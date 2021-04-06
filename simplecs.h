@@ -22,7 +22,8 @@ simplecs_entity_t next_entity_id = UINT16_MAX + 1; // 48 bits from UINT16_MAX ex
 #define SIMPLECS_REGISTER_COMPONENT(name) struct Component_##name {\
     simplecs_entity_t id;\
     name * component;\
-} component_##name;
+} component_##name;\
+const COMPONENT_##name##_id = next_component_id++;
 
 #define SIMPLECS_HAS_COMPONENT(name, entity_id) (hmget(component_##name, entity_id) != NULL)
 #define SIMPLECS_GET_COMPONENT(name, entity_id) hmget(component_##name, entity_id);
