@@ -15,6 +15,12 @@
 // Systems are functions
 // The main loop iterates over systems
 
+
+struct Simplecs_World * simplecs_init() {
+	hmdefault(&simplecs_world, NULL);
+	return(&simplecs_world);
+}
+
 simplecs_entity_t simplecs_new_entity(world) {
 	simplecs_entity_t out = 0;
 	while ((out == 0) && (num_open_entity_ids > 0)) {
@@ -24,4 +30,6 @@ simplecs_entity_t simplecs_new_entity(world) {
 	if (out == 0) {
 		out = next_entity_id++;
 	} 
+    hmget(world, out) = NULL;
+    return(out);
 }

@@ -26,7 +26,7 @@ SOURCES_TEST := test.c
 TARGETS_SIMPLECS := $(SOURCES_SIMPLECS:.c=.o)
 
 # $(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@
-$(EXEC): $(SOURCES_TEST); $(CC) $< -o $@  $(CFLAGS)  $(INCLUDE_ALL)  ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
+$(EXEC): $(SOURCES_TEST); $(CC) $< -o $@ -run $(CFLAGS)  $(INCLUDE_ALL)  ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: wclean
 wclean: ; del /q /s *.o *.a *.exe build\\*.txt
