@@ -1,6 +1,7 @@
 *.*
 !*.h
 !*.c
+!*.md
 !.gitignore
 !.gitattributes
 stb_ds.h

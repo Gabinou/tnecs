@@ -13,7 +13,7 @@
 // Entities are indices (uint64_t)
 // Component are structures
 // Systems are functions
-// the main loop iterates over systems
+// The main loop iterates over systems
 
 simplecs_entity_t simplecs_new_entity(world) {
 	simplecs_entity_t out = 0;
