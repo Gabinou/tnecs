@@ -18,18 +18,28 @@
 
 struct Simplecs_World * simplecs_init() {
 	hmdefault(&simplecs_world, NULL);
+    arrput(component_tables, NULL);
 	return(&simplecs_world);
 }
 
-simplecs_entity_t simplecs_new_entity(world) {
+simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
 	simplecs_entity_t out = 0;
-	while ((out == 0) && (num_open_entity_ids > 0)) {
-		out = open_entity_ids[--num_open_entity_ids];
-		open_entity_ids[num_open_entity_ids] = 0;
+	while ((out == 0) && (num_opened_entity_ids > 0)) {
+		out = opened_entity_ids[--num_opened_entity_ids];
+		opened_entity_ids[num_opened_entity_ids] = 0;
 	}
 	if (out == 0) {
 		out = next_entity_id++;
 	} 
-    hmget(world, out) = NULL;
+    hmget(in_world, out) = NULL;
     return(out);
 }
+
+simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity) {
+    for (size_t i = 0; i < arrlen(hmget(in_world, in_entity)); i++) {
+        free(component_tables[hmget(in_world, in_entity)[i]]);
+    }
+    hmput(in_world, in_entity, NULL);
+    arrput(opened_entity_ids, num_opened_entity_ids);
+}
+
