@@ -1,30 +1,32 @@
+#ifndef SIMPLECS_H
+#define SIMPLECS_H
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
-#define STB_DS_IMPLEMENTATION
+// #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
 
 typedef uint64_t simplecs_entity_t;
 
 struct Simplecs_World {
-	simplecs_entity_t id;
-    simplecs_entity_t * components;
+	simplecs_entity_t key;
+    simplecs_entity_t * value;
 } simplecs_world;
 
 struct Simplecs_World * simplecs_init();
 
 #define OPEN_IDS_BUFFER 128
 simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
-uint8_t num_opened_entity_ids = 0;
+uint8_t num_opened_entity_ids;
 
-simplecs_entity_t next_component_id = 1; // ]0,  UINT16_MAX]
-simplecs_entity_t next_entity_id = UINT16_MAX + 1; // ]UINT16_MAX,  UINT64_MAX]
+simplecs_entity_t next_component_id; // ]0,  UINT16_MAX]
+simplecs_entity_t next_entity_id; // ]UINT16_MAX,  UINT64_MAX]
 
 void ** component_tables;
 #define SIMPLECS_REGISTER_COMPONENT(name) struct Component_##name {\
-    simplecs_entity_t id;\
-    name * component;\
+    simplecs_entity_t key;\
+    name * value;\
 } component_##name;\
 const Component_##name##_id = next_component_id++;\
 arrput(component_tables, &component_##name);
@@ -40,3 +42,5 @@ malloc(hmget(Component_##name, entity_id), sizeof(Component_##name));
 
 simplecs_entity_t simplecs_entity_create(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
+
+#endif // SIMPLECS

@@ -15,9 +15,12 @@
 // Systems are functions
 // The main loop iterates over systems
 
+uint8_t num_opened_entity_ids = 0;
+simplecs_entity_t next_component_id = 1; // ]0,  UINT16_MAX]
+simplecs_entity_t next_entity_id = UINT16_MAX + 1; // ]UINT16_MAX,  UINT64_MAX]
 
 struct Simplecs_World * simplecs_init() {
-	hmdefault(&simplecs_world, NULL);
+	// hmdefault(&simplecs_world, NULL);
     arrput(component_tables, NULL);
 	return(&simplecs_world);
 }
@@ -40,6 +43,8 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
         free(component_tables[hmget(in_world, in_entity)[i]]);
     }
     hmput(in_world, in_entity, NULL);
-    arrput(opened_entity_ids, num_opened_entity_ids);
+    if (num_opened_entity_ids < OPEN_IDS_BUFFER) {
+        opened_entity_ids[num_opened_entity_ids++] = in_entity;
+    }
 }
 

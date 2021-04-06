@@ -19,14 +19,15 @@ FLAGS_BUILD_TYPE = -O0 -g  #Debug
 
 CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${LIBS_THIRD} ${FLAGS_ERROR}
 
-.PHONY: all $(EXEC)
+.PHONY: all $(EXEC)  
 all: $(EXEC)
 SOURCES_SIMPLECS := simplecs.c
 SOURCES_TEST := test.c
 TARGETS_SIMPLECS := $(SOURCES_SIMPLECS:.c=.o)
 
-# $(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@
-$(EXEC): $(SOURCES_TEST); $(CC) $< -o $@ -run $(CFLAGS)  $(INCLUDE_ALL)  ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
+
+$(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@
+$(EXEC): $(SOURCES_TEST) $(TARGETS_SIMPLECS); $(CC) $< $(TARGETS_SIMPLECS) -o $@ $(CFLAGS)  $(INCLUDE_ALL)  ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR} & $(EXEC) 
 
 .PHONY: wclean
 wclean: ; del /q /s *.o *.a *.exe build\\*.txt

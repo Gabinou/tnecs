@@ -1,4 +1,6 @@
-#include <simplecs.h>
+#include "stb_ds.h"
+#define STB_DS_IMPLEMENTATION
+#include "simplecs.h"
 
 
 typedef struct Position {
@@ -13,6 +15,8 @@ typedef struct Unit {
 
 int main () {
 	printf("Hello, World! I am testing Simplecs \n");
+	struct Simplecs_World * test_wordd = simplecs_init();
+
 	SIMPLECS_REGISTER_COMPONENT(Position);
 	printf("%d\n", Component_Position_id);
 	SIMPLECS_REGISTER_COMPONENT(Unit);
