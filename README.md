@@ -3,7 +3,7 @@
 Simplecs (pronounced simplex) is a very simple C99 implementation of an Entity-Component-System (ECS).
 ECS is a very useful design pattern/alternative to OOP that mainly finds use in video game development.
 For more details about ECS, read...
-I am aiming to be compileable with gcc and especially tcc.
+I am aiming for simplecs to be compileable with gcc and especially tcc.
 Very inspired by flecs, which was created by Sanders Mertens.
 
 
