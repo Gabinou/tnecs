@@ -1,0 +1,8 @@
+*.*
+!*.h
+!*.c
+!*.md
+!.gitignore
+!.gitattributes
+!makefile
+!license.txt
