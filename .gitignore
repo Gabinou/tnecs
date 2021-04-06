@@ -1,0 +1,8 @@
+*.*
+!*.h
+!*.c
+!.gitignore
+!.gitattributes
+stb_ds.h
+!makefile
+!license.txt
