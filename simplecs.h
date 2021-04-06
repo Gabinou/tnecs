@@ -10,8 +10,8 @@
 typedef uint64_t simplecs_entity_t;
 
 struct Simplecs_World {
-	simplecs_entity_t key;
-    simplecs_entity_t * value;
+	simplecs_entity_t key; // id
+    simplecs_entity_t * value; // component list
 } simplecs_world;
 
 struct Simplecs_World * simplecs_init();
@@ -36,10 +36,12 @@ arrput(component_tables, &component_##name);
 #define SIMPLECS_GET_COMPONENT(name, entity_id) hmget(Component_##name, entity_id)
 #define SIMPLECS_GET_COMPONENT_TABLE(name) component_tables[Component_##name##id]
 
-#define SIMPLECS_ADD_COMPONENT(world, name, entity_id) arrput(hmget(simplecs_world, entity_id), Component_##name##_id);\
-malloc(hmget(Component_##name, entity_id), sizeof(Component_##name));
+#define SIMPLECS_ADD_COMPONENT(world, name, entity_id) hmput(world, entity_id, NULL)
+// hmget(world, entity_id)
+// #define SIMPLECS_ADD_COMPONENT(world, name, entity_id) arrput(hmget(world, entity_id), Component_##name##_id);
+// malloc(hmget(Component_##name, entity_id), sizeof(Component_##name))
 
-
+simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_create(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 

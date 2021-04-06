@@ -20,7 +20,13 @@ simplecs_entity_t next_component_id = 1; // ]0,  UINT16_MAX]
 simplecs_entity_t next_entity_id = UINT16_MAX + 1; // ]UINT16_MAX,  UINT64_MAX]
 
 struct Simplecs_World * simplecs_init() {
-	// hmdefault(&simplecs_world, NULL);
+    simplecs_entity_t temp = 1;
+    simplecs_entity_t * temp_value = NULL;
+    struct Simplecs_World * temp_vec = &simplecs_world;
+    hmdefault(temp_vec, temp_value);
+    simplecs_entity_t * temp_array = NULL;
+    arrput(temp_array, 1);
+    hmput(temp_vec, temp, temp_array);
     arrput(component_tables, NULL);
 	return(&simplecs_world);
 }
@@ -34,7 +40,6 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
 	if (out == 0) {
 		out = next_entity_id++;
 	} 
-    hmget(in_world, out) = NULL;
     return(out);
 }
 
