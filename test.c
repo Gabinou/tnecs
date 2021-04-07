@@ -16,6 +16,8 @@ typedef struct Unit {
 int main () {
 	printf("Hello, World! I am testing Simplecs. \n\n");
 	simplecs_entity_t * components_list;
+	struct Position * temp_position; 
+	struct Unit * temp_unit; 
 
 	printf("simplecs_init tests \n");
 	struct Simplecs_World * test_world = simplecs_init();
@@ -66,6 +68,9 @@ int main () {
 	assert(components_list[1] == Component_Unit_id);
 
 	printf("\n");
+	printf("Getting Components from Entities\n");
+	// SIMPLECS_GET_COMPONENT(Position, Silou);
+	temp_position = SIMPLECS_GET_COMPONENT(Position, Silou);
 
 
 	// SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
