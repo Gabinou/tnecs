@@ -14,7 +14,8 @@ typedef struct Unit {
 }Unit;
 
 int main () {
-	printf("Hello, World! I am testing Simplecs \n\n");
+	printf("Hello, World! I am testing Simplecs. \n\n");
+	simplecs_entity_t * components_list;
 
 	printf("simplecs_init tests \n");
 	struct Simplecs_World * test_world = simplecs_init();
@@ -35,20 +36,40 @@ int main () {
 	assert(next_entity_id == ENTITY_ID_START);
 	printf("Making Silou Entity \n");
 	simplecs_entity_t Silou = simplecs_new_entity(test_world);
+	assert(Silou == ENTITY_ID_START);
 	assert(next_entity_id == (ENTITY_ID_START + 1));
 	printf("Making Pirou Entity \n");
 	simplecs_entity_t Pirou = simplecs_new_entity(test_world);
+	assert(Pirou == (ENTITY_ID_START + 1));
 	assert(next_entity_id == (ENTITY_ID_START + 2));
 	printf("\n");
 
-	simplecs_entity_t * components_list;
+	printf("Adding Components to Entities\n");
 	SIMPLECS_ADD_COMPONENT(test_world, Position, Silou);
 	components_list = hmget(test_world, Silou);
 	assert(arrlen(components_list) == 1);
-	assert(arrlen(components_list) == Component_Position_id);
-	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Silou);
+	assert(components_list[0] == Component_Position_id);
+	SIMPLECS_ADD_COMPONENT(test_world, Unit, Silou);
+	components_list = hmget(test_world, Silou);
+	assert(arrlen(components_list) == 2);
+	assert(components_list[0] == Component_Position_id);
+	assert(components_list[1] == Component_Unit_id);
+
+	SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
+	components_list = hmget(test_world, Pirou);
+	assert(arrlen(components_list) == 1);
+	assert(components_list[0] == Component_Position_id);
+	SIMPLECS_ADD_COMPONENT(test_world, Unit, Pirou);
+	components_list = hmget(test_world, Pirou);
+	assert(arrlen(components_list) == 2);
+	assert(components_list[0] == Component_Position_id);
+	assert(components_list[1] == Component_Unit_id);
+
+	printf("\n");
+
+
 	// SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
 	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Pirou);
-    getchar();
+	printf("Simplecs Test End");
 	return(0);
 }

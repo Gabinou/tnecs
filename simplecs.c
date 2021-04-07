@@ -41,8 +41,11 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
 		out = next_entity_id++;
 	} 
     simplecs_entity_t temp = DEFAULT_COMPONENT_CAP;
-    simplecs_entity_t * components_list = hmget(in_world, out);
+
+    simplecs_entity_t * components_list;
     arrsetcap(components_list, temp);
+    hmput(in_world, out, components_list);
+    
     return(out);
 }
 
