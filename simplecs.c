@@ -8,29 +8,27 @@
 // Example: Videogame 
 //      -> main character: Physics component, PlayerControlled Component
 //      -> enemies: Physics component, AIControlled Component
-//      -> Environment tiles: Destroyable Component
+//      -> environment tiles: Destroyable Component
 // 
 // Entities are indices (uint64_t)
 // Component are structures
 // Systems are functions
 // The main loop iterates over systems
+// There can be only one world.
 
 uint8_t num_opened_entity_ids = 0;
 simplecs_entity_t next_component_id = 1; // ]0,  UINT16_MAX]
 simplecs_entity_t next_entity_id = UINT16_MAX + 1; // ]UINT16_MAX,  UINT64_MAX]
 
 struct Simplecs_World * simplecs_init() {
-    simplecs_entity_t temp = 1;
+    simplecs_entity_t temp = SIMPLECS_NULLENTITY;
     simplecs_entity_t * temp_value = NULL;
-    simplecs_world = NULL;
-    hmdefault(simplecs_world, temp_value);
     simplecs_entity_t * temp_array = NULL;
-    // temp_array = (simplecs_entity_t *) malloc(100);
-    arrput(temp_array, 1);
-    printf("HERE\n");
+    simplecs_world = NULL;
+
+    hmdefault(simplecs_world, temp_value);
     hmput(simplecs_world, temp, temp_array);
-    printf("HERE\n");
-    // arrput(component_tables, NULL);
+    arrput(component_tables, NULL);
 	return(&simplecs_world);
 }
 

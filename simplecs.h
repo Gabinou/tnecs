@@ -8,6 +8,8 @@
 #include "stb_ds.h"
 
 typedef uint64_t simplecs_entity_t;
+#define SIMPLECS_NULLENTITY 0
+#define OPEN_IDS_BUFFER 128
 
 struct Simplecs_World {
 	simplecs_entity_t key; // id
@@ -16,7 +18,6 @@ struct Simplecs_World {
 
 struct Simplecs_World * simplecs_init();
 
-#define OPEN_IDS_BUFFER 128
 simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
 uint8_t num_opened_entity_ids;
 
