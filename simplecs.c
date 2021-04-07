@@ -9,7 +9,6 @@
 //      -> main character: Physics component, PlayerControlled Component
 //      -> enemies: Physics component, AIControlled Component
 //      -> environment tiles: Destroyable Component
-// 
 // Entities are indices (uint64_t)
 // Component are structures
 // Systems are functions

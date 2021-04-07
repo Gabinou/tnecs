@@ -42,7 +42,7 @@ int main () {
 	printf("\n");
 
 	
-	// SIMPLECS_ADD_COMPONENT(test_world, Position, Silou);
+	SIMPLECS_ADD_COMPONENT(test_world, Position, Silou);
 	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Silou);
 	// SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
 	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Pirou);
