@@ -12,7 +12,7 @@ typedef uint64_t simplecs_entity_t;
 struct Simplecs_World {
 	simplecs_entity_t key; // id
     simplecs_entity_t * value; // component list
-} simplecs_world;
+} * simplecs_world;
 
 struct Simplecs_World * simplecs_init();
 

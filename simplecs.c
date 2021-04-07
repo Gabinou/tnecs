@@ -22,11 +22,14 @@ simplecs_entity_t next_entity_id = UINT16_MAX + 1; // ]UINT16_MAX,  UINT64_MAX]
 struct Simplecs_World * simplecs_init() {
     simplecs_entity_t temp = 1;
     simplecs_entity_t * temp_value = NULL;
-    struct Simplecs_World * temp_vec = &simplecs_world;
-    hmdefault(temp_vec, temp_value);
+    simplecs_world = NULL;
+    hmdefault(simplecs_world, temp_value);
     simplecs_entity_t * temp_array = NULL;
+    // temp_array = (simplecs_entity_t *) malloc(100);
     arrput(temp_array, 1);
-    // hmput(temp_vec, temp, temp_array);
+    printf("HERE\n");
+    hmput(simplecs_world, temp, temp_array);
+    printf("HERE\n");
     // arrput(component_tables, NULL);
 	return(&simplecs_world);
 }
