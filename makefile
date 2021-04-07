@@ -1,6 +1,6 @@
 
 
-CC := gcc # tcc, gcc 
+CC := tcc # tcc, gcc 
 
 DIR_INCLUDE = include
 INCLUDE_ALL = -I. -I${DIR_INCLUDE}

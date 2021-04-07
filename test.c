@@ -44,6 +44,7 @@ int main () {
 	simplecs_entity_t Pirou = simplecs_new_entity(test_world);
 	assert(Pirou == (ENTITY_ID_START + 1));
 	assert(next_entity_id == (ENTITY_ID_START + 2));
+	assert(Silou != Pirou);
 	printf("\n");
 
 	printf("Adding Components to Entities\n");
@@ -69,6 +70,10 @@ int main () {
 	printf("\n");
 
 	printf("Getting Components from Entities\n");
+	Position * temp_Pirou = hmget(component_Position, Pirou);
+	Position * temp_Silou = hmget(component_Position, Silou);
+	assert(temp_Silou != temp_Pirou);
+	assert(SIMPLECS_GET_COMPONENT(Position, Silou) != SIMPLECS_GET_COMPONENT(Position, Pirou));
 	temp_position = SIMPLECS_GET_COMPONENT(Position, Silou);
 	assert(temp_position->x == 0);
 	assert(temp_position->y == 0);
