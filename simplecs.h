@@ -14,9 +14,10 @@ typedef uint64_t simplecs_entity_t;
 #define DEFAULT_COMPONENT_CAP 128
 #define COMPONENT_ID_START 1
 #define ENTITY_ID_START UINT16_MAX + 1
+#define DEFAULT_COMPONENT_NUM 4
 
 struct Simplecs_World {
-	simplecs_entity_t key; // id
+    simplecs_entity_t key; // id
     simplecs_entity_t * value; // components_list
 } * simplecs_world;
 
@@ -45,8 +46,9 @@ arrput(component_tables, &component_##name);
 #define SIMPLECS_ADD_COMPONENT(world, name, entity_id) _SIMPLECS_ADD_COMPONENT(world, name, entity_id)
 #define _SIMPLECS_ADD_COMPONENT(world, name, entity_id) arrput(hmget(world, entity_id), Component_##name##_id);\
 printf("in_id: %d\n", entity_id);\
-printf("pointer: %p\n",hmget(world, entity_id));\
-hmget(component_##name, entity_id) = (name *)calloc(1, sizeof(name))
+printf("pointer1: %p\n", hmget(world, entity_id));\
+hmput(component_##name, entity_id, (name *)calloc(1, sizeof(name)));\
+printf("pointer2: %p\n", hmget(component_##name, entity_id));\
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_create(struct Simplecs_World * in_world);

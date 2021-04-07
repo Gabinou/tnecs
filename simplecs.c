@@ -2,10 +2,10 @@
 #include "simplecs.h"
 
 // Simplecs (pronounced simplex) is a very simple implementation of an entity-component-system (ECS)
-// ECS is very useful in game programming. 
+// ECS is very useful in game programming.
 // OOP: objects and methods, children inheriting from parents, etc.
 // ECS: Entities can have any number of independent components, acted upon by systems
-// Example: Videogame 
+// Example: Videogame
 //      -> main character: Physics component, PlayerControlled Component
 //      -> enemies: Physics component, AIControlled Component
 //      -> environment tiles: Destroyable Component
@@ -28,25 +28,25 @@ struct Simplecs_World * simplecs_init() {
     hmdefault(simplecs_world, temp_value);
     hmput(simplecs_world, temp, temp_array);
     arrput(component_tables, NULL);
-	return(simplecs_world);
+    return (simplecs_world);
 }
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
-	simplecs_entity_t out = 0;
-	while ((out == 0) && (num_opened_entity_ids > 0)) {
-		out = opened_entity_ids[--num_opened_entity_ids];
-		opened_entity_ids[num_opened_entity_ids] = 0;
-	}
-	if (out == 0) {
-		out = next_entity_id++;
-	} 
+    simplecs_entity_t out = 0;
+    while ((out == 0) && (num_opened_entity_ids > 0)) {
+        out = opened_entity_ids[--num_opened_entity_ids];
+        opened_entity_ids[num_opened_entity_ids] = 0;
+    }
+    if (out == 0) {
+        out = next_entity_id++;
+    }
     simplecs_entity_t temp = DEFAULT_COMPONENT_CAP;
+    simplecs_entity_t * components_list = NULL;
 
-    simplecs_entity_t * components_list;
     arrsetcap(components_list, temp);
     hmput(in_world, out, components_list);
-    
-    return(out);
+
+    return (out);
 }
 
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity) {

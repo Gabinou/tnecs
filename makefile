@@ -24,10 +24,15 @@ CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${LIBS_THIRD} ${FLAGS_ERROR}
 all: $(EXEC) run
 SOURCES_SIMPLECS := simplecs.c
 SOURCES_TEST := test.c
+HEADERS := $(wildcard *.h)
+SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_SIMPLECS) 
 TARGETS_SIMPLECS := $(SOURCES_SIMPLECS:.c=.o)
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
+
+.PHONY : astyle
+astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
 $(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@ 
 $(EXEC): $(SOURCES_TEST) $(TARGETS_SIMPLECS); $(CC) $< $(TARGETS_SIMPLECS) -o $@ $(CFLAGS)
