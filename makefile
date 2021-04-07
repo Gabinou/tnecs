@@ -21,7 +21,7 @@ FLAGS_BUILD_TYPE =  #Debug
 CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${LIBS_THIRD} ${FLAGS_ERROR}
 
 .PHONY: all $(EXEC)  
-all: $(EXEC) run
+all: astyle $(EXEC) run 
 SOURCES_SIMPLECS := simplecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
