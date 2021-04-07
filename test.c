@@ -66,16 +66,60 @@ int main () {
 	assert(arrlen(components_list) == 2);
 	assert(components_list[0] == Component_Position_id);
 	assert(components_list[1] == Component_Unit_id);
-
 	printf("\n");
+
 	printf("Getting Components from Entities\n");
-	// SIMPLECS_GET_COMPONENT(Position, Silou);
 	temp_position = SIMPLECS_GET_COMPONENT(Position, Silou);
 	assert(temp_position->x == 0);
 	assert(temp_position->y == 0);
+	temp_position->x = 1;
+	temp_position->y = 2;
+	assert(temp_position->x == 1);
+	assert(temp_position->y == 2);
+	temp_position = SIMPLECS_GET_COMPONENT(Position, Silou);
+	assert(temp_position->x == 1);
+	assert(temp_position->y == 2);
 
-	// SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
-	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Pirou);
+	temp_unit = SIMPLECS_GET_COMPONENT(Unit, Silou);
+	assert(temp_unit->hp == 0);
+	assert(temp_unit->str == 0);
+	temp_unit->hp = 3;
+	temp_unit->str = 4;
+	assert(temp_unit->hp == 3);
+	assert(temp_unit->str == 4);
+	temp_position = SIMPLECS_GET_COMPONENT(Position, Silou);
+	assert(temp_position->x == 1);
+	assert(temp_position->y == 2);
+	temp_unit = SIMPLECS_GET_COMPONENT(Unit, Silou);
+	assert(temp_unit->hp == 3);
+	assert(temp_unit->str == 4);
+
+	temp_position = SIMPLECS_GET_COMPONENT(Position, Pirou);
+	assert(temp_position->x == 0);
+	assert(temp_position->y == 0);
+	temp_position->x = 5;
+	temp_position->y = 6;
+	assert(temp_position->x == 5);
+	assert(temp_position->y == 6);
+	temp_position = SIMPLECS_GET_COMPONENT(Position, Pirou);
+	assert(temp_position->x == 5);
+	assert(temp_position->y == 6);
+
+	temp_unit = SIMPLECS_GET_COMPONENT(Unit, Pirou);
+	assert(temp_unit->hp == 0);
+	assert(temp_unit->str == 0);
+	temp_unit->hp = 7;
+	temp_unit->str = 8;
+	assert(temp_unit->hp == 7);
+	assert(temp_unit->str == 8);
+	temp_position = SIMPLECS_GET_COMPONENT(Position, Pirou);
+	assert(temp_position->x == 5);
+	assert(temp_position->y == 6);
+	temp_unit = SIMPLECS_GET_COMPONENT(Unit, Pirou);
+	assert(temp_unit->hp == 7);
+	assert(temp_unit->str == 8);
+
+
 	printf("Simplecs Test End");
 	return(0);
 }
