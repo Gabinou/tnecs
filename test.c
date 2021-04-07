@@ -21,7 +21,7 @@ int main () {
 
 	printf("simplecs_init tests \n");
 	struct Simplecs_World * test_world = simplecs_init();
-	printf("component_tables[SIMPLECS_NULLENTITY]: %d\n", component_tables[SIMPLECS_NULLENTITY]);
+	assert(component_tables[SIMPLECS_NULLENTITY] == NULL);
 	printf("\n");
 
 	printf("Component registration tests\n");
@@ -71,7 +71,8 @@ int main () {
 	printf("Getting Components from Entities\n");
 	// SIMPLECS_GET_COMPONENT(Position, Silou);
 	temp_position = SIMPLECS_GET_COMPONENT(Position, Silou);
-
+	assert(temp_position->x == 0);
+	assert(temp_position->y == 0);
 
 	// SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
 	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Pirou);

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <stdbool.h>
 // #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h"
@@ -42,7 +43,7 @@ arrput(component_tables, &component_##name);
 #define SIMPLECS_GET_COMPONENT_TABLE(name) component_tables[Component_##name##_id]
 
 #define SIMPLECS_ADD_COMPONENT(world, name, entity_id) arrput(hmget(world, entity_id), Component_##name##_id);\
-hmget(component_##name, entity_id) = (name *)malloc(sizeof(name))
+hmget(component_##name, entity_id) = (name *)calloc(1, sizeof(name))
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_create(struct Simplecs_World * in_world);
