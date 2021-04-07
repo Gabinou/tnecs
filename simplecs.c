@@ -26,8 +26,8 @@ struct Simplecs_World * simplecs_init() {
     hmdefault(temp_vec, temp_value);
     simplecs_entity_t * temp_array = NULL;
     arrput(temp_array, 1);
-    hmput(temp_vec, temp, temp_array);
-    arrput(component_tables, NULL);
+    // hmput(temp_vec, temp, temp_array);
+    // arrput(component_tables, NULL);
 	return(&simplecs_world);
 }
 
