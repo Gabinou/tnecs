@@ -1,6 +1,6 @@
 
 
-CC := tcc 
+CC := gcc # tcc, gcc 
 
 DIR_INCLUDE = include
 INCLUDE_ALL = -I. -I${DIR_INCLUDE}
@@ -29,7 +29,7 @@ TARGETS_SIMPLECS := $(SOURCES_SIMPLECS:.c=.o)
 .PHONY : run
 run: $(EXEC); $(EXEC)
 
-$(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@
+$(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@ 
 $(EXEC): $(SOURCES_TEST) $(TARGETS_SIMPLECS); $(CC) $< $(TARGETS_SIMPLECS) -o $@ $(CFLAGS)
 
 .PHONY: wclean

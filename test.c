@@ -1,7 +1,7 @@
 #include "stb_ds.h"
 #define STB_DS_IMPLEMENTATION
 #include "simplecs.h"
-
+#include <assert.h>
 
 typedef struct Position {
 	uint32_t x;
@@ -24,25 +24,28 @@ int main () {
 	printf("Component registration tests\n");
 	printf("Registering Position Component \n");
 	SIMPLECS_REGISTER_COMPONENT(Position);
-	printf("Component_Position_id: %d\n", Component_Position_id);
+	assert(Component_Position_id == COMPONENT_ID_START);
 	printf("Registering Position Unit \n");
 	SIMPLECS_REGISTER_COMPONENT(Unit);
-	printf("Component_Unit_id: %d\n", Component_Unit_id);
+	assert(Component_Unit_id == (COMPONENT_ID_START + 1));
 	printf("\n");
 
 
 	printf("Entity Creation/Destruction tests\n");
-	printf("next_entity_id: %d \n", next_entity_id);
+	assert(next_entity_id == ENTITY_ID_START);
 	printf("Making Silou Entity \n");
 	simplecs_entity_t Silou = simplecs_new_entity(test_world);
-	printf("next_entity_id: %d \n", next_entity_id);
+	assert(next_entity_id == (ENTITY_ID_START + 1));
 	printf("Making Pirou Entity \n");
 	simplecs_entity_t Pirou = simplecs_new_entity(test_world);
-	printf("next_entity_id: %d \n", next_entity_id);
+	assert(next_entity_id == (ENTITY_ID_START + 2));
 	printf("\n");
 
-	
+	simplecs_entity_t * components_list;
 	SIMPLECS_ADD_COMPONENT(test_world, Position, Silou);
+	components_list = hmget(test_world, Silou);
+	assert(arrlen(components_list) == 1);
+	assert(arrlen(components_list) == Component_Position_id);
 	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Silou);
 	// SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
 	// SIMPLECS_ADD_COMPONENT(test_world, Unit, Pirou);

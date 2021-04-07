@@ -10,10 +10,13 @@
 typedef uint64_t simplecs_entity_t;
 #define SIMPLECS_NULLENTITY 0
 #define OPEN_IDS_BUFFER 128
+#define DEFAULT_COMPONENT_CAP 128
+#define COMPONENT_ID_START 1
+#define ENTITY_ID_START UINT16_MAX + 1
 
 struct Simplecs_World {
 	simplecs_entity_t key; // id
-    simplecs_entity_t * value; // component list
+    simplecs_entity_t * value; // components_list
 } * simplecs_world;
 
 struct Simplecs_World * simplecs_init();
@@ -29,7 +32,7 @@ void ** component_tables;
     simplecs_entity_t key;\
     name * value;\
 } component_##name;\
-const Component_##name##_id = next_component_id++;\
+const simplecs_entity_t Component_##name##_id = next_component_id++;\
 arrput(component_tables, &component_##name);
 // Error if component registered twice -> user responsibility
 

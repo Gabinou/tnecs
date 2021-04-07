@@ -16,8 +16,8 @@
 // There can be only one world.
 
 uint8_t num_opened_entity_ids = 0;
-simplecs_entity_t next_component_id = 1; // ]0,  UINT16_MAX]
-simplecs_entity_t next_entity_id = UINT16_MAX + 1; // ]UINT16_MAX,  UINT64_MAX]
+simplecs_entity_t next_component_id = COMPONENT_ID_START; // ]0,  UINT16_MAX]
+simplecs_entity_t next_entity_id = ENTITY_ID_START; // ]UINT16_MAX,  UINT64_MAX]
 
 struct Simplecs_World * simplecs_init() {
     simplecs_entity_t temp = SIMPLECS_NULLENTITY;
@@ -28,7 +28,7 @@ struct Simplecs_World * simplecs_init() {
     hmdefault(simplecs_world, temp_value);
     hmput(simplecs_world, temp, temp_array);
     arrput(component_tables, NULL);
-	return(&simplecs_world);
+	return(simplecs_world);
 }
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
@@ -40,6 +40,9 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
 	if (out == 0) {
 		out = next_entity_id++;
 	} 
+    simplecs_entity_t temp = DEFAULT_COMPONENT_CAP;
+    simplecs_entity_t * components_list = hmget(in_world, out);
+    arrsetcap(components_list, temp);
     return(out);
 }
 
