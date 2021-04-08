@@ -33,6 +33,7 @@ struct Simplecs_World * simplecs_init() {
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
     simplecs_entity_t out = 0;
+    simplecs_entity_t * components_list;
     while ((out == 0) && (num_opened_entity_ids > 0)) {
         out = opened_entity_ids[--num_opened_entity_ids];
         opened_entity_ids[num_opened_entity_ids] = 0;
@@ -41,8 +42,11 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
         out = next_entity_id++;
     }
     simplecs_entity_t temp = DEFAULT_COMPONENT_CAP;
-    simplecs_entity_t * components_list = NULL;
-
+    components_list = hmget(in_world, out);
+    if (components_list != NULL) {
+        arrfree(components_list);
+    }
+    components_list = NULL;
     arrsetcap(components_list, temp);
     hmput(in_world, out, components_list);
 
@@ -50,8 +54,10 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
 }
 
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity) {
+    simplecs_entity_t * components_list;
     for (size_t i = 0; i < arrlen(hmget(in_world, in_entity)); i++) {
-        free(component_tables[hmget(in_world, in_entity)[i]]);
+        components_list = hmget(in_world, in_entity);
+        arrfree(components_list);
     }
     hmput(in_world, in_entity, NULL);
     if (num_opened_entity_ids < OPEN_IDS_BUFFER) {
