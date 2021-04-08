@@ -72,6 +72,10 @@ int main() {
     printf("Getting Components from Entities\n");
     Position * temp_Pirou = hmget(component_Position, Pirou);
     Position * temp_Silou = hmget(component_Position, Silou);
+    // Position * temp_Pirou = SIMPLECS_GET_COMPONENT(Position, Pirou);
+    // Position * temp_Silou = SIMPLECS_GET_COMPONENT(Position, Silou);
+    printf("temp_Silou: %p\n", temp_Silou);
+    printf("temp_Pirou: %p\n", temp_Pirou);
     assert(temp_Silou != temp_Pirou);
     assert(SIMPLECS_GET_COMPONENT(Position, Silou) != SIMPLECS_GET_COMPONENT(Position, Pirou));
     temp_position = SIMPLECS_GET_COMPONENT(Position, Silou);
