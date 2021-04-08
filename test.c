@@ -19,12 +19,12 @@ int main() {
     struct Position * temp_position;
     struct Unit * temp_unit;
 
-    printf("simplecs_init tests \n");
+    printf("simplecs_init\n");
     struct Simplecs_World * test_world = simplecs_init();
     assert(component_tables[SIMPLECS_NULLENTITY] == NULL);
     printf("\n");
 
-    printf("Component registration tests\n");
+    printf("Component registration\n");
     printf("Registering Position Component \n");
     SIMPLECS_REGISTER_COMPONENT(Position);
     assert(Component_Position_id == COMPONENT_ID_START);
@@ -34,7 +34,7 @@ int main() {
     printf("\n");
 
 
-    printf("Entity Creation/Destruction tests\n");
+    printf("Entity Creation/Destruction\n");
     assert(next_entity_id == ENTITY_ID_START);
     printf("Making Silou Entity \n");
     simplecs_entity_t Silou = simplecs_new_entity(test_world);
@@ -123,6 +123,9 @@ int main() {
     temp_unit = SIMPLECS_GET_COMPONENT(Unit, Pirou);
     assert(temp_unit->hp == 7);
     assert(temp_unit->str == 8);
+    printf("\n");
+
+    printf("Destroying Entities\n");
 
 
     printf("Simplecs Test End");
