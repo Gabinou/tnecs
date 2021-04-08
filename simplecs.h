@@ -43,8 +43,8 @@ arrput(component_tables, &component_##name);
 #define SIMPLECS_GET_COMPONENT(name, entity_id) hmget(component_##name, entity_id)
 #define SIMPLECS_GET_COMPONENT_TABLE(name) (name*)component_tables[Component_##name##_id]
 
-#define SIMPLECS_ADD_COMPONENT(world, name, entity_id) _SIMPLECS_ADD_COMPONENT(world, name, entity_id)
-#define _SIMPLECS_ADD_COMPONENT(world, name, entity_id) arrput(hmget(world, entity_id), Component_##name##_id);\
+// #define SIMPLECS_ADD_COMPONENT(world, name, entity_id) _SIMPLECS_ADD_COMPONENT(world, name, entity_id)
+#define SIMPLECS_ADD_COMPONENT(world, name, entity_id) arrput(hmget(world, entity_id), Component_##name##_id);\
 if (hmget(component_##name, entity_id) != NULL) {\
     free(hmget(component_##name, entity_id));\
 }\

@@ -126,7 +126,21 @@ int main() {
     printf("\n");
 
     printf("Destroying Entities\n");
-
+    simplecs_entity_destroy(test_world, Pirou);
+    Pirou = simplecs_new_entity(test_world);
+    assert(Pirou == (ENTITY_ID_START + 1));
+    assert(next_entity_id == (ENTITY_ID_START + 2));
+    assert(Silou != Pirou);
+    SIMPLECS_ADD_COMPONENT(test_world, Position, Pirou);
+    components_list = hmget(test_world, Pirou);
+    assert(arrlen(components_list) == 1);
+    assert(components_list[0] == Component_Position_id);
+    SIMPLECS_ADD_COMPONENT(test_world, Unit, Pirou);
+    components_list = hmget(test_world, Pirou);
+    assert(arrlen(components_list) == 2);
+    assert(components_list[0] == Component_Position_id);
+    assert(components_list[1] == Component_Unit_id);
+    printf("\n");
 
     printf("Simplecs Test End");
     return (0);

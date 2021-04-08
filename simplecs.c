@@ -49,16 +49,12 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
     components_list = NULL;
     arrsetcap(components_list, temp);
     hmput(in_world, out, components_list);
-
     return (out);
 }
 
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity) {
-    simplecs_entity_t * components_list;
-    for (size_t i = 0; i < arrlen(hmget(in_world, in_entity)); i++) {
-        components_list = hmget(in_world, in_entity);
-        arrfree(components_list);
-    }
+    simplecs_entity_t * components_list = hmget(in_world, in_entity);
+    arrfree(components_list);
     hmput(in_world, in_entity, NULL);
     if (num_opened_entity_ids < OPEN_IDS_BUFFER) {
         opened_entity_ids[num_opened_entity_ids++] = in_entity;
