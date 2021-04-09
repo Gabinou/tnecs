@@ -23,10 +23,15 @@ struct Simplecs_World * simplecs_init() {
     simplecs_entity_t temp = SIMPLECS_NULLENTITY;
     simplecs_entity_t * temp_value = NULL;
     simplecs_entity_t * temp_array = NULL;
+    // struct Simplecs_World * simplecs_world = NULL;
     simplecs_world = NULL;
-
-    hmdefault(simplecs_world, temp_value);
-    hmput(simplecs_world, temp, temp_array);
+    // hmdefault(in_world, temp_value);
+    // hmput(in_world, temp, temp_array);
+    // hmput(in_world, temp+1, temp_array);
+    // hmput(in_world, temp+2, temp_array);
+    // hmput(in_world, temp+3, temp_array);
+    // hmput(in_world, temp+4, temp_array);
+    // hmput(in_world, temp+5, temp_array);
     arrput(component_tables, NULL);
     return (simplecs_world);
 }
@@ -38,17 +43,27 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
         out = opened_entity_ids[--num_opened_entity_ids];
         opened_entity_ids[num_opened_entity_ids] = 0;
     }
+    // printf("out %d\n", out);
     if (out == 0) {
+        // next_entity_id++;
         out = next_entity_id++;
     }
     simplecs_entity_t temp = DEFAULT_COMPONENT_CAP;
     components_list = hmget(in_world, out);
+    // printf("HERE1\n");
     if (components_list != NULL) {
         arrfree(components_list);
     }
+    // printf("HERE2\n");
     components_list = NULL;
+    // printf("HERE3\n");
     arrsetcap(components_list, temp);
+    // printf("components_list %p\n", components_list);
+    // printf("in_world %p\n", in_world);
+    // printf("out %d\n", out);
+    // printf("HERE4\n");
     hmput(in_world, out, components_list);
+    // printf("HERE5\n");
     return (out);
 }
 

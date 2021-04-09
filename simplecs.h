@@ -11,7 +11,7 @@
 typedef uint64_t simplecs_entity_t;
 #define SIMPLECS_NULLENTITY 0
 #define OPEN_IDS_BUFFER 128
-#define DEFAULT_COMPONENT_CAP 128
+#define DEFAULT_COMPONENT_CAP 10
 #define COMPONENT_ID_START 1
 #define ENTITY_ID_START UINT16_MAX + 1
 #define DEFAULT_COMPONENT_NUM 4
@@ -51,7 +51,6 @@ if (hmget(component_##name, entity_id) != NULL) {\
 hmput(component_##name, entity_id, (name *)calloc(1, sizeof(name)));
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
-simplecs_entity_t simplecs_entity_create(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
 #endif // SIMPLECS
