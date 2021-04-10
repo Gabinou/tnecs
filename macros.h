@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #include <stdarg.h>
 
+// VARIADIC MACROS: 
+//  Apply arbitrary macro to each arg in __VA_ARGS__->FOR_EACH
+//  Count number of args in __VA_ARGS__->FOR_EACH_NARG
+
 #define CONCATENATE(arg1, arg2) CONCATENATE1(arg1, arg2)
 #define CONCATENATE1(arg1, arg2) CONCATENATE2(arg1, arg2)
 #define CONCATENATE2(arg1, arg2)  arg1##arg2
@@ -46,9 +50,13 @@
 #define FOR_EACH_NARG_(...) FOR_EACH_ARG_N(__VA_ARGS__)
 #define FOR_EACH_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
 #define FOR_EACH_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
-
 #define FOR_EACH_(N, what, ...) CONCATENATE(FOR_EACH_, N)(what, __VA_ARGS__)
 #define FOR_EACH(what, ...) FOR_EACH_(FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
 
-
+// Overloaded macros on number of input args
+#define GET_MACRO(_1,_2,_3,NAME,...) NAME
+#define FOO(...) GET_MACRO(__VA_ARGS__, FOO3, FOO2)(__VA_ARGS__)
+// EXAMPLE: 
+// FOO(World, !)         # expands to FOO2(World, !)
+// FOO(foo,bar,baz)      # expands to FOO3(foo,bar,baz)
 #endif // MACROS
