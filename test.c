@@ -1,7 +1,31 @@
+#include <stdio.h>
 #include "stb_ds.h"
 #define STB_DS_IMPLEMENTATION
 #include "simplecs.h"
 #include <assert.h>
+
+// TIMER. get_time() resolution: 0.1 [us] 
+#ifdef WIN32
+#include <windows.h>
+double get_time() {
+    LARGE_INTEGER t, f; // [us]
+    QueryPerformanceCounter(&t);
+    QueryPerformanceFrequency(&f);
+    return 1e6 * (double)t.QuadPart / (double)f.QuadPart;
+}
+
+#else
+#include <sys/time.h>
+#include <sys/resource.h>
+
+double get_time() { // [s]
+    struct timeval t;
+    struct timezone tzp;
+    gettimeofday(&t, &tzp);
+    return 1e6 * t.tv_sec + t.tv_usec;
+}
+#endif
+
 
 typedef struct Position {
     uint32_t x;
@@ -12,6 +36,25 @@ typedef struct Unit {
     uint32_t hp;
     uint32_t str;
 } Unit;
+
+
+#define ITERATIONS 100000
+#define ITERATIONS_SMALL 1000
+simplecs_entity_t simplecs_entities[ITERATIONS];
+ecs_entity_t flecs_entities[ITERATIONS];
+
+
+// void Simplecs_SystemMove(simplecs_entity_t * entity_list, size_t entity_num) {
+//     Position *p = SIMPLECS_COMPONENTS_LIST(entity_list, Position);
+//     Unit *v = SIMPLECS_COMPONENTS_LIST(entity_list, Unit);
+
+//     for (int i = 0; i < entity_num; i++) {
+//         p[i].x += 2;
+//         p[i].y += 4;
+//     }
+// }
+
+
 
 int main() {
     printf("Hello, World! I am testing Simplecs. \n\n");
@@ -141,6 +184,46 @@ int main() {
     assert(components_list[0] == Component_Position_id);
     assert(components_list[1] == Component_Unit_id);
     printf("\n");
+
+    printf("Homemade simplecs benchmarks\n");
+    double t_0;
+    double t_1;
+
+    t_0 = get_time();
+    struct Simplecs_World * simplecs_world= simplecs_init();
+    t_1 = get_time();
+    printf("simplecs: World Creation time \n");
+    printf("%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_time();
+    SIMPLECS_REGISTER_COMPONENT(Position) 
+    SIMPLECS_REGISTER_COMPONENT(Unit) 
+    t_1 = get_time();
+    printf("simplecs: Component Registration \n");
+    printf("%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_time();
+    simplecs_entity_t simplecs_temp_ent;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        // printf("i %d\n", i);
+        simplecs_temp_ent = simplecs_new_entity(simplecs_world);
+        simplecs_entities[i] = simplecs_temp_ent;
+
+        // printf("simplecs_temp_ent %d\n", simplecs_temp_ent);
+    }
+    t_1 = get_time();
+    printf("simplecs: Entity Creation time: %d iterations \n", ITERATIONS);
+    printf("%.1f [us] \n", t_1 - t_0);
+
+
+    t_0 = get_time();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        SIMPLECS_ADD_COMPONENT(simplecs_world, Position, simplecs_entities[i]);
+        SIMPLECS_ADD_COMPONENT(simplecs_world, Unit, simplecs_entities[i]);
+    }
+    t_1 = get_time();
+    printf("simplecs: Component adding time: %d iterations \n", ITERATIONS);
+    printf("%.1f [us] \n", t_1 - t_0);
 
     printf("Simplecs Test End");
     return (0);
