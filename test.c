@@ -79,7 +79,6 @@ int main() {
 
     printf("simplecs_init\n");
     struct Simplecs_World * test_world = simplecs_init();
-    // assert(component_tables[SIMPLECS_NULLENTITY] == NULL);
     printf("\n");
 
     printf("Component registration\n");

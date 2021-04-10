@@ -19,7 +19,6 @@ struct Simplecs_World * simplecs_init() {
     simplecs_entity_t temp = SIMPLECS_NULLENTITY;
     uint8_t num_opened_entity_ids = 0;
     struct Simplecs_World * simplecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
-
     simplecs_world->next_component_id = COMPONENT_ID_START; // ]0,  UINT16_MAX]
     simplecs_world->next_entity_id = ENTITY_ID_START; // ]UINT16_MAX,  UINT64_MAX]
     simplecs_entity_t * temp_value = NULL;
@@ -27,8 +26,8 @@ struct Simplecs_World * simplecs_init() {
     simplecs_world->entities_table = NULL;
     simplecs_world->component_tables = NULL;
     simplecs_world->next_system_id = 0;
-    simplecs_world->systems_table->components_lists = NULL;
     simplecs_world->systems_table = (struct Simplecs_Systems_Table *)calloc(sizeof(simplecs_world->systems_table), 1);;
+    simplecs_world->systems_table->components_lists = NULL;
     arrput(simplecs_world->component_tables, NULL);
     return (simplecs_world);
 }
