@@ -9,6 +9,7 @@
 #include "stb_ds.h"
 
 typedef uint64_t simplecs_entity_t;
+typedef uint16_t simplecs_system_t;
 #define SIMPLECS_NULLENTITY 0
 #define OPEN_IDS_BUFFER 128
 #define DEFAULT_COMPONENT_CAP 10
@@ -16,19 +17,33 @@ typedef uint64_t simplecs_entity_t;
 #define ENTITY_ID_START UINT16_MAX + 1
 #define DEFAULT_COMPONENT_NUM 4
 
+struct Simplecs_System_Input{
+    simplecs_entity_t * entities_list;
+    size_t entities_num;
+}
+
+struct Simplecs_Systems {
+   void (**systems_list) (struct Simplecs_System_Input system_input);
+   simplecs_entity_t ** components_lists;
+   size_t * components_num;
+}
+
+// Should the world contain the nezt indices, the components lists and system lists? i think so. 
 struct Simplecs_World {
     simplecs_entity_t key; // id
     simplecs_entity_t * value; // components_list
 } * simplecs_world;
 
+
 struct Simplecs_World * simplecs_init();
+
 
 simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
 uint8_t num_opened_entity_ids;
 
 simplecs_entity_t next_component_id; // ]0,  UINT16_MAX]
 simplecs_entity_t next_entity_id; // ]UINT16_MAX,  UINT64_MAX]
-
+simplecs_system_t next_system_id;
 void ** component_tables;
 #define SIMPLECS_REGISTER_COMPONENT(name) struct Component_##name {\
     simplecs_entity_t key;\
@@ -53,7 +68,12 @@ hmput(component_##name, entity_id, (name *)calloc(1, sizeof(name)));
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
-#define SIMPLECS_REGISTER_SYSTEM(world, name_sys, when, ...) 
+// SIMPLECS_REGISTER_SYSTEM
+//   1- Takes pointer of system function
+//   2- Make associated system index
+//   3- Takes list of component indices
+#define SIMPLECS_REGISTER_SYSTEM(world, name_sys, when, ...) const simplecs_system_t System_##name_sys##_id = next_system_id++;\
+
 #define SIMPLECS_COMPONENTS_LIST(entity_list, Position)
 
 

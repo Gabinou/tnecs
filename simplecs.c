@@ -58,3 +58,16 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
     }
 }
 
+/* PROTOTYPE SYSTEM
+void Simplecs_SystemMove(struct Simplecs_System_Input system_input) {
+
+    Position *p = SIMPLECS_COMPONENTS_LIST(entity_list, Position);
+
+    Unit *v = SIMPLECS_COMPONENTS_LIST(entity_list, Unit);
+
+    for (int i = 0; i < entity_num; i++) {
+        p[i].x += 2;
+        p[i].y += 4;
+    }
+}
+*/
