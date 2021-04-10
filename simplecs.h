@@ -100,31 +100,31 @@ world->systems_table->systems_list[world->next_system_id] = &name_sys;
     what(x)
 
 #define FOR_EACH_2(what, x, ...)    \
-    what(x)                        \
+    what(x),                        \
     FOR_EACH_1(what, __VA_ARGS__)
 
 #define FOR_EACH_3(what, x, ...)    \
-    what(x)                        \
+    what(x),                        \
     FOR_EACH_2(what, __VA_ARGS__)
 
 #define FOR_EACH_4(what, x, ...)    \
-    what(x)                        \
+    what(x),                        \
     FOR_EACH_3(what,  __VA_ARGS__)
 
 #define FOR_EACH_5(what, x, ...)    \
-    what(x)                        \
+    what(x),                        \
     FOR_EACH_4(what,  __VA_ARGS__)
 
 #define FOR_EACH_6(what, x, ...)    \
-  what(x)                          \
+  what(x),                         \
   FOR_EACH_5(what,  __VA_ARGS__)
 
 #define FOR_EACH_7(what, x, ...)    \
-    what(x)                        \
+    what(x),                       \
     FOR_EACH_6(what,  __VA_ARGS__)
 
 #define FOR_EACH_8(what, x, ...)    \
-    what(x)                        \
+    what(x),                        \
     FOR_EACH_7(what,  __VA_ARGS__)
 
 #define FOR_EACH_NARG(...) FOR_EACH_NARG_(__VA_ARGS__, FOR_EACH_RSEQ_N())
@@ -134,7 +134,7 @@ world->systems_table->systems_list[world->next_system_id] = &name_sys;
 
 #define FOR_EACH_(N, what, ...) CONCATENATE(FOR_EACH_, N)(what, __VA_ARGS__)
 #define FOR_EACH(what, ...) FOR_EACH_(FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
-#define SIMPLECS_COMPONENT_ID(name) Component_##name##_id,
+#define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
 
 #define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) simplecs_register_system(world, pfunc, phase, FOR_EACH_NARG(__VA_ARGS__), FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
 
