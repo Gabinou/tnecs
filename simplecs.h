@@ -136,10 +136,8 @@ world->systems_table->systems_list[world->next_system_id] = &name_sys;
 #define FOR_EACH(what, ...) FOR_EACH_(FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
 #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id,
 
-#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) simplecs_register_system(world, pfunc, phase, FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__) NULL)
-// #define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__)
+#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) simplecs_register_system(world, pfunc, phase, FOR_EACH_NARG(__VA_ARGS__), FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
 
-// simplecs_register_system(world, pfunc, phase, __VA_ARGS__, NULL);
 void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, ...);
 
 // void simplecs_component_list_add(size_t component_num, ...);
