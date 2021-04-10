@@ -15,12 +15,11 @@
 // The main loop iterates over systems
 // There can be only one world.
 
+struct Simplecs_World * simplecs_init() {
+    simplecs_entity_t temp = SIMPLECS_NULLENTITY;
 uint8_t num_opened_entity_ids = 0;
 simplecs_entity_t next_component_id = COMPONENT_ID_START; // ]0,  UINT16_MAX]
 simplecs_entity_t next_entity_id = ENTITY_ID_START; // ]UINT16_MAX,  UINT64_MAX]
-
-struct Simplecs_World * simplecs_init() {
-    simplecs_entity_t temp = SIMPLECS_NULLENTITY;
     simplecs_entity_t * temp_value = NULL;
     simplecs_entity_t * temp_array = NULL;
     simplecs_world = NULL;

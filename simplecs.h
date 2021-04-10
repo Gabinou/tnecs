@@ -22,28 +22,32 @@ struct Simplecs_System_Input{
     size_t entities_num;
 }
 
-struct Simplecs_Systems {
+struct Simplecs_Systems_Table {
    void (**systems_list) (struct Simplecs_System_Input system_input);
    simplecs_entity_t ** components_lists;
    size_t * components_num;
 }
 
-// Should the world contain the nezt indices, the components lists and system lists? i think so. 
-struct Simplecs_World {
+// Should the world contain the next indices, the components lists and system lists? i think so. 
+struct Simplecs_Entities_Table{
     simplecs_entity_t key; // id
     simplecs_entity_t * value; // components_list
-} * simplecs_world;
+};
 
+struct Simplecs_World {
+    struct Simplecs_Entities_Table entities_table;
+    struct Simplecs_Systems_Table systems_table;
+
+    simplecs_entity_t next_component_id; // ]0,  UINT16_MAX]
+    simplecs_entity_t next_entity_id; // ]UINT16_MAX,  UINT64_MAX]
+    simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
+    uint8_t num_opened_entity_ids;
+     // Systems don't get destroyed
+    simplecs_system_t next_system_id; //[0,...]
+} 
 
 struct Simplecs_World * simplecs_init();
 
-
-simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
-uint8_t num_opened_entity_ids;
-
-simplecs_entity_t next_component_id; // ]0,  UINT16_MAX]
-simplecs_entity_t next_entity_id; // ]UINT16_MAX,  UINT64_MAX]
-simplecs_system_t next_system_id;
 void ** component_tables;
 #define SIMPLECS_REGISTER_COMPONENT(name) struct Component_##name {\
     simplecs_entity_t key;\
