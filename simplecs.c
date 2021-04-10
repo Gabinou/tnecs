@@ -62,12 +62,12 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
     }
 }
 
-// void simplecs_register_system(struct Simplecs_World, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, ...) {
+void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, ...) {
 //     printf("I'M IN");
 //     // va_list ap;
 //     // va_start(ap, num);
 //     // va_end(ap);
-// }
+}
 
 
 /* PROTOTYPE SYSTEM

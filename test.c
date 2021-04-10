@@ -58,21 +58,20 @@ typedef struct Unit2 {
 #define ITERATIONS_SMALL 1000
 simplecs_entity_t simplecs_entities[ITERATIONS];
 
-// void Simplecs_SystemMove(simplecs_entity_t * entity_list, size_t entity_num) {
-//     Position *p = SIMPLECS_COMPONENTS_LIST(entity_list, Position);
-//     Unit *v = SIMPLECS_COMPONENTS_LIST(entity_list, Unit);
+void Simplecs_SystemMove(struct Simplecs_System_Input in_input) {
+    // Position *p = SIMPLECS_COMPONENTS_LIST(entity_list, Position);
+    // Unit *v = SIMPLECS_COMPONENTS_LIST(entity_list, Unit);
 
-//     for (int i = 0; i < entity_num; i++) {
-//         p[i].x += 2;
-//         p[i].y += 4;
-//     }
-// }
+    // for (int i = 0; i < entity_num; i++) {
+    //     p[i].x += 2;
+    //     p[i].y += 4;
+    // }
+}
 
 
 
 int main() {
     printf("Hello, World! I am testing Simplecs. \n\n");
-    // SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, Position, Unit);
     simplecs_entity_t * components_list;
     struct Position * temp_position;
     struct Unit * temp_unit;
@@ -80,6 +79,7 @@ int main() {
     printf("simplecs_init\n");
     struct Simplecs_World * test_world = simplecs_init();
     printf("\n");
+
 
     printf("Component registration\n");
     printf("Registering Position Component \n");
@@ -90,6 +90,9 @@ int main() {
     assert(Component_Unit_id == (COMPONENT_ID_START + 1));
     printf("\n");
 
+    printf("System registration\n");
+    SIMPLECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, SIMPLECS_PHASE_PREUPDATE, Position, Unit);
+    printf("\n");
 
     printf("Entity Creation/Destruction\n");
     assert(test_world->next_entity_id == ENTITY_ID_START);

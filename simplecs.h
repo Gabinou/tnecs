@@ -92,8 +92,6 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
 world->systems_table->systems_list[world->next_system_id] = &name_sys;
 //const simplecs_system_t System_##name##_id = (world->next_system_id)++;
 
-// #define SRS_0()
-
 #define CONCATENATE(arg1, arg2)   CONCATENATE1(arg1, arg2)
 #define CONCATENATE1(arg1, arg2)  CONCATENATE2(arg1, arg2)
 #define CONCATENATE2(arg1, arg2)  arg1##arg2
@@ -102,32 +100,32 @@ world->systems_table->systems_list[world->next_system_id] = &name_sys;
     what(x)
 
 #define FOR_EACH_2(what, x, ...)    \
-    what(x);                        \
-    FOR_EACH_1(what, __VA_ARGS__);
+    what(x)                        \
+    FOR_EACH_1(what, __VA_ARGS__)
 
 #define FOR_EACH_3(what, x, ...)    \
-    what(x);                        \
-    FOR_EACH_2(what, __VA_ARGS__);
+    what(x)                        \
+    FOR_EACH_2(what, __VA_ARGS__)
 
 #define FOR_EACH_4(what, x, ...)    \
-    what(x);                        \
-    FOR_EACH_3(what,  __VA_ARGS__);
+    what(x)                        \
+    FOR_EACH_3(what,  __VA_ARGS__)
 
 #define FOR_EACH_5(what, x, ...)    \
-    what(x);                        \
-    FOR_EACH_4(what,  __VA_ARGS__);
+    what(x)                        \
+    FOR_EACH_4(what,  __VA_ARGS__)
 
 #define FOR_EACH_6(what, x, ...)    \
-  what(x);                          \
-  FOR_EACH_5(what,  __VA_ARGS__);
+  what(x)                          \
+  FOR_EACH_5(what,  __VA_ARGS__)
 
 #define FOR_EACH_7(what, x, ...)    \
-    what(x);                        \
-    FOR_EACH_6(what,  __VA_ARGS__);
+    what(x)                        \
+    FOR_EACH_6(what,  __VA_ARGS__)
 
 #define FOR_EACH_8(what, x, ...)    \
-    what(x);                        \
-    FOR_EACH_7(what,  __VA_ARGS__);
+    what(x)                        \
+    FOR_EACH_7(what,  __VA_ARGS__)
 
 #define FOR_EACH_NARG(...) FOR_EACH_NARG_(__VA_ARGS__, FOR_EACH_RSEQ_N())
 #define FOR_EACH_NARG_(...) FOR_EACH_ARG_N(__VA_ARGS__)
@@ -136,12 +134,13 @@ world->systems_table->systems_list[world->next_system_id] = &name_sys;
 
 #define FOR_EACH_(N, what, ...) CONCATENATE(FOR_EACH_, N)(what, __VA_ARGS__)
 #define FOR_EACH(what, ...) FOR_EACH_(FOR_EACH_NARG(__VA_ARGS__), what, __VA_ARGS__)
-#define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
+#define SIMPLECS_COMPONENT_ID(name) Component_##name##_id,
 
-#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) simplecs_register_system(world, pfunc, phase, FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__), NULL)
+#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) simplecs_register_system(world, pfunc, phase, FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__) NULL)
+// #define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__)
 
 // simplecs_register_system(world, pfunc, phase, __VA_ARGS__, NULL);
-void simplecs_register_system(struct Simplecs_World, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, ...);
+void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, ...);
 
 // void simplecs_component_list_add(size_t component_num, ...);
 
