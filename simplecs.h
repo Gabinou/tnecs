@@ -44,11 +44,11 @@ struct Simplecs_World {
     uint8_t num_opened_entity_ids;
      // Systems don't get destroyed
     simplecs_system_t next_system_id; //[0,...]
+void ** component_tables;
 } 
 
 struct Simplecs_World * simplecs_init();
 
-void ** component_tables;
 #define SIMPLECS_REGISTER_COMPONENT(name) struct Component_##name {\
     simplecs_entity_t key;\
     name * value;\
