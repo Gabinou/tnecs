@@ -88,7 +88,7 @@ struct Simplecs_World {
     size_t num_components;
     size_t num_system_typeflags;
 
-    void * component_hashes;
+    void ** component_hashes;
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
 
