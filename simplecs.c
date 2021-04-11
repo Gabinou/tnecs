@@ -19,13 +19,15 @@ struct Simplecs_World * simplecs_init() {
     simplecs_entity_t temp = SIMPLECS_NULLENTITY;
     uint8_t num_opened_entity_ids = 0;
     struct Simplecs_World * simplecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
-    simplecs_world->next_component_id = COMPONENT_ID_START; // ]0,  UINT16_MAX]
     simplecs_world->next_entity_id = ENTITY_ID_START; // ]UINT16_MAX,  UINT64_MAX]
     simplecs_entity_t * temp_value = NULL;
     simplecs_entity_t * temp_array = NULL;
     simplecs_world->entities_table = NULL;
+    simplecs_world->num_component_combinations = 0;
+
     simplecs_world->component_tables = NULL;
     simplecs_world->next_system_id = 0;
+    simplecs_world->component_totalnum = 0;
     simplecs_world->systems_table = (struct Simplecs_Systems_Table *)calloc(sizeof(simplecs_world->systems_table), 1);;
     simplecs_world->systems_table->components_lists = NULL;
     simplecs_world->systems_table->systems_list = NULL;
@@ -43,7 +45,7 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
     if (out == 0) {
         out = in_world->next_entity_id++;
     }
-    simplecs_entity_t temp = DEFAULT_COMPONENT_CAP;
+    simplecs_entity_t temp = ENTITY_MAX_COMPONENT_NUM;
     components_list = hmget(in_world->entities_table, out);
     if (components_list != NULL) {
         arrfree(components_list);

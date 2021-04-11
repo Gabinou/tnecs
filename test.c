@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <time.h>
+#include <stdbool.h>
 
 #include "stb_ds.h"
 #define STB_DS_IMPLEMENTATION
@@ -43,6 +44,17 @@ typedef struct Unit {
     uint32_t str;
 } Unit;
 
+
+typedef struct Sprite {
+    uint32_t texture;
+    bool isAnimated;
+} Sprite;
+
+struct Unit Unit_default = {
+    .hp = 0,
+    .str = 0,
+};
+
 typedef struct Position2 {
     uint32_t x;
     uint32_t y;
@@ -54,9 +66,19 @@ typedef struct Unit2 {
 } Unit2;
 
 
+
 #define ITERATIONS 100000
 #define ITERATIONS_SMALL 1000
 simplecs_entity_t simplecs_entities[ITERATIONS];
+
+#define ARRAY_LEN 100
+struct Unit unit_array[ARRAY_LEN];
+
+struct Unit_Hash {
+    simplecs_entity_t key; // id
+    struct Unit value; // components_list
+};
+
 
 void Simplecs_SystemMove(struct Simplecs_System_Input in_input) {
     // Position *p = SIMPLECS_COMPONENTS_LIST(entity_list, Position);
@@ -84,14 +106,20 @@ int main() {
     printf("Component registration\n");
     printf("Registering Position Component \n");
     SIMPLECS_REGISTER_COMPONENT(test_world, Position);
+
+    printf("Component_Position_id %d \n", Component_Position_id);
     assert(Component_Position_id == COMPONENT_ID_START);
     printf("Registering Position Unit \n");
     SIMPLECS_REGISTER_COMPONENT(test_world, Unit);
-    assert(Component_Unit_id == (COMPONENT_ID_START + 1));
+    assert(Component_Unit_id == (COMPONENT_ID_START << 1));
+    printf("Registering Position Sprite \n");
+    SIMPLECS_REGISTER_COMPONENT(test_world, Sprite);
+    assert(Component_Sprite_id == (COMPONENT_ID_START << 2));
+
     printf("\n");
 
     printf("System registration\n");
-    SIMPLECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, SIMPLECS_PHASE_PREUPDATE, Position, Unit);
+    // SIMPLECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, SIMPLECS_PHASE_PREUPDATE, Position, Unit);
     printf("\n");
 
     printf("Entity Creation/Destruction\n");
@@ -205,6 +233,52 @@ int main() {
     printf("Homemade simplecs benchmarks\n");
     double t_0;
     double t_1;
+
+    struct Unit_Hash * unit_hash = NULL;
+
+    t_0 = get_time();
+    for (size_t i = 0; i < ARRAY_LEN; i++) {
+        unit_array[i].hp = Unit_default.hp;
+        unit_array[i].str = Unit_default.str;
+    }
+    t_1 = get_time();
+    printf("unit_array init: %d iterations \n", ARRAY_LEN);
+    printf("%.1f [us] \n", t_1 - t_0);
+
+    struct Unit temp_unitnp;
+    t_0 = get_time();
+    for (size_t i = 0; i < ARRAY_LEN; i++) {
+        temp_unitnp.hp = i;
+        temp_unitnp.str = i * 2;
+        hmput(unit_hash, i, temp_unitnp);
+    }
+    t_1 = get_time();
+    printf("unit_hash init: %d iterations \n", ARRAY_LEN);
+    printf("%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_time();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        unit_array[(i % ARRAY_LEN)].hp++;
+        unit_array[(i % ARRAY_LEN)].str++;
+    }
+    t_1 = get_time();
+    printf("unit_array operations: %d iterations \n", ITERATIONS);
+    printf("%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_time();
+    size_t index;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        index = (i % ARRAY_LEN);
+        temp_unitnp = hmget(unit_hash, index);
+        temp_unitnp.hp++;
+        temp_unitnp.str++;
+        hmput(unit_hash, index, temp_unitnp);
+    }
+    t_1 = get_time();
+    printf("unit_hash operations: %d iterations \n", ITERATIONS);
+    printf("%.1f [us] \n", t_1 - t_0);
+
+
 
     t_0 = get_time();
     struct Simplecs_World * bench_world = simplecs_init();
