@@ -18,6 +18,8 @@ typedef uint16_t simplecs_system_t;
 #define COMPONENT_ID_START 1
 #define ENTITY_ID_START 1
 #define DEFAULT_COMPONENT_NUM 4
+#define DEFAULT_SYSTEM_CAP 16
+#define DEFAULT_ENTITY_CAP 128
 #define ENTITY_MAX_COMPONENT_NUM 10
 // IDEA component IDS are integer bitflags.
 //  -> MAX 64 components
@@ -76,20 +78,20 @@ enum RUN_PHASES {
 
 struct Simplecs_World {
     simplecs_entity_t * entities;                    // Always maintain contiguous as possible.
-    simplecs_components_t * entities_typeflags;      // Same order as entities
+    simplecs_components_t * entity_component_flags;  // Same order as entities
     simplecs_components_t * system_typeflags;        // Each system's typeflag
-    simplecs_entity_t ** entitiesbytype_lists;         // 2D list. Same order as system_typeflags
+    simplecs_entity_t ** entitiesbytype_lists;       // 2D list. Same order as system_typeflags
     size_t * num_components_insystem_typeflag;       // For reference I guess?
+    size_t * num_entitiesbytype;
     size_t num_components;
     size_t num_system_typeflags;
 
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
-    simplecs_system_t next_system_id; //[0, ...]
-    simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
+    simplecs_system_t next_system_id; // [0, ...]
 
+    simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
     // Systems don't get destroyed
-    void ** component_tables;
 };
 
 struct Simplecs_World * simplecs_init();
