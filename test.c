@@ -240,6 +240,5 @@ int main() {
     printf("%.1f [us] \n", t_1 - t_0);
 
     printf("Simplecs Test End");
-    printf("clock() %lf \n", clock());
     return (0);
 }

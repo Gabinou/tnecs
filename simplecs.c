@@ -28,6 +28,7 @@ struct Simplecs_World * simplecs_init() {
     simplecs_world->next_system_id = 0;
     simplecs_world->systems_table = (struct Simplecs_Systems_Table *)calloc(sizeof(simplecs_world->systems_table), 1);;
     simplecs_world->systems_table->components_lists = NULL;
+    simplecs_world->systems_table->systems_list = NULL;
     arrput(simplecs_world->component_tables, NULL);
     return (simplecs_world);
 }
@@ -62,11 +63,18 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
     }
 }
 
-void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, ...) {
-//     printf("I'M IN");
-//     // va_list ap;
-//     // va_start(ap, num);
-//     // va_end(ap);
+void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, size_t num_components, ...) {
+    printf("I'M IN");
+    arrput(in_world->systems_table->systems_list, in_system);
+    arrput(in_world->systems_table->components_num, num_components);
+    simplecs_entity_t * components_list = malloc(num_components * sizeof(simplecs_entity_t));
+    va_list ap;
+    va_start(ap, num_components);
+    for (size_t i = 0; i < num_components; i++) {
+        components_list[i] = va_arg(ap, simplecs_entity_t);
+    }
+    arrput(in_world->systems_table->components_lists, components_list);
+    in_world->next_system_id++;
 }
 
 
