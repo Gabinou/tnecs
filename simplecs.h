@@ -10,6 +10,7 @@
 #include "stb_ds.h"
 
 typedef uint64_t simplecs_entity_t;
+typedef uint64_t simplecs_component_t;
 typedef uint64_t simplecs_components_t;
 typedef uint16_t simplecs_system_t;
 #define SIMPLECS_NULLENTITY 0
@@ -104,8 +105,8 @@ struct Simplecs_World * simplecs_init();
     name * value;\
 } * component_##name;\
 component_##name = NULL;\
-const simplecs_component_t Component_##name##_flag = (1 << world->component_totalnum);\
-const simplecs_component_t Component_##name##_id = world->component_totalnum++;\
+const simplecs_component_t Component_##name##_flag = (1 << world->num_components);\
+const simplecs_component_t Component_##name##_id = world->num_components++;\
 arrput(world->component_hashes, &component_##name);
 // Error if component registered twice -> user responsibility
 
@@ -122,6 +123,7 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
 #define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) simplecs_register_system(world, pfunc, phase, FOR_EACH_NARG(__VA_ARGS__), FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
 
 void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, size_t component_num, simplecs_components_t component_typeflag);
+
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag);
 
 #define SIMPLECS_COMPONENTS_LIST(entity_list, Position)

@@ -35,7 +35,6 @@ struct Simplecs_World * simplecs_init() {
     simplecs_world->next_entity_id = ENTITY_ID_START;
     simplecs_world->next_system_id = 0;
     simplecs_world->num_components = 0;
-    simplecs_world->entities_typeflags = NULL;
 
     return (simplecs_world);
 }
@@ -59,8 +58,8 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
     for (size_t i = 0 ; i < in_world->num_system_typeflags; i++) {
         if (previous_flag == in_world->system_typeflags[i]) {
             for (size_t j = 0 ; j < in_world->num_entitiesbytype[i]; j++) {
-                if (entitiesbytype_lists[i][j] == in_entity) {
-                    arrdel(entitiesbytype_lists[i], j);
+                if (in_world->entitiesbytype_lists[i][j] == in_entity) {
+                    arrdel(in_world->entitiesbytype_lists[i], j);
                     break;
                 }
             }
@@ -71,38 +70,39 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
             in_world->opened_entity_ids[in_world->num_opened_entity_ids++] = in_entity;
         }
     }
+}
 
-    void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, size_t num_components, ...) {
-        printf("I'M IN");
-        arrput(in_world->systems_table->systems_list, in_system);
-        arrput(in_world->systems_table->components_num, num_components);
-        simplecs_entity_t * components_list = malloc(num_components * sizeof(simplecs_entity_t));
-        va_list ap;
-        va_start(ap, num_components);
-        for (size_t i = 0; i < num_components; i++) {
-            components_list[i] = va_arg(ap, simplecs_entity_t);
-        }
-        arrput(in_world->systems_table->components_lists, components_list);
-        in_world->next_system_id++;
-    }
+void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, size_t component_num, simplecs_components_t component_typeflag) {
+    printf("I'M IN");
+    // arrput(in_world->systems_table->systems_list, in_system);
+    // arrput(in_world->systems_table->components_num, num_components);
+    // simplecs_entity_t * components_list = malloc(num_components * sizeof(simplecs_entity_t));
+    // va_list ap;
+    // va_start(ap, num_components);
+    // for (size_t i = 0; i < num_components; i++) {
+    //     components_list[i] = va_arg(ap, simplecs_entity_t);
+    // }
+    // arrput(in_world->systems_table->components_lists, components_list);
+    // in_world->next_system_id++;
+}
 
-    void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag) {
-        simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
-        in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_flag;
+void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag) {
+    simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
+    in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_flag;
 
-        for (size_t i = 0; i < in_world->num_system_typeflags; i++) {
-            if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
-                for (size_t j = 0; j < in_world->num_entitiesbytype; j++) {
-                    if (in_entity == in_world->entitiesbytype_lists[i][j]) {
-                        arrdel(in_world->entitiesbytype_lists[i], j);
-                        break;
-                    }
+    for (size_t i = 0; i < in_world->num_system_typeflags; i++) {
+        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
+            for (size_t j = 0; j < in_world->num_entitiesbytype[i]; j++) {
+                if (in_entity == in_world->entitiesbytype_lists[i][j]) {
+                    arrdel(in_world->entitiesbytype_lists[i], j);
+                    break;
                 }
             }
-            if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
-                arrput(in_world->entitiesbytype_lists[i], in_entity);
-            }
-            // if (previous_flag == in_world->system_typeflags[i]) //      EXCLUSIVE
         }
+        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
+            arrput(in_world->entitiesbytype_lists[i], in_entity);
+        }
+        // if (previous_flag == in_world->system_typeflags[i]) //      EXCLUSIVE
     }
+}
 
