@@ -18,17 +18,19 @@
 struct Simplecs_World * simplecs_init() {
     struct Simplecs_World * simplecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     simplecs_world->entities = NULL;
-    arrsetcap(simplecs_world->entities, DEFAULT_ENTITY_CAP)
+    arrsetcap(simplecs_world->entities, DEFAULT_ENTITY_CAP);
     arrput(simplecs_world->entities, 0);
     simplecs_world->entity_component_flags = NULL;
-    arrsetcap(simplecs_world->entity_component_flags, DEFAULT_ENTITY_CAP)
+    arrsetcap(simplecs_world->entity_component_flags, DEFAULT_ENTITY_CAP);
     arrput(simplecs_world->entity_component_flags, 0);
     simplecs_world->system_typeflags = NULL;
-    arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP)
+    arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
     simplecs_world->num_system_typeflags = 0;
-    arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP)
+    arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
     simplecs_world->entitiesbytype_lists = NULL;
-    arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_SYSTEM_CAP)
+    arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_SYSTEM_CAP);
+    simplecs_world->components_hashes = NULL;
+    arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_COMPONENT_CAP);
 
     simplecs_world->next_entity_id = ENTITY_ID_START;
     simplecs_world->next_system_id = 0;
@@ -84,17 +86,23 @@ void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system
     in_world->next_system_id++;
 }
 
+void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag) {
+    simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
+    in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_flag;
 
-/* PROTOTYPE SYSTEM
-void Simplecs_SystemMove(struct Simplecs_System_Input system_input) {
-
-    Position *p = SIMPLECS_COMPONENTS_LIST(entity_list, Position);
-
-    Unit *v = SIMPLECS_COMPONENTS_LIST(entity_list, Unit);
-
-    for (int i = 0; i < entity_num; i++) {
-        p[i].x += 2;
-        p[i].y += 4;
+    for (size_t i = 0; i < in_world->num_system_typeflags; i++) {
+        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE 
+            for (size_t j = 0; j < in_world->num_entitiesbytype; j++) {
+                if (in_entity == in_world->entitiesbytype_lists[i][j]) {
+                    arrdel(in_world->entitiesbytype_lists[i], j);
+                    break;
+                }
+            }
+        }
+        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE 
+            arrput(in_world->entitiesbytype_lists[i], in_entity);
+        }
+        // if (previous_flag == in_world->system_typeflags[i]) //      EXCLUSIVE
     }
 }
-*/
+
