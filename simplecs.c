@@ -29,7 +29,7 @@ struct Simplecs_World * simplecs_init() {
     arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
     simplecs_world->entitiesbytype_lists = NULL;
     arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_SYSTEM_CAP);
-    simplecs_world->components_hashes = NULL;
+    simplecs_world->component_hashes = NULL;
     arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_COMPONENT_CAP);
 
     simplecs_world->next_entity_id = ENTITY_ID_START;
@@ -55,54 +55,54 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
 
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity) {
     simplecs_component_t previous_flag = in_world->entity_component_flags[in_entity];
-    
-    for (size_t i =0 ; i < in_world->num_system_typeflags; i++) {
+
+    for (size_t i = 0 ; i < in_world->num_system_typeflags; i++) {
         if (previous_flag == in_world->system_typeflags[i]) {
-            for (size_t j =0 ; j < in_world->num_entitiesbytype[i]; j++) {
+            for (size_t j = 0 ; j < in_world->num_entitiesbytype[i]; j++) {
                 if (entitiesbytype_lists[i][j] == in_entity) {
                     arrdel(entitiesbytype_lists[i], j);
-                break;
-            }
-        }
-    }
-
-    in_world->entity_component_flags[in_entity] = 0;
-    if (in_world->num_opened_entity_ids < OPEN_IDS_BUFFER) {
-        in_world->opened_entity_ids[in_world->num_opened_entity_ids++] = in_entity;
-    }
-}
-
-void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, size_t num_components, ...) {
-    printf("I'M IN");
-    arrput(in_world->systems_table->systems_list, in_system);
-    arrput(in_world->systems_table->components_num, num_components);
-    simplecs_entity_t * components_list = malloc(num_components * sizeof(simplecs_entity_t));
-    va_list ap;
-    va_start(ap, num_components);
-    for (size_t i = 0; i < num_components; i++) {
-        components_list[i] = va_arg(ap, simplecs_entity_t);
-    }
-    arrput(in_world->systems_table->components_lists, components_list);
-    in_world->next_system_id++;
-}
-
-void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag) {
-    simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
-    in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_flag;
-
-    for (size_t i = 0; i < in_world->num_system_typeflags; i++) {
-        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE 
-            for (size_t j = 0; j < in_world->num_entitiesbytype; j++) {
-                if (in_entity == in_world->entitiesbytype_lists[i][j]) {
-                    arrdel(in_world->entitiesbytype_lists[i], j);
                     break;
                 }
             }
         }
-        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE 
-            arrput(in_world->entitiesbytype_lists[i], in_entity);
+
+        in_world->entity_component_flags[in_entity] = 0;
+        if (in_world->num_opened_entity_ids < OPEN_IDS_BUFFER) {
+            in_world->opened_entity_ids[in_world->num_opened_entity_ids++] = in_entity;
         }
-        // if (previous_flag == in_world->system_typeflags[i]) //      EXCLUSIVE
     }
-}
+
+    void simplecs_register_system(struct Simplecs_World * in_world, void (*in_system)(struct Simplecs_System_Input system_input), uint8_t in_run_phase, size_t num_components, ...) {
+        printf("I'M IN");
+        arrput(in_world->systems_table->systems_list, in_system);
+        arrput(in_world->systems_table->components_num, num_components);
+        simplecs_entity_t * components_list = malloc(num_components * sizeof(simplecs_entity_t));
+        va_list ap;
+        va_start(ap, num_components);
+        for (size_t i = 0; i < num_components; i++) {
+            components_list[i] = va_arg(ap, simplecs_entity_t);
+        }
+        arrput(in_world->systems_table->components_lists, components_list);
+        in_world->next_system_id++;
+    }
+
+    void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag) {
+        simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
+        in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_flag;
+
+        for (size_t i = 0; i < in_world->num_system_typeflags; i++) {
+            if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
+                for (size_t j = 0; j < in_world->num_entitiesbytype; j++) {
+                    if (in_entity == in_world->entitiesbytype_lists[i][j]) {
+                        arrdel(in_world->entitiesbytype_lists[i], j);
+                        break;
+                    }
+                }
+            }
+            if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
+                arrput(in_world->entitiesbytype_lists[i], in_entity);
+            }
+            // if (previous_flag == in_world->system_typeflags[i]) //      EXCLUSIVE
+        }
+    }
 
