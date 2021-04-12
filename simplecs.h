@@ -106,7 +106,7 @@ struct Simplecs_World {
     size_t num_system_typeflags;
     size_t num_all_typeflags;
     size_t num_typeflags_bybitcount;
-    struct Components_byType ** components_bytype;  // 2D. Each entity has multiple components
+    struct Components_byType *** components_bytype;  // 3D. Each entity has multiple components
 
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
