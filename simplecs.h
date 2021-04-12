@@ -84,8 +84,11 @@ struct Components_byType {
 };
 
 struct Simplecs_System_Input {
+    simplecs_entity_t * entities;       
     simplecs_components_t typeflag;
-    simplecs_entity_t * entities;                    // Always maintain contiguous as possible.
+    size_t num;
+    size_t * components_order; // Always equal to the total length of components I guess.
+    void ** components_lists;
 };
 
 struct Simplecs_World {
@@ -103,7 +106,7 @@ struct Simplecs_World {
     size_t num_system_typeflags;
     size_t num_all_typeflags;
     size_t num_typeflags_bybitcount;
-    struct Components_byType ** components_bytype;
+    struct Components_byType ** components_bytype;  // 2D. Each entity has multiple components
 
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
@@ -114,6 +117,10 @@ struct Simplecs_World {
 };
 
 struct Simplecs_World * simplecs_init();
+
+
+// -> system should be able to get 1D component arrays associated with all entities.
+#define SIMPLECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
 
 
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
