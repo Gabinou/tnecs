@@ -28,6 +28,10 @@ typedef uint16_t simplecs_system_t;
 // This makes the system flag just a sum
 // -> Still want to keep posibility of multiple systems having same bitflag, but it makes everything easier to store.
 
+// col->x, row->y, depth->z
+#define index_2d(row, col, col_len) (row * col_len + col)
+#define index_3d(row, col, depth, row_len, col_len) (row * col_len * row_len + col * row_len + depth)
+
 
 #define CONCATENATE(arg1, arg2) CONCATENATE1(arg1, arg2)
 #define CONCATENATE1(arg1, arg2) CONCATENATE2(arg1, arg2)
