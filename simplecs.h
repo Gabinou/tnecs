@@ -29,6 +29,8 @@ typedef uint16_t simplecs_system_t;
 // -> Still want to keep posibility of multiple systems having same bitflag, but it makes everything easier to store.
 
 // col->x, row->y, depth->z
+// components_bytype_3d col->type, row->entity, depth->component 
+// entitiesbytype_2d  col->type, row->entity
 #define index_2d(row, col, col_len) (row * col_len + col)
 #define index_3d(row, col, depth, row_len, col_len) (row * col_len * row_len + col * row_len + depth)
 
@@ -103,14 +105,14 @@ struct Simplecs_World {
     void (** systems)(struct Simplecs_System_Input);
 
     simplecs_components_t * all_typeflags;           // created on ADD_COMPONENT
-    simplecs_entity_t ** entitiesbytype_lists;       // 2D list. Same order as system_typeflags
+    simplecs_entity_t ** entitiesbytype;       // 2D list. Same order as system_typeflags
     size_t * num_componentsbytype;       // For reference I guess?
     size_t * num_entitiesbytype;
     size_t num_components;
     size_t num_system_typeflags;
     size_t num_all_typeflags;
     size_t num_typeflags_bybitcount;
-    struct Components_byType *** components_bytype;  // 3D. Each entity has multiple components
+    struct Components_byType *** components_bytype;  // Each entity has multiple components
 
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
