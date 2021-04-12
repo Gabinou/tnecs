@@ -29,8 +29,12 @@ struct Simplecs_World * simplecs_init() {
     arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
     simplecs_world->entitiesbytype_lists = NULL;
     arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_SYSTEM_CAP);
-    simplecs_world->component_hashes = NULL;
     arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_COMPONENT_CAP);
+    simplecs_world->components_bytype = NULL;
+    arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_COMPONENT_CAP);
+    simplecs_world->num_all_typeflags = 0;
+    simplecs_world->systems = NULL;
+    arrsetcap(simplecs_world->systems, DEFAULT_SYSTEM_CAP);
 
     simplecs_world->next_entity_id = ENTITY_ID_START;
     simplecs_world->next_system_id = 0;
@@ -106,3 +110,24 @@ void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_
     }
 }
 
+bool simplecs_type_exists(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag) {
+    bool found = 0;
+    for (size_t i = 0; i < len; i++) {
+        if (in_typelist[i] == in_flag) {
+            found = true;
+            break;
+        }
+    }
+    return (found);
+}
+
+size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag) {
+    size_t found = 0;
+    for (size_t i = 0; i < len; i++) {
+        if ((in_typelist[i] & in_flag) == in_flag) {
+            found = i;
+            break;
+        }
+    }
+    return (found);
+}
