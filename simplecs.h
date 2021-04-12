@@ -92,6 +92,7 @@ struct Simplecs_World {
     simplecs_entity_t * entities;                    // Always maintain contiguous as possible.
     simplecs_components_t * entity_component_flags;  // Same order as entities
     simplecs_components_t * system_typeflags;
+    bool * system_isExclusive;
     void (** systems)(struct Simplecs_System_Input);
 
     simplecs_components_t * all_typeflags;           // created on ADD_COMPONENT
@@ -136,16 +137,13 @@ simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
-#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, ...) simplecs_register_system(world, pfunc, phase, FOR_EACH_NARG(__VA_ARGS__), FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
+#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) simplecs_register_system(world, pfunc, phase, isexcl, FOR_EACH_NARG(__VA_ARGS__), FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
 
-void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, size_t component_num, simplecs_components_t component_typeflag);
+void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, simplecs_components_t component_typeflag);
 
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag);
 bool simplecs_type_exists(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
 size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
-
-
-
 
 #define SIMPLECS_COMPONENTS_LIST(entity_list, Position)
 

@@ -35,6 +35,8 @@ struct Simplecs_World * simplecs_init() {
     simplecs_world->num_all_typeflags = 0;
     simplecs_world->systems = NULL;
     arrsetcap(simplecs_world->systems, DEFAULT_SYSTEM_CAP);
+    simplecs_world->system_isExclusive = NULL;
+    arrsetcap(simplecs_world->system_isExclusive, DEFAULT_SYSTEM_CAP);
 
     simplecs_world->next_entity_id = ENTITY_ID_START;
     simplecs_world->next_system_id = 0;
@@ -76,7 +78,7 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
     }
 }
 
-void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, size_t component_num, simplecs_components_t component_typeflag) {
+void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, simplecs_components_t component_typeflag) {
     printf("I'M IN");
     // arrput(in_world->systems_table->systems_list, in_system);
     // arrput(in_world->systems_table->components_num, num_components);
@@ -122,6 +124,7 @@ bool simplecs_type_exists(simplecs_components_t * in_typelist, size_t len, simpl
 }
 
 size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag) {
+    // returns position of subtype from in_typelist
     size_t found = 0;
     for (size_t i = 0; i < len; i++) {
         if ((in_typelist[i] & in_flag) == in_flag) {
