@@ -158,28 +158,36 @@ struct Simplecs_World {
 struct Simplecs_World * simplecs_init();
 
 
-// -> system should be able to get 1D component arrays associated with all entities.
 #define SIMPLECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
 
 
+// Error if component registered twice -> user responsibility
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
 #define _SIMPLECS_REGISTER_COMPONENT(world, name) const simplecs_component_t Component_##name##_flag = (1 << world->num_components);\
 arrput(world->typeflags, Component_##name##_flag);\
 world->num_typeflags++;\
 const simplecs_component_t Component_##name##_id = world->num_components++;
-// Error if component registered twice -> user responsibility
 
-#define SIMPLECS_GET_COMPONENT_HASH(name)  (struct Component_##name *)(in_world->component_hashes[Component_##name##_id])
 #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
 #define SIMPLECS_COMPONENT_FLAG(name) Component_##name##_flag
 
-// add option for user to specify if type is new.
-#define SIMPLECS_ADD_COMPONENT(world, name, entity_id) if (!simplecs_type_id(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_component_flags[entity_id])) {\
-arrput(world->typeflags, world->entity_component_flags[entity_id]); \
-world->num_typeflags++;\
-}\
-simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);
 // Components are never removed.
+
+#define GET_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
+#define SIMPLECS_ADD_COMPONENT(...) GET_ADD_COMPONENT(__VA_ARGS__, SIMPLECS_ADD_COMPONENT4, SIMPLECS_ADD_COMPONENT3)(__VA_ARGS__)
+
+#define SIMPLECS_ADD_COMPONENT3(world, name, entity_id) if (!simplecs_type_id(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_component_flags[entity_id])) {\
+    arrput(world->typeflags, world->entity_component_flags[entity_id]); \
+    world->num_typeflags++;\
+    simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);\
+}
+
+#define SIMPLECS_ADD_COMPONENT4(world, name, entity_id, is_new) SIMPLECS_ADD_COMPONENT4_(world, name, entity_id, is_new) 
+#define SIMPLECS_ADD_COMPONENT4_(world, name, entity_id, is_new) if (is_new) {\
+SIMPLECS_ADD_COMPONENT3(world, name, entity_id)\
+}
+
+
 
 #define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
 #define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(in_world, VARMACRO_FOREACH_SUM(SIMPLECS_COMPONENT_FLAG, __VA_ARGS__))
