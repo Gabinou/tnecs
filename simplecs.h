@@ -140,6 +140,7 @@ struct Simplecs_System_Input {
 
 struct Simplecs_World {
     simplecs_entity_t * entities;                 // Useless?
+    simplecs_components_t * typeflags;            // [typeflag_id]
     simplecs_components_t * entity_typeflags;     // [entity]
     simplecs_components_t * system_typeflags;     // [system]
     bool * system_isExclusive;                    // [system]
@@ -147,11 +148,11 @@ struct Simplecs_World {
     struct Components_Hash * component_typehash;
     struct Components_Hash * component_id;
 
-    simplecs_entity_t ** entitiesbytype;          // [typeflag][num_entitiesbytype]
-    simplecs_components_t ** component_idbytype;  // [typeflag][num_componentsbytype]
-    simplecs_components_t ** component_flagbytype;// [typeflag][num_componentsbytype]
-    size_t * num_componentsbytype;                // [typeflag]
-    size_t * num_entitiesbytype;                  // [typeflag]
+    simplecs_entity_t ** entitiesbytype;          // [typeflag_id][num_entitiesbytype]
+    simplecs_components_t ** component_idbytype;  // [typeflag_id][num_componentsbytype]
+    simplecs_components_t ** component_flagbytype;// [typeflag_id][num_componentsbytype]
+    size_t * num_componentsbytype;                // [typeflag_id]
+    size_t * num_entitiesbytype;                  // [typeflag_id]
     size_t num_components;
     size_t num_systems;
     size_t num_typeflags;
@@ -223,6 +224,7 @@ simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_wor
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
 void simplecs_new_component(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd);
+void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components_t typeflag);
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type);
 bool simplecs_type_add(struct Simplecs_World * in_world, simplecs_components_t component_typeflag);
 size_t simplecs_type_id(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);

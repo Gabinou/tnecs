@@ -23,6 +23,10 @@ struct Simplecs_World * simplecs_init() {
     arrsetcap(simplecs_world->entities, DEFAULT_ENTITY_CAP);
     arrput(simplecs_world->entities, SIMPLECS_NULL);
 
+    simplecs_world->typeflags = NULL;
+    arrsetcap(simplecs_world->typeflags, DEFAULT_ENTITY_CAP);    
+    arrput(simplecs_world->entity_typeflags, SIMPLECS_NULL);
+    
     simplecs_world->entity_typeflags = NULL;
     arrsetcap(simplecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
     // arrput(simplecs_world->entity_typeflags, SIMPLECS_NULL);
@@ -43,7 +47,7 @@ struct Simplecs_World * simplecs_init() {
 
     simplecs_world->entitiesbytype = NULL;
     arrsetcap(simplecs_world->entitiesbytype, DEFAULT_SYSTEM_CAP);
-    // arrput(simplecs_world->entitiesbytype, NULL);
+    arrput(simplecs_world->entitiesbytype, NULL);
 
     simplecs_world->component_idbytype = NULL;
     arrsetcap(simplecs_world->component_idbytype, DEFAULT_SYSTEM_CAP);
@@ -85,6 +89,20 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
     }
     return (out);
 }
+
+void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components_t typeflag) {
+    // arrput(in_world->num_entitiesbytype[SIMPLECS_NULL])
+    bool found = 0;
+    for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
+
+     in_world->entitiesbytype;          
+     in_world->component_idbytype;  
+     in_world->component_flagbytype;
+     ;  
+     in_world->components_bytype;  
+}
+
+
 
 simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t component_typeflag) {
     printf("simplecs_new_entity_wcomponents \n");
