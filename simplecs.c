@@ -20,11 +20,11 @@ struct Simplecs_World * simplecs_init() {
     simplecs_world->entities = NULL;
     arrsetcap(simplecs_world->entities, DEFAULT_ENTITY_CAP);
     arrput(simplecs_world->entities, SIMPLECS_NULL);
-    
+
     simplecs_world->entity_typeflags = NULL;
     arrsetcap(simplecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
     // arrput(simplecs_world->entity_typeflags, SIMPLECS_NULL);
-    
+
     simplecs_world->system_typeflags = NULL;
     arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
     // arrput(simplecs_world->system_typeflags, SIMPLECS_NULL);
@@ -50,7 +50,7 @@ struct Simplecs_World * simplecs_init() {
     simplecs_world->component_flagbytype = NULL;
     arrsetcap(simplecs_world->component_flagbytype, DEFAULT_SYSTEM_CAP);
     // arrput(simplecs_world->component_flagbytype, NULL);
-    
+
     simplecs_world->num_componentsbytype = NULL;
     arrsetcap(simplecs_world->num_componentsbytype, DEFAULT_SYSTEM_CAP);
     // arrput(simplecs_world->component_flagbytype, NULL);
@@ -148,7 +148,7 @@ void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_
     in_world->entity_typeflags[in_entity] = in_world->entity_typeflags[in_entity] | new_type;
 
     for (size_t i = 0; i < in_world->num_typeflags; i++) {
-        if (previous_flag == in_world->typeflags[i]) { //      EXCLUSIVE
+        if (previous_flag == in_world->entity_typeflags[i]) { //      EXCLUSIVE
             for (size_t j = 0; j < in_world->num_entitiesbytype[i]; j++) {
                 if (in_entity == in_world->entitiesbytype[i][j]) {
                     arrdel(in_world->entitiesbytype[i], j);
@@ -156,7 +156,7 @@ void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_
                 }
             }
         }
-        if (in_world->entity_typeflags[in_entity] == in_world->typeflags[i]) { //      EXCLUSIVE
+        if (in_world->entity_typeflags[in_entity] == in_world->entity_typeflags[i]) { //      EXCLUSIVE
             arrput(in_world->entitiesbytype[i], in_entity);
         }
         // if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
