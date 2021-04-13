@@ -134,8 +134,8 @@ bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplec
     size_t new_component_num = in_world->num_componentsbytype[new_type_id]; 
     size_t old_component_num = in_world->num_componentsbytype[old_type_id];
 
-    struct Components_Array ** new_type_components_byid = in_world->components_bytype[new_type_id];
-    struct Components_Array ** old_type_components_byid = in_world->components_bytype[old_type_id];
+    struct Components_Array ** new_type_components_byentity = in_world->components_bytype[new_type_id];
+    struct Components_Array ** old_type_components_byentity = in_world->components_bytype[old_type_id];
 
 
     for (size_t i = 0; i < old_num_entities; i++) {
