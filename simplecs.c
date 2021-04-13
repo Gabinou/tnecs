@@ -90,16 +90,23 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
     return (out);
 }
 
-void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components_t typeflag) {
+void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components_t new_typeflag) {
     // arrput(in_world->num_entitiesbytype[SIMPLECS_NULL])
     bool found = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
-
-     in_world->entitiesbytype;          
-     in_world->component_idbytype;  
-     in_world->component_flagbytype;
-     ;  
-     in_world->components_bytype;  
+        if (new_typeflag == in_world->typeflags[i]) {
+            found = true;
+            break;
+        }          
+    }
+    if (!found) {
+        in_world->entitiesbytype;          
+        in_world->component_idbytype;  
+        in_world->component_flagbytype;
+        in_world->components_bytype;  
+    } else {
+        printf("simplecs_new_typeflag: new_typeflag already exists!");
+    }
 }
 
 
