@@ -23,6 +23,7 @@ typedef uint16_t simplecs_systems_t;
 #define COMPONENT_ID_START 1
 #define ENTITY_ID_START 1
 #define OPEN_IDS_BUFFER 128
+#define STR_BUFFER 128
 #define MAX_COMPONENT 63
 #define DEFAULT_COMPONENT_NUM 4
 #define DEFAULT_SYSTEM_CAP 16
@@ -136,15 +137,16 @@ struct Simplecs_System_Input {
     void ** components_lists;
 };
 
+
 struct Simplecs_World {
     simplecs_entity_t * entities;                 // Useless?
     simplecs_components_t * entity_typeflags;     // [entity]
     simplecs_components_t * system_typeflags;
     bool * system_isExclusive;
     void (** systems)(struct Simplecs_System_Input);
-    struct Components_Hash * components;
+    struct Components_Hash * component_typehash;
+    struct Components_Hash * component_id;
 
-    simplecs_components_t * typeflags;            // created on ADD_COMPONENT
     simplecs_entity_t ** entitiesbytype;          // [typeflag][num_entitiesbytype]
     simplecs_components_t ** component_idbytype;  // [typeflag][num_componentsbytype]
     simplecs_components_t ** component_flagbytype;// [typeflag][num_componentsbytype]
@@ -155,25 +157,24 @@ struct Simplecs_World {
     size_t num_typeflags;
     size_t num_typeflags_bybitcount;
     struct Components_Array *** components_bytype;  // [typeflag][entity_id][num_componentsbytype]
-
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
 
     simplecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
+
+    simplecs_component_t temp_typeflag;
+    char temp_str[STR_BUFFER];
 };
 
 struct Simplecs_World * simplecs_init();
 
 // Error if component registered twice -> user responsibility
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
-#define _SIMPLECS_REGISTER_COMPONENT(world, name) const simplecs_component_t Component_##name##_flag = (1 << world->num_components);\
-arrput(world->typeflags, Component_##name##_flag);\
-world->num_typeflags++;\
-const simplecs_component_t Component_##name##_id = world->num_components++;
-// How to make Component_##name##_id accessible to functions and stuff?
-// -> make it a hash table? inside world with new macro SIMPLECS_COMPONENT_FLAG(world, name)
-//
+#define _SIMPLECS_REGISTER_COMPONENT(world, name) world->temp_typeflag = (1 << world->num_components);\
+strncpy(world->temp_str, #name, sizeof(#name));\
+hmput(world->component_typehash, world->temp_str, world->temp_typeflag);\
+world->num_components++;
 
 
 // Redundant macro for API consistency
@@ -186,7 +187,7 @@ const simplecs_component_t Component_##name##_id = world->num_components++;
 
 // UTILITY MACROS
 #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
-#define SIMPLECS_COMPONENT_FLAG(name) Component_##name##_flag
+#define SIMPLECS_COMPONENT_FLAG(name) hmget(world->component_typehash, world->temp_str)
 #define SIMPLECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
 
 
@@ -196,29 +197,31 @@ const simplecs_component_t Component_##name##_id = world->num_components++;
 #define GET_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define SIMPLECS_ADD_COMPONENT(...) GET_ADD_COMPONENT(__VA_ARGS__, SIMPLECS_ADD_COMPONENT4, SIMPLECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define SIMPLECS_ADD_COMPONENT3(world, name, entity_id) if (!simplecs_type_id(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_typeflags[entity_id])) {\
-    arrput(world->typeflags, world->entity_typeflags[entity_id]); \
-    world->num_typeflags++;\
+#define SIMPLECS_ADD_COMPONENT3(world, name, entity_id) strncpy(world->temp_str, #name, sizeof(#name));\
+world->temp_typeflag = (hmget(world->component_typehash, world->temp_str) + world->entity_typeflags[entity_id]);\
+if (!simplecs_type_id(world->system_typeflags, world->num_systems, world->temp_typeflag)) {\
+    arrput(world->system_typeflags, world->entity_typeflags[entity_id]);\
+    world->num_systems++;\
 }\
-simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);
+simplecs_entity_typeflag_change(world, entity_id, world->temp_typeflag)
 
 #define SIMPLECS_ADD_COMPONENT4(world, name, entity_id, newtype) if (newtype) {\
-if (!simplecs_type_id(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_typeflags[entity_id])) {\
-    arrput(world->typeflags, world->entity_typeflags[entity_id]); \
-    world->num_typeflags++;\
+strncpy(world->temp_str, #name, sizeof(#name));\
+world->temp_typeflag = (hmget(world->component_typehash, world->temp_str) + world->entity_typeflags[entity_id]);\
+if (!simplecs_type_id(world->system_typeflags, world->num_systems, world->temp_typeflag)) {\
+    arrput(world->system_typeflags, world->entity_typeflags[entity_id]);\
+    world->num_systems++;\
 }\
-simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);\
+simplecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);\
 }
+
+#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) simplecs_register_system(world, pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
+void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, simplecs_components_t component_typeflag);
 
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t components_typeflag);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
-
-#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) simplecs_register_system(world, pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
-
-void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, simplecs_components_t component_typeflag);
-
 
 void simplecs_new_component(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd);
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type);
