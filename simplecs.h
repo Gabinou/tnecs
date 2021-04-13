@@ -39,43 +39,72 @@ typedef uint16_t simplecs_system_t;
 #define CONCATENATE1(arg1, arg2) CONCATENATE2(arg1, arg2)
 #define CONCATENATE2(arg1, arg2)  arg1##arg2
 
-#define FOR_EACH_1(macro, x)\
+#define FOREACH_1(macro, x)\
     macro(x)
 
-#define FOR_EACH_2(macro, x, ...)\
+#define FOREACH_SUM_2(macro, x, ...)\
     macro(x)+\
-    FOR_EACH_1(macro, __VA_ARGS__)
+    FOREACH_1(macro, __VA_ARGS__)
 
-#define FOR_EACH_3(macro, x, ...)\
+#define FOREACH_SUM_3(macro, x, ...)\
     macro(x)+\
-    FOR_EACH_2(macro, __VA_ARGS__)
+    FOREACH_SUM_2(macro, __VA_ARGS__)
 
-#define FOR_EACH_4(macro, x, ...)\
+#define FOREACH_SUM_4(macro, x, ...)\
     macro(x)+\
-    FOR_EACH_3(macro,  __VA_ARGS__)
+    FOREACH_SUM_3(macro,  __VA_ARGS__)
 
-#define FOR_EACH_5(macro, x, ...)\
+#define FOREACH_SUM_5(macro, x, ...)\
     macro(x)+\
-    FOR_EACH_4(macro,  __VA_ARGS__)
+    FOREACH_SUM_4(macro,  __VA_ARGS__)
 
-#define FOR_EACH_6(macro, x, ...)\
+#define FOREACH_SUM_6(macro, x, ...)\
     macro(x)+\
-    FOR_EACH_5(macro,  __VA_ARGS__)
+    FOREACH_SUM_5(macro,  __VA_ARGS__)
 
-#define FOR_EACH_7(macro, x, ...)\
+#define FOREACH_SUM_7(macro, x, ...)\
     macro(x)+\
-    FOR_EACH_6(macro,  __VA_ARGS__)
+    FOREACH_SUM_6(macro,  __VA_ARGS__)
 
-#define FOR_EACH_8(macro, x, ...)\
+#define FOREACH_SUM_8(macro, x, ...)\
     macro(x)+\
-    FOR_EACH_7(macro,  __VA_ARGS__)
+    FOREACH_SUM_7(macro,  __VA_ARGS__)
 
-#define FOR_EACH_NARG(...) FOR_EACH_NARG_(__VA_ARGS__, FOR_EACH_RSEQ_N())
-#define FOR_EACH_NARG_(...) FOR_EACH_ARG_N(__VA_ARGS__)
-#define FOR_EACH_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
-#define FOR_EACH_RSEQ_N() 8, 7, 6, 5, 4, 3, 2, 1, 0
-#define FOR_EACH_(N, macro, ...) CONCATENATE(FOR_EACH_, N)(macro, __VA_ARGS__)
-#define FOR_EACH(macro, ...) FOR_EACH_(FOR_EACH_NARG(__VA_ARGS__), macro, __VA_ARGS__)
+#define FOREACH_COMMA_2(macro, x, ...)\
+    macro(x),\
+    FOREACH_1(macro, __VA_ARGS__)
+
+#define FOREACH_COMMA_3(macro, x, ...)\
+    macro(x),\
+    FOREACH_COMMA_2(macro, __VA_ARGS__)
+
+#define FOREACH_COMMA_4(macro, x, ...)\
+    macro(x),\
+    FOREACH_COMMA_3(macro,  __VA_ARGS__)
+
+#define FOREACH_COMMA_5(macro, x, ...)\
+    macro(x),\
+    FOREACH_COMMA_4(macro,  __VA_ARGS__)
+
+#define FOREACH_COMMA_6(macro, x, ...)\
+    macro(x),\
+    FOREACH_COMMA_5(macro,  __VA_ARGS__)
+
+#define FOREACH_COMMA_7(macro, x, ...)\
+    macro(x),\
+    FOREACH_COMMA_6(macro,  __VA_ARGS__)
+
+#define FOREACH_COMMA_8(macro, x, ...)\
+    macro(x),\
+    FOREACH_COMMA_7(macro,  __VA_ARGS__)
+
+#define VARMACRO_EACH_ARGN(...) VARMACRO_EACH_ARGN_(__VA_ARGS__, VARMACRO_VARG_SEQ())
+#define VARMACRO_EACH_ARGN_(...) VARMACRO_ARGN(__VA_ARGS__)
+#define VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
+#define VARMACRO_VARG_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
+    
+#define VARMACRO_FOREACH_SUM_(N, macro, ...) CONCATENATE(VARMACRO_FOREACH_SUM_, N)(macro, __VA_ARGS__)
+#define VARMACRO_FOREACH_SUM(macro, ...) VARMACRO_FOREACH_SUM_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 enum RUN_PHASES {
     SIMPLECS_PHASE_PREUPDATE = 0,
@@ -150,7 +179,7 @@ simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
-#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) simplecs_register_system(world, pfunc, phase, isexcl, FOR_EACH_NARG(__VA_ARGS__), FOR_EACH(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
+#define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) simplecs_register_system(world, pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
 
 void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, simplecs_components_t component_typeflag);
 
