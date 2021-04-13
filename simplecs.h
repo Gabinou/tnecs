@@ -83,9 +83,9 @@ enum RUN_PHASES {
     SIMPLECS_PHASE_POSTUPDATE = 2,
 };
 
-struct Components_byType {
+struct Components_Array {
     simplecs_components_t type;   //single bit on
-    void * components;
+    void * components; // same order as entitiesbytype 
 };
 
 struct Simplecs_System_Input {
@@ -97,7 +97,7 @@ struct Simplecs_System_Input {
 };
 
 struct Simplecs_World {
-    simplecs_entity_t * entities;                    // Always maintain contiguous as possible.
+    simplecs_entity_t * entities;                    // Useless? 
     simplecs_components_t * entity_component_flags;  // Same order as entities
     simplecs_components_t * system_typeflags;
     bool * system_isExclusive;
@@ -105,14 +105,14 @@ struct Simplecs_World {
 
     simplecs_components_t * all_typeflags;           // created on ADD_COMPONENT
     simplecs_entity_t ** entitiesbytype;       // 2D list. Same order as all_typeflags
-    simplecs_components_t ** component_idbytype;  // Same order as all_typeflags 
+    simplecs_components_t ** component_idbytype; // Same order as all_typeflags 
     size_t * num_componentsbytype; // same order as all_typeflags
     size_t * num_entitiesbytype; // same order as all_typeflags 
     size_t num_components;
     size_t num_system_typeflags;
     size_t num_all_typeflags;
     size_t num_typeflags_bybitcount;
-    struct Components_byType ** components_bytype;  // Same order as entitiesbytype.
+    struct Components_Array ** components_bytype;  // Same order as all_typeflags + component_idbytype.
 
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
