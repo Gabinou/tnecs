@@ -156,7 +156,7 @@ struct Simplecs_World {
     size_t num_components;
     size_t num_systems;
     size_t num_typeflags;
-    struct Components_Array *** components_bytype;  // [typeflag][entity_id][num_componentsbytype]
+    struct Components_Array *** components_bytype;  // [typeflag_id][entity_id][num_componentsbytype]
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
 
