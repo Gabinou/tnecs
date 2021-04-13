@@ -95,7 +95,7 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag) {
     simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
     in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_flag;
-
+Components_byType
     for (size_t i = 0; i < in_world->num_system_typeflags; i++) {
         if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
             for (size_t j = 0; j < in_world->num_entitiesbytype[i]; j++) {

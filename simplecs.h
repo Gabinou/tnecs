@@ -84,8 +84,7 @@ enum RUN_PHASES {
 };
 
 struct Components_byType {
-    \
-    simplecs_components_t type;
+    simplecs_components_t type;   //single bit on
     void * components;
 };
 
@@ -105,14 +104,15 @@ struct Simplecs_World {
     void (** systems)(struct Simplecs_System_Input);
 
     simplecs_components_t * all_typeflags;           // created on ADD_COMPONENT
-    simplecs_entity_t ** entitiesbytype;       // 2D list. Same order as system_typeflags
-    size_t * num_componentsbytype;       // For reference I guess?
-    size_t * num_entitiesbytype;
+    simplecs_entity_t ** entitiesbytype;       // 2D list. Same order as all_typeflags
+    simplecs_components_t ** component_idbytype;  // Same order as all_typeflags 
+    size_t * num_componentsbytype; // same order as all_typeflags
+    size_t * num_entitiesbytype; // same order as all_typeflags 
     size_t num_components;
     size_t num_system_typeflags;
     size_t num_all_typeflags;
     size_t num_typeflags_bybitcount;
-    struct Components_byType *** components_bytype;  // Each entity has multiple components
+    struct Components_byType ** components_bytype;  // Same order as entitiesbytype.
 
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
@@ -156,6 +156,8 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
 
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag);
 bool simplecs_type_exists(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
+bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world,
+simplecs_components_t previous_flag, simplecs_components_t new_flag);
 size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
 
 #define SIMPLECS_COMPONENTS_LIST(entity_list, Position)
