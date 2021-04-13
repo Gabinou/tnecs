@@ -305,10 +305,12 @@ int main() {
 
 
     t_0 = get_time();
-    for (size_t i = 0; i < ITERATIONS; i++) {
+    SIMPLECS_ADD_COMPONENT(bench_world, Position2, simplecs_entities[1]);
+    SIMPLECS_ADD_COMPONENT(bench_world, Unit2, simplecs_entities[1]);
+    for (size_t i = 2; i < ITERATIONS; i++) {
         printf("%i \n", i);
-        SIMPLECS_ADD_COMPONENT(bench_world, Position2, simplecs_entities[i]);
-        SIMPLECS_ADD_COMPONENT(bench_world, Unit2, simplecs_entities[i]);
+        SIMPLECS_ADD_COMPONENT(bench_world, Position2, simplecs_entities[i], false);
+        SIMPLECS_ADD_COMPONENT(bench_world, Unit2, simplecs_entities[i], false);
     }
     t_1 = get_time();
     printf("simplecs: Component adding time: %d iterations \n", ITERATIONS);

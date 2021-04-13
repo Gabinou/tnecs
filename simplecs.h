@@ -198,18 +198,18 @@ world->num_components++;
 
 #define SIMPLECS_ADD_COMPONENT3(world, name, entity_id) strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag = (hmget(world->component_typehash, world->temp_str) + world->entity_typeflags[entity_id]);\
-if (!simplecs_type_id(world->system_typeflags, world->num_systems, world->temp_typeflag)) {\
-    arrput(world->system_typeflags, world->entity_typeflags[entity_id]);\
-    world->num_systems++;\
+if (!simplecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
+    arrput(world->entity_typeflags, world->entity_typeflags[entity_id]);\
+    world->num_typeflags++;\
 }\
 simplecs_entity_typeflag_change(world, entity_id, world->temp_typeflag)
 
 #define SIMPLECS_ADD_COMPONENT4(world, name, entity_id, newtype) if (newtype) {\
 strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag = (hmget(world->component_typehash, world->temp_str) + world->entity_typeflags[entity_id]);\
-if (!simplecs_type_id(world->system_typeflags, world->num_systems, world->temp_typeflag)) {\
-    arrput(world->system_typeflags, world->entity_typeflags[entity_id]);\
-    world->num_systems++;\
+if (!simplecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
+    arrput(world->entity_typeflags, world->entity_typeflags[entity_id]);\
+    world->num_typeflags++;\
 }\
 simplecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);\
 }
