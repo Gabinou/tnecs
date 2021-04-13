@@ -34,7 +34,10 @@ struct Simplecs_World * simplecs_init() {
     arrsetcap(simplecs_world->entitiesbytype, DEFAULT_COMPONENT_CAP);
     simplecs_world->num_typeflags = 1;
     simplecs_world->systems = NULL;
-    arrput(simplecs_world->systems, SIMPLECS_NULLTYPE);
+    simplecs_world->components = NULL;
+    hmdefault(simplecs_world->components, SIMPLECS_NULL);
+
+    arrput(simplecs_world->systems, SIMPLECS_NULL);
     arrsetcap(simplecs_world->systems, DEFAULT_SYSTEM_CAP);
     simplecs_world->system_isExclusive = NULL;
     arrsetcap(simplecs_world->system_isExclusive, DEFAULT_SYSTEM_CAP);
@@ -47,13 +50,13 @@ struct Simplecs_World * simplecs_init() {
 }
 
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
-    simplecs_entity_t out = SIMPLECS_NULLENTITY;
+    simplecs_entity_t out = SIMPLECS_NULL;
     simplecs_component_t component_flag;
-    while ((out == SIMPLECS_NULLENTITY) && (in_world->num_opened_entity_ids > 0)) {
+    while ((out == SIMPLECS_NULL) && (in_world->num_opened_entity_ids > 0)) {
         out = in_world->opened_entity_ids[--in_world->num_opened_entity_ids];
-        in_world->opened_entity_ids[in_world->num_opened_entity_ids] = SIMPLECS_NULLENTITY;
+        in_world->opened_entity_ids[in_world->num_opened_entity_ids] = SIMPLECS_NULL;
     }
-    if (out == SIMPLECS_NULLENTITY) {
+    if (out == SIMPLECS_NULL) {
         out = in_world->next_entity_id++;
     }
     return (out);
@@ -98,8 +101,7 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
     // in_world->next_system_id++;
 }
 
-void simplecs_componentsbytype_add(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd) {
-
+void simplecs_new_component(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd) {
     bool found = 0;
     for (size_t i = 0; i < in_world->num_componentsbytype[typeflag]; i++) {
         if (in_world->component_flagbytype[typeflag][i] == type_toadd) {
@@ -108,9 +110,9 @@ void simplecs_componentsbytype_add(struct Simplecs_World * in_world, simplecs_en
         }
     }
     if (!found) {
-        struct * Components_Array temp;
-        temp->components = NULL;
-        temp->type = type_toadd;
+        struct Components_Array temp;
+        temp.components = NULL;
+        temp.type = type_toadd;
         arrput(in_world->components_bytype[typeflag][in_entity], temp);
         arrput(in_world->component_flagbytype[typeflag], type_toadd);
     } else {
@@ -190,7 +192,7 @@ bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplec
 }
 
 size_t simplecs_type_id(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag) {
-    size_t found = SIMPLECS_NULLTYPE;
+    size_t found = SIMPLECS_NULL;
     for (size_t i = 0; i < len; i++) {
         if (in_typelist[i] == in_flag) {
             found = i;

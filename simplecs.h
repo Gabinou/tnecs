@@ -19,8 +19,7 @@ typedef uint64_t simplecs_components_t; // 64 bit flags -> MAX 64 components
 typedef uint16_t simplecs_system_t;
 typedef uint16_t simplecs_systems_t;
 
-#define SIMPLECS_NULLENTITY 0
-#define SIMPLECS_NULLTYPE 0
+#define SIMPLECS_NULL 0
 #define COMPONENT_ID_START 1
 #define ENTITY_ID_START 1
 #define OPEN_IDS_BUFFER 128
@@ -123,6 +122,12 @@ struct Components_Array {
     void * components; // same order as entitiesbytype
 };
 
+struct Components_Hash {
+    char * key;                  // name
+    simplecs_components_t value; // type
+
+};
+
 struct Simplecs_System_Input {
     simplecs_entity_t * entities;
     simplecs_components_t typeflag;
@@ -137,6 +142,7 @@ struct Simplecs_World {
     simplecs_components_t * system_typeflags;
     bool * system_isExclusive;
     void (** systems)(struct Simplecs_System_Input);
+    struct Components_Hash * components;
 
     simplecs_components_t * typeflags;            // created on ADD_COMPONENT
     simplecs_entity_t ** entitiesbytype;          // [typeflag][num_entitiesbytype]
@@ -164,10 +170,10 @@ struct Simplecs_World * simplecs_init();
 #define _SIMPLECS_REGISTER_COMPONENT(world, name) const simplecs_component_t Component_##name##_flag = (1 << world->num_components);\
 arrput(world->typeflags, Component_##name##_flag);\
 world->num_typeflags++;\
-const simplecs_component_t Component_##name##_id = world->num_components++; 
+const simplecs_component_t Component_##name##_id = world->num_components++;
 // How to make Component_##name##_id accessible to functions and stuff?
 // -> make it a hash table? inside world with new macro SIMPLECS_COMPONENT_FLAG(world, name)
-//  
+//
 
 
 // Redundant macro for API consistency
@@ -213,7 +219,8 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
 
 void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, simplecs_components_t component_typeflag);
 
-void simplecs_componentsbytype_add(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type);
+
+void simplecs_new_component(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd);
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type);
 bool simplecs_type_add(struct Simplecs_World * in_world, simplecs_components_t component_typeflag);
 size_t simplecs_type_id(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
