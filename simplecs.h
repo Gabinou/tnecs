@@ -166,8 +166,8 @@ arrput(world->typeflags, Component_##name##_flag);\
 world->num_typeflags++;\
 const simplecs_component_t Component_##name##_id = world->num_components++; 
 // How to make Component_##name##_id accessible to functions and stuff?
-// -> make it a variable inside world with new macro SIMPLECS_COMPONENT_FLAG(world, name)
-
+// -> make it a hash table? inside world with new macro SIMPLECS_COMPONENT_FLAG(world, name)
+//  
 
 
 // Redundant macro for API consistency
