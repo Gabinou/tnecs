@@ -30,7 +30,7 @@ typedef uint16_t simplecs_system_t;
 // -> Still want to keep posibility of multiple systems having same bitflag, but it makes everything easier to store.
 
 // col->x, row->y, depth->z
-// components_bytype_3d col->type, row->entity, depth->component 
+// components_bytype_3d col->type, row->entity, depth->component
 // entitiesbytype_2d  col->type, row->entity
 #define index_2d(row, col, col_len) (row * col_len + col)
 #define index_3d(row, col, depth, row_len, col_len) (row * col_len * row_len + col * row_len + depth)
@@ -103,7 +103,7 @@ typedef uint16_t simplecs_system_t;
 #define VARMACRO_EACH_ARGN_(...) VARMACRO_ARGN(__VA_ARGS__)
 #define VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
 #define VARMACRO_VARG_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
-    
+
 #define VARMACRO_FOREACH_SUM_(N, macro, ...) CONCATENATE(FOREACH_SUM_, N)(macro, __VA_ARGS__)
 #define VARMACRO_FOREACH_SUM(macro, ...) VARMACRO_FOREACH_SUM_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
@@ -118,11 +118,11 @@ enum RUN_PHASES {
 
 struct Components_Array {
     simplecs_components_t type;   //single bit on
-    void * components; // same order as entitiesbytype 
+    void * components; // same order as entitiesbytype
 };
 
 struct Simplecs_System_Input {
-    simplecs_entity_t * entities;       
+    simplecs_entity_t * entities;
     simplecs_components_t typeflag;
     size_t num;
     size_t * components_order; // Always equal to the total length of components I guess.
@@ -130,7 +130,7 @@ struct Simplecs_System_Input {
 };
 
 struct Simplecs_World {
-    simplecs_entity_t * entities;                    // Useless? 
+    simplecs_entity_t * entities;                    // Useless?
     simplecs_components_t * entity_component_flags;  // [entity]
     simplecs_components_t * system_typeflags;
     bool * system_isExclusive;
@@ -138,14 +138,14 @@ struct Simplecs_World {
 
     simplecs_components_t * typeflags;            // created on ADD_COMPONENT
     simplecs_entity_t ** entitiesbytype;          // [typeflag][num_entitiesbytype]
-    simplecs_components_t ** component_id_bytype; // [typeflag][num_componentsbytype]
+    simplecs_components_t ** component_idbytype; // [typeflag][num_componentsbytype]
     size_t * num_componentsbytype;                // [typeflag]
-    size_t * num_entitiesbytype;                  // [typeflag] 
+    size_t * num_entitiesbytype;                  // [typeflag]
     size_t num_components;
     size_t num_systems;
     size_t num_typeflags;
     size_t num_typeflags_bybitcount;
-    struct Components_Array *** components_bytype;  // [typeflag][entity_id][component_id]
+    struct Components_Array *** components_bytype;  // [typeflag][entity_id][num_componentsbytype]
 
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]
@@ -174,7 +174,7 @@ const simplecs_component_t Component_##name##_id = world->num_components++;
 #define SIMPLECS_COMPONENT_FLAG(name) Component_##name##_flag
 
 // add option for user to specify if type is new.
-#define SIMPLECS_ADD_COMPONENT(world, name, entity_id) if (!simplecs_type_exists(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_component_flags[entity_id])) {\
+#define SIMPLECS_ADD_COMPONENT(world, name, entity_id) if (!simplecs_type_id(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_component_flags[entity_id])) {\
 arrput(world->typeflags, world->entity_component_flags[entity_id]); \
 world->num_typeflags++;\
 }\
@@ -194,7 +194,6 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
 
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type);
 bool simplecs_type_add(struct Simplecs_World * in_world, simplecs_components_t component_typeflag);
-bool simplecs_type_exists(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
 size_t simplecs_type_id(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
 bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t previous_flag, simplecs_components_t new_flag);
 size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
