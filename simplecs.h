@@ -10,9 +10,14 @@
 #include "stb_ds.h"
 
 typedef uint64_t simplecs_entity_t;
-typedef uint64_t simplecs_component_t;
-typedef uint64_t simplecs_components_t;
+typedef uint64_t simplecs_entities_t;
+typedef uint64_t simplecs_component_t;  // 64 bit flags -> MAX 64 components
+typedef uint64_t simplecs_components_t; // 64 bit flags -> MAX 64 components
+// component type > 0 -> 1 nonzero bit -> unique for component
+// component flag > 0 -> sum of component types -> determines Simplecs_System_Input
+// component id > 0 -> unique for component (should be exponent of component type)
 typedef uint16_t simplecs_system_t;
+typedef uint16_t simplecs_systems_t;
 #define SIMPLECS_NULLENTITY 0
 #define SIMPLECS_NULLTYPE 0
 #define OPEN_IDS_BUFFER 128
@@ -24,10 +29,6 @@ typedef uint16_t simplecs_system_t;
 #define DEFAULT_COMPONENT_CAP 64
 #define DEFAULT_ENTITY_CAP 128
 #define ENTITY_MAX_COMPONENT_NUM 10
-// IDEA component IDS are integer bitflags.
-//  -> MAX 64 components
-// This makes the system flag just a sum
-// -> Still want to keep posibility of multiple systems having same bitflag, but it makes everything easier to store.
 
 // col->x, row->y, depth->z
 // components_bytype_3d col->type, row->entity, depth->component

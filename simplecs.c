@@ -102,18 +102,17 @@ void simplecs_componentsbytype_add(struct Simplecs_World * in_world, simplecs_en
 
     bool found = 0;
     for (size_t i = 0; i < in_world->num_componentsbytype[typeflag]; i++) {
-        if (in_world->component_flagbytype[typeflag][i]) {
+        if (in_world->component_flagbytype[typeflag][i] == type_toadd) {
             found = true;
             break;
         }
     }
     if (!found) {
-
-    struct * Components_Array temp;
-    temp->components = NULL;
-    temp->type = type_toadd;
-
-    arrput(in_world->components_bytype[typeflag][in_entity], temp);
+        struct * Components_Array temp;
+        temp->components = NULL;
+        temp->type = type_toadd;
+        arrput(in_world->components_bytype[typeflag][in_entity], temp);
+        arrput(in_world->component_flagbytype[typeflag], type_toadd);
     } else {
         printf("simplecs_componentsbytype_add: component already in component_flagbytype");
     }
