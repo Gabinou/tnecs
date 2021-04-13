@@ -32,8 +32,9 @@ struct Simplecs_World * simplecs_init() {
     arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_COMPONENT_CAP);
     simplecs_world->components_bytype = NULL;
     arrsetcap(simplecs_world->entitiesbytype_lists, DEFAULT_COMPONENT_CAP);
-    simplecs_world->num_all_typeflags = 0;
+    simplecs_world->num_typeflags = 1;
     simplecs_world->systems = NULL;
+    arrput(simplecs_world->systems, SIMPLECS_NULLTYPE);
     arrsetcap(simplecs_world->systems, DEFAULT_SYSTEM_CAP);
     simplecs_world->system_isExclusive = NULL;
     arrsetcap(simplecs_world->system_isExclusive, DEFAULT_SYSTEM_CAP);
@@ -59,7 +60,7 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
 }
 
 simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t component_typeflag){
-    
+
 }
 
 
@@ -97,12 +98,12 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
     // in_world->next_system_id++;
 }
 
-void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag) {
+void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type) {
     simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
-    in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_flag;
+    in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_type;
 
-    for (size_t i = 0; i < in_world->num_system_typeflags; i++) {
-        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
+    for (size_t i = 0; i < in_world->num_typeflags; i++) {
+        if (previous_flag == in_world->typeflags[i]) { //      EXCLUSIVE
             for (size_t j = 0; j < in_world->num_entitiesbytype[i]; j++) {
                 if (in_entity == in_world->entitiesbytype_lists[i][j]) {
                     arrdel(in_world->entitiesbytype_lists[i], j);
@@ -110,25 +111,62 @@ void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_
                 }
             }
         }
-        if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
+        if (in_world->entity_component_flags[in_entity] == in_world->typeflags[i]) { //      EXCLUSIVE
             arrput(in_world->entitiesbytype_lists[i], in_entity);
         }
-        // if (previous_flag == in_world->system_typeflags[i]) //      EXCLUSIVE
+        // if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
+        // if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
     }
 }
 
+bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t old_flag, simplecs_components_t new_flag) {
+    // Migrates components associated with in_entity
+    // -components_bytype: previous_flag -> new_flag
+    // DOES NOT CHECK in_entity's TYPE.
+    size_t new_type_id = simplecs_type_id(in_world->systems, in_world->num_typeflags, new_flag);
+    size_t old_type_id = simplecs_type_id(in_world->systems, in_world->num_typeflags, old_flag);
+
+    simplecs_entity_t * new_type_entities = in_world->entities_bytype[new_type_id];
+    simplecs_entity_t * old_type_entities = in_world->entities_bytype[old_type_id];
+
+    size_t new_num_entities = in_world->num_entitiesbytype[new_type_id]; 
+    size_t old_num_entities = in_world->num_entitiesbytype[old_type_id]; 
+    size_t new_component_num = in_world->num_componentsbytype[new_type_id]; 
+    size_t old_component_num = in_world->num_componentsbytype[old_type_id];
+
+    struct Components_Array ** new_type_components_byid = in_world->components_bytype[new_type_id];
+    struct Components_Array ** old_type_components_byid = in_world->components_bytype[old_type_id];
 
 
-bool simplecs_type_exists(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag) {
-    bool found = 0;
+    for (size_t i = 0; i < old_num_entities; i++) {
+        if (old_type_entities[i] == in_entity) {
+            arrdel(old_type_entities, i);
+            in_world->num_entitiesbytype[old_type_id]--;
+        }
+    }    
+    size_t found = 0;
+    for (size_t i = 0; i < new_num_entities; i++) {
+        if (new_type_entities[i] == in_entity) {
+            found = i;
+        }
+    }
+    if (!found) {
+        arrput(new_type_entities, in_entity);
+    }
+
+}
+
+size_t simplecs_type_id(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag) {
+    size_t found = SIMPLECS_NULLTYPE;
     for (size_t i = 0; i < len; i++) {
         if (in_typelist[i] == in_flag) {
-            found = true;
+            found = i;
             break;
         }
     }
     return (found);
 }
+
 
 size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag) {
     // returns position of subtype from in_typelist
