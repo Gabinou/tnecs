@@ -103,8 +103,11 @@ typedef uint16_t simplecs_system_t;
 #define VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
 #define VARMACRO_VARG_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
     
-#define VARMACRO_FOREACH_SUM_(N, macro, ...) CONCATENATE(VARMACRO_FOREACH_SUM_, N)(macro, __VA_ARGS__)
+#define VARMACRO_FOREACH_SUM_(N, macro, ...) CONCATENATE(FOREACH_SUM_, N)(macro, __VA_ARGS__)
 #define VARMACRO_FOREACH_SUM(macro, ...) VARMACRO_FOREACH_SUM_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
+
+#define VARMACRO_FOREACH_COMMA_(N, macro, ...) CONCATENATE(FOREACH_COMMA_, N)(macro, __VA_ARGS__)
+#define VARMACRO_FOREACH_COMMA(macro, ...) VARMACRO_FOREACH_COMMA_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 enum RUN_PHASES {
     SIMPLECS_PHASE_PREUPDATE = 0,
@@ -176,7 +179,11 @@ world->num_all_typeflags++;\
 simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);
 // Components are never removed.
 
+#define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
+#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(in_world, VARMACRO_FOREACH_SUM(SIMPLECS_COMPONENT_FLAG, __VA_ARGS__))
+
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
+simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t component_typeflag);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
 #define SIMPLECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) simplecs_register_system(world, pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(SIMPLECS_COMPONENT_ID, __VA_ARGS__))
@@ -184,6 +191,7 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
 void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, simplecs_components_t component_typeflag);
 
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_flag);
+bool simplecs_type_add(struct Simplecs_World * in_world, simplecs_components_t component_typeflag);
 bool simplecs_type_exists(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
 bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world,
 simplecs_components_t previous_flag, simplecs_components_t new_flag);

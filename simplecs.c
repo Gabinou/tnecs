@@ -58,6 +58,11 @@ simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world) {
     return (out);
 }
 
+simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t component_typeflag){
+    
+}
+
+
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity) {
     simplecs_component_t previous_flag = in_world->entity_component_flags[in_entity];
 
