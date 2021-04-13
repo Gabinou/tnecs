@@ -137,21 +137,33 @@ bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplec
     struct Components_Array ** new_type_components_byentity = in_world->components_bytype[new_type_id];
     struct Components_Array ** old_type_components_byentity = in_world->components_bytype[old_type_id];
 
-
+    // Deletes in_entity from old_type_entities
+    size_t found_old = 0;
     for (size_t i = 0; i < old_num_entities; i++) {
         if (old_type_entities[i] == in_entity) {
             arrdel(old_type_entities, i);
             in_world->num_entitiesbytype[old_type_id]--;
+            found_old = i;
         }
     }
-    size_t found = 0;
+    size_t found_new = 0;
     for (size_t i = 0; i < new_num_entities; i++) {
         if (new_type_entities[i] == in_entity) {
-            found = i;
+            found_new = i;
         }
     }
-    if (!found) {
+    if (!found_new) {
         arrput(new_type_entities, in_entity);
+        in_world->entitiesbytype[new_type_id]++;
+    } else {
+        printf("entity found in components_bytype for new_flag");
+    }
+
+    if (found_old && !found_new) {
+        arrput(new_type_components_byentity, old_type_components_byentity[found_old]);
+        arrdel(old_type_components_byentity, found_old);
+    } else {
+        printf("entity found in components_bytype for new_flag");
     }
 
 }

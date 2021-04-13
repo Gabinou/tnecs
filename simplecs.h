@@ -138,7 +138,7 @@ struct Simplecs_World {
 
     simplecs_components_t * typeflags;            // created on ADD_COMPONENT
     simplecs_entity_t ** entitiesbytype;          // [typeflag][num_entitiesbytype]
-    simplecs_components_t ** component_idbytype; // [typeflag][num_componentsbytype]
+    simplecs_components_t ** component_idbytype;  // [typeflag][num_componentsbytype]
     size_t * num_componentsbytype;                // [typeflag]
     size_t * num_entitiesbytype;                  // [typeflag]
     size_t num_components;
