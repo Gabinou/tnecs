@@ -141,8 +141,8 @@ struct Simplecs_System_Input {
 struct Simplecs_World {
     simplecs_entity_t * entities;                 // Useless?
     simplecs_components_t * entity_typeflags;     // [entity]
-    simplecs_components_t * system_typeflags;
-    bool * system_isExclusive;
+    simplecs_components_t * system_typeflags;     // [system]
+    bool * system_isExclusive;                    // [system]
     void (** systems)(struct Simplecs_System_Input);
     struct Components_Hash * component_typehash;
     struct Components_Hash * component_id;
@@ -155,7 +155,6 @@ struct Simplecs_World {
     size_t num_components;
     size_t num_systems;
     size_t num_typeflags;
-    size_t num_typeflags_bybitcount;
     struct Components_Array *** components_bytype;  // [typeflag][entity_id][num_componentsbytype]
     simplecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     simplecs_system_t next_system_id; // [0, ...]

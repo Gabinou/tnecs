@@ -19,32 +19,54 @@ struct Simplecs_World * simplecs_init() {
     struct Simplecs_World * simplecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     simplecs_world->entities = NULL;
     arrsetcap(simplecs_world->entities, DEFAULT_ENTITY_CAP);
-    arrput(simplecs_world->entities, 0);
+    arrput(simplecs_world->entities, SIMPLECS_NULL);
+    
     simplecs_world->entity_typeflags = NULL;
     arrsetcap(simplecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
-    arrput(simplecs_world->entity_typeflags, 0);
+    // arrput(simplecs_world->entity_typeflags, SIMPLECS_NULL);
+    
     simplecs_world->system_typeflags = NULL;
     arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
-    simplecs_world->num_systems = 0;
-    arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
-    simplecs_world->entitiesbytype = NULL;
-    arrsetcap(simplecs_world->entitiesbytype, DEFAULT_SYSTEM_CAP);
-    arrsetcap(simplecs_world->entitiesbytype, DEFAULT_COMPONENT_CAP);
-    simplecs_world->components_bytype = NULL;
-    arrsetcap(simplecs_world->entitiesbytype, DEFAULT_COMPONENT_CAP);
-    simplecs_world->num_typeflags = 1;
-    simplecs_world->systems = NULL;
-    simplecs_world->components = NULL;
-    hmdefault(simplecs_world->components, SIMPLECS_NULL);
+    // arrput(simplecs_world->system_typeflags, SIMPLECS_NULL);
 
-    arrput(simplecs_world->systems, SIMPLECS_NULL);
-    arrsetcap(simplecs_world->systems, DEFAULT_SYSTEM_CAP);
     simplecs_world->system_isExclusive = NULL;
     arrsetcap(simplecs_world->system_isExclusive, DEFAULT_SYSTEM_CAP);
+    // arrput(simplecs_world->system_isExclusive, SIMPLECS_NULL);
+
+    simplecs_world->component_typehash = NULL;
+    hmdefault(simplecs_world->component_typehash, SIMPLECS_NULL);
+
+    simplecs_world->component_id = NULL;
+    hmdefault(simplecs_world->component_id, SIMPLECS_NULL);
+
+    simplecs_world->entitiesbytype = NULL;
+    arrsetcap(simplecs_world->entitiesbytype, DEFAULT_SYSTEM_CAP);
+    // arrput(simplecs_world->entitiesbytype, NULL);
+
+    simplecs_world->component_idbytype = NULL;
+    arrsetcap(simplecs_world->component_idbytype, DEFAULT_SYSTEM_CAP);
+    // arrput(simplecs_world->component_idbytype, NULL);
+
+    simplecs_world->component_flagbytype = NULL;
+    arrsetcap(simplecs_world->component_flagbytype, DEFAULT_SYSTEM_CAP);
+    // arrput(simplecs_world->component_flagbytype, NULL);
+    
+    simplecs_world->num_componentsbytype = NULL;
+    arrsetcap(simplecs_world->num_componentsbytype, DEFAULT_SYSTEM_CAP);
+    // arrput(simplecs_world->component_flagbytype, NULL);
+
+    simplecs_world->num_entitiesbytype = NULL;
+    arrsetcap(simplecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
+
+    simplecs_world->num_components = 0;
+    simplecs_world->num_systems = 0;
+    simplecs_world->num_typeflags = 0;
+
+    simplecs_world->components_bytype = NULL;
+    arrsetcap(simplecs_world->components_bytype, DEFAULT_SYSTEM_CAP);
 
     simplecs_world->next_entity_id = ENTITY_ID_START;
     simplecs_world->next_system_id = 0;
-    simplecs_world->num_components = 0;
 
     return (simplecs_world);
 }
