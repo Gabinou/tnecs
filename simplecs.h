@@ -131,7 +131,7 @@ struct Simplecs_System_Input {
 
 struct Simplecs_World {
     simplecs_entity_t * entities;                    // Useless?
-    simplecs_components_t * entity_component_flags;  // [entity]
+    simplecs_components_t * entity_typeflags;  // [entity]
     simplecs_components_t * system_typeflags;
     bool * system_isExclusive;
     void (** systems)(struct Simplecs_System_Input);
@@ -176,14 +176,13 @@ const simplecs_component_t Component_##name##_id = world->num_components++;
 #define GET_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define SIMPLECS_ADD_COMPONENT(...) GET_ADD_COMPONENT(__VA_ARGS__, SIMPLECS_ADD_COMPONENT4, SIMPLECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define SIMPLECS_ADD_COMPONENT3(world, name, entity_id) if (!simplecs_type_id(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_component_flags[entity_id])) {\
-    arrput(world->typeflags, world->entity_component_flags[entity_id]); \
+#define SIMPLECS_ADD_COMPONENT3(world, name, entity_id) if (!simplecs_type_id(world->typeflags, world->num_typeflags, Component_##name##_flag + world->entity_typeflags[entity_id])) {\
+    arrput(world->typeflags, world->entity_typeflags[entity_id]); \
     world->num_typeflags++;\
-    simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);\
 }
+simplecs_entity_typeflag_change(world, entity_id, Component_##name##_flag);\
 
-#define SIMPLECS_ADD_COMPONENT4(world, name, entity_id, is_new) SIMPLECS_ADD_COMPONENT4_(world, name, entity_id, is_new) 
-#define SIMPLECS_ADD_COMPONENT4_(world, name, entity_id, is_new) if (is_new) {\
+#define SIMPLECS_ADD_COMPONENT4(world, name, entity_id, newtype) if (newtype) {\
 SIMPLECS_ADD_COMPONENT3(world, name, entity_id)\
 }
 

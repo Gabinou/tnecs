@@ -20,9 +20,9 @@ struct Simplecs_World * simplecs_init() {
     simplecs_world->entities = NULL;
     arrsetcap(simplecs_world->entities, DEFAULT_ENTITY_CAP);
     arrput(simplecs_world->entities, 0);
-    simplecs_world->entity_component_flags = NULL;
-    arrsetcap(simplecs_world->entity_component_flags, DEFAULT_ENTITY_CAP);
-    arrput(simplecs_world->entity_component_flags, 0);
+    simplecs_world->entity_typeflags = NULL;
+    arrsetcap(simplecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
+    arrput(simplecs_world->entity_typeflags, 0);
     simplecs_world->system_typeflags = NULL;
     arrsetcap(simplecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
     simplecs_world->num_systems = 0;
@@ -65,7 +65,7 @@ simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_wor
 
 
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity) {
-    simplecs_component_t previous_flag = in_world->entity_component_flags[in_entity];
+    simplecs_component_t previous_flag = in_world->entity_typeflags[in_entity];
 
     for (size_t i = 0 ; i < in_world->num_systems; i++) {
         if (previous_flag == in_world->system_typeflags[i]) {
@@ -77,7 +77,7 @@ simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simp
             }
         }
 
-        in_world->entity_component_flags[in_entity] = 0;
+        in_world->entity_typeflags[in_entity] = 0;
         if (in_world->num_opened_entity_ids < OPEN_IDS_BUFFER) {
             in_world->opened_entity_ids[in_world->num_opened_entity_ids++] = in_entity;
         }
@@ -99,8 +99,8 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
 }
 
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type) {
-    simplecs_components_t previous_flag = in_world->entity_component_flags[in_entity];
-    in_world->entity_component_flags[in_entity] = in_world->entity_component_flags[in_entity] | new_type;
+    simplecs_components_t previous_flag = in_world->entity_typeflags[in_entity];
+    in_world->entity_typeflags[in_entity] = in_world->entity_typeflags[in_entity] | new_type;
 
     for (size_t i = 0; i < in_world->num_typeflags; i++) {
         if (previous_flag == in_world->typeflags[i]) { //      EXCLUSIVE
@@ -111,7 +111,7 @@ void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_
                 }
             }
         }
-        if (in_world->entity_component_flags[in_entity] == in_world->typeflags[i]) { //      EXCLUSIVE
+        if (in_world->entity_typeflags[in_entity] == in_world->typeflags[i]) { //      EXCLUSIVE
             arrput(in_world->entitiesbytype[i], in_entity);
         }
         // if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
