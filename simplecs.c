@@ -98,6 +98,28 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
     // in_world->next_system_id++;
 }
 
+void simplecs_componentsbytype_add(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd) {
+
+    bool found = 0;
+    for (size_t i = 0; i < in_world->num_componentsbytype[typeflag]; i++) {
+        if (in_world->component_flagbytype[typeflag][i]) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+
+    struct * Components_Array temp;
+    temp->components = NULL;
+    temp->type = type_toadd;
+
+    arrput(in_world->components_bytype[typeflag][in_entity], temp);
+    } else {
+        printf("simplecs_componentsbytype_add: component already in component_flagbytype");
+    }
+
+}
+
 void simplecs_entity_typeflag_change(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t new_type) {
     simplecs_components_t previous_flag = in_world->entity_typeflags[in_entity];
     in_world->entity_typeflags[in_entity] = in_world->entity_typeflags[in_entity] | new_type;
@@ -156,14 +178,14 @@ bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplec
         arrput(new_type_entities, in_entity);
         in_world->entitiesbytype[new_type_id]++;
     } else {
-        printf("entity found in components_bytype for new_flag");
+        printf("simplecs_componentsbytype_migrate: entity found in components_bytype for new_flag");
     }
 
     if (found_old && !found_new) {
         arrput(new_type_components_byentity, old_type_components_byentity[found_old]);
         arrdel(old_type_components_byentity, found_old);
     } else {
-        printf("entity found in components_bytype for new_flag");
+        printf("simplecs_componentsbytype_migrate: entity found in components_bytype for new_flag");
     }
 
 }
