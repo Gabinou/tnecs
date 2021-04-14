@@ -196,7 +196,7 @@ size_t simplecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_
             break;
         }
     }
-    return (òut);
+    return (out);
 }
 
 simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t component_typeflag) {
