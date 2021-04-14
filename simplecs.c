@@ -39,11 +39,14 @@ struct Simplecs_World * simplecs_init() {
     arrsetcap(simplecs_world->system_isExclusive, DEFAULT_SYSTEM_CAP);
     // arrput(simplecs_world->system_isExclusive, SIMPLECS_NULL);
 
-    simplecs_world->component_typehash = NULL;
-    hmdefault(simplecs_world->component_typehash, SIMPLECS_NULL);
+    simplecs_world->component_hashes = NULL;
+    arrsetcap(simplecs_world->component_hashes, MAX_COMPONENT);
 
-    simplecs_world->component_id = NULL;
-    hmdefault(simplecs_world->component_id, SIMPLECS_NULL);
+    // simplecs_world->component_typehash = NULL;
+    // hmdefault(simplecs_world->component_typehash, SIMPLECS_NULL);
+
+    // simplecs_world->component_id = NULL;
+    // hmdefault(simplecs_world->component_id, SIMPLECS_NULL);
 
     simplecs_world->entitiesbytype = NULL;
     arrsetcap(simplecs_world->entitiesbytype, DEFAULT_SYSTEM_CAP);
@@ -77,10 +80,10 @@ struct Simplecs_World * simplecs_init() {
     return (simplecs_world);
 }
 
-uint64_t hash_djb2(const unsigned char *str) {
+uint64_t hash_djb2(const unsigned char * str) {
     /* djb2 hashing algorithm by Dan Bernstein.
-    * Description: this algorithm (k=33) was first reported by dan bernstein many
-    * years ago in comp.lang.c. another version of this algorithm (now favored by bernstein)
+    * Description: This algorithm (k=33) was first reported by dan bernstein many
+    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
     * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
     * (why it works better than many other constants, prime or not) has never been adequately explained.
     * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
@@ -90,32 +93,30 @@ uint64_t hash_djb2(const unsigned char *str) {
     while (str_char = *str++) {
         hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
     }
-    return(hash);
+    return (hash);
 }
 
-uint64_t hash_sdbm(const unsigned char *str;{
+uint64_t hash_sdbm(const unsigned char * str) {
     /* sdbm hashing algorithm by Dan Bernstein.
-    * Description: this algorithm was created for sdbm (a public-domain 
-    * reimplementation of ndbm) database library. it was found to do
-    * well in scrambling bits, causing better distribution of the 
-    * keys and fewer splits. it also happens to be a good general hashing 
-    * function with good distribution. the actual function is 
+    * Description: This algorithm was created for sdbm (a public-domain
+    * reimplementation of ndbm) database library. It was found to do
+    * well in scrambling bits, causing better distribution of the
+    * keys and fewer splits. It also happens to be a good general hashing
+    * function with good distribution. The actual function is
     *hash(i) = hash(i - 1) * 65599 + str[i]; what is included below
     * is the faster version used in gawk. [* there is even a faster,
     * duff-device version] the magic constant 65599 was picked out of
     * thin air while experimenting with different constants, and turns
-    * out to be a prime. this is one of the algorithms used in 
+    * out to be a prime. this is one of the algorithms used in
     * berkeley db (see sleepycat) and elsewhere.
     * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
     * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    unsigned long hash = 0;
+    uint64_t hash = 0;
     uint32_t str_char;
-
     while (str_char = *str++) {
         hash = str_char + (hash << 6) + (hash << 16) - hash;
     }
-
-    return hash;
+    return (hash);
 }
 
 
@@ -154,35 +155,34 @@ void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components
 
 
 simplecs_component_t simplecs_name2id(struct Simplecs_World * in_world, const char * in_name) {
-    return (hmget(in_world->component_id, in_name));
+    // return (hmget(in_world->component_id, in_name));
 }
 
 simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...) {
-
-    simplecs_component_t out = 0;
-    va_list ap;
-    va_start(ap, num);
-    char temp_str[STR_BUFFER];
-    for (size_t i = 0; i < num; i++) {
-        strncpy(temp_str, va_arg(ap, char *), STR_BUFFER);
-        printf("temp_str %s\n", temp_str);
-        out += hmget(in_world->component_typehash, temp_str);
-        printf("out %d\n", out);
-    }
-    va_end(ap);
-    return (out);
+    // simplecs_component_t out = 0;
+    // va_list ap;
+    // va_start(ap, num);
+    // char temp_str[STR_BUFFER];
+    // for (size_t i = 0; i < num; i++) {
+    //     strncpy(temp_str, va_arg(ap, char *), STR_BUFFER);
+    //     printf("temp_str %s\n", temp_str);
+    //     out += hmget(in_world->component_typehash, temp_str);
+    //     printf("out %d\n", out);
+    // }
+    // va_end(ap);
+    // return (out);
 }
 
 simplecs_component_t simplecs_ids2typeflag(uint8_t num, ...) {
-    simplecs_component_t out = 0;
-    va_list ap;
-    va_start(ap, num);
-    char * temp_str;
-    for (size_t i = 0; i < num; i++) {
-        out += 1 << (va_arg(ap, size_t) - COMPONENT_ID_START);
-    }
-    va_end(ap);
-    return (out);
+    // simplecs_component_t out = 0;
+    // va_list ap;
+    // va_start(ap, num);
+    // char * temp_str;
+    // for (size_t i = 0; i < num; i++) {
+    //     out += 1 << (va_arg(ap, size_t) - COMPONENT_ID_START);
+    // }
+    // va_end(ap);
+    // return (out);
 }
 
 

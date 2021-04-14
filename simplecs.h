@@ -176,6 +176,7 @@ struct Simplecs_World {
     simplecs_components_t * system_typeflags;     // [system]
     bool * system_isExclusive;                    // [system]
     void (** systems)(struct Simplecs_System_Input);
+    uint64_t * component_hashes;
     // struct Components_Hash * component_typehash; -> no need
     // struct Components_Hash * component_id; -> no need
     char ** component_names;
@@ -206,13 +207,14 @@ struct Simplecs_World * simplecs_init();
 // Error if component registered twice -> user responsibility
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
 #define _SIMPLECS_REGISTER_COMPONENT(world, name) world->temp_typeflag = (1 << world->num_components);\
-strncpy(world->temp_str, #name, sizeof(#name));\
-hmput(world->component_typehash, world->temp_typeflag, world->temp_str);\
-++world->num_components;\
-printf("world->temp_str %s\n", world->temp_str);\
-hmput(world->component_id, world->num_components, world->temp_str);\
-printf("hmget(world->component_id, world->temp_str) %d\n", hmget(world->component_id, world->num_components));\
-printf("world->num_components %d\n", world->num_components);
+arrput(component_hashes, hash_djb2(#name));
+// strncpy(world->temp_str, #name, sizeof(#name));\
+// hmput(world->component_typehash, world->temp_typeflag, world->temp_str);\
+// ++world->num_components;\
+// printf("world->temp_str %s\n", world->temp_str);\
+// hmput(world->component_id, world->num_components, world->temp_str);\
+// printf("hmget(world->component_id, world->temp_str) %d\n", hmget(world->component_id, world->num_components));\
+// printf("world->num_components %d\n", world->num_components);
 
 
 // Redundant macro for API consistency
@@ -222,14 +224,14 @@ printf("world->num_components %d\n", world->num_components);
 #define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(world, simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__)));
 
 // UTILITY MACROS
-// #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
+#define SIMPLECS_COMPONENT_ID(name) hash_djb2(#name)
 #define SIMPLECS_NAMES2TYPEFLAG(world, ...) simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define SIMPLECS_IDS2TYPEFLAG(...) simplecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define SIMPLECS_NAME2ID(world, name) simplecs_name2id(world, #name)
 
 #define SIMPLECS_NAME2TYPEFLAG(world, name) simplecs_names2typeflag(world, 1, #name)
-
 #define SIMPLECS_ID2TYPEFLAG(id) (0 << (id - ENTITY_COMPONENT_START))
+
 
 #define SIMPLECS_COMPONENT_NAMES2FLAG(world, name) SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name)
 #define SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
@@ -285,5 +287,11 @@ bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplec
 size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
 
 #define SIMPLECS_COMPONENTS_LIST(entity_list, Position)
+
+// STRING HASHING ALGORITHMS
+// hash_djb2 slightly faster than hash_sdbm
+uint64_t hash_djb2(const unsigned char * str);
+uint64_t hash_sdbm(const unsigned char * str);
+
 
 #endif // SIMPLECS

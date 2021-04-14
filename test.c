@@ -67,7 +67,7 @@ typedef struct Unit2 {
 
 
 
-#define ITERATIONS 100000
+#define ITERATIONS 1000000
 #define ITERATIONS_SMALL 1000
 simplecs_entity_t simplecs_entities[ITERATIONS];
 
@@ -102,24 +102,24 @@ int main() {
 
 
 
-    printf("Component registration\n");
-    printf("Registering Position Component \n");
-    SIMPLECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
-    printf("Component_Position_id %d \n", SIMPLECS_NAME2ID(test_world, Position));
-    printf("SIMPLECS_NAME2TYPEFLAG(test_world, Position) %d\n", SIMPLECS_NAME2TYPEFLAG(test_world, Position));
-    // assert(Component_Position_id == COMPONENT_ID_START);
-    assert(test_world->num_components == 1);
-    printf("Registering Position Unit \n");
-    SIMPLECS_REGISTER_COMPONENT(test_world, Unit);
-    printf("Component_Unit_id %d \n", SIMPLECS_NAME2ID(test_world, Unit));
-    printf("SIMPLECS_NAME2TYPEFLAG(test_world, Position) %d\n", SIMPLECS_NAME2TYPEFLAG(test_world, Unit));
-    assert(test_world->num_components == 2);
-    // assert(Component_Unit_id == (COMPONENT_ID_START << 1));
-    printf("Registering Position Sprite \n");
-    SIMPLECS_REGISTER_COMPONENT(test_world, Sprite);
-    // assert(Component_Sprite_id == (COMPONENT_ID_START << 2));
-    printf("\n");
-    SIMPLECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    // printf("Component registration\n");
+    // printf("Registering Position Component \n");
+    // SIMPLECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
+    // printf("Component_Position_id %d \n", SIMPLECS_NAME2ID(test_world, Position));
+    // printf("SIMPLECS_NAME2TYPEFLAG(test_world, Position) %d\n", SIMPLECS_NAME2TYPEFLAG(test_world, Position));
+    // // assert(Component_Position_id == COMPONENT_ID_START);
+    // assert(test_world->num_components == 1);
+    // printf("Registering Position Unit \n");
+    // SIMPLECS_REGISTER_COMPONENT(test_world, Unit);
+    // printf("Component_Unit_id %d \n", SIMPLECS_NAME2ID(test_world, Unit));
+    // printf("SIMPLECS_NAME2TYPEFLAG(test_world, Position) %d\n", SIMPLECS_NAME2TYPEFLAG(test_world, Unit));
+    // assert(test_world->num_components == 2);
+    // // assert(Component_Unit_id == (COMPONENT_ID_START << 1));
+    // printf("Registering Position Sprite \n");
+    // SIMPLECS_REGISTER_COMPONENT(test_world, Sprite);
+    // // assert(Component_Sprite_id == (COMPONENT_ID_START << 2));
+    // printf("\n");
+    // SIMPLECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
 
     // printf("System registration\n");
     // // SIMPLECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, SIMPLECS_PHASE_PREUPDATE, Position, Unit);
@@ -233,9 +233,9 @@ int main() {
     // assert(components_list[1] == Component_Unit_id);
     // printf("\n");
 
-    // printf("Homemade simplecs benchmarks\n");
-    // double t_0;
-    // double t_1;
+    printf("Homemade simplecs benchmarks\n");
+    double t_0;
+    double t_1;
 
     // struct Unit_Hash * unit_hash = NULL;
 
@@ -267,6 +267,26 @@ int main() {
     // t_1 = get_time();
     // printf("unit_array operations: %d iterations \n", ITERATIONS);
     // printf("%.1f [us] \n", t_1 - t_0);
+
+    uint64_t res_hash;
+    t_0 = get_time();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        res_hash = hash_djb2("Position");
+        res_hash = hash_djb2("Unit");
+    }
+    t_1 = get_time();
+    printf("hash_djb2: %d iterations \n", ITERATIONS);
+    printf("%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_time();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        res_hash = hash_sdbm("Unit");
+        res_hash = hash_sdbm("Position");
+    }
+    t_1 = get_time();
+    printf("hash_sdbm: %d iterations \n", ITERATIONS);
+    printf("%.1f [us] \n", t_1 - t_0);
+
 
     // t_0 = get_time();
     // size_t index;
