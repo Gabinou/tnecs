@@ -111,6 +111,10 @@ void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components
 
 
 
+simplecs_component_t simplecs_name2id(struct Simplecs_World * in_world, const char * in_name) {
+    return (hmget(in_world->component_id, in_name));
+}
+
 simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...) {
     simplecs_component_t out = 0;
     va_list ap;

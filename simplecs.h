@@ -205,7 +205,9 @@ struct Simplecs_World * simplecs_init();
 #define _SIMPLECS_REGISTER_COMPONENT(world, name) world->temp_typeflag = (1 << world->num_components);\
 strncpy(world->temp_str, #name, sizeof(#name));\
 hmput(world->component_typehash, world->temp_str, world->temp_typeflag);\
-world->num_components++;
+++world->num_components;\
+printf("world->temp_str %s\n", world->temp_str);\
+hmput(world->component_id, world->temp_str, world->num_components);
 
 
 // Redundant macro for API consistency
@@ -218,11 +220,11 @@ world->num_components++;
 // #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
 #define SIMPLECS_NAMES2TYPEFLAG(world, ...) simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), #__VA_ARGS__)
 #define SIMPLECS_IDS2TYPEFLAG(...) simplecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), __VA_ARGS__)
+#define SIMPLECS_NAME2ID(world, name) simplecs_name2id(world, #name)
 
-#define SIMPLECS_COMPONENT_NAME2FLAG(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
-world->temp_typeflag = hmget(world->component_typehash, world->temp_str);
+#define SIMPLECS_NAME2TYPEFLAG(world, name) simplecs_names2typeflag(world, 1, #name)
 
-#define SIMPLECS_COMPONENT_ID2FLAG(id) (0 << (id - ENTITY_COMPONENT_START))
+#define SIMPLECS_ID2TYPEFLAG(id) (0 << (id - ENTITY_COMPONENT_START))
 
 #define SIMPLECS_COMPONENT_NAMES2FLAG(world, name) SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name)
 #define SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
@@ -264,6 +266,7 @@ simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_wor
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
 // UTILITY FUNCTIONS
+simplecs_component_t simplecs_name2id(struct Simplecs_World * in_world, const char * in_name);
 simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...);
 simplecs_component_t simplecs_ids2typeflag(uint8_t num, ...);
 
