@@ -223,7 +223,7 @@ simplecs_new_entity_wcomponents(in_world, world->temp_typeflag);
 #define SIMPLECS_COMPONENT_NAME2FLAG(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag = hmget(world->component_typehash, world->temp_str);
 
-#define SIMPLECS_COMPONENT_ID2FLAG(id) (0 << (id - ENTITY_COMPONENT_START))  
+#define SIMPLECS_COMPONENT_ID2FLAG(id) (0 << (id - ENTITY_COMPONENT_START))
 
 #define SIMPLECS_COMPONENT_NAMES2FLAG(world, name) SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name)
 #define SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
@@ -265,8 +265,8 @@ simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_wor
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
 
 // UTILITY FUNCTIONS
-simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ... );
-simplecs_component_t simplecs_ids2typeflag(uint8_t num, ... );
+simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...);
+simplecs_component_t simplecs_ids2typeflag(uint8_t num, ...);
 
 
 void simplecs_new_component(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd);

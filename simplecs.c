@@ -111,29 +111,29 @@ void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components
 
 
 
-simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ... ) {
+simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...) {
     simplecs_component_t out = 0;
     va_list ap;
-    va_start(ap, num_components);
-    char * temp_str;
+    va_start(ap, num);
+    char temp_str[STR_BUFFER];
     for (size_t i = 0; i < num; i++) {
-        temp_str = va_arg(ap, i);
-        out += hmget(world->component_typehash, temp_str);
+        strncpy(temp_str, va_arg(ap, char *), STR_BUFFER);
+        out += hmget(in_world->component_typehash, temp_str);
     }
     va_end(ap);
-    return(out);
+    return (out);
 }
 
-simplecs_component_t simplecs_ids2typeflag(uint8_t num, ... ) {
+simplecs_component_t simplecs_ids2typeflag(uint8_t num, ...) {
     simplecs_component_t out = 0;
     va_list ap;
-    va_start(ap, num_components);
+    va_start(ap, num);
     char * temp_str;
     for (size_t i = 0; i < num; i++) {
-        out += 1 << (va_arg(ap, i) - ENTITY_COMPONENT_START);
+        out += 1 << (va_arg(ap, size_t) - COMPONENT_ID_START);
     }
     va_end(ap);
-    return(out);
+    return (out);
 }
 
 
@@ -174,7 +174,7 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
     // for (size_t i = 0; i < num_components; i++) {
     //     components_list[i] = va_arg(ap, simplecs_entity_t);
     // }
-    va_end
+    // va_end
     // arrput(in_world->systems_table->components_lists, components_list);
     // in_world->next_system_id++;
 }

@@ -103,7 +103,7 @@ int main() {
     printf("Component registration\n");
     printf("Registering Position Component \n");
     SIMPLECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
-    SIMPLECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    // SIMPLECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
     // printf("Component_Position_id %d \n", Component_Position_id);
     // assert(Component_Position_id == COMPONENT_ID_START);
     // printf("Registering Position Unit \n");
