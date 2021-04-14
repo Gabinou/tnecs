@@ -130,6 +130,37 @@ typedef uint16_t simplecs_system_t;
     macro(x),\
     FOREACH_COMMA_7(macro,  __VA_ARGS__)
 
+#define FOREACH_S1(macro, x)\
+    macro(#x)
+
+#define FOREACH_SCOMMA_2(macro, x, ...)\
+    macro(#x),\
+    FOREACH_S1(macro, __VA_ARGS__)
+
+#define FOREACH_SCOMMA_3(macro, x, ...)\
+    macro(#x),\
+    FOREACH_SCOMMA_2(macro, __VA_ARGS__)
+
+#define FOREACH_SCOMMA_4(macro, x, ...)\
+    macro(#x),\
+    FOREACH_SCOMMA_3(macro,  __VA_ARGS__)
+
+#define FOREACH_SCOMMA_5(macro, x, ...)\
+    macro(#x),\
+    FOREACH_SCOMMA_4(macro,  __VA_ARGS__)
+
+#define FOREACH_SCOMMA_6(macro, x, ...)\
+    macro(#x),\
+    FOREACH_SCOMMA_5(macro,  __VA_ARGS__)
+
+#define FOREACH_SCOMMA_7(macro, x, ...)\
+    macro(#x),\
+    FOREACH_SCOMMA_6(macro,  __VA_ARGS__)
+
+#define FOREACH_SCOMMA_8(macro, x, ...)\
+    macro(#x),\
+    FOREACH_SCOMMA_7(macro,  __VA_ARGS__)
+
 #define VARMACRO_EACH_ARGN(...) VARMACRO_EACH_ARGN_(__VA_ARGS__, VARMACRO_VARG_SEQ())
 #define VARMACRO_EACH_ARGN_(...) VARMACRO_ARGN(__VA_ARGS__)
 #define VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
@@ -140,6 +171,9 @@ typedef uint16_t simplecs_system_t;
 
 #define VARMACRO_FOREACH_COMMA_(N, macro, ...) CONCATENATE(FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define VARMACRO_FOREACH_COMMA(macro, ...) VARMACRO_FOREACH_COMMA_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
+
+#define VARMACRO_FOREACH_SCOMMA_(N, macro, ...) CONCATENATE(FOREACH_SCOMMA_, N)(macro, __VA_ARGS__)
+#define VARMACRO_FOREACH_SCOMMA(macro, ...) VARMACRO_FOREACH_SCOMMA_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 #define VARMACRO_FOREACH_NEWLINE_(N, macro, ...) CONCATENATE(FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define VARMACRO_FOREACH_NEWLINE(macro, ...) VARMACRO_FOREACH_NEWLINE_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
@@ -170,23 +204,19 @@ struct Simplecs_System_Input {
 };
 
 struct Simplecs_World {
-    simplecs_entity_t * entities;                 // Useless?
-    simplecs_components_t * typeflags;            // [typeflag_id]
-    simplecs_components_t * entity_typeflags;     // [entity]
-    simplecs_components_t * system_typeflags;     // [system]
-    bool * system_isExclusive;                    // [system]
-    void (** systems)(struct Simplecs_System_Input);
-    uint64_t * component_hashes;
-    // struct Components_Hash * component_typehash; -> no need
-    // struct Components_Hash * component_id; -> no need
-    char ** component_names;
-    // instead of storing strings, component names should be hashed, and the hash stored.
+    simplecs_entity_t * entities;                   // Useless?
+    simplecs_components_t * typeflags;              // [typeflag_id]
+    simplecs_components_t * entity_typeflags;       // [entity]
+    simplecs_components_t * system_typeflags;       // [system]
+    bool * system_isExclusive;                      // [system]
+    void (** systems)(struct Simplecs_System_Input);// [system]
+    uint64_t * component_hashes;                    // [component]
 
-    simplecs_entity_t ** entitiesbytype;          // [typeflag_id][num_entitiesbytype]
-    simplecs_components_t ** component_idbytype;  // [typeflag_id][num_componentsbytype]
-    simplecs_components_t ** component_flagbytype;// [typeflag_id][num_componentsbytype]
-    size_t * num_componentsbytype;                // [typeflag_id]
-    size_t * num_entitiesbytype;                  // [typeflag_id]
+    simplecs_entity_t ** entitiesbytype;            // [typeflag_id][num_entitiesbytype]
+    simplecs_components_t ** component_idbytype;    // [typeflag_id][num_componentsbytype]
+    simplecs_components_t ** component_flagbytype;  // [typeflag_id][num_componentsbytype]
+    size_t * num_componentsbytype;                  // [typeflag_id]
+    size_t * num_entitiesbytype;                    // [typeflag_id]
     size_t num_components;
     size_t num_systems;
     size_t num_typeflags;
@@ -206,22 +236,13 @@ struct Simplecs_World * simplecs_init();
 
 // Error if component registered twice -> user responsibility
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
-#define _SIMPLECS_REGISTER_COMPONENT(world, name) world->temp_typeflag = (1 << world->num_components);\
-arrput(component_hashes, hash_djb2(#name));
-// strncpy(world->temp_str, #name, sizeof(#name));\
-// hmput(world->component_typehash, world->temp_typeflag, world->temp_str);\
-// ++world->num_components;\
-// printf("world->temp_str %s\n", world->temp_str);\
-// hmput(world->component_id, world->num_components, world->temp_str);\
-// printf("hmget(world->component_id, world->temp_str) %d\n", hmget(world->component_id, world->num_components));\
-// printf("world->num_components %d\n", world->num_components);
-
+#define _SIMPLECS_REGISTER_COMPONENT(world, name) arrput(component_hashes, hash_djb2(#name))
 
 // Redundant macro for API consistency
 #define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
 
 // SIMPLECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
-#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(world, simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__)));
+#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(world, simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__)));
 
 // UTILITY MACROS
 #define SIMPLECS_COMPONENT_ID(name) hash_djb2(#name)

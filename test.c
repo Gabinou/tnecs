@@ -100,10 +100,9 @@ int main() {
     struct Simplecs_World * test_world = simplecs_init();
     printf("\n");
 
-
-
     // printf("Component registration\n");
     // printf("Registering Position Component \n");
+    // SIMPLECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
     // SIMPLECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
     // printf("Component_Position_id %d \n", SIMPLECS_NAME2ID(test_world, Position));
     // printf("SIMPLECS_NAME2TYPEFLAG(test_world, Position) %d\n", SIMPLECS_NAME2TYPEFLAG(test_world, Position));
@@ -119,7 +118,7 @@ int main() {
     // SIMPLECS_REGISTER_COMPONENT(test_world, Sprite);
     // // assert(Component_Sprite_id == (COMPONENT_ID_START << 2));
     // printf("\n");
-    // SIMPLECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    SIMPLECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
 
     // printf("System registration\n");
     // // SIMPLECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, SIMPLECS_PHASE_PREUPDATE, Position, Unit);
