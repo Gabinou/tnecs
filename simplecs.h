@@ -208,7 +208,9 @@ strncpy(world->temp_str, #name, sizeof(#name));\
 hmput(world->component_typehash, world->temp_str, world->temp_typeflag);\
 ++world->num_components;\
 printf("world->temp_str %s\n", world->temp_str);\
-hmput(world->component_id, world->temp_str, world->num_components);
+hmput(world->component_id, world->temp_str, world->num_components);\
+printf("hmget(world->component_id, world->temp_str) %d\n", hmget(world->component_id, world->temp_str));\
+printf("world->num_components %d\n", world->num_components);
 
 
 // Redundant macro for API consistency
