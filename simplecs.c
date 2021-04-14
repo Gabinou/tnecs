@@ -186,15 +186,13 @@ simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, u
 }
 
 simplecs_component_t simplecs_ids2typeflag(uint8_t num, ...) {
-    // simplecs_component_t out = 0;
-    // va_list ap;
-    // va_start(ap, num);
-    // char * temp_str;
-    // for (size_t i = 0; i < num; i++) {
-    //     out += 1 << (va_arg(ap, size_t) - COMPONENT_ID_START);
-    // }
-    // va_end(ap);
-    // return (out);
+    simplecs_component_t out = 0;
+    va_list ap;
+    va_start(ap, num);
+    for (size_t i = 0; i < num; i++) {
+        out += SIMPLECS_ID2TYPEFLAG(va_arg(ap, size_t));
+    }
+    return (out);
 }
 
 size_t simplecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) {
