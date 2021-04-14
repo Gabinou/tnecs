@@ -220,12 +220,13 @@ simplecs_new_entity_wcomponents(in_world, world->temp_typeflag);
 #define SIMPLECS_NAMES2TYPEFLAG(world, ...) simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), #__VA_ARGS__)
 #define SIMPLECS_IDS2TYPEFLAG(...) simplecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), __VA_ARGS__)
 
-#define SIMPLECS_COMPONENT_FLAG(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
+#define SIMPLECS_COMPONENT_NAME2FLAG(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag = hmget(world->component_typehash, world->temp_str);
 
-#define SIMPLECS_COMPONENT_ID(id) (0 << (id - ENTITY_COMPONENT_START))  
+#define SIMPLECS_COMPONENT_ID2FLAG(id) (0 << (id - ENTITY_COMPONENT_START))  
 
-#define SIMPLECS_COMPONENT_FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
+#define SIMPLECS_COMPONENT_NAMES2FLAG(world, name) SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name)
+#define SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag += hmget(world->component_typehash, world->temp_str);
 
 #define SIMPLECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
