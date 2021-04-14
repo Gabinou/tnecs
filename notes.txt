@@ -1,0 +1,25 @@
+
+
+Arrays are much faster than hash tables.
+
+New Name:
+	NotComplECS
+	ECSitement
+	HECSadecimal/HECS -> I like it
+	CybersECS (Cybers-E-C-S) -> Hilarious, not serious
+	MultiplECS
+	TurtlenECS TNECS -> Funny.
+	RoughnECS RECS
+	wrECS -> Not bad, a little cringe.
+	vertECS vECS
+	perplECS
+
+Steps:
+	1- Component ID into bitflags. DONE
+	2- Systems as function of types. EN COURS?
+	3- Entities arrays as function of types DONE
+	4- Recast some has tables into arrays DONE
+		-> entities stored in arrays. DONE
+	5- Implement INCLUSIVE/EXCLUSIVE Systems
+		-> systems for entities that HAVE ONLY SPECIFIED COMPONENTS are EXCLUSIVE
+		-> systems for entities that HAVE SPECIFIED COMPONENTS + MORE are INCLUSIVE
