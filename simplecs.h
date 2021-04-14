@@ -176,8 +176,9 @@ struct Simplecs_World {
     simplecs_components_t * system_typeflags;     // [system]
     bool * system_isExclusive;                    // [system]
     void (** systems)(struct Simplecs_System_Input);
-    struct Components_Hash * component_typehash;
-    struct Components_Hash * component_id;
+    // struct Components_Hash * component_typehash; -> no need
+    // struct Components_Hash * component_id; -> no need
+    char ** component_names;
 
     simplecs_entity_t ** entitiesbytype;          // [typeflag_id][num_entitiesbytype]
     simplecs_components_t ** component_idbytype;  // [typeflag_id][num_componentsbytype]
