@@ -38,6 +38,7 @@ typedef uint16_t simplecs_system_t;
 #define index_3d(row, col, depth, row_len, col_len) (row * col_len * row_len + col * row_len + depth)
 
 
+#define STRINGIFY(x) #x
 #define CONCATENATE(arg1, arg2) CONCATENATE1(arg1, arg2)
 #define CONCATENATE1(arg1, arg2) CONCATENATE2(arg1, arg2)
 #define CONCATENATE2(arg1, arg2)  arg1##arg2
@@ -214,12 +215,12 @@ hmput(world->component_id, world->temp_str, world->num_components);
 #define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
 
 // SIMPLECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
-#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(world, simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), #__VA_ARGS__));
+#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(world, simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__)));
 
 // UTILITY MACROS
 // #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
-#define SIMPLECS_NAMES2TYPEFLAG(world, ...) simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), #__VA_ARGS__)
-#define SIMPLECS_IDS2TYPEFLAG(...) simplecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), __VA_ARGS__)
+#define SIMPLECS_NAMES2TYPEFLAG(world, ...) simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
+#define SIMPLECS_IDS2TYPEFLAG(...) simplecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define SIMPLECS_NAME2ID(world, name) simplecs_name2id(world, #name)
 
 #define SIMPLECS_NAME2TYPEFLAG(world, name) simplecs_names2typeflag(world, 1, #name)

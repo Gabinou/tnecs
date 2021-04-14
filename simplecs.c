@@ -116,13 +116,16 @@ simplecs_component_t simplecs_name2id(struct Simplecs_World * in_world, const ch
 }
 
 simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...) {
+
     simplecs_component_t out = 0;
     va_list ap;
     va_start(ap, num);
     char temp_str[STR_BUFFER];
     for (size_t i = 0; i < num; i++) {
         strncpy(temp_str, va_arg(ap, char *), STR_BUFFER);
+        printf("temp_str %s\n", temp_str);
         out += hmget(in_world->component_typehash, temp_str);
+        printf("out %d\n", out);
     }
     va_end(ap);
     return (out);

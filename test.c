@@ -106,11 +106,13 @@ int main() {
     printf("Registering Position Component \n");
     SIMPLECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
     printf("Component_Position_id %d \n", SIMPLECS_NAME2ID(test_world, Position));
+    printf("SIMPLECS_NAME2TYPEFLAG(test_world, Position) %d\n", SIMPLECS_NAME2TYPEFLAG(test_world, Position));
     // assert(Component_Position_id == COMPONENT_ID_START);
     assert(test_world->num_components == 1);
     printf("Registering Position Unit \n");
     SIMPLECS_REGISTER_COMPONENT(test_world, Unit);
     printf("Component_Unit_id %d \n", SIMPLECS_NAME2ID(test_world, Unit));
+    printf("SIMPLECS_NAME2TYPEFLAG(test_world, Position) %d\n", SIMPLECS_NAME2TYPEFLAG(test_world, Unit));
     assert(test_world->num_components == 2);
     // assert(Component_Unit_id == (COMPONENT_ID_START << 1));
     printf("Registering Position Sprite \n");
