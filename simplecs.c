@@ -24,9 +24,9 @@ struct Simplecs_World * simplecs_init() {
     arrput(simplecs_world->entities, SIMPLECS_NULL);
 
     simplecs_world->typeflags = NULL;
-    arrsetcap(simplecs_world->typeflags, DEFAULT_ENTITY_CAP);    
+    arrsetcap(simplecs_world->typeflags, DEFAULT_ENTITY_CAP);
     arrput(simplecs_world->entity_typeflags, SIMPLECS_NULL);
-    
+
     simplecs_world->entity_typeflags = NULL;
     arrsetcap(simplecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
     // arrput(simplecs_world->entity_typeflags, SIMPLECS_NULL);
@@ -97,13 +97,13 @@ void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components
         if (new_typeflag == in_world->typeflags[i]) {
             found = true;
             break;
-        }          
+        }
     }
     if (!found) {
-        in_world->entitiesbytype;          
-        in_world->component_idbytype;  
+        in_world->entitiesbytype;
+        in_world->component_idbytype;
         in_world->component_flagbytype;
-        in_world->components_bytype;  
+        in_world->components_bytype;
     } else {
         printf("simplecs_new_typeflag: new_typeflag already exists!");
     }

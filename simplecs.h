@@ -73,6 +73,34 @@ typedef uint16_t simplecs_systems_t;
     macro(x)+\
     FOREACH_SUM_7(macro,  __VA_ARGS__)
 
+#define FOREACH_NEWLINE_2(macro, x, ...)\
+    macro(x);\
+    FOREACH_1(macro, __VA_ARGS__)
+
+#define FOREACH_NEWLINE_3(macro, x, ...)\
+    macro(x);\
+    FOREACH_NEWLINE_2(macro, __VA_ARGS__)
+
+#define FOREACH_NEWLINE_4(macro, x, ...)\
+    macro(x);\
+    FOREACH_NEWLINE_3(macro,  __VA_ARGS__)
+
+#define FOREACH_NEWLINE_5(macro, x, ...)\
+    macro(x);\
+    FOREACH_NEWLINE_4(macro,  __VA_ARGS__)
+
+#define FOREACH_NEWLINE_6(macro, x, ...)\
+    macro(x);\
+    FOREACH_NEWLINE_5(macro,  __VA_ARGS__)
+
+#define FOREACH_NEWLINE_7(macro, x, ...)\
+    macro(x);\
+    FOREACH_NEWLINE_6(macro,  __VA_ARGS__)
+
+#define FOREACH_NEWLINE_8(macro, x, ...)\
+    macro(x);\
+    FOREACH_NEWLINE_7(macro,  __VA_ARGS__)
+
 #define FOREACH_COMMA_2(macro, x, ...)\
     macro(x),\
     FOREACH_1(macro, __VA_ARGS__)
@@ -112,6 +140,9 @@ typedef uint16_t simplecs_systems_t;
 #define VARMACRO_FOREACH_COMMA_(N, macro, ...) CONCATENATE(FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define VARMACRO_FOREACH_COMMA(macro, ...) VARMACRO_FOREACH_COMMA_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
+#define VARMACRO_FOREACH_NEWLINE_(N, macro, ...) CONCATENATE(FOREACH_COMMA_, N)(macro, __VA_ARGS__)
+#define VARMACRO_FOREACH_NEWLINE(macro, ...) VARMACRO_FOREACH_NEWLINE_(VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
+
 enum RUN_PHASES {
     SIMPLECS_PHASE_PREUPDATE = 0,
     SIMPLECS_PHASE_ONUPDATE = 1,
@@ -136,7 +167,6 @@ struct Simplecs_System_Input {
     size_t * components_order; // Always equal to the total length of components I guess.
     void ** components_lists;
 };
-
 
 struct Simplecs_World {
     simplecs_entity_t * entities;                 // Useless?
@@ -181,13 +211,15 @@ world->num_components++;
 #define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
 
 // SIMPLECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
-#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(in_world, VARMACRO_FOREACH_SUM(SIMPLECS_COMPONENT_FLAG, __VA_ARGS__))
-
-
+#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) VARMACRO_FOREACH_NEWLINE(SIMPLECS_COMPONENT_FLAGSUM(world, __VA_ARGS__);\
+simplecs_new_entity_wcomponents(in_world, world->temp_typeflag)
 
 // UTILITY MACROS
 #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
-#define SIMPLECS_COMPONENT_FLAG(name) hmget(world->component_typehash, world->temp_str)
+#define SIMPLECS_COMPONENT_FLAG(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
+hmget(world->component_typehash, world->temp_str);
+#define SIMPLECS_COMPONENT_FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
+world->temp_typeflag += hmget(world->component_typehash, world->temp_str);
 #define SIMPLECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
 
 
