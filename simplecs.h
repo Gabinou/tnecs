@@ -212,8 +212,7 @@ world->num_components++;
 #define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
 
 // SIMPLECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
-// #define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) VARMACRO_FOREACH_NEWLINE(SIMPLECS_COMPONENT_FLAGSUM(world, __VA_ARGS__);\
-simplecs_new_entity_wcomponents(in_world, world->temp_typeflag);
+#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(world, simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), #__VA_ARGS__));
 
 // UTILITY MACROS
 // #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
