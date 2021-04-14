@@ -238,20 +238,20 @@ struct Simplecs_World * simplecs_init();
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
 #define _SIMPLECS_REGISTER_COMPONENT(world, name) arrput(component_hashes, hash_djb2(#name))
 
-// Redundant macro for API consistency
-#define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
 
+
+#define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world) // redundancy for API consistency
 // SIMPLECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
 #define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) simplecs_new_entity_wcomponents(world, simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__)));
 
 // UTILITY MACROS
-#define SIMPLECS_COMPONENT_ID(name) hash_djb2(#name)
+#define SIMPLECS_COMPONENT_HASH2ID(world, hash) simplecs_component_hash2id(world, hash)
+#define SIMPLECS_COMPONENT_ID(world, name) simplecs_component_hash2id(world, hash_djb2(#name))
 #define SIMPLECS_NAMES2TYPEFLAG(world, ...) simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define SIMPLECS_IDS2TYPEFLAG(...) simplecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define SIMPLECS_NAME2ID(world, name) simplecs_name2id(world, #name)
-
 #define SIMPLECS_NAME2TYPEFLAG(world, name) simplecs_names2typeflag(world, 1, #name)
-#define SIMPLECS_ID2TYPEFLAG(id) (0 << (id - ENTITY_COMPONENT_START))
+#define SIMPLECS_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
 
 
 #define SIMPLECS_COMPONENT_NAMES2FLAG(world, name) SIMPLECS_COMPONENT_NAMES2FLAGSUM(world, name)
@@ -306,6 +306,8 @@ bool simplecs_type_add(struct Simplecs_World * in_world, simplecs_components_t c
 size_t simplecs_type_id(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
 bool simplecs_componentsbytype_migrate(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t previous_flag, simplecs_components_t new_flag);
 size_t simplecs_issubtype(simplecs_components_t * in_typelist, size_t len, simplecs_components_t in_flag);
+
+size_t simplecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
 
 #define SIMPLECS_COMPONENTS_LIST(entity_list, Position)
 

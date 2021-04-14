@@ -159,18 +159,21 @@ simplecs_component_t simplecs_name2id(struct Simplecs_World * in_world, const ch
 }
 
 simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...) {
-    // simplecs_component_t out = 0;
-    // va_list ap;
-    // va_start(ap, num);
-    // char temp_str[STR_BUFFER];
-    // for (size_t i = 0; i < num; i++) {
-    //     strncpy(temp_str, va_arg(ap, char *), STR_BUFFER);
-    //     printf("temp_str %s\n", temp_str);
-    //     out += hmget(in_world->component_typehash, temp_str);
-    //     printf("out %d\n", out);
-    // }
-    // va_end(ap);
-    // return (out);
+    simplecs_component_t out = 0;
+    va_list ap;
+    va_start(ap, num);
+    uint64_t temp_hash;
+    for (size_t i = 0; i < num; i++) {
+        temp_hash = hash_djb2(va_arg(ap, char *));
+        for (size_t j = 0; j < in_world->num_components; j++) {
+            if (in_world->component_hashes[j] == temp_hash) {
+                out += SIMPLECS_ID2TYPEFLAG(j);
+                break;
+            }
+        }
+    }
+    va_end(ap);
+    return (out);
 }
 
 simplecs_component_t simplecs_ids2typeflag(uint8_t num, ...) {
@@ -185,6 +188,16 @@ simplecs_component_t simplecs_ids2typeflag(uint8_t num, ...) {
     // return (out);
 }
 
+size_t simplecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) {
+    size_t out;
+    for (size_t i = 0; i < in_world->num_components; i++) {
+        if (in_world->component_hashes[i] == in_hash) {
+            out = i;
+            break;
+        }
+    }
+    return (òut);
+}
 
 simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t component_typeflag) {
     printf("simplecs_new_entity_wcomponents \n");
