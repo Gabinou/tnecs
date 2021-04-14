@@ -236,8 +236,8 @@ struct Simplecs_World * simplecs_init();
 
 // Error if component registered twice -> user responsibility
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
-#define _SIMPLECS_REGISTER_COMPONENT(world, name) arrput(component_hashes, hash_djb2(#name))
-
+#define _SIMPLECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
+world->num_components++;
 
 
 #define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world) // redundancy for API consistency

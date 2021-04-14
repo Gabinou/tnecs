@@ -41,6 +41,7 @@ struct Simplecs_World * simplecs_init() {
 
     simplecs_world->component_hashes = NULL;
     arrsetcap(simplecs_world->component_hashes, MAX_COMPONENT);
+    arrput(simplecs_world->component_hashes, SIMPLECS_NULL);
 
     // simplecs_world->component_typehash = NULL;
     // hmdefault(simplecs_world->component_typehash, SIMPLECS_NULL);
@@ -155,7 +156,15 @@ void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components
 
 
 simplecs_component_t simplecs_name2id(struct Simplecs_World * in_world, const char * in_name) {
-    // return (hmget(in_world->component_id, in_name));
+    simplecs_component_t out = 0;
+    uint64_t temp_hash = hash_djb2(in_name);
+    for (size_t j = 0; j < in_world->num_components; j++) {
+        if (in_world->component_hashes[j] == temp_hash) {
+            out = j;
+            break;
+        }
+    }
+    return (out);
 }
 
 simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...) {
