@@ -179,6 +179,7 @@ struct Simplecs_World {
     // struct Components_Hash * component_typehash; -> no need
     // struct Components_Hash * component_id; -> no need
     char ** component_names;
+    // instead of storing strings, component names should be hashed, and the hash stored.
 
     simplecs_entity_t ** entitiesbytype;          // [typeflag_id][num_entitiesbytype]
     simplecs_components_t ** component_idbytype;  // [typeflag_id][num_componentsbytype]
