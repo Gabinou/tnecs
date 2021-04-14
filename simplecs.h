@@ -17,7 +17,7 @@ typedef uint64_t simplecs_components_t; // 64 bit flags -> MAX 64 components
 // component flag > 0 -> sum of component types -> determines Simplecs_System_Input
 // component id > 0 -> unique for component (should be exponent of component type)
 typedef uint16_t simplecs_system_t;
-typedef uint16_t simplecs_systems_t;
+typedef uint16_t simplecs_system_t;
 
 #define SIMPLECS_NULL 0
 #define COMPONENT_ID_START 1
@@ -196,6 +196,7 @@ struct Simplecs_World {
     simplecs_component_t temp_typeflag;
     char temp_str[STR_BUFFER];
 };
+typedef struct Simplecs_World simplecs_world_t;
 
 struct Simplecs_World * simplecs_init();
 
@@ -211,15 +212,19 @@ world->num_components++;
 #define SIMPLECS_NEW_ENTITY(world) simplecs_new_entity(in_world)
 
 // SIMPLECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
-#define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) VARMACRO_FOREACH_NEWLINE(SIMPLECS_COMPONENT_FLAGSUM(world, __VA_ARGS__);\
-simplecs_new_entity_wcomponents(in_world, world->temp_typeflag)
+// #define SIMPLECS_NEW_ENTITY_WCOMPONENTS(world,...) VARMACRO_FOREACH_NEWLINE(SIMPLECS_COMPONENT_FLAGSUM(world, __VA_ARGS__);\
+simplecs_new_entity_wcomponents(in_world, world->temp_typeflag);
 
 // UTILITY MACROS
-#define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
+// #define SIMPLECS_COMPONENT_ID(name) Component_##name##_id
+#define SIMPLECS_NAMES2TYPEFLAG(world, ...) simplecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), #__VA_ARGS__)
+#define SIMPLECS_IDS2TYPEFLAG(...) simplecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), __VA_ARGS__)
+
 #define SIMPLECS_COMPONENT_FLAG(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
-hmget(world->component_typehash, world->temp_str);
+world->temp_typeflag = hmget(world->component_typehash, world->temp_str);
 #define SIMPLECS_COMPONENT_FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag += hmget(world->component_typehash, world->temp_str);
+
 #define SIMPLECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
 
 
@@ -254,6 +259,11 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
 simplecs_entity_t simplecs_new_entity(struct Simplecs_World * in_world);
 simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t components_typeflag);
 simplecs_entity_t simplecs_entity_destroy(struct Simplecs_World * in_world, simplecs_entity_t in_entity);
+
+// UTILITY FUNCTIONS
+simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ... );
+simplecs_component_t simplecs_ids2typeflag(uint8_t num, ... );
+
 
 void simplecs_new_component(struct Simplecs_World * in_world, simplecs_entity_t in_entity, simplecs_components_t typeflag, simplecs_components_t type_toadd);
 void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components_t typeflag);

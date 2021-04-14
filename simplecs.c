@@ -111,6 +111,32 @@ void simplecs_new_typeflag(struct Simplecs_World * in_world, simplecs_components
 
 
 
+simplecs_component_t simplecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ... ) {
+    simplecs_component_t out = 0;
+    va_list ap;
+    va_start(ap, num_components);
+    char * temp_str;
+    for (size_t i = 0; i < num; i++) {
+        temp_str = va_arg(ap, i);
+        out += hmget(world->component_typehash, temp_str);
+    }
+    va_end(ap);
+    return(out);
+}
+
+simplecs_component_t simplecs_ids2typeflag(uint8_t num, ... ) {
+    simplecs_component_t out = 0;
+    va_list ap;
+    va_start(ap, num_components);
+    char * temp_str;
+    for (size_t i = 0; i < num; i++) {
+        out += 1 << va_arg(ap, i);
+    }
+    va_end(ap);
+    return(out);
+}
+
+
 simplecs_entity_t simplecs_new_entity_wcomponents(struct Simplecs_World * in_world, simplecs_components_t component_typeflag) {
     printf("simplecs_new_entity_wcomponents \n");
 
@@ -148,6 +174,7 @@ void simplecs_register_system(struct Simplecs_World * in_world, simplecs_entity_
     // for (size_t i = 0; i < num_components; i++) {
     //     components_list[i] = va_arg(ap, simplecs_entity_t);
     // }
+    va_end
     // arrput(in_world->systems_table->components_lists, components_list);
     // in_world->next_system_id++;
 }
