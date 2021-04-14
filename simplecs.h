@@ -222,6 +222,9 @@ simplecs_new_entity_wcomponents(in_world, world->temp_typeflag);
 
 #define SIMPLECS_COMPONENT_FLAG(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag = hmget(world->component_typehash, world->temp_str);
+
+#define SIMPLECS_COMPONENT_ID(id) (0 << (id - ENTITY_COMPONENT_START))  
+
 #define SIMPLECS_COMPONENT_FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag += hmget(world->component_typehash, world->temp_str);
 

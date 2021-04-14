@@ -130,7 +130,7 @@ simplecs_component_t simplecs_ids2typeflag(uint8_t num, ... ) {
     va_start(ap, num_components);
     char * temp_str;
     for (size_t i = 0; i < num; i++) {
-        out += 1 << va_arg(ap, i);
+        out += 1 << (va_arg(ap, i) - ENTITY_COMPONENT_START);
     }
     va_end(ap);
     return(out);
