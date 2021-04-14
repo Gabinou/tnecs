@@ -156,8 +156,8 @@ struct Components_Array {
 };
 
 struct Components_Hash {
-    char * key;                  // name
-    simplecs_components_t value; // type
+    simplecs_components_t key; // type
+    char * value;                  // name
 
 };
 
@@ -205,11 +205,11 @@ struct Simplecs_World * simplecs_init();
 #define SIMPLECS_REGISTER_COMPONENT(world, name) _SIMPLECS_REGISTER_COMPONENT(world, name)
 #define _SIMPLECS_REGISTER_COMPONENT(world, name) world->temp_typeflag = (1 << world->num_components);\
 strncpy(world->temp_str, #name, sizeof(#name));\
-hmput(world->component_typehash, world->temp_str, world->temp_typeflag);\
+hmput(world->component_typehash, world->temp_typeflag, world->temp_str);\
 ++world->num_components;\
 printf("world->temp_str %s\n", world->temp_str);\
-hmput(world->component_id, world->temp_str, world->num_components);\
-printf("hmget(world->component_id, world->temp_str) %d\n", hmget(world->component_id, world->temp_str));\
+hmput(world->component_id, world->num_components, world->temp_str);\
+printf("hmget(world->component_id, world->temp_str) %d\n", hmget(world->component_id, world->num_components));\
 printf("world->num_components %d\n", world->num_components);
 
 
