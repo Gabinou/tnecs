@@ -260,8 +260,7 @@ world->num_components++;
 #define GET_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) GET_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define TNECS_ADD_COMPONENT3(world, name, entity_id) 
-world->temp_typeflag = TNECS_NAMES2TYPEFLAG(world, name) + world->entity_typeflags[entity_id];\
+#define TNECS_ADD_COMPONENT3(world, name, entity_id) world->temp_typeflag = TNECS_NAMES2TYPEFLAG(world, name) + world->entity_typeflags[entity_id];\
 if (!tnecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
     arrput(world->entity_typeflags, world->temp_typeflag);\
     world->num_typeflags++;\
