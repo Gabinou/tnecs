@@ -18,7 +18,9 @@ Videogame Example:
 ## Features/Objective
 - Compileable using tcc, gcc, clang (msvc untested)
 - Simple API
-- Small Codebase, <1000 lines.
+- Small Codebase, <1000 lines (for now).
 - Fast (as much as can be measures uing simple benchmarks in test.c)
 - Exclusive/Inclusive systems
     * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
+- Be _mostly_ [STB-style](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt).
+- Free and Open Source

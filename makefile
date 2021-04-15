@@ -23,41 +23,41 @@ CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: all 
 all: astyle $(EXEC) run 
-SOURCES_SIMPLECS := simplecs.c
+SOURCES_TNECS := simplecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
-SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_SIMPLECS) 
-TARGETS_SIMPLECS := $(SOURCES_SIMPLECS:.c=.o)
-TARGETS_SIMPLECS_GCC := $(SOURCES_SIMPLECS:.c=_gcc.o)
-TARGETS_SIMPLECS_TCC := $(SOURCES_SIMPLECS:.c=_tcc.o)
-TARGETS_SIMPLECS_CLANG := $(SOURCES_SIMPLECS:.c=_clang.o)
+SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_TNECS) 
+TARGETS_TNECS := $(SOURCES_TNECS:.c=.o)
+TARGETS_TNECS_GCC := $(SOURCES_TNECS:.c=_gcc.o)
+TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
+TARGETS_TNECS_CLANG := $(SOURCES_TNECS:.c=_clang.o)
 
-.PHONY: compile  
-compile: astyle ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} ; run_tcc run_gcc run_clang
+.PHONY: compile_test
+compile_test: astyle ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} ; run_tcc run_gcc run_clang
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
 .PHONY : run_tcc
-run: $(EXEC_TCC)  ; $(EXEC_TCC)
+run_tcc: $(EXEC_TCC)  ; $(EXEC_TCC)
 .PHONY : run_gcc
-run: $(EXEC_GCC) ; $(EXEC_GCC)
+run_gcc: $(EXEC_GCC) ; $(EXEC_GCC)
 .PHONY : run_clang
-run: $(EXEC_CLANG) ; $(EXEC_CLANG)
+run_clang: $(EXEC_CLANG) ; $(EXEC_CLANG)
 
 .PHONY : astyle
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
-$(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@
-$(TARGETS_SIMPLECS_CLANG) : $(SOURCES_SIMPLECS) ; clang $< -c -o $@ 
-$(TARGETS_SIMPLECS_GCC) : $(SOURCES_SIMPLECS) ; gcc $< -c -o $@
-$(TARGETS_SIMPLECS_TCC) : $(SOURCES_SIMPLECS) ; tcc $< -c -o $@ 
+$(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(CC) $< -c -o $@
+$(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@ 
+$(TARGETS_TNECS_GCC) : $(SOURCES_TNECS) ; gcc $< -c -o $@
+$(TARGETS_TNECS_TCC) : $(SOURCES_TNECS) ; tcc $< -c -o $@ 
 
-$(EXEC): $(SOURCES_TEST) $(TARGETS_SIMPLECS); $(CC) $< $(TARGETS_SIMPLECS) -o $@ $(CFLAGS)
-$(EXEC_TCC): $(SOURCES_TEST) $(TARGETS_SIMPLECS_TCC); tcc $< $(TARGETS_SIMPLECS_TCC) -o $@ $(CFLAGS)
-$(EXEC_GCC): $(SOURCES_TEST) $(TARGETS_SIMPLECS_GCC); gcc $< $(TARGETS_SIMPLECS_GCC) -o $@ $(CFLAGS)
-$(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_SIMPLECS_CLANG); clang $< $(TARGETS_SIMPLECS_CLANG) -o $@ $(CFLAGS)
+$(EXEC): $(SOURCES_TEST) $(TARGETS_TNECS); $(CC) $< $(TARGETS_TNECS) -o $@ $(CFLAGS)
+$(EXEC_TCC): $(SOURCES_TEST) $(TARGETS_TNECS_TCC); tcc $< $(TARGETS_TNECS_TCC) -o $@ $(CFLAGS)
+$(EXEC_GCC): $(SOURCES_TEST) $(TARGETS_TNECS_GCC); gcc $< $(TARGETS_TNECS_GCC) -o $@ $(CFLAGS)
+$(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_TNECS_CLANG); clang $< $(TARGETS_TNECS_CLANG) -o $@ $(CFLAGS)
 
 .PHONY: wclean
 wclean: ; del /q /s *.o *.a *.exe build\\*.txt
 .PHONY: clean
-clean: ; @echo "Cleaning Simplecs" & rm -frv $(TARGETS_SIMPLECS) $(TARGETS_SC_TIMER) $(EXEC)
+clean: ; @echo "Cleaning Simplecs" & rm -frv $(TARGETS_TNECS) $(TARGETS_SC_TIMER) $(EXEC)

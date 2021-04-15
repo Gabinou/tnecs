@@ -7,30 +7,32 @@
 #define STB_DS_IMPLEMENTATION
 #include "simplecs.h"
 
-// TIMER. get_time() resolution: 0.1 [us]
-#ifdef __TINYC__
-// very low resolution
+#if defined(__TINYC__) || defined(__clang__)
+//  resolution: 0.1 [s]
 #define get_time() ((double)clock())/CLOCKS_PER_SEC*1e6
 // #define get_time() (double)(sc_time_ns() * 1e3)
 // #define get_time() (double)clock()/CLOCKS_PER_SEC*1e6
-#else
-#ifdef WIN32
-#include <windows.h>
-double get_time() {
-    LARGE_INTEGER t, f; // [us]
-    QueryPerformanceCounter(&t);
-    QueryPerformanceFrequency(&f);
-    return 1e6 * (double)t.QuadPart / (double)f.QuadPart;
-}
-#else
+#endif
+
+// #ifdef WIN32
+// #include <windows.h>
+// double get_time() {
+//     LARGE_INTEGER t, f; // [us]
+//     QueryPerformanceCounter(&t);
+//     QueryPerformanceFrequency(&f);
+//     return 1e6 * (double)t.QuadPart / (double)f.QuadPart;
+// }
+// #endif
+
+#ifdef __GNUC__
 #include <sys/time.h>
+// resolution: 0.1 [us]
 double get_time() { // [s]
     struct timeval t;
     struct timezone tzp;
     gettimeofday(&t, &tzp);
     return 1e6 * t.tv_sec + t.tv_usec;
 }
-#endif
 #endif
 
 
