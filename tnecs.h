@@ -252,8 +252,7 @@ world->num_components++;
 #define TNECS_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
 
 
-#define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
-
+#define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
 // TNECS_ADD_COMPONENT is overloaded component adder macro
 //      3 inputs required: (world, name, entity_id)
@@ -261,10 +260,10 @@ world->num_components++;
 #define GET_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) GET_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define TNECS_ADD_COMPONENT3(world, name, entity_id) strncpy(world->temp_str, #name, sizeof(#name));\
-world->temp_typeflag = (hmget(world->component_typehash, world->temp_str) + world->entity_typeflags[entity_id]);\
+#define TNECS_ADD_COMPONENT3(world, name, entity_id) 
+world->temp_typeflag = TNECS_NAMES2TYPEFLAG(world, name) + world->entity_typeflags[entity_id];\
 if (!tnecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
-    arrput(world->entity_typeflags, world->entity_typeflags[entity_id]);\
+    arrput(world->entity_typeflags, world->temp_typeflag);\
     world->num_typeflags++;\
 }\
 tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag)
@@ -302,8 +301,6 @@ bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_enti
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
 
 size_t tnecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
-
-#define TNECS_COMPONENTS_LIST(entity_list, Position)
 
 // STRING HASHING ALGORITHMS
 // hash_djb2 slightly faster than hash_sdbm
