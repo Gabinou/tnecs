@@ -2,29 +2,37 @@
 
 CC := tcc # tcc, gcc 
 
-DIR_INCLUDE = include
-INCLUDE_ALL = -I. -I${DIR_INCLUDE}
-
-# FLAGS_ERROR := -Wall -pedantic-errors
-FLAGS_ERROR :=
+TCC := tcc
+GCC := gcc
+CLANGC := clang
 
 EXEC := test.exe
+EXEC_TCC := test_tcc.exe
+EXEC_GCC := test_gcc.exe
+EXEC_CLANGC := test_clang.exe
 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
 # FLAGS_BUILD_TYPE = -O0 -g  #Debug
 FLAGS_BUILD_TYPE =  #Debug
 
-CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${LIBS_THIRD} ${FLAGS_ERROR}
+# FLAGS_ERROR := -Wall -pedantic-errors
+FLAGS_ERROR :=
+INCLUDE_ALL := -I. 
 
-.PHONY: all $(EXEC)  
+CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
+
+.PHONY: all 
 all: astyle $(EXEC) run 
 SOURCES_SIMPLECS := simplecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
-SOURCES_ALL := $(SOURCES_SC_TIMER) $(SOURCES_TEST) $(SOURCES_SIMPLECS) 
+SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_SIMPLECS) 
 TARGETS_SIMPLECS := $(SOURCES_SIMPLECS:.c=.o)
 # SOURCES_SC_TIMER := sc_time.c
 # TARGETS_SC_TIMER := $(SOURCES_SC_TIMER:.c=.o)
+
+.PHONY: compile  
+compile: astyle ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANGC} run_tcc run_gcc run_clang
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
