@@ -16,8 +16,6 @@
 // There can be only one world.
 
 struct Simplecs_World * tnecs_init() {
-    printf("tnecs_init \n");
-
     struct Simplecs_World * tnecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     tnecs_world->entities = NULL;
     arrsetcap(tnecs_world->entities, DEFAULT_ENTITY_CAP);

@@ -23,7 +23,7 @@ CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: all 
 all: astyle $(EXEC) run 
-SOURCES_TNECS := simplecs.c
+SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
 SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_TNECS) 
@@ -33,12 +33,12 @@ TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
 TARGETS_TNECS_CLANG := $(SOURCES_TNECS:.c=_clang.o)
 
 .PHONY: compile_test
-compile_test: astyle ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} ; run_tcc run_gcc run_clang
+compile_test: astyle ${EXEC_TCC} run_tcc ${EXEC_GCC} run_gcc  ${EXEC_CLANG} run_clang
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
 .PHONY : run_tcc
-run_tcc: $(EXEC_TCC)  ; $(EXEC_TCC)
+run_tcc: $(EXEC_TCC) ; $(EXEC_TCC)
 .PHONY : run_gcc
 run_gcc: $(EXEC_GCC) ; $(EXEC_GCC)
 .PHONY : run_clang
