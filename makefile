@@ -33,18 +33,21 @@ TARGETS_SIMPLECS_TCC := $(SOURCES_SIMPLECS:.c=_tcc.o)
 TARGETS_SIMPLECS_CLANG := $(SOURCES_SIMPLECS:.c=_clang.o)
 
 .PHONY: compile  
-compile: astyle ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} run_tcc run_gcc run_clang
+compile: astyle ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} ; run_tcc run_gcc run_clang
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
+.PHONY : run_tcc
+run: $(EXEC_TCC)  ; $(EXEC_TCC)
+.PHONY : run_gcc
+run: $(EXEC_GCC) ; $(EXEC_GCC)
+.PHONY : run_clang
+run: $(EXEC_CLANG) ; $(EXEC_CLANG)
 
-.PHONY : run2
-run: $(EXEC_TCC) $(EXEC_GCC) $(EXEC_CLANG) ; $(EXEC_TCC) && $(EXEC_GCC) && $(EXEC_CLANG)
 .PHONY : astyle
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
 $(TARGETS_SIMPLECS) : $(SOURCES_SIMPLECS) ; $(CC) $< -c -o $@
-
 $(TARGETS_SIMPLECS_CLANG) : $(SOURCES_SIMPLECS) ; clang $< -c -o $@ 
 $(TARGETS_SIMPLECS_GCC) : $(SOURCES_SIMPLECS) ; gcc $< -c -o $@
 $(TARGETS_SIMPLECS_TCC) : $(SOURCES_SIMPLECS) ; tcc $< -c -o $@ 
