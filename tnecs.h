@@ -189,14 +189,8 @@ enum RUN_PHASES {
 };
 
 struct Components_Array {
-    tnecs_components_t type;   //single bit on
-    void * components; // same order as entitiesbytype
-};
-
-struct Components_Hash {
-    tnecs_components_t key; // type
-    char * value;                  // name
-
+    tnecs_components_t type; // single bit on
+    void * components;       // same order as entitiesbytype
 };
 
 struct Simplecs_System_Input {
@@ -208,23 +202,23 @@ struct Simplecs_System_Input {
 };
 
 struct Simplecs_World {
-    tnecs_entity_t * entities;                   // Useless?
-    tnecs_components_t * typeflags;              // [typeflag_id]
-    tnecs_components_t * entity_typeflags;       // [entity]
-    tnecs_components_t * system_typeflags;       // [system]
+    tnecs_entity_t * entities;                      // Useless?
+    tnecs_components_t * typeflags;                 // [typeflag_id]
+    tnecs_components_t * entity_typeflags;          // [entity]
+    tnecs_components_t * system_typeflags;          // [system]
     bool * system_isExclusive;                      // [system]
     void (** systems)(struct Simplecs_System_Input);// [system]
     uint64_t * component_hashes;                    // [component]
 
-    tnecs_entity_t ** entitiesbytype;            // [typeflag_id][num_entitiesbytype]
-    tnecs_components_t ** component_idbytype;    // [typeflag_id][num_componentsbytype]
-    tnecs_components_t ** component_flagbytype;  // [typeflag_id][num_componentsbytype]
+    tnecs_entity_t ** entitiesbytype;               // [typeflag_id][num_entitiesbytype]
+    tnecs_components_t ** component_idbytype;       // [typeflag_id][num_componentsbytype]
+    tnecs_components_t ** component_flagbytype;     // [typeflag_id][num_componentsbytype]
     size_t * num_componentsbytype;                  // [typeflag_id]
     size_t * num_entitiesbytype;                    // [typeflag_id]
     size_t num_components;
     size_t num_systems;
     size_t num_typeflags;
-    struct Components_Array *** components_bytype;  // [typeflag_id][entity_id][num_componentsbytype]
+    struct Components_Array ** components_bytype;  // [typeflag_id][num_componentsbytype]
     tnecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     tnecs_system_t next_system_id; // [0, ...]
 
@@ -239,8 +233,7 @@ typedef struct Simplecs_World tnecs_world_t;
 struct Simplecs_World * tnecs_init();
 
 // Error if component registered twice -> user responsibility
-#define TNECS_REGISTER_COMPONENT(world, name) _TNECS_REGISTER_COMPONENT(world, name)
-#define _TNECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
+#define TNECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
 world->num_components++;
 
 
@@ -251,16 +244,13 @@ world->num_components++;
 // UTILITY MACROS
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
 #define TNECS_COMPONENT_ID(world, name) tnecs_component_hash2id(world, hash_djb2(#name))
+#define TNECS_NAME2TYPEFLAG(world, name) TNECS_NAMES2TYPEFLAG(world, name)
 #define TNECS_NAMES2TYPEFLAG(world, ...) tnecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_IDS2TYPEFLAG(...) tnecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_NAME2ID(world, name) tnecs_name2id(world, #name)
 #define TNECS_NAME2TYPEFLAG(world, name) tnecs_names2typeflag(world, 1, #name)
 #define TNECS_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
 
-
-#define TNECS_COMPONENT_NAMES2FLAG(world, name) TNECS_COMPONENT_NAMES2FLAGSUM(world, name)
-#define TNECS_COMPONENT_NAMES2FLAGSUM(world, name) strncpy(world->temp_str, #name, sizeof(#name));\
-world->temp_typeflag += hmget(world->component_typehash, world->temp_str);
 
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components_lists[input->components_order[Component_##name##_id]]
 
