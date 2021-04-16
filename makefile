@@ -1,6 +1,8 @@
 
-# OS AND Process detection 
 
+COMPILER := tcc # tcc, gcc 
+
+# OS AND Process detection 
 ifeq ($(OS),Windows_NT)
     OS_FLAG := WIN32
     ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
@@ -36,16 +38,18 @@ endif
 $(info $$OS_FLAG is [${OS_FLAG}])
 $(info $$PROCESSOR_FLAG is [${PROCESSOR_FLAG}])
 
-CC := tcc # tcc, gcc 
 
 
 LINUX_EXT := .bin
 WIN_EXT := .exe
 ifeq ($(OS_FLAG),WIN32)
 	EXTENSION := $(WIN_EXT)
+	isASTYLE := $(shell where astyle)
 else
 	EXTENSION := $(LINUX_EXT)
+	isASTYLE := $(shell type astyle)
 endif
+$(info $$isASTYLE is [$(isASTYLE)])
 $(info $$EXTENSION is [$(EXTENSION)])
 
 EXEC := test$(EXTENSION)
@@ -89,12 +93,12 @@ run_clang: $(EXEC_CLANG) ; $(EXEC_CLANG)
 .PHONY : astyle
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
-$(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(CC) $< -c -o $@
+$(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
 $(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@ 
 $(TARGETS_TNECS_GCC) : $(SOURCES_TNECS) ; gcc $< -c -o $@
 $(TARGETS_TNECS_TCC) : $(SOURCES_TNECS) ; tcc $< -c -o $@ 
 
-$(EXEC): $(SOURCES_TEST) $(TARGETS_TNECS); $(CC) $< $(TARGETS_TNECS) -o $@ $(CFLAGS)
+$(EXEC): $(SOURCES_TEST) $(TARGETS_TNECS); $(COMPILER) $< $(TARGETS_TNECS) -o $@ $(CFLAGS)
 $(EXEC_TCC): $(SOURCES_TEST) $(TARGETS_TNECS_TCC); tcc $< $(TARGETS_TNECS_TCC) -o $@ $(CFLAGS)
 $(EXEC_GCC): $(SOURCES_TEST) $(TARGETS_TNECS_GCC); gcc $< $(TARGETS_TNECS_GCC) -o $@ $(CFLAGS)
 $(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_TNECS_CLANG); clang $< $(TARGETS_TNECS_CLANG) -o $@ $(CFLAGS)
