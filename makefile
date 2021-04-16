@@ -70,9 +70,9 @@ CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: all 
 ifeq ($(isASTYLE),)
-	all: astyle $(EXEC) run 
+	all: $(EXEC) run 
 else
-	all:  $(EXEC) run 
+	all: astyle $(EXEC) run 
 endif
 SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
