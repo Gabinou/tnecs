@@ -1,7 +1,7 @@
 
 #include "tnecs.h"
 
-// Simplecs (pronounced simplex) is a very simple implementation of an entity-component-system (ECS)
+// tnecs_world  is a very simple implementation of an entity-component-system (ECS)
 // ECS is very useful in game programming.
 // OOP: objects and methods, children inheriting from parents, etc.
 // ECS: Entities can have any number of independent components, acted upon by systems
@@ -13,8 +13,8 @@
 // Component are structures
 // Systems are functions
 // The main loop iterates over systems
-// There can be only one world.
-
+// systems can be inclusive: iterate over entities that have components including the system's
+// or exclusive: iterate over entities that have only the system's components 
 struct Simplecs_World * tnecs_init() {
     struct Simplecs_World * tnecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     tnecs_world->entities = NULL;

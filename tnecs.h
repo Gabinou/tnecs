@@ -35,13 +35,6 @@ typedef uint16_t tnecs_system_t;
 #define DEFAULT_ENTITY_CAP 128
 #define ENTITY_MAX_COMPONENT_NUM 10
 
-// col->x, row->y, depth->z
-// components_bytype_3d col->type, row->entity, depth->component
-// entitiesbytype_2d  col->type, row->entity
-#define index_2d(row, col, col_len) (row * col_len + col)
-#define index_3d(row, col, depth, row_len, col_len) (row * col_len * row_len + col * row_len + depth)
-
-
 #define STRINGIFY(x) #x
 #define CONCATENATE(arg1, arg2) CONCATENATE1(arg1, arg2)
 #define CONCATENATE1(arg1, arg2) CONCATENATE2(arg1, arg2)
