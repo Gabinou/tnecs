@@ -15,6 +15,7 @@
 // The main loop iterates over systems
 // systems can be inclusive: iterate over entities that have components including the system's
 // or exclusive: iterate over entities that have only the system's components
+
 struct Simplecs_World * tnecs_init() {
     struct Simplecs_World * tnecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     tnecs_world->entities = NULL;
@@ -123,11 +124,11 @@ tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
     if (out == TNECS_NULL) {
         out = in_world->next_entity_id++;
     }
+    arrput(in_world->entities, out);
     return (out);
 }
 
 void tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t new_typeflag) {
-    // arrput(in_world->num_entitiesbytype[TNECS_NULL])
     bool found = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
         if (new_typeflag == in_world->typeflags[i]) {
@@ -136,10 +137,9 @@ void tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t new
         }
     }
     if (!found) {
-        in_world->entitiesbytype;
-        in_world->component_idbytype;
-        in_world->component_flagbytype;
-        in_world->components_bytype;
+        in_world->num_typeflags++;
+        arrput(in_world->typeflags, new_typeflag);
+        arrput(in_world->components_bytype, NULL);
     } else {
         printf("tnecs_new_typeflag: new_typeflag already exists!");
     }
