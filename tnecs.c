@@ -14,7 +14,7 @@
 // Systems are functions
 // The main loop iterates over systems
 // systems can be inclusive: iterate over entities that have components including the system's
-// or exclusive: iterate over entities that have only the system's components 
+// or exclusive: iterate over entities that have only the system's components
 struct Simplecs_World * tnecs_init() {
     struct Simplecs_World * tnecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     tnecs_world->entities = NULL;
@@ -253,7 +253,7 @@ void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_ent
         struct Components_Array temp;
         temp.components = NULL;
         temp.type = type_toadd;
-        arrput(in_world->components_bytype[typeflag][in_entity], temp);
+        arrput(in_world->components_bytype[typeflag], temp);
         arrput(in_world->component_flagbytype[typeflag], type_toadd);
     } else {
         printf("tnecs_componentsbytype_add: component already in component_flagbytype");

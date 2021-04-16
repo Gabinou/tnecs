@@ -237,11 +237,10 @@ world->num_components++;
 // UTILITY MACROS
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
 #define TNECS_COMPONENT_ID(world, name) tnecs_component_hash2id(world, hash_djb2(#name))
-#define TNECS_NAME2TYPEFLAG(world, name) TNECS_NAMES2TYPEFLAG(world, name)
+#define TNECS_NAME2TYPEFLAG(world, name) tnecs_names2typeflag(world, 1, #name)
 #define TNECS_NAMES2TYPEFLAG(world, ...) tnecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_IDS2TYPEFLAG(...) tnecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_NAME2ID(world, name) tnecs_name2id(world, #name)
-#define TNECS_NAME2TYPEFLAG(world, name) tnecs_names2typeflag(world, 1, #name)
 #define TNECS_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
 
 
