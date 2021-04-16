@@ -50,6 +50,12 @@ else
 	EXTENSION := $(LINUX_EXT)
 	isASTYLE := $(shell type astyle)
 endif
+ifeq ($(isASTYLE),)
+	ASTYLE :=
+else
+	ASTYLE := astyle 
+endif
+
 $(info $$isASTYLE is [$(isASTYLE)])
 $(info $$EXTENSION is [$(EXTENSION)])
 
@@ -69,11 +75,7 @@ INCLUDE_ALL := -I.
 CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: all 
-ifeq ($(isASTYLE),)
-	all: $(EXEC) run 
-else
-	all: astyle $(EXEC) run 
-endif
+all: astyle $(EXEC) run 
 SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
@@ -84,7 +86,7 @@ TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
 TARGETS_TNECS_CLANG := $(SOURCES_TNECS:.c=_clang.o)
 
 .PHONY: compile_test
-compile_test: astyle ${EXEC_TCC} run_tcc ${EXEC_GCC} run_gcc  ${EXEC_CLANG} run_clang
+compile_test: ${ASTYLE} ${EXEC_TCC} run_tcc ${EXEC_GCC} run_gcc  ${EXEC_CLANG} run_clang
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
