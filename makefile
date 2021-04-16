@@ -1,15 +1,57 @@
 
-# NEED OS DETECTOR. 
+# OS AND Process detection 
+
+ifeq ($(OS),Windows_NT)
+    OS_FLAG := WIN32
+    ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
+        PROCESSOR_FLAG = AMD64
+    else
+        ifeq ($(PROCESSOR_ARCHITECTURE),AMD64)
+            PROCESSOR_FLAG := AMD64
+        endif
+        ifeq ($(PROCESSOR_ARCHITECTURE),x86)
+            PROCESSOR_FLAG := IA32
+        endif
+    endif
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        OS_FLAG := LINUX
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        PROCESSOR_FLAG := OSX
+    endif
+    UNAME_P := $(shell uname -p)
+    ifeq ($(UNAME_P),x86_64)
+        PROCESSOR_FLAG := AMD64
+    endif
+    ifneq ($(filter %86,$(UNAME_P)),)
+        PROCESSOR_FLAG := IA32
+    endif
+    ifneq ($(filter arm%,$(UNAME_P)),)
+        PROCESSOR_FLAG := ARM
+    endif
+endif
+
+$(info $$OS_FLAG is [${OS_FLAG}])
+$(info $$PROCESSOR_FLAG is [${PROCESSOR_FLAG}])
 
 CC := tcc # tcc, gcc 
 
 
 LINUX_EXT := .bin
 WIN_EXT := .exe
-EXEC := test.exe
-EXEC_TCC := test_tcc.exe
-EXEC_GCC := test_gcc.exe
-EXEC_CLANG := test_clang.exe
+ifeq ($(OS_FLAG),WIN32)
+	EXTENSION := $(WIN_EXT)
+else
+	EXTENSION := $(LINUX_EXT)
+endif
+$(info $$EXTENSION is [$(EXTENSION)])
+
+EXEC := test$(EXTENSION)
+EXEC_TCC := test_tcc$(EXTENSION)
+EXEC_GCC := test_gcc$(EXTENSION)
+EXEC_CLANG := test_clang$(EXTENSION)
 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
 # FLAGS_BUILD_TYPE = -O0 -g  #Debug
