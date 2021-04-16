@@ -50,14 +50,14 @@ else
 	EXTENSION := $(LINUX_EXT)
 	isASTYLE := $(shell type astyle)
 endif
+# $(info $$isASTYLE is [$(isASTYLE)])
+$(info $$EXTENSION is [$(EXTENSION)])
 ifeq ($(isASTYLE),)
 	ASTYLE :=
 else
 	ASTYLE := astyle 
 endif
 
-$(info $$isASTYLE is [$(isASTYLE)])
-$(info $$EXTENSION is [$(EXTENSION)])
 
 EXEC := test$(EXTENSION)
 EXEC_TCC := test_tcc$(EXTENSION)
