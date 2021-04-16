@@ -75,7 +75,7 @@ INCLUDE_ALL := -I.
 CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: all 
-all: astyle $(EXEC) run 
+all: ${ASTYLE} $(EXEC) run 
 SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
