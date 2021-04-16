@@ -42,6 +42,7 @@ $(info $$PROCESSOR_FLAG is [${PROCESSOR_FLAG}])
 
 LINUX_EXT := .bin
 WIN_EXT := .exe
+# astyle detection: isASTYLE is empty unless astyle exists
 ifeq ($(OS_FLAG),WIN32)
 	EXTENSION := $(WIN_EXT)
 	isASTYLE := $(shell where astyle)
@@ -68,7 +69,11 @@ INCLUDE_ALL := -I.
 CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: all 
-all: astyle $(EXEC) run 
+ifeq ($(isASTYLE),)
+	all: astyle $(EXEC) run 
+else
+	all:  $(EXEC) run 
+endif
 SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
