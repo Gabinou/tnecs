@@ -38,8 +38,6 @@ endif
 $(info $$OS_FLAG is [${OS_FLAG}])
 $(info $$PROCESSOR_FLAG is [${PROCESSOR_FLAG}])
 
-
-
 LINUX_EXT := .bin
 WIN_EXT := .exe
 # astyle detection: isASTYLE is empty unless astyle exists
@@ -50,20 +48,22 @@ else
 	EXTENSION := $(LINUX_EXT)
 	isASTYLE := $(shell type astyle)
 endif
+
+# $(info $$isASTYLE is [$(isASTYLE)])
+$(info $$EXTENSION is [$(EXTENSION)])
+
 ifeq ($(isASTYLE),)
 	ASTYLE :=
 else
 	ASTYLE := astyle 
 endif
 
-$(info $$isASTYLE is [$(isASTYLE)])
-$(info $$EXTENSION is [$(EXTENSION)])
 
 EXEC := test$(EXTENSION)
 EXEC_TCC := test_tcc$(EXTENSION)
 EXEC_GCC := test_gcc$(EXTENSION)
 EXEC_CLANG := test_clang$(EXTENSION)
-
+EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
 # FLAGS_BUILD_TYPE = -O0 -g  #Debug
 FLAGS_BUILD_TYPE =  #Debug
@@ -84,9 +84,9 @@ TARGETS_TNECS := $(SOURCES_TNECS:.c=.o)
 TARGETS_TNECS_GCC := $(SOURCES_TNECS:.c=_gcc.o)
 TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
 TARGETS_TNECS_CLANG := $(SOURCES_TNECS:.c=_clang.o)
-
+TARGETS_ALL := ${TARGETS_TNECS} ${TARGETS_TNECS_GCC} ${TARGETS_TNECS_TCC} ${TARGETS_TNECS_CLANG}
 .PHONY: compile_test
-compile_test: ${ASTYLE} ${EXEC_TCC} run_tcc ${EXEC_GCC} run_gcc  ${EXEC_CLANG} run_clang
+compile_test: ${ASTYLE} ${EXEC_TCC}  ${EXEC_GCC}  ${EXEC_CLANG} run_tcc run_gcc run_clang
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
@@ -110,7 +110,5 @@ $(EXEC_TCC): $(SOURCES_TEST) $(TARGETS_TNECS_TCC); tcc $< $(TARGETS_TNECS_TCC) -
 $(EXEC_GCC): $(SOURCES_TEST) $(TARGETS_TNECS_GCC); gcc $< $(TARGETS_TNECS_GCC) -o $@ $(CFLAGS)
 $(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_TNECS_CLANG); clang $< $(TARGETS_TNECS_CLANG) -o $@ $(CFLAGS)
 
-.PHONY: wclean
-wclean: ; del /q /s *.o *.a *.exe build\\*.txt
 .PHONY: clean
-clean: ; @echo "Cleaning Simplecs" & rm -frv $(TARGETS_TNECS) $(TARGETS_SC_TIMER) $(EXEC)
+clean: ; @echo "Cleaning Simplecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL)

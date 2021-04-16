@@ -15,6 +15,7 @@
 // The main loop iterates over systems
 // systems can be inclusive: iterate over entities that have components including the system's
 // or exclusive: iterate over entities that have only the system's components
+
 struct Simplecs_World * tnecs_init() {
     struct Simplecs_World * tnecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     tnecs_world->entities = NULL;
@@ -60,9 +61,9 @@ struct Simplecs_World * tnecs_init() {
     tnecs_world->num_entitiesbytype = NULL;
     arrsetcap(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
 
-    tnecs_world->num_components = 0;
-    tnecs_world->num_systems = 0;
-    tnecs_world->num_typeflags = 0;
+    tnecs_world->num_components = ID_START;
+    tnecs_world->num_systems = ID_START;
+    tnecs_world->num_typeflags = ID_START;
 
     tnecs_world->components_bytype = NULL;
     arrsetcap(tnecs_world->components_bytype, DEFAULT_SYSTEM_CAP);
@@ -73,44 +74,6 @@ struct Simplecs_World * tnecs_init() {
     return (tnecs_world);
 }
 
-uint64_t hash_djb2(const unsigned char * str) {
-    /* djb2 hashing algorithm by Dan Bernstein.
-    * Description: This algorithm (k=33) was first reported by dan bernstein many
-    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
-    * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
-    * (why it works better than many other constants, prime or not) has never been adequately explained.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    uint64_t hash = 5381;
-    int32_t str_char;
-    while (str_char = *str++) {
-        hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
-    }
-    return (hash);
-}
-
-uint64_t hash_sdbm(const unsigned char * str) {
-    /* sdbm hashing algorithm by Dan Bernstein.
-    * Description: This algorithm was created for sdbm (a public-domain
-    * reimplementation of ndbm) database library. It was found to do
-    * well in scrambling bits, causing better distribution of the
-    * keys and fewer splits. It also happens to be a good general hashing
-    * function with good distribution. The actual function is
-    *hash(i) = hash(i - 1) * 65599 + str[i]; what is included below
-    * is the faster version used in gawk. [* there is even a faster,
-    * duff-device version] the magic constant 65599 was picked out of
-    * thin air while experimenting with different constants, and turns
-    * out to be a prime. this is one of the algorithms used in
-    * berkeley db (see sleepycat) and elsewhere.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    uint64_t hash = 0;
-    uint32_t str_char;
-    while (str_char = *str++) {
-        hash = str_char + (hash << 6) + (hash << 16) - hash;
-    }
-    return (hash);
-}
 
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
@@ -123,34 +86,37 @@ tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
     if (out == TNECS_NULL) {
         out = in_world->next_entity_id++;
     }
+    arrput(in_world->entities, out);
     return (out);
 }
 
-void tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t new_typeflag) {
-    // arrput(in_world->num_entitiesbytype[TNECS_NULL])
-    bool found = 0;
+size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t new_typeflag) {
+    size_t typeflag_id = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
         if (new_typeflag == in_world->typeflags[i]) {
-            found = true;
+            typeflag_id = i;
             break;
         }
     }
-    if (!found) {
-        in_world->entitiesbytype;
-        in_world->component_idbytype;
-        in_world->component_flagbytype;
-        in_world->components_bytype;
-    } else {
-        printf("tnecs_new_typeflag: new_typeflag already exists!");
+    if (!typeflag_id) {
+        typeflag_id = in_world->num_typeflags++;
+        arrput(in_world->typeflags, new_typeflag);
+        arrput(in_world->components_bytype, NULL);
+        // } else {
+        // printf("tnecs_new_typeflag: new_typeflag already exists!");
     }
+    return (typeflag_id);
 }
 
-
-
-tnecs_component_t tnecs_name2id(struct Simplecs_World * in_world, const char * in_name) {
-    tnecs_component_t out = 0;
+size_t tnecs_component_name2id(struct Simplecs_World * in_world, const char * in_name) {
+    printf("tnecs_component_name2id\n");
+    size_t   out = 0;
     uint64_t temp_hash = hash_djb2(in_name);
+    printf("%s hash %llu \n", in_name, temp_hash);
+
+
     for (size_t j = 0; j < in_world->num_components; j++) {
+        printf("%d id, hash %llu \n", j, in_world->component_hashes[j]);
         if (in_world->component_hashes[j] == temp_hash) {
             out = j;
             break;
@@ -159,16 +125,16 @@ tnecs_component_t tnecs_name2id(struct Simplecs_World * in_world, const char * i
     return (out);
 }
 
-tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...) {
+tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t argnum, ...) {
     tnecs_component_t out = 0;
     va_list ap;
-    va_start(ap, num);
+    va_start(ap, argnum);
     uint64_t temp_hash;
-    for (size_t i = 0; i < num; i++) {
+    for (size_t i = 0; i < argnum; i++) {
         temp_hash = hash_djb2(va_arg(ap, char *));
         for (size_t j = 0; j < in_world->num_components; j++) {
             if (in_world->component_hashes[j] == temp_hash) {
-                out += TNECS_ID2TYPEFLAG(j);
+                out += TNECS_COMPONENT_ID2TYPEFLAG(j);
                 break;
             }
         }
@@ -177,13 +143,14 @@ tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t
     return (out);
 }
 
-tnecs_component_t tnecs_ids2typeflag(uint8_t num, ...) {
+tnecs_component_t tnecs_component_ids2typeflag(uint8_t argnum, ...) {
     tnecs_component_t out = 0;
     va_list ap;
-    va_start(ap, num);
-    for (size_t i = 0; i < num; i++) {
-        out += TNECS_ID2TYPEFLAG(va_arg(ap, size_t));
+    va_start(ap, argnum);
+    for (size_t i = 0; i < argnum; i++) {
+        out += TNECS_COMPONENT_ID2TYPEFLAG(va_arg(ap, size_t));
     }
+    va_end(ap);
     return (out);
 }
 
@@ -198,9 +165,19 @@ size_t tnecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_has
     return (out);
 }
 
-tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, tnecs_components_t component_typeflag) {
+tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, size_t argnum, ...) {
     printf("tnecs_new_entity_wcomponents \n");
-
+    va_list ap;
+    va_start(ap, argnum);
+    tnecs_component_t typeflag = 0;
+    for (size_t i = 0; i < argnum; i++) {
+        typeflag += TNECS_COMPONENT_HASH2ID(in_world, va_arg(ap, uint64_t));
+    }
+    va_end(ap);
+    tnecs_entity_t new_entity = tnecs_new_entity(in_world);
+    size_t typeflag_id = tnecs_new_typeflag(in_world, typeflag);
+    arrput(in_world->entitiesbytype[typeflag_id], new_entity);
+    in_world->num_entitiesbytype[typeflag_id]++;
 }
 
 
@@ -225,8 +202,9 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
     }
 }
 
-void tnecs_register_system(struct Simplecs_World * in_world, tnecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
+void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
     printf("tnecs_register_system\n");
+    arrput(in_world->system_hashes, in_hash);
     // arrput(in_world->systems_table->systems_list, in_system);
     // arrput(in_world->systems_table->components_num, num_components);
     // tnecs_entity_t * components_list = malloc(num_components * sizeof(tnecs_entity_t));
@@ -345,6 +323,17 @@ size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_compone
     return (found);
 }
 
+size_t tnecs_component_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag) {
+    size_t id = 0;
+    for (size_t i = 0; i < in_world->num_typeflags; i++) {
+        if (in_typeflag = in_world->typeflags[i]) {
+            id = i;
+            break;
+        }
+    }
+    return (id);
+}
+
 
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag) {
     // returns position of subtype from in_typelist
@@ -356,4 +345,75 @@ size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_compo
         }
     }
     return (found);
+}
+
+size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) {
+    size_t found = 0;
+    for (size_t i = 0; i < in_world->num_systems; i++) {
+        if (in_world->system_hashes[i] == in_hash) {
+            found = i;
+            break;
+        }
+    }
+    return (found);
+}
+
+size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name) {
+    return (tnecs_system_hash2id(in_world, hash_djb2(in_name)));
+}
+
+tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const char * in_name) {
+    size_t id = tnecs_system_hash2id(in_world, hash_djb2(in_name));
+    return (in_world->system_typeflags[id]);
+}
+
+tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_world, uint8_t argnum, ...) {
+    printf("tnecs_component_names2typeflag\n");
+    va_list ap;
+    tnecs_component_t typeflag;
+    va_start(ap, argnum);
+    for (size_t i = 0; i < argnum; i++) {
+        typeflag += in_world->typeflags[tnecs_component_hash2id(in_world, va_arg(ap, char *))];
+    }
+    va_end(ap);
+    return (typeflag);
+}
+
+uint64_t hash_djb2(const unsigned char * str) {
+    /* djb2 hashing algorithm by Dan Bernstein.
+    * Description: This algorithm (k=33) was first reported by dan bernstein many
+    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
+    * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
+    * (why it works better than many other constants, prime or not) has never been adequately explained.
+    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
+    * [2] http://www.cse.yorku.ca/~oz/hash.html */
+    uint64_t hash = 5381;
+    int32_t str_char;
+    while (str_char = *str++) {
+        hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
+    }
+    return (hash);
+}
+
+uint64_t hash_sdbm(const unsigned char * str) {
+    /* sdbm hashing algorithm by Dan Bernstein.
+    * Description: This algorithm was created for sdbm (a public-domain
+    * reimplementation of ndbm) database library. It was found to do
+    * well in scrambling bits, causing better distribution of the
+    * keys and fewer splits. It also happens to be a good general hashing
+    * function with good distribution. The actual function is
+    *hash(i) = hash(i - 1) * 65599 + str[i]; what is included below
+    * is the faster version used in gawk. [* there is even a faster,
+    * duff-device version] the magic constant 65599 was picked out of
+    * thin air while experimenting with different constants, and turns
+    * out to be a prime. this is one of the algorithms used in
+    * berkeley db (see sleepycat) and elsewhere.
+    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
+    * [2] http://www.cse.yorku.ca/~oz/hash.html */
+    uint64_t hash = 0;
+    uint32_t str_char;
+    while (str_char = *str++) {
+        hash = str_char + (hash << 6) + (hash << 16) - hash;
+    }
+    return (hash);
 }
