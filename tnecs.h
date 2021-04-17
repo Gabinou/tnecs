@@ -239,18 +239,25 @@ world->num_components++;
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world,...) tnecs_new_entity_wcomponents(world, tnecs_component_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__)));
 
 // UTILITY MACROS
+#define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) hash_djb2(#name)
+
+#define TNECS_COMPONENT_HASH(name) TNECS_HASH(name)
 #define TNECS_COMPONENT_NAME2HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
 #define TNECS_COMPONENT_ID(world, name) tnecs_component_hash2id(world, hash_djb2(#name))
-#define TNECS_COMPONENT_NAME2TYPEFLAG(world, name) tnecs_component_names2typeflag(world, 1, #name)
+#define TNECS_COMPONENT_TYPEFLAG(world, name) tnecs_component_names2typeflag(world, 1, #name)
 #define TNECS_COMPONENTS_NAMES2TYPEFLAG(world, ...) tnecs_component_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
+
+#define TNECS_SYSTEM_HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_SYSTEM_ID(world, name) tnecs_system_name2id(world, #name)
 #define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]
+#define TNECS_SYSTEM_TYPEFLAG(world, name) tnecs_system_name2typeflag(world, #name);
+#define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
 #define TNECS_COMPONENTARRAY_ADD(world, name, entity, typeflag) world->temp_typeflag = tnecs_component_names2typeflag(world, 1, #name)
 // world->temp_id = tnecs_component_hash2id(world, hash_djb2(#name));\
@@ -260,7 +267,6 @@ world->num_components++;
 //     }
 // arraddn(world->components_bytype[world->temp_typeflag][entity], num)
 
-#define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
 // TNECS_ADD_COMPONENT is overloaded component adder macro
 //      3 inputs required: (world, name, entity_id)
