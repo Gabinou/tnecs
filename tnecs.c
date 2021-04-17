@@ -354,6 +354,17 @@ size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_compone
     return (found);
 }
 
+size_t tnecs_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag) {
+    size_t id = 0;
+    for (size_t i = 0; i < in_world->num_typeflags; i++) { 
+    	if (in_typeflag = in_world->typeflags[i]) {
+            id =`i;
+            break;
+        }
+    }
+    return(id);
+}
+
 
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag) {
     // returns position of subtype from in_typelist

@@ -218,7 +218,9 @@ struct Simplecs_World {
     tnecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
 
+    size_t temp_size;
     tnecs_component_t temp_typeflag;
+    size_t temp_id;
     char temp_str[STR_BUFFER];
 };
 typedef struct Simplecs_World tnecs_world_t;
@@ -243,6 +245,13 @@ world->num_components++;
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
 
+#define TNECS_COMPONENTARRAY_ADD(world, name, entity, typeflag) world->temp_typeflag = tnecs_names2typeflag(world, 1, #name);
+world->temp_id = tnecs_component_hash2id(world, hash_djb2(#name));\
+for (size_t i = 0; i < world->num_componentsbytype[]; i++) {
+    if ()
+
+}
+arraddn(world->components_bytype[world->temp_typeflag][entity], num)
 
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
@@ -286,7 +295,7 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
 tnecs_component_t tnecs_name2id(struct Simplecs_World * in_world, const char * in_name);
 tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...);
 tnecs_component_t tnecs_ids2typeflag(uint8_t num, ...);
-
+size_t tnecs_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag);
 
 void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
 size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t typeflag);
