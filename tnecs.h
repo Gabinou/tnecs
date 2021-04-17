@@ -201,7 +201,7 @@ struct Simplecs_World {
     tnecs_components_t * system_typeflags;          // [system]
     bool * system_isExclusive;                      // [system]
     void (** systems)(struct Simplecs_System_Input);// [system]
-    uint64_t * component_hashes;                    // [component]
+    uint64_t * component_hashes;                    // [component_id]
 
     tnecs_entity_t ** entitiesbytype;               // [typeflag_id][num_entitiesbytype]
     tnecs_components_t ** component_idbytype;       // [typeflag_id][num_componentsbytype]
@@ -262,12 +262,16 @@ tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag)
 #define TNECS_ADD_COMPONENT4(world, name, entity_id, newtype) if (newtype) {\
 strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag = (hmget(world->component_typehash, world->temp_str) + world->entity_typeflags[entity_id]);\
-if (!tnecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
-    arrput(world->entity_typeflags, world->entity_typeflags[entity_id]);\
-    world->num_typeflags++;\
-}\
-tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);\
+tnecs_new_typeflag(world, temp_typeflag);\
+tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);
+
+// if (!tnecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
+//     arrput(world->entity_typeflags, world->entity_typeflags[entity_id]);\
+//     world->num_typeflags++;\
+// }\
 }
+
+
 
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(TNECS_COMPONENT_ID, __VA_ARGS__))
 void tnecs_register_system(struct Simplecs_World * in_world,
@@ -275,7 +279,7 @@ void tnecs_register_system(struct Simplecs_World * in_world,
 
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world);
-tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, tnecs_components_t components_typeflag);
+tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, size_t argnum, ...);
 tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_entity_t in_entity);
 
 // UTILITY FUNCTIONS
@@ -285,7 +289,7 @@ tnecs_component_t tnecs_ids2typeflag(uint8_t num, ...);
 
 
 void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
-void tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t typeflag);
+size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t typeflag);
 void tnecs_entity_typeflag_change(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t new_type);
 bool tnecs_type_add(struct Simplecs_World * in_world, tnecs_components_t component_typeflag);
 size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);

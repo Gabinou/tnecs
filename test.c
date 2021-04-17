@@ -119,6 +119,7 @@ int main() {
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     // assert(Component_Sprite_id == (COMPONENT_ID_START << 2));
     printf("\n");
+    printf("New Entity with components \n");
     TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
 
     // printf("System registration\n");
