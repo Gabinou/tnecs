@@ -140,14 +140,14 @@ size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t n
         typeflag_id = in_world->num_typeflags++;
         arrput(in_world->typeflags, new_typeflag);
         arrput(in_world->components_bytype, NULL);
-    // } else {
+        // } else {
         // printf("tnecs_new_typeflag: new_typeflag already exists!");
     }
-    return(typeflag_id);
+    return (typeflag_id);
 }
 
-tnecs_component_t tnecs_name2id(struct Simplecs_World * in_world, const char * in_name) {
-    tnecs_component_t out = 0;
+size_t tnecs_component_name2id(struct Simplecs_World * in_world, const char * in_name) {
+    size_t   out = 0;
     uint64_t temp_hash = hash_djb2(in_name);
     for (size_t j = 0; j < in_world->num_components; j++) {
         if (in_world->component_hashes[j] == temp_hash) {
@@ -176,7 +176,7 @@ tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t
     return (out);
 }
 
-tnecs_component_t tnecs_ids2typeflag(uint8_t argnum, ...) {
+tnecs_component_t tnecs_component_ids2typeflag(uint8_t argnum, ...) {
     tnecs_component_t out = 0;
     va_list ap;
     va_start(ap, num);
@@ -207,9 +207,9 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, si
     }
     va_end(ap);
     tnecs_entity_t new_entity = tnecs_new_entity(in_world);
-	size_t typeflag_id = tnecs_new_typeflag(in_world, typeflag);
-	arrput(in_world->entities_bytype[typeflag_id], new_entity);
-	in_world->num_entitiesbytype[typeflag_id]++;
+    size_t typeflag_id = tnecs_new_typeflag(in_world, typeflag);
+    arrput(in_world->entities_bytype[typeflag_id], new_entity);
+    in_world->num_entitiesbytype[typeflag_id]++;
 }
 
 
@@ -234,8 +234,9 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
     }
 }
 
-void tnecs_register_system(struct Simplecs_World * in_world, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
+void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
     printf("tnecs_register_system\n");
+    arrput(in_world->system_hashes  , in_hash);
     // arrput(in_world->systems_table->systems_list, in_system);
     // arrput(in_world->systems_table->components_num, num_components);
     // tnecs_entity_t * components_list = malloc(num_components * sizeof(tnecs_entity_t));
@@ -354,15 +355,15 @@ size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_compone
     return (found);
 }
 
-size_t tnecs_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag) {
+size_t tnecs_component_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag) {
     size_t id = 0;
-    for (size_t i = 0; i < in_world->num_typeflags; i++) { 
-    	if (in_typeflag = in_world->typeflags[i]) {
-            id =`i;
+    for (size_t i = 0; i < in_world->num_typeflags; i++) {
+        if (in_typeflag = in_world->typeflags[i]) {
+            id = `i;
             break;
         }
     }
-    return(id);
+    return (id);
 }
 
 
@@ -376,4 +377,15 @@ size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_compo
         }
     }
     return (found);
+}
+
+size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) {
+    size_t found = 0;
+    for (size_t i = 0; i < len; i++) {
+        if (in_world->system_hashes[i] == in_hash) {
+            found = i;
+            break;
+        }
+    }
+    return (found); 
 }
