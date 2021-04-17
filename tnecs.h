@@ -237,11 +237,11 @@ world->num_components++;
 // UTILITY MACROS
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
 #define TNECS_COMPONENT_ID(world, name) tnecs_component_hash2id(world, hash_djb2(#name))
-#define TNECS_NAME2TYPEFLAG(world, name) tnecs_names2typeflag(world, 1, #name)
-#define TNECS_NAMES2TYPEFLAG(world, ...) tnecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
-#define TNECS_IDS2TYPEFLAG(...) tnecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
-#define TNECS_NAME2ID(world, name) tnecs_name2id(world, #name)
-#define TNECS_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
+#define TNECS_COMPONENT_NAME2TYPEFLAG(world, name) tnecs_names2typeflag(world, 1, #name)
+#define TNECS_COMPONENTS_NAMES2TYPEFLAG(world, ...) tnecs_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
+#define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
+#define TNECS_COMPONENT_NAME2ID(world, name) tnecs_name2id(world, #name)
+#define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
 
 
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
@@ -270,7 +270,8 @@ tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);\
 }
 
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(TNECS_COMPONENT_ID, __VA_ARGS__))
-void tnecs_register_system(struct Simplecs_World * in_world, tnecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
+void tnecs_register_system(struct Simplecs_World * in_world, 
+    uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
 
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world);

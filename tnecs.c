@@ -145,8 +145,6 @@ void tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t new
     }
 }
 
-
-
 tnecs_component_t tnecs_name2id(struct Simplecs_World * in_world, const char * in_name) {
     tnecs_component_t out = 0;
     uint64_t temp_hash = hash_djb2(in_name);
@@ -225,7 +223,7 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
     }
 }
 
-void tnecs_register_system(struct Simplecs_World * in_world, tnecs_entity_t * entities_list, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
+void tnecs_register_system(struct Simplecs_World * in_world, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
     printf("tnecs_register_system\n");
     // arrput(in_world->systems_table->systems_list, in_system);
     // arrput(in_world->systems_table->components_num, num_components);
