@@ -166,7 +166,7 @@ tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t
         temp_hash = hash_djb2(va_arg(ap, char *));
         for (size_t j = 0; j < in_world->num_components; j++) {
             if (in_world->component_hashes[j] == temp_hash) {
-                out += TNECS_ID2TYPEFLAG(j);
+                out += TNECS_COMPONENT_ID2TYPEFLAG(j);
                 break;
             }
         }
@@ -180,7 +180,7 @@ tnecs_component_t tnecs_ids2typeflag(uint8_t num, ...) {
     va_list ap;
     va_start(ap, num);
     for (size_t i = 0; i < num; i++) {
-        out += TNECS_ID2TYPEFLAG(va_arg(ap, size_t));
+        out += TNECS_COMPONENT_ID2TYPEFLAG(va_arg(ap, size_t));
     }
     return (out);
 }

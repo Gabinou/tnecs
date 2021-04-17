@@ -249,10 +249,10 @@ world->num_components++;
 // TNECS_ADD_COMPONENT is overloaded component adder macro
 //      3 inputs required: (world, name, entity_id)
 //      4th input for speed if newtype is false
-#define GET_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
-#define TNECS_ADD_COMPONENT(...) GET_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
+#define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
+#define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define TNECS_ADD_COMPONENT3(world, name, entity_id) world->temp_typeflag = TNECS_NAMES2TYPEFLAG(world, name) + world->entity_typeflags[entity_id];\
+#define TNECS_ADD_COMPONENT3(world, name, entity_id) world->temp_typeflag = TNECS_COMPONENT_NAMES2TYPEFLAG(world, name) + world->entity_typeflags[entity_id];\
 if (!tnecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
     arrput(world->entity_typeflags, world->temp_typeflag);\
     world->num_typeflags++;\
@@ -270,8 +270,8 @@ tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);\
 }
 
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(TNECS_COMPONENT_ID, __VA_ARGS__))
-void tnecs_register_system(struct Simplecs_World * in_world, 
-    uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
+void tnecs_register_system(struct Simplecs_World * in_world,
+                           uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
 
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world);
