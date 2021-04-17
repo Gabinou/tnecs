@@ -249,7 +249,8 @@ world->num_components++;
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
 #define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)
-#define TNECS_SYSTEM_NAME2ID(name) tnecs_system_name2id(world, #name)
+#define TNECS_SYSTEM_ID(world, name) tnecs_system_name2id(world, #name)
+#define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]
 
 #define TNECS_COMPONENTARRAY_ADD(world, name, entity, typeflag) world->temp_typeflag = tnecs_component_names2typeflag(world, 1, #name)
 // world->temp_id = tnecs_component_hash2id(world, hash_djb2(#name));\
@@ -315,6 +316,7 @@ size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_compo
 
 size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
 size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name);
+tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const char * in_name);
 
 
 // STRING HASHING ALGORITHMS

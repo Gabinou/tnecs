@@ -393,3 +393,8 @@ size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) 
 size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name) {
     return(tnecs_system_hash2id(in_world, hash_djb2(in_name)));
 }
+
+tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const char * in_name) {
+    size_t id = tnecs_system_hash2id(in_world, hash_djb2(in_name));
+    return(in_world->system_typeflags[i]);
+}
