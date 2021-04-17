@@ -359,7 +359,7 @@ size_t tnecs_component_typeflag2id(struct Simplecs_World * in_world, tnecs_compo
     size_t id = 0;
     for (size_t i = 0; i < in_world->num_typeflags; i++) {
         if (in_typeflag = in_world->typeflags[i]) {
-            id = `i;
+            id = i;
             break;
         }
     }
@@ -388,4 +388,8 @@ size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) 
         }
     }
     return (found); 
+}
+
+size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name) {
+    return(tnecs_system_hash2id(in_world, hash_djb2(in_name)));
 }

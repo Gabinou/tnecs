@@ -241,14 +241,15 @@ world->num_components++;
 // UTILITY MACROS
 #define TNECS_NAME2HASH(name) hash_djb2(#name)
 #define TNECS_COMPONENT_NAME2HASH(name) TNECS_NAME2HASH(name)
-#define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
-#define TNECS_COMPONE NT_ID(world, name) tnecs_component_hash2id(world, hash_djb2(#name))
+#define TNECS_COMPONENT_ID(world, name) tnecs_component_hash2id(world, hash_djb2(#name))
 #define TNECS_COMPONENT_NAME2TYPEFLAG(world, name) tnecs_component_names2typeflag(world, 1, #name)
 #define TNECS_COMPONENTS_NAMES2TYPEFLAG(world, ...) tnecs_component_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
+#define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)
+#define TNECS_SYSTEM_NAME2ID(name) tnecs_system_name2id(world, #name)
 
 #define TNECS_COMPONENTARRAY_ADD(world, name, entity, typeflag) world->temp_typeflag = tnecs_component_names2typeflag(world, 1, #name)
 // world->temp_id = tnecs_component_hash2id(world, hash_djb2(#name));\
@@ -313,7 +314,7 @@ size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_compone
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
 
 size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
-tnecs_component_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name);
+size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name);
 
 
 // STRING HASHING ALGORITHMS
