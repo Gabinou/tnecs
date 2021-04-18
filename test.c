@@ -82,7 +82,7 @@ struct Unit_Hash {
 };
 
 
-void SystemMove(struct Simplecs_System_Input in_input) {
+void SystemMove(struct tnECS_System_Input in_input) {
     // Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
     // Unit *v = TNECS_COMPONENTS_LIST(entity_list, Unit);
 
@@ -93,13 +93,13 @@ void SystemMove(struct Simplecs_System_Input in_input) {
 }
 
 int main() {
-    printf("Hello, World! I am testing Simplecs. \n\n");
+    printf("Hello, World! I am testing tnECS. \n\n");
     tnecs_entity_t * components_list;
     struct Position * temp_position;
     struct Unit * temp_unit;
 
     printf("tnecs_init\n");
-    struct Simplecs_World * test_world = tnecs_init();
+    struct tnECS_World * test_world = tnecs_init();
     printf("\n");
 
     printf("Component registration\n");
@@ -321,7 +321,7 @@ int main() {
     // printf("%.1f [us] \n", t_1 - t_0);
 
     // t_0 = get_time();
-    // struct Simplecs_World * bench_world = tnecs_init();
+    // struct tnECS_World * bench_world = tnecs_init();
     // t_1 = get_time();
     // printf("tnecs: World Creation time \n");
     // printf("%.1f [us] \n", t_1 - t_0);
@@ -355,6 +355,6 @@ int main() {
     // printf("tnecs: Component adding time: %d iterations \n", ITERATIONS);
     // printf("%.1f [us] \n", t_1 - t_0);
 
-    printf("Simplecs Test End");
+    printf("tnECS Test End");
     return (0);
 }

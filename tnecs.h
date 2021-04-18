@@ -26,7 +26,7 @@ typedef uint64_t tnecs_entities_t;
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 64 components
 typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 64 components
 // component type > 0 -> 1 nonzero bit -> unique for component
-// component flag > 0 -> sum of component types -> determines Simplecs_System_Input
+// component flag > 0 -> sum of component types -> determines tnECS_System_Input
 // component id > 0 -> unique for component (should be exponent of component type)
 typedef uint16_t tnecs_system_t;
 typedef uint16_t tnecs_system_t;
@@ -195,7 +195,7 @@ struct Components_Array {
     void * components;       // same order as entities_bytype
 };
 
-struct Simplecs_System_Input {
+struct tnECS_System_Input {
     tnecs_entity_t * entities;
     tnecs_components_t typeflag;
     size_t num;
@@ -203,12 +203,12 @@ struct Simplecs_System_Input {
     void ** components_lists;
 };
 
-struct Simplecs_World {
+struct tnECS_World {
     tnecs_entity_t * entities;                      // Deleted Entities are 0
     tnecs_components_t * typeflags;                 // [typeflag_id]
     tnecs_components_t * entity_typeflags;          // [entity]
     tnecs_components_t * system_typeflags;          // [system]
-    void (** systems)(struct Simplecs_System_Input);// [system]
+    void (** systems)(struct tnECS_System_Input);// [system]
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
@@ -236,9 +236,9 @@ struct Simplecs_World {
     uint64_t temp_hash;
     char temp_str[STR_BUFFER];
 };
-typedef struct Simplecs_World tnecs_world_t;
+typedef struct tnECS_World tnecs_world_t;
 
-struct Simplecs_World * tnecs_init();
+struct tnECS_World * tnecs_init();
 
 // Error if component registered twice -> user responsibility
 #define TNECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
@@ -313,30 +313,30 @@ tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__)))
 
 
-void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, void (* in_system)(struct Simplecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
+void tnecs_register_system(struct tnECS_World * in_world, uint64_t in_hash, void (* in_system)(struct tnECS_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
 
 
-tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world);
-tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, size_t argnum, ...);
-void tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_entity_t in_entity);
-void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
-bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t previous_flag, tnecs_components_t new_flag);
-void tnecs_entity_typeflag_change(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t new_type);
-size_t tnecs_new_typeflag(struct Simplecs_World * in_world, size_t num_components, tnecs_components_t typeflag);
-tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, size_t argnum, ...);
+tnecs_entity_t tnecs_new_entity(struct tnECS_World * in_world);
+tnecs_entity_t tnecs_new_entity_wcomponents(struct tnECS_World * in_world, size_t argnum, ...);
+void tnecs_entity_destroy(struct tnECS_World * in_world, tnecs_entity_t in_entity);
+void tnecs_new_component(struct tnECS_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
+bool tnecs_componentsbytype_migrate(struct tnECS_World * in_world, tnecs_entity_t in_entity, tnecs_components_t previous_flag, tnecs_components_t new_flag);
+void tnecs_entity_typeflag_change(struct tnECS_World * in_world, tnecs_entity_t in_entity, tnecs_components_t new_type);
+size_t tnecs_new_typeflag(struct tnECS_World * in_world, size_t num_components, tnecs_components_t typeflag);
+tnecs_component_t tnecs_names2typeflag(struct tnECS_World * in_world, size_t argnum, ...);
 
 // UTILITY FUNCTIONS
-size_t tnecs_component_name2id(struct Simplecs_World * in_world, const unsigned char * in_name);
-tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_world, size_t argnum, ...);
+size_t tnecs_component_name2id(struct tnECS_World * in_world, const unsigned char * in_name);
+tnecs_component_t tnecs_component_names2typeflag(struct tnECS_World * in_world, size_t argnum, ...);
 tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...);
-size_t tnecs_component_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag);
-size_t tnecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
+size_t tnecs_component_typeflag2id(struct tnECS_World * in_world, tnecs_component_t in_typeflag);
+size_t tnecs_component_hash2id(struct tnECS_World * in_world, uint64_t in_hash);
 size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
 
-size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
-size_t tnecs_system_name2id(struct Simplecs_World * in_world, const unsigned char * in_name);
-tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const unsigned char * in_name);
+size_t tnecs_system_hash2id(struct tnECS_World * in_world, uint64_t in_hash);
+size_t tnecs_system_name2id(struct tnECS_World * in_world, const unsigned char * in_name);
+tnecs_component_t tnecs_system_name2typeflag(struct tnECS_World * in_world, const unsigned char * in_name);
 
 
 // STRING HASHING
