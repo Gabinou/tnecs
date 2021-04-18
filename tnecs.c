@@ -187,7 +187,8 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, si
     va_start(ap, argnum);
     tnecs_component_t typeflag = 0;
     for (size_t i = 0; i < argnum; i++) {
-        typeflag += TNECS_COMPONENT_HASH2ID(in_world, va_arg(ap, uint64_t));
+        TNECS_DEBUG_PRINTF("Current hash %llu\n", va_arg(ap, uint64_t));
+        typeflag += tnecs_component_hash2id(in_world, va_arg(ap, uint64_t));
     }
     va_end(ap);
     tnecs_entity_t new_entity = tnecs_new_entity(in_world);
@@ -397,7 +398,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, c
 }
 
 tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_world, uint8_t argnum, ...) {
-    // TNECS_DEBUG_PRINTF("tnecs_component_names2typeflag\n");
+    TNECS_DEBUG_PRINTF("tnecs_component_names2typeflag\n");
 
     va_list ap;
     tnecs_component_t typeflag;
