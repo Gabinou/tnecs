@@ -13,6 +13,9 @@
 extern "C" {
 #endif
 
+#define TNECS_DEBUG 1
+#define TNECS_DEBUG_PRINTF(...) do { if (TNECS_DEBUG)  printf(__VA_ARGS__);} while (0)
+
 typedef uint64_t tnecs_entity_t;
 typedef uint64_t tnecs_entities_t;
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 64 components
@@ -23,9 +26,9 @@ typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 64 components
 typedef uint16_t tnecs_system_t;
 typedef uint16_t tnecs_system_t;
 
-#define TNECS_NULL 0        
+#define TNECS_NULL 0
 // entity, component, system:  XXXX_id zero AKWAYS reserved for NULL
-#define ID_START 1
+#define TNECS_ID_START 1
 #define OPEN_IDS_BUFFER 128
 #define STR_BUFFER 128
 #define MAX_COMPONENT 63
@@ -253,7 +256,7 @@ world->num_components++;
 #define TNECS_COMPONENTS_NAMES2TYPEFLAG(world, ...) tnecs_component_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
-#define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - COMPONENT_ID_START))
+#define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_ID_START))
 
 #define TNECS_SYSTEM_HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)
