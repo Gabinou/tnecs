@@ -110,6 +110,10 @@ int main() {
     printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
     assert(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
     assert(test_world->num_components == 2);
+    printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
+    printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
+    assert(test_world->typeflags[0] == 0);
+    assert(test_world->typeflags[1] == (TNECS_ID_START << 0));
     assert(TNECS_COMPONENT_TYPEFLAG(test_world, Position) == (TNECS_ID_START << 0));
 
     printf("Registering Position Unit \n");

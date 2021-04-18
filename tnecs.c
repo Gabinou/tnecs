@@ -26,7 +26,7 @@ struct Simplecs_World * tnecs_init() {
 
     tnecs_world->typeflags = NULL;
     arrsetcap(tnecs_world->typeflags, DEFAULT_ENTITY_CAP);
-    arrput(tnecs_world->entity_typeflags, TNECS_NULL);
+    arrput(tnecs_world->typeflags, TNECS_NULL);
 
     tnecs_world->entity_typeflags = NULL;
     arrsetcap(tnecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
