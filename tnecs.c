@@ -17,6 +17,8 @@
 // or exclusive: iterate over entities that have only the system's components
 
 struct Simplecs_World * tnecs_init() {
+    TNECS_DEBUG_PRINTF("tnecs_init\n");
+
     struct Simplecs_World * tnecs_world = (struct Simplecs_World *)calloc(sizeof(struct Simplecs_World), 1);
     tnecs_world->entities = NULL;
     arrsetcap(tnecs_world->entities, DEFAULT_ENTITY_CAP);
@@ -81,6 +83,8 @@ struct Simplecs_World * tnecs_init() {
 
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_new_entity\n");
+
     tnecs_entity_t out = TNECS_NULL;
     tnecs_component_t component_flag;
     while ((out == TNECS_NULL) && (in_world->num_opened_entity_ids > 0)) {
@@ -95,6 +99,8 @@ tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
 }
 
 size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t new_typeflag) {
+    TNECS_DEBUG_PRINTF("tnecs_new_typeflag\n");
+
     size_t typeflag_id = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
         if (new_typeflag == in_world->typeflags[i]) {
@@ -114,6 +120,7 @@ size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t n
 
 size_t tnecs_component_name2id(struct Simplecs_World * in_world, const char * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_component_name2id\n");
+
     size_t   out = 0;
     uint64_t temp_hash = hash_djb2(in_name);
     TNECS_DEBUG_PRINTF("%s hash %llu \n", in_name, temp_hash);
@@ -128,6 +135,8 @@ size_t tnecs_component_name2id(struct Simplecs_World * in_world, const char * in
 }
 
 tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t argnum, ...) {
+    TNECS_DEBUG_PRINTF("tnecs_names2typeflag\n");
+
     tnecs_component_t out = 0;
     va_list ap;
     va_start(ap, argnum);
@@ -146,6 +155,8 @@ tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, uint8_t
 }
 
 tnecs_component_t tnecs_component_ids2typeflag(uint8_t argnum, ...) {
+    TNECS_DEBUG_PRINTF("tnecs_component_ids2typeflag\n");
+
     tnecs_component_t out = 0;
     va_list ap;
     va_start(ap, argnum);
@@ -157,6 +168,8 @@ tnecs_component_t tnecs_component_ids2typeflag(uint8_t argnum, ...) {
 }
 
 size_t tnecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) {
+    TNECS_DEBUG_PRINTF("tnecs_component_hash2id\n");
+
     size_t out;
     for (size_t i = 0; i < in_world->num_components; i++) {
         if (in_world->component_hashes[i] == in_hash) {
@@ -169,6 +182,7 @@ size_t tnecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_has
 
 tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, size_t argnum, ...) {
     TNECS_DEBUG_PRINTF("tnecs_new_entity_wcomponents \n");
+
     va_list ap;
     va_start(ap, argnum);
     tnecs_component_t typeflag = 0;
@@ -185,8 +199,8 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, si
 
 tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_entity_t in_entity) {
     TNECS_DEBUG_PRINTF("tnecs_entity_destroy \n");
-    tnecs_component_t previous_flag = in_world->entity_typeflags[in_entity];
 
+    tnecs_component_t previous_flag = in_world->entity_typeflags[in_entity];
     for (size_t i = 0 ; i < in_world->num_systems; i++) {
         if (previous_flag == in_world->system_typeflags[i]) {
             for (size_t j = 0 ; j < in_world->num_entitiesbytype[i]; j++) {
@@ -206,6 +220,7 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
 
 void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
+
     arrput(in_world->system_hashes, in_hash);
     // arrput(in_world->systems_table->systems_list, in_system);
     // arrput(in_world->systems_table->components_num, num_components);
@@ -222,6 +237,7 @@ void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, u
 
 void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd) {
     TNECS_DEBUG_PRINTF("tnecs_new_component\n");
+
     bool found = 0;
     for (size_t i = 0; i < in_world->num_componentsbytype[typeflag]; i++) {
         if (in_world->component_flagbytype[typeflag][i] == type_toadd) {
@@ -243,6 +259,7 @@ void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_ent
 
 void tnecs_entity_typeflag_change(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t new_type) {
     TNECS_DEBUG_PRINTF("tnecs_entity_typeflag_change\n");
+
     tnecs_components_t previous_flag = in_world->entity_typeflags[in_entity];
     in_world->entity_typeflags[in_entity] = in_world->entity_typeflags[in_entity] | new_type;
 
@@ -315,6 +332,8 @@ bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_enti
 }
 
 size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag) {
+    TNECS_DEBUG_PRINTF("tnecs_type_id \n");
+
     size_t found = TNECS_NULL;
     for (size_t i = 0; i < len; i++) {
         if (in_typelist[i] == in_flag) {
@@ -326,6 +345,8 @@ size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_compone
 }
 
 size_t tnecs_component_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag) {
+    TNECS_DEBUG_PRINTF("tnecs_component_typeflag2id \n");
+
     size_t id = 0;
     for (size_t i = 0; i < in_world->num_typeflags; i++) {
         if (in_typeflag = in_world->typeflags[i]) {
@@ -339,6 +360,8 @@ size_t tnecs_component_typeflag2id(struct Simplecs_World * in_world, tnecs_compo
 
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag) {
     // returns position of subtype from in_typelist
+    TNECS_DEBUG_PRINTF("tnecs_issubtype\n");
+
     size_t found = 0;
     for (size_t i = 0; i < len; i++) {
         if ((in_typelist[i] & in_flag) == in_flag) {
@@ -350,6 +373,8 @@ size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_compo
 }
 
 size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) {
+    TNECS_DEBUG_PRINTF("tnecs_system_hash2id\n");
+
     size_t found = 0;
     for (size_t i = 0; i < in_world->num_systems; i++) {
         if (in_world->system_hashes[i] == in_hash) {
@@ -361,16 +386,19 @@ size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash) 
 }
 
 size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name) {
+    TNECS_DEBUG_PRINTF("tnecs_system_name2id\n");
     return (tnecs_system_hash2id(in_world, hash_djb2(in_name)));
 }
 
 tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const char * in_name) {
+    TNECS_DEBUG_PRINTF("tnecs_system_name2typeflag\n");
     size_t id = tnecs_system_hash2id(in_world, hash_djb2(in_name));
     return (in_world->system_typeflags[id]);
 }
 
 tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_world, uint8_t argnum, ...) {
-    TNECS_DEBUG_PRINTF("tnecs_component_names2typeflag\n");
+    // TNECS_DEBUG_PRINTF("tnecs_component_names2typeflag\n");
+
     va_list ap;
     tnecs_component_t typeflag;
     va_start(ap, argnum);
@@ -389,6 +417,8 @@ uint64_t hash_djb2(const unsigned char * str) {
     * (why it works better than many other constants, prime or not) has never been adequately explained.
     * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
     * [2] http://www.cse.yorku.ca/~oz/hash.html */
+    TNECS_DEBUG_PRINTF("hash_djb2\n");
+
     uint64_t hash = 5381;
     int32_t str_char;
     while (str_char = *str++) {
@@ -412,6 +442,8 @@ uint64_t hash_sdbm(const unsigned char * str) {
     * berkeley db (see sleepycat) and elsewhere.
     * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
     * [2] http://www.cse.yorku.ca/~oz/hash.html */
+    TNECS_DEBUG_PRINTF("hash_djb2\n");
+
     uint64_t hash = 0;
     uint32_t str_char;
     while (str_char = *str++) {

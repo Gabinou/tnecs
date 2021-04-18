@@ -13,8 +13,13 @@
 extern "C" {
 #endif
 
-#define TNECS_DEBUG 1
-#define TNECS_DEBUG_PRINTF(...) do { if (TNECS_DEBUG)  printf(__VA_ARGS__);} while (0)
+#define TNECS_DEBUG
+#ifndef TNECS_DEBUG
+#define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0);
+#else
+#define TNECS_DEBUG_PRINTF(...) (void)0
+#endif
+
 
 typedef uint64_t tnecs_entity_t;
 typedef uint64_t tnecs_entities_t;
