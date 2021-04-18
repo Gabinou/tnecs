@@ -208,8 +208,9 @@ struct Simplecs_World {
     tnecs_components_t * typeflags;                 // [typeflag_id]
     tnecs_components_t * entity_typeflags;          // [entity]
     tnecs_components_t * system_typeflags;          // [system]
-    bool * system_isExclusive;                      // [system]
     void (** systems)(struct Simplecs_System_Input);// [system]
+    bool * system_isExclusive;                      // [system_id]
+    uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
@@ -225,7 +226,6 @@ struct Simplecs_World {
     size_t num_entities;
     size_t num_typeflags;
     tnecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
-    tnecs_system_t next_system_id; // [0, ...]
 
     tnecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;

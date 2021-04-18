@@ -113,7 +113,6 @@ int main() {
 
     assert(test_world->num_components == 2);
     printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
-    printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
     assert(test_world->typeflags[0] == 0);
     assert(test_world->typeflags[1] == (TNECS_ID_START << 0));
     assert(TNECS_COMPONENT_TYPEFLAG(test_world, Position) == (TNECS_ID_START << 0));
@@ -125,10 +124,14 @@ int main() {
     printf("TNECS_NAME2TYPEFLAG(test_world, Unit) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Unit));
     assert(test_world->num_components == 3);
     assert(TNECS_COMPONENT_TYPEFLAG(test_world, Unit) == (TNECS_ID_START << 1));
+    assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == hash_djb2("Unit"));
+
     printf("Registering Position Sprite \n");
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     assert(TNECS_COMPONENT_NAME2ID(test_world, Sprite) == 3);
     assert(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == (TNECS_ID_START << 2));
+    assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
+
     printf("New Entity with components \n");
     TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
     printf("\n");

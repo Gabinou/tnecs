@@ -82,7 +82,6 @@ struct Simplecs_World * tnecs_init() {
     arrput(tnecs_world->systems, NULL);
 
     tnecs_world->next_entity_id = TNECS_ID_START;
-    tnecs_world->next_system_id = TNECS_ID_START;
 
     return (tnecs_world);
 }
@@ -231,21 +230,19 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
     }
 }
 
-void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, void (* in_system)(struct Simplecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag) {
+void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, void (* in_system)(struct Simplecs_System_Input), uint8_t in_run_phase, bool isExclusive, size_t num_components, tnecs_components_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
-    // arrput(in_world->system_hashes, in_hash);
-    // arrput(in_world->systems_table->systems_list, in_system);
-    // arrput(in_world->systems_table->components_num, num_components);
-    // tnecs_entity_t * components_list = malloc(num_components * sizeof(tnecs_entity_t));
-    // va_list ap;
-    // va_start(ap, num_components);
-    // for (size_t i = 0; i < num_components; i++) {
-    //     components_list[i] = va_arg(ap, tnecs_entity_t);
-    // }
-    // va_end
-    // arrput(in_world->systems_table->components_lists, components_list);
-    // in_world->next_system_id++;
+    arrput(in_world->system_isExclusive, isExclusive);
+    arrput(in_world->system_phase, in_run_phase);
+    arrput(in_world->system_hashes, in_hash);
+    arrput(in_world->system_typeflags, components_typeflag);
+    arrput(in_world->systems, in_system);
+    arrput(in_world->num_componentsbytype, num_components);
+
+    in_world->num_systems++;
+    size_t typeflag_id = tnecs_new_typeflag(in_world, num_components, components_typeflag);
+
 }
 
 void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd) {
