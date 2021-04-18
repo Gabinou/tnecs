@@ -213,7 +213,9 @@ struct Simplecs_World {
     uint64_t * component_hashes;                    // [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
-    tnecs_entity_t ** entities_bytype;               // [typeflag_id][num_entitiesbytype]
+    // the by_type array are exclusive.
+    struct Components_Array ** components_bytype;   // [typeflag_id][num_componentsbytype]
+    tnecs_entity_t ** entities_bytype;              // [typeflag_id][num_entitiesbytype]
     tnecs_components_t ** component_idbytype;       // [typeflag_id][num_componentsbytype]
     tnecs_components_t ** component_flagbytype;     // [typeflag_id][num_componentsbytype]
     size_t * num_componentsbytype;                  // [typeflag_id]
@@ -222,7 +224,6 @@ struct Simplecs_World {
     size_t num_systems;
     size_t num_entities;
     size_t num_typeflags;
-    struct Components_Array ** components_bytype;  // [typeflag_id][num_componentsbytype]
     tnecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     tnecs_system_t next_system_id; // [0, ...]
 
@@ -309,12 +310,10 @@ tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);
 // }\
 }
 
+#define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__)))
 
 
-#define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), pfunc, phase, isexcl, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_SUM(TNECS_COMPONENT_ID, __VA_ARGS__));\
-
-
-void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
+void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, void (* in_system)(struct Simplecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
 
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world);

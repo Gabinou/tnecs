@@ -132,8 +132,8 @@ int main() {
     printf("\n");
 
     printf("System registration\n");
-    // // TNECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, TNECS_PHASE_PREUPDATE, Position, Unit);
-    // printf("\n");
+    TNECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
+    printf("\n");
 
     // printf("Entity Creation/Destruction\n");
     // assert(test_world->next_entity_id == ENTITY_ID_START);
