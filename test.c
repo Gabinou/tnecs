@@ -109,6 +109,8 @@ int main() {
     TNECS_COMPONENT_TYPEFLAG(test_world, Position);
     printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
     assert(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
+    assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == hash_djb2("Position"));
+
     assert(test_world->num_components == 2);
     printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
     printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));

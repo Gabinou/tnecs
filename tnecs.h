@@ -15,7 +15,7 @@ extern "C" {
 
 // #define TNECS_DEBUG
 #ifdef TNECS_DEBUG
-#define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0);
+#define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
 #define TNECS_DEBUG_PRINTF(...) (void)0
 #endif
@@ -243,7 +243,7 @@ struct Simplecs_World * tnecs_init();
 // Error if component registered twice -> user responsibility
 #define TNECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
 arrput(world->typeflags, (1ULL << (world->num_components - 1)));\
-printf("world->typeflags[world->num_components-1] %llu \n", world->typeflags[world->num_components]);\
+printf("world->typeflags[world->num_components] %llu \n", world->typeflags[world->num_components]);\
 printf("%s hash %llu \n", #name, hash_djb2(#name));\
 world->num_components++;
 // printf("world->num_components %llu \n", world->num_components);
