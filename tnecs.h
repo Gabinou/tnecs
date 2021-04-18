@@ -23,9 +23,9 @@ typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 64 components
 typedef uint16_t tnecs_system_t;
 typedef uint16_t tnecs_system_t;
 
-#define TNECS_NULL 0
-#define COMPONENT_ID_START 1
-#define ENTITY_ID_START 1
+#define TNECS_NULL 0        
+// entity, component, system:  XXXX_id zero AKWAYS reserved for NULL
+#define ID_START 1
 #define OPEN_IDS_BUFFER 128
 #define STR_BUFFER 128
 #define MAX_COMPONENT 63
@@ -209,7 +209,7 @@ struct Simplecs_World {
     tnecs_components_t ** component_flagbytype;     // [typeflag_id][num_componentsbytype]
     size_t * num_componentsbytype;                  // [typeflag_id]
     size_t * num_entitiesbytype;                    // [typeflag_id]
-    size_t num_components;
+    size_t num_components;                          // includes NULL component
     size_t num_systems;
     size_t num_typeflags;
     struct Components_Array ** components_bytype;  // [typeflag_id][num_componentsbytype]
@@ -231,7 +231,9 @@ struct Simplecs_World * tnecs_init();
 
 // Error if component registered twice -> user responsibility
 #define TNECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
+printf("%s hash %llu \n", #name, hash_djb2(#name));\
 world->num_components++;
+// printf("world->num_components %llu \n", world->num_components);
 
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(in_world) // redundancy for API consistency

@@ -2,6 +2,7 @@
 
 Tiny C99 Entity-Component-System (ECS) library.
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
+
 OOP: Objects/Classes contain data and methods, children objects inherit from parents...
 
 ECS: By contrast, components are purely data, user-defined structs.
@@ -25,7 +26,7 @@ Videogame Example:
 - Be _mostly_ [STB-style](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt).
 - Free and Open Source
 
-## Alternative ECS C/C++ libraries
+## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
 - [entt (C++)](https://github.com/skypjack/entt)
 - [gamedev_libraries](https://github.com/raizam/gamedev_libraries)

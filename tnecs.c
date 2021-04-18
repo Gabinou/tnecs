@@ -61,9 +61,9 @@ struct Simplecs_World * tnecs_init() {
     tnecs_world->num_entitiesbytype = NULL;
     arrsetcap(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
 
-    tnecs_world->num_components = 0;
-    tnecs_world->num_systems = 0;
-    tnecs_world->num_typeflags = 0;
+    tnecs_world->num_components = ID_START;
+    tnecs_world->num_systems = ID_START;
+    tnecs_world->num_typeflags = ID_START;
 
     tnecs_world->components_bytype = NULL;
     arrsetcap(tnecs_world->components_bytype, DEFAULT_SYSTEM_CAP);
@@ -74,44 +74,6 @@ struct Simplecs_World * tnecs_init() {
     return (tnecs_world);
 }
 
-uint64_t hash_djb2(const unsigned char * str) {
-    /* djb2 hashing algorithm by Dan Bernstein.
-    * Description: This algorithm (k=33) was first reported by dan bernstein many
-    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
-    * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
-    * (why it works better than many other constants, prime or not) has never been adequately explained.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    uint64_t hash = 5381;
-    int32_t str_char;
-    while (str_char = *str++) {
-        hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
-    }
-    return (hash);
-}
-
-uint64_t hash_sdbm(const unsigned char * str) {
-    /* sdbm hashing algorithm by Dan Bernstein.
-    * Description: This algorithm was created for sdbm (a public-domain
-    * reimplementation of ndbm) database library. It was found to do
-    * well in scrambling bits, causing better distribution of the
-    * keys and fewer splits. It also happens to be a good general hashing
-    * function with good distribution. The actual function is
-    *hash(i) = hash(i - 1) * 65599 + str[i]; what is included below
-    * is the faster version used in gawk. [* there is even a faster,
-    * duff-device version] the magic constant 65599 was picked out of
-    * thin air while experimenting with different constants, and turns
-    * out to be a prime. this is one of the algorithms used in
-    * berkeley db (see sleepycat) and elsewhere.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    uint64_t hash = 0;
-    uint32_t str_char;
-    while (str_char = *str++) {
-        hash = str_char + (hash << 6) + (hash << 16) - hash;
-    }
-    return (hash);
-}
 
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
@@ -147,9 +109,14 @@ size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t n
 }
 
 size_t tnecs_component_name2id(struct Simplecs_World * in_world, const char * in_name) {
+    printf("tnecs_component_name2id\n");
     size_t   out = 0;
     uint64_t temp_hash = hash_djb2(in_name);
+    printf("%s hash %llu \n", in_name, temp_hash);
+
+
     for (size_t j = 0; j < in_world->num_components; j++) {
+        printf("%d id, hash %llu \n", j, in_world->component_hashes[j]);
         if (in_world->component_hashes[j] == temp_hash) {
             out = j;
             break;
@@ -401,6 +368,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, c
 }
 
 tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_world, uint8_t argnum, ...) {
+    printf("tnecs_component_names2typeflag\n");
     va_list ap;
     tnecs_component_t typeflag;
     va_start(ap, argnum);
@@ -411,3 +379,41 @@ tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_worl
     return (typeflag);
 }
 
+uint64_t hash_djb2(const unsigned char * str) {
+    /* djb2 hashing algorithm by Dan Bernstein.
+    * Description: This algorithm (k=33) was first reported by dan bernstein many
+    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
+    * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
+    * (why it works better than many other constants, prime or not) has never been adequately explained.
+    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
+    * [2] http://www.cse.yorku.ca/~oz/hash.html */
+    uint64_t hash = 5381;
+    int32_t str_char;
+    while (str_char = *str++) {
+        hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
+    }
+    return (hash);
+}
+
+uint64_t hash_sdbm(const unsigned char * str) {
+    /* sdbm hashing algorithm by Dan Bernstein.
+    * Description: This algorithm was created for sdbm (a public-domain
+    * reimplementation of ndbm) database library. It was found to do
+    * well in scrambling bits, causing better distribution of the
+    * keys and fewer splits. It also happens to be a good general hashing
+    * function with good distribution. The actual function is
+    *hash(i) = hash(i - 1) * 65599 + str[i]; what is included below
+    * is the faster version used in gawk. [* there is even a faster,
+    * duff-device version] the magic constant 65599 was picked out of
+    * thin air while experimenting with different constants, and turns
+    * out to be a prime. this is one of the algorithms used in
+    * berkeley db (see sleepycat) and elsewhere.
+    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
+    * [2] http://www.cse.yorku.ca/~oz/hash.html */
+    uint64_t hash = 0;
+    uint32_t str_char;
+    while (str_char = *str++) {
+        hash = str_char + (hash << 6) + (hash << 16) - hash;
+    }
+    return (hash);
+}

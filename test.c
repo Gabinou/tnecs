@@ -108,12 +108,12 @@ int main() {
     printf("Component_Position_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Position));
     printf("TNECS_NAME2TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
     // assert(Component_Position_id == COMPONENT_ID_START);
-    assert(test_world->num_components == 1);
+    assert(test_world->num_components == 2);
     printf("Registering Position Unit \n");
     TNECS_REGISTER_COMPONENT(test_world, Unit);
     printf("Component_Unit_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Unit));
-    printf("TNECS_NAME2TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Unit));
-    assert(test_world->num_components == 2);
+    printf("TNECS_NAME2TYPEFLAG(test_world, Unit) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Unit));
+    assert(test_world->num_components == 3);
     // assert(Component_Unit_id == (COMPONENT_ID_START << 1));
     printf("Registering Position Sprite \n");
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
