@@ -32,6 +32,7 @@ typedef uint16_t tnecs_system_t;
 typedef uint16_t tnecs_system_t;
 
 #define TNECS_NULL 0
+#define TNECS_NOCOMPONENT_TYPEFLAG 0
 // entity, component, system:  XXXX_id zero AKWAYS reserved for NULL
 #define TNECS_ID_START 1
 #define OPEN_IDS_BUFFER 128
@@ -240,6 +241,8 @@ struct Simplecs_World * tnecs_init();
 
 // Error if component registered twice -> user responsibility
 #define TNECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
+arrput(world->typeflags, (1ULL << (world->num_components - 1)));\
+printf("world->typeflags[world->num_components-1] %llu \n", world->typeflags[world->num_components-1]);\
 printf("%s hash %llu \n", #name, hash_djb2(#name));\
 world->num_components++;
 // printf("world->num_components %llu \n", world->num_components);

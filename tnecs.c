@@ -87,8 +87,6 @@ struct Simplecs_World * tnecs_init() {
     return (tnecs_world);
 }
 
-
-
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_new_entity\n");
 
@@ -102,8 +100,8 @@ tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
         out = in_world->next_entity_id++;
     }
     arrput(in_world->entities, out);
-    arrput(in_world->entitiesbytype[TNECS_NULL], out);
-    in_world->num_entitiesbytype[TNECS_NULL]++;
+    arrput(in_world->entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG], out);
+    in_world->num_entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG]++;
     return (out);
 }
 
