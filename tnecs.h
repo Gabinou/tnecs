@@ -225,8 +225,8 @@ struct Simplecs_World {
     size_t num_systems;
     size_t num_entities;
     size_t num_typeflags;
-    tnecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
 
+    tnecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
     tnecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
 

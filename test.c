@@ -82,7 +82,7 @@ struct Unit_Hash {
 };
 
 
-void Simplecs_SystemMove(struct Simplecs_System_Input in_input) {
+void SystemMove(struct Simplecs_System_Input in_input) {
     // Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
     // Unit *v = TNECS_COMPONENTS_LIST(entity_list, Unit);
 
@@ -137,7 +137,9 @@ int main() {
     printf("\n");
 
     printf("System registration\n");
-    TNECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
+    TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
+    printf("TNECS_SYSTEM_ID(test_world, SystemMove) %d\n", TNECS_SYSTEM_ID(test_world, SystemMove));
+    assert(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
     printf("\n");
 
     // printf("Entity Creation/Destruction\n");

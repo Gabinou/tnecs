@@ -44,6 +44,10 @@ struct Simplecs_World * tnecs_init() {
     arrsetcap(tnecs_world->component_hashes, MAX_COMPONENT);
     arrput(tnecs_world->component_hashes, TNECS_NULL);
 
+    tnecs_world->system_hashes = NULL;
+    arrsetcap(tnecs_world->system_hashes, DEFAULT_SYSTEM_CAP);
+    arrput(tnecs_world->system_hashes, TNECS_NULL);
+
     tnecs_world->entities_bytype = NULL;
     arrsetcap(tnecs_world->entities_bytype, DEFAULT_SYSTEM_CAP);
     arrsetlen(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
