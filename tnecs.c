@@ -297,8 +297,8 @@ bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_enti
     size_t new_component_num = in_world->num_componentsbytype[new_type_id];
     size_t old_component_num = in_world->num_componentsbytype[old_type_id];
 
-    struct Components_Array ** new_type_components_byentity = in_world->components_bytype[new_type_id];
-    struct Components_Array ** old_type_components_byentity = in_world->components_bytype[old_type_id];
+    struct Components_Array * new_type_components_byentity = in_world->components_bytype[new_type_id];
+    struct Components_Array * old_type_components_byentity = in_world->components_bytype[old_type_id];
 
     // Deletes in_entity from old_type_entities
     size_t found_old = 0;
@@ -403,7 +403,7 @@ tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_worl
     tnecs_component_t typeflag;
     va_start(ap, argnum);
     for (size_t i = 0; i < argnum; i++) {
-        typeflag += in_world->typeflags[tnecs_component_hash2id(in_world, va_arg(ap, char *))];
+        typeflag += in_world->typeflags[tnecs_component_name2id(in_world, va_arg(ap, const char *))];
     }
     va_end(ap);
     return (typeflag);
