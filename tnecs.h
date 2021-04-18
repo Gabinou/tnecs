@@ -13,7 +13,7 @@
 extern "C" {
 #endif
 
-// #define TNECS_DEBUG
+#define TNECS_DEBUG
 #ifdef TNECS_DEBUG
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0);
 #else
@@ -192,7 +192,7 @@ enum RUN_PHASES {
 
 struct Components_Array {
     tnecs_components_t type; // single bit on
-    void * components;       // same order as entitiesbytype
+    void * components;       // same order as entities_bytype
 };
 
 struct Simplecs_System_Input {
@@ -213,7 +213,7 @@ struct Simplecs_World {
     uint64_t * component_hashes;                    // [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
-    tnecs_entity_t ** entitiesbytype;               // [typeflag_id][num_entitiesbytype]
+    tnecs_entity_t ** entities_bytype;               // [typeflag_id][num_entitiesbytype]
     tnecs_components_t ** component_idbytype;       // [typeflag_id][num_componentsbytype]
     tnecs_components_t ** component_flagbytype;     // [typeflag_id][num_componentsbytype]
     size_t * num_componentsbytype;                  // [typeflag_id]
@@ -323,7 +323,7 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
 void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
 bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t previous_flag, tnecs_components_t new_flag);
 void tnecs_entity_typeflag_change(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t new_type);
-size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t typeflag);
+size_t tnecs_new_typeflag(struct Simplecs_World * in_world, size_t num_components, tnecs_components_t typeflag);
 
 // UTILITY FUNCTIONS
 size_t tnecs_component_name2id(struct Simplecs_World * in_world, const char * in_name);
@@ -339,10 +339,13 @@ size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_na
 tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const char * in_name);
 
 
-// STRING HASHING ALGORITHMS
+// STRING HASHING
 // hash_djb2 slightly faster than hash_sdbm
 uint64_t hash_djb2(const unsigned char * str);
 uint64_t hash_sdbm(const unsigned char * str);
+
+// SET BIT COUNTING
+uint8_t setBits_KnR(uint64_t in_flag); // Credits to Kernighan and Ritchie in the C Programming Language
 
 #ifdef __cplusplus
 }

@@ -131,7 +131,7 @@ int main() {
     TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
     printf("\n");
 
-    // printf("System registration\n");
+    printf("System registration\n");
     // // TNECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, TNECS_PHASE_PREUPDATE, Position, Unit);
     // printf("\n");
 

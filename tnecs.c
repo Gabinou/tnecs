@@ -44,8 +44,8 @@ struct Simplecs_World * tnecs_init() {
     arrsetcap(tnecs_world->component_hashes, MAX_COMPONENT);
     arrput(tnecs_world->component_hashes, TNECS_NULL);
 
-    tnecs_world->entitiesbytype = NULL;
-    arrsetcap(tnecs_world->entitiesbytype, DEFAULT_SYSTEM_CAP);
+    tnecs_world->entities_bytype = NULL;
+    arrsetcap(tnecs_world->entities_bytype, DEFAULT_SYSTEM_CAP);
     arrsetlen(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
     tnecs_world->num_componentsbytype = NULL;
     arrsetcap(tnecs_world->num_componentsbytype, DEFAULT_SYSTEM_CAP);
@@ -53,8 +53,8 @@ struct Simplecs_World * tnecs_init() {
         tnecs_world->num_entitiesbytype[i] = 0;
         tnecs_world->num_componentsbytype[i] = 0;
     }
-    arrput(tnecs_world->entitiesbytype, NULL);
-    arrput(tnecs_world->entitiesbytype[TNECS_NULL], TNECS_NULL);
+    arrput(tnecs_world->entities_bytype, NULL);
+    arrput(tnecs_world->entities_bytype[TNECS_NULL], TNECS_NULL);
     tnecs_world->num_entitiesbytype[TNECS_NULL]++;
 
     tnecs_world->component_idbytype = NULL;
@@ -100,25 +100,34 @@ tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
         out = in_world->next_entity_id++;
     }
     arrput(in_world->entities, out);
-    arrput(in_world->entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG], out);
+    arrput(in_world->entities_bytype[TNECS_NOCOMPONENT_TYPEFLAG], out);
     in_world->num_entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG]++;
     return (out);
 }
 
-size_t tnecs_new_typeflag(struct Simplecs_World * in_world, tnecs_components_t new_typeflag) {
+size_t tnecs_new_typeflag(struct Simplecs_World * in_world, size_t num_components, tnecs_components_t new_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_new_typeflag\n");
 
     size_t typeflag_id = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
+        printf("i %d \n", i);
         if (new_typeflag == in_world->typeflags[i]) {
             typeflag_id = i;
             break;
         }
     }
+    printf("not found\n");
     if (!typeflag_id) {
         typeflag_id = in_world->num_typeflags++;
+        printf("here1\n");
         arrput(in_world->typeflags, new_typeflag);
-        arrput(in_world->components_bytype, NULL);
+        printf("here2\n");
+        struct Components_Array * temp_comparray = NULL;
+        arrsetlen(temp_comparray, num_components);
+        printf("here3\n");
+        arrput(in_world->components_bytype, temp_comparray);
+        printf("here4\n");
+        arrput(in_world->entities_bytype, NULL);
         // } else {
         // TNECS_DEBUG_PRINTF("tnecs_new_typeflag: new_typeflag already exists!");
     }
@@ -199,8 +208,8 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, si
     }
     va_end(ap);
     tnecs_entity_t new_entity = tnecs_new_entity(in_world);
-    size_t typeflag_id = tnecs_new_typeflag(in_world, typeflag);
-    arrput(in_world->entitiesbytype[typeflag_id], new_entity);
+    size_t typeflag_id = tnecs_new_typeflag(in_world, argnum, typeflag);
+    arrput(in_world->entities_bytype[typeflag_id], new_entity);
     in_world->num_entitiesbytype[typeflag_id]++;
 }
 
@@ -212,8 +221,8 @@ tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_enti
     for (size_t i = 0 ; i < in_world->num_systems; i++) {
         if (previous_flag == in_world->system_typeflags[i]) {
             for (size_t j = 0 ; j < in_world->num_entitiesbytype[i]; j++) {
-                if (in_world->entitiesbytype[i][j] == in_entity) {
-                    arrdel(in_world->entitiesbytype[i], j);
+                if (in_world->entities_bytype[i][j] == in_entity) {
+                    arrdel(in_world->entities_bytype[i], j);
                     break;
                 }
             }
@@ -274,14 +283,14 @@ void tnecs_entity_typeflag_change(struct Simplecs_World * in_world, tnecs_entity
     for (size_t i = 0; i < in_world->num_typeflags; i++) {
         if (previous_flag == in_world->entity_typeflags[i]) { //      EXCLUSIVE
             for (size_t j = 0; j < in_world->num_entitiesbytype[i]; j++) {
-                if (in_entity == in_world->entitiesbytype[i][j]) {
-                    arrdel(in_world->entitiesbytype[i], j);
+                if (in_entity == in_world->entities_bytype[i][j]) {
+                    arrdel(in_world->entities_bytype[i], j);
                     break;
                 }
             }
         }
         if (in_world->entity_typeflags[in_entity] == in_world->entity_typeflags[i]) { //      EXCLUSIVE
-            arrput(in_world->entitiesbytype[i], in_entity);
+            arrput(in_world->entities_bytype[i], in_entity);
         }
         // if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
         // if (previous_flag & in_world->system_typeflags[i] > 0) { //   INCLUSIVE
@@ -297,8 +306,8 @@ bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_enti
     size_t new_type_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, new_flag);
     size_t old_type_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, old_flag);
 
-    tnecs_entity_t * new_type_entities = in_world->entitiesbytype[new_type_id];
-    tnecs_entity_t * old_type_entities = in_world->entitiesbytype[old_type_id];
+    tnecs_entity_t * new_type_entities = in_world->entities_bytype[new_type_id];
+    tnecs_entity_t * old_type_entities = in_world->entities_bytype[old_type_id];
 
     size_t new_num_entities = in_world->num_entitiesbytype[new_type_id];
     size_t old_num_entities = in_world->num_entitiesbytype[old_type_id];
@@ -325,7 +334,7 @@ bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_enti
     }
     if (!found_new) {
         arrput(new_type_entities, in_entity);
-        in_world->entitiesbytype[new_type_id]++;
+        in_world->entities_bytype[new_type_id]++;
     } else {
         TNECS_DEBUG_PRINTF("tnecs_componentsbytype_migrate: entity found in components_bytype for new_flag");
     }
@@ -417,6 +426,7 @@ tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_worl
     return (typeflag);
 }
 
+// STRING HASHING
 uint64_t hash_djb2(const unsigned char * str) {
     /* djb2 hashing algorithm by Dan Bernstein.
     * Description: This algorithm (k=33) was first reported by dan bernstein many
@@ -459,3 +469,5 @@ uint64_t hash_sdbm(const unsigned char * str) {
     }
     return (hash);
 }
+
+// SET BIT COUNTING
