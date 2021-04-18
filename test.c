@@ -140,6 +140,8 @@ int main() {
     TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
     printf("TNECS_SYSTEM_ID(test_world, SystemMove) %d\n", TNECS_SYSTEM_ID(test_world, SystemMove));
     assert(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
+    assert(TNECS_SYSTEM_HASH(SystemMove) == hash_djb2("SystemMove"));
+    assert(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == hash_djb2("SystemMove"));
     printf("\n");
 
     // printf("Entity Creation/Destruction\n");
