@@ -122,6 +122,8 @@ size_t tnecs_new_typeflag(struct Simplecs_World * in_world, size_t num_component
         arrsetlen(temp_comparray, num_components);
         arrput(in_world->components_bytype, temp_comparray);
         arrput(in_world->entities_bytype, NULL);
+        arrput(in_world->num_componentsbytype, num_components);
+        arrput(in_world->num_entitiesbytype, 0);
         // } else {
         // TNECS_DEBUG_PRINTF("tnecs_new_typeflag: new_typeflag already exists!");
     }
