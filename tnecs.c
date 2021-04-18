@@ -408,7 +408,7 @@ tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_worl
     TNECS_DEBUG_PRINTF("tnecs_component_names2typeflag\n");
 
     va_list ap;
-    tnecs_component_t typeflag;
+    tnecs_component_t typeflag = 0;
     va_start(ap, argnum);
     for (size_t i = 0; i < argnum; i++) {
         typeflag += in_world->typeflags[tnecs_component_name2id(in_world, va_arg(ap, const char *))];
