@@ -46,7 +46,13 @@ struct Simplecs_World * tnecs_init() {
 
     tnecs_world->entitiesbytype = NULL;
     arrsetcap(tnecs_world->entitiesbytype, DEFAULT_SYSTEM_CAP);
+    arrsetlen(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
+    for (size_t i = 0 ; i < DEFAULT_SYSTEM_CAP; i++) {
+        tnecs_world->num_entitiesbytype[i] = 0;
+    }
     arrput(tnecs_world->entitiesbytype, NULL);
+    arrput(tnecs_world->entitiesbytype[TNECS_NULL], TNECS_NULL);
+    tnecs_world->num_entitiesbytype[TNECS_NULL]++;
 
     tnecs_world->component_idbytype = NULL;
     arrsetcap(tnecs_world->component_idbytype, DEFAULT_SYSTEM_CAP);
@@ -95,6 +101,8 @@ tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world) {
         out = in_world->next_entity_id++;
     }
     arrput(in_world->entities, out);
+    arrput(in_world->entitiesbytype[TNECS_NULL], out);
+    in_world->num_entitiesbytype[TNECS_NULL]++;
     return (out);
 }
 

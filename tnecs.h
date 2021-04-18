@@ -203,7 +203,7 @@ struct Simplecs_System_Input {
 };
 
 struct Simplecs_World {
-    tnecs_entity_t * entities;                      // Useless?
+    tnecs_entity_t * entities;                      // Deleted Entities are 0
     tnecs_components_t * typeflags;                 // [typeflag_id]
     tnecs_components_t * entity_typeflags;          // [entity]
     tnecs_components_t * system_typeflags;          // [system]
@@ -219,6 +219,7 @@ struct Simplecs_World {
     size_t * num_entitiesbytype;                    // [typeflag_id]
     size_t num_components;                          // includes NULL component
     size_t num_systems;
+    size_t num_entities;
     size_t num_typeflags;
     struct Components_Array ** components_bytype;  // [typeflag_id][num_componentsbytype]
     tnecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
