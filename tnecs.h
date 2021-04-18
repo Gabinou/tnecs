@@ -318,24 +318,25 @@ void tnecs_register_system(struct Simplecs_World * in_world, uint64_t in_hash, v
 
 tnecs_entity_t tnecs_new_entity(struct Simplecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct Simplecs_World * in_world, size_t argnum, ...);
-tnecs_entity_t tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_entity_t in_entity);
+void tnecs_entity_destroy(struct Simplecs_World * in_world, tnecs_entity_t in_entity);
 void tnecs_new_component(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
 bool tnecs_componentsbytype_migrate(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t previous_flag, tnecs_components_t new_flag);
 void tnecs_entity_typeflag_change(struct Simplecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t new_type);
 size_t tnecs_new_typeflag(struct Simplecs_World * in_world, size_t num_components, tnecs_components_t typeflag);
+tnecs_component_t tnecs_names2typeflag(struct Simplecs_World * in_world, size_t argnum, ...);
 
 // UTILITY FUNCTIONS
-size_t tnecs_component_name2id(struct Simplecs_World * in_world, const char * in_name);
-tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_world, uint8_t num, ...);
-tnecs_component_t tnecs_component_ids2typeflag(uint8_t num, ...);
+size_t tnecs_component_name2id(struct Simplecs_World * in_world, const unsigned char * in_name);
+tnecs_component_t tnecs_component_names2typeflag(struct Simplecs_World * in_world, size_t argnum, ...);
+tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...);
 size_t tnecs_component_typeflag2id(struct Simplecs_World * in_world, tnecs_component_t in_typeflag);
 size_t tnecs_component_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
 size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
 
 size_t tnecs_system_hash2id(struct Simplecs_World * in_world, uint64_t in_hash);
-size_t tnecs_system_name2id(struct Simplecs_World * in_world, const char * in_name);
-tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const char * in_name);
+size_t tnecs_system_name2id(struct Simplecs_World * in_world, const unsigned char * in_name);
+tnecs_component_t tnecs_system_name2typeflag(struct Simplecs_World * in_world, const unsigned char * in_name);
 
 
 // STRING HASHING
