@@ -110,23 +110,17 @@ size_t tnecs_new_typeflag(struct Simplecs_World * in_world, size_t num_component
 
     size_t typeflag_id = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
-        printf("i %d \n", i);
         if (new_typeflag == in_world->typeflags[i]) {
             typeflag_id = i;
             break;
         }
     }
-    printf("not found\n");
     if (!typeflag_id) {
         typeflag_id = in_world->num_typeflags++;
-        printf("here1\n");
         arrput(in_world->typeflags, new_typeflag);
-        printf("here2\n");
         struct Components_Array * temp_comparray = NULL;
         arrsetlen(temp_comparray, num_components);
-        printf("here3\n");
         arrput(in_world->components_bytype, temp_comparray);
-        printf("here4\n");
         arrput(in_world->entities_bytype, NULL);
         // } else {
         // TNECS_DEBUG_PRINTF("tnecs_new_typeflag: new_typeflag already exists!");
