@@ -7,9 +7,21 @@
 #define STB_DS_IMPLEMENTATION
 #include "tnecs.h"
 
-#if defined(__TINYC__) || defined(__clang__)
+#ifdef __GNUC__
+#include <sys/time.h>
+// resolution: 0.1 [us]
+// [s]
+double get_time() {
+    struct timeval t;
+    struct timezone tzp;
+    gettimeofday(&t, &tzp);
+    return (1e6 * t.tv_sec + t.tv_usec);
+}
+#endif
+
+#ifndef get_time()
 //  resolution: 0.1 [s]
-#define get_time() ((double)clock())/CLOCKS_PER_SEC*1e6
+#define get_time() (((double)clock())/CLOCKS_PER_SEC*1e6)
 // #define get_time() (double)(sc_time_ns() * 1e3)
 // #define get_time() (double)clock()/CLOCKS_PER_SEC*1e6
 #endif
@@ -24,16 +36,6 @@
 // }
 // #endif
 
-#ifdef __GNUC__
-#include <sys/time.h>
-// resolution: 0.1 [us]
-double get_time() { // [s]
-    struct timeval t;
-    struct timezone tzp;
-    gettimeofday(&t, &tzp);
-    return 1e6 * t.tv_sec + t.tv_usec;
-}
-#endif
 
 
 typedef struct Position {
@@ -82,7 +84,7 @@ struct Unit_Hash {
 };
 
 
-void Simplecs_SystemMove(struct Simplecs_System_Input in_input) {
+void SystemMove(struct tnecs_System_Input in_input) {
     // Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
     // Unit *v = TNECS_COMPONENTS_LIST(entity_list, Unit);
 
@@ -93,73 +95,87 @@ void Simplecs_SystemMove(struct Simplecs_System_Input in_input) {
 }
 
 int main() {
-    printf("Hello, World! I am testing Simplecs. \n\n");
+    printf("Hello, World! I am testing tnECS. \n\n");
     tnecs_entity_t * components_list;
     struct Position * temp_position;
     struct Unit * temp_unit;
 
     printf("tnecs_init\n");
-    struct Simplecs_World * test_world = tnecs_init();
+    struct tnecs_World * test_world = tnecs_init();
     printf("\n");
 
     printf("Component registration\n");
     printf("Registering Position Component \n");
     TNECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
     printf("Component_Position_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Position));
-    printf("TNECS_NAME2TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
-    // assert(Component_Position_id == COMPONENT_ID_START);
+    TNECS_COMPONENT_TYPEFLAG(test_world, Position);
+    printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
+    assert(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
+    assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == hash_djb2("Position"));
+
     assert(test_world->num_components == 2);
+    printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
+    assert(test_world->typeflags[0] == 0);
+    assert(test_world->typeflags[1] == (TNECS_ID_START << 0));
+    assert(TNECS_COMPONENT_TYPEFLAG(test_world, Position) == (TNECS_ID_START << 0));
+
     printf("Registering Position Unit \n");
     TNECS_REGISTER_COMPONENT(test_world, Unit);
+    assert(TNECS_COMPONENT_NAME2ID(test_world, Unit) == 2);
     printf("Component_Unit_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Unit));
     printf("TNECS_NAME2TYPEFLAG(test_world, Unit) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Unit));
     assert(test_world->num_components == 3);
-    // assert(Component_Unit_id == (COMPONENT_ID_START << 1));
+    assert(TNECS_COMPONENT_TYPEFLAG(test_world, Unit) == (TNECS_ID_START << 1));
+    assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == hash_djb2("Unit"));
+
     printf("Registering Position Sprite \n");
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
-    // assert(Component_Sprite_id == (COMPONENT_ID_START << 2));
+    assert(TNECS_COMPONENT_NAME2ID(test_world, Sprite) == 3);
+    assert(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == (TNECS_ID_START << 2));
+    assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
+
+
+    printf("System registration\n");
+    TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
+    printf("TNECS_SYSTEM_ID(test_world, SystemMove) %d\n", TNECS_SYSTEM_ID(test_world, SystemMove));
+    assert(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
+    assert(TNECS_SYSTEM_HASH(SystemMove) == hash_djb2("SystemMove"));
+    assert(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == hash_djb2("SystemMove"));
     printf("\n");
+
+    printf("Entity Creation/Destruction\n");
+    assert(test_world->next_entity_id == TNECS_ID_START);
+    printf("Making Silou Entity \n");
+    tnecs_entity_t Silou = tnecs_new_entity(test_world);
+    assert(Silou == TNECS_ID_START);
+    assert(test_world->next_entity_id == (TNECS_ID_START + 1));
+    printf("Making Pirou Entity \n");
+    tnecs_entity_t Pirou = tnecs_new_entity(test_world);
+    assert(Pirou == (TNECS_ID_START + 1));
+    assert(test_world->next_entity_id == (TNECS_ID_START + 2));
+    assert(Silou != Pirou);
     printf("New Entity with components \n");
-    TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    tnecs_entity_t Chasse = tnecs_new_entity(test_world);
+    printf("\n");
 
-    // printf("System registration\n");
-    // // TNECS_REGISTER_SYSTEM(test_world, Simplecs_SystemMove, TNECS_PHASE_PREUPDATE, Position, Unit);
-    // printf("\n");
+    printf("Adding Components to Entities\n");
+    TNECS_ADD_COMPONENT(test_world, Silou, Position);
+    TNECS_ADD_COMPONENT(test_world, Silou, Unit);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
 
-    // printf("Entity Creation/Destruction\n");
-    // assert(test_world->next_entity_id == ENTITY_ID_START);
-    // printf("Making Silou Entity \n");
-    // tnecs_entity_t Silou = tnecs_new_entity(test_world);
-    // assert(Silou == ENTITY_ID_START);
-    // assert(test_world->next_entity_id == (ENTITY_ID_START + 1));
-    // printf("Making Pirou Entity \n");
-    // tnecs_entity_t Pirou = tnecs_new_entity(test_world);
-    // assert(Pirou == (ENTITY_ID_START + 1));
-    // assert(test_world->next_entity_id == (ENTITY_ID_START + 2));
-    // assert(Silou != Pirou);
-    // printf("\n");
+    TNECS_ADD_COMPONENT(test_world, Pirou, Position);
+    TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
 
-    // printf("Adding Components to Entities\n");
-    // TNECS_ADD_COMPONENT(test_world, Position, Silou);
-    // components_list = hmget(test_world->entities_table, Silou);
-    // assert(arrlen(components_list) == 1);
-    // assert(components_list[0] == Component_Position_id);
-    // TNECS_ADD_COMPONENT(test_world, Unit, Silou);
-    // components_list = hmget(test_world->entities_table, Silou);
-    // assert(arrlen(components_list) == 2);
-    // assert(components_list[0] == Component_Position_id);
-    // assert(components_list[1] == Component_Unit_id);
 
-    // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // assert(arrlen(components_list) == 1);
-    // assert(components_list[0] == Component_Position_id);
-    // TNECS_ADD_COMPONENT(test_world, Unit, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // assert(arrlen(components_list) == 2);
-    // assert(components_list[0] == Component_Position_id);
-    // assert(components_list[1] == Component_Unit_id);
-    // printf("\n");
+    TNECS_ADD_COMPONENTS(test_world, Chasse, 0, Unit, Position);
+    assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    printf("\n");
 
     // printf("Getting Components from Entities\n");
     // Position * temp_Pirou = hmget(component_Position, Pirou);
@@ -220,8 +236,8 @@ int main() {
     // printf("Destroying Entities\n");
     // tnecs_entity_destroy(test_world, Pirou);
     // Pirou = tnecs_new_entity(test_world);
-    // assert(Pirou == (ENTITY_ID_START + 1));
-    // assert(test_world->next_entity_id == (ENTITY_ID_START + 2));
+    // assert(Pirou == (TNECS_ID_START + 1));
+    // assert(test_world->next_entity_id == (TNECS_ID_START + 2));
     // assert(Silou != Pirou);
     // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
     // components_list = hmget(test_world->entities_table, Pirou);
@@ -233,6 +249,17 @@ int main() {
     // assert(components_list[0] == Component_Position_id);
     // assert(components_list[1] == Component_Unit_id);
     // printf("\n");
+
+    printf("hashing algorithms test\n");
+
+    printf("setbit counting test\n");
+    int8_t got_bitcount = 0;
+    int8_t expected_bitcount = 4 * 8;
+    uint64_t temp_flag = 0xF0F0F0F0F0F0F0F0;
+
+    got_bitcount = setBits_KnR_uint64_t(temp_flag);
+    assert(expected_bitcount == got_bitcount);
+
 
     printf("Homemade tnecs benchmarks\n");
     double t_0;
@@ -303,7 +330,7 @@ int main() {
     // printf("%.1f [us] \n", t_1 - t_0);
 
     // t_0 = get_time();
-    // struct Simplecs_World * bench_world = tnecs_init();
+    // struct tnecs_World * bench_world = tnecs_init();
     // t_1 = get_time();
     // printf("tnecs: World Creation time \n");
     // printf("%.1f [us] \n", t_1 - t_0);
@@ -337,6 +364,7 @@ int main() {
     // printf("tnecs: Component adding time: %d iterations \n", ITERATIONS);
     // printf("%.1f [us] \n", t_1 - t_0);
 
-    printf("Simplecs Test End");
+
+    printf("tnECS Test End \n \n");
     return (0);
 }
