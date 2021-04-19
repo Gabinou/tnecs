@@ -16,11 +16,14 @@ Videogame Example:
 - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
 - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
 
+## Installation
+Add tnecs.c and tnecs.h to your source code.
+
 ## Features/Objective
 - Compileable using tcc, gcc, clang (msvc untested)
-- Simple API
+- Simple C99 API
 - Small Codebase, <1000 lines (for now).
-- Fast (as much as can be measures uing simple benchmarks in test.c)
+- Fast (as much as can be measured uing simple benchmarks in test.c)
 - Exclusive/Inclusive systems
     * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
 - Be _mostly_ [STB-style](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt).
