@@ -15,7 +15,7 @@ Entity 0 is always reserved for NULL.
 ```c
 ```
 tnecs_component_t is a uint64_t flag: each component has a one bit set, at component_id location.
-Component names stringified, then hashed with hash_djb2 and saved in tnecs_world->component_hashes.
+Component names are stringified, then hashed with hash_djb2 and saved in tnecs_world->component_hashes.
 Any component's id is also its index in component_hashes.
 
 A component is a user-defined struct:
@@ -44,6 +44,19 @@ A maximal number of 64 components can be registered.
 ```c
 ```
 ## Register System to the world
+A system is a user-defined function:
+```c
+void SystemMove(struct tnecs_System_Input in_input) {
+    Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
+    Unit *v = TNECS_COMPONENTS_LIST(entity_list, Unit);
+
+    for (int i = 0; i < in_input->entity_num; i++) {
+        p[i].x += 2;
+        p[i].y += 4;
+    }
+}
+TNECS_REGISTER_SYSTEM()
+```
 System id 0 is always reserved for NULL.
 ```c
 ```

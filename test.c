@@ -155,7 +155,8 @@ int main() {
     assert(test_world->next_entity_id == (TNECS_ID_START + 2));
     assert(Silou != Pirou);
     printf("New Entity with components \n");
-    TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    tnecs_entity_t Chasse = tnecs_new_entity(test_world);
     printf("\n");
 
     printf("Adding Components to Entities\n");
@@ -164,6 +165,7 @@ int main() {
 
     TNECS_ADD_COMPONENT(test_world, Pirou, Position);
     TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
+    TNECS_ADD_COMPONENTS(test_world, Chasse, Unit, Position);
     printf("\n");
 
     // printf("Getting Components from Entities\n");
