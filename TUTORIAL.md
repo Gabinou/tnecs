@@ -1,7 +1,5 @@
 # tnECS Tutorial
 
-
-
 ## Initializing the world
 ```c
     struct tnECS_World * tnecs_world = tnecs_init();
@@ -20,6 +18,14 @@ tnecs_component_t is a uint64_t flag: each component has a one bit set, at compo
 Component names stringified, then hashed with hash_djb2 and saved in tnecs_world->component_hashes.
 Any component's id is also its index in component_hashes.
 
+A component is a user-defined struct:
+```c
+typedef struct Position {
+    uint32_t x;
+    uint32_t y;
+} Position;
+```
+
 You can get a component id with:
 ```c
 TNECS_COMPONENT_NAME2ID(tnecs_world, Position);
@@ -34,14 +40,14 @@ tnecs_component_hash2id(tnecs_world, hash_djb2("Position"));
 ```
 A maximal number of 64 components can be registered.
 
-## Attach components to entities
+## Attach Components to Entities
 ```c
 ```
 ## Register System to the world
 System id 0 is always reserved for NULL.
 ```c
 ```
-## Iteratung over entities in a system
+## Iterating over Entities in a System
 ```c
 ```
 ## Updating the world
