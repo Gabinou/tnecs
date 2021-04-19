@@ -7,9 +7,21 @@
 #define STB_DS_IMPLEMENTATION
 #include "tnecs.h"
 
-#if defined(__TINYC__) || defined(__clang__)
+#ifdef __GNUC__
+#include <sys/time.h>
+// resolution: 0.1 [us]
+// [s]
+double get_time() {
+    struct timeval t;
+    struct timezone tzp;
+    gettimeofday(&t, &tzp);
+    return (1e6 * t.tv_sec + t.tv_usec);
+}
+#endif
+
+#ifndef get_time()
 //  resolution: 0.1 [s]
-#define get_time() ((double)clock())/CLOCKS_PER_SEC*1e6
+#define get_time() (((double)clock())/CLOCKS_PER_SEC*1e6)
 // #define get_time() (double)(sc_time_ns() * 1e3)
 // #define get_time() (double)clock()/CLOCKS_PER_SEC*1e6
 #endif
@@ -24,16 +36,6 @@
 // }
 // #endif
 
-#ifdef __GNUC__
-#include <sys/time.h>
-// resolution: 0.1 [us]
-double get_time() { // [s]
-    struct timeval t;
-    struct timezone tzp;
-    gettimeofday(&t, &tzp);
-    return 1e6 * t.tv_sec + t.tv_usec;
-}
-#endif
 
 
 typedef struct Position {
@@ -355,6 +357,6 @@ int main() {
     // printf("tnecs: Component adding time: %d iterations \n", ITERATIONS);
     // printf("%.1f [us] \n", t_1 - t_0);
 
-    printf("tnECS Test End");
+    printf("tnECS Test End \n \n");
     return (0);
 }

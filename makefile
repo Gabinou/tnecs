@@ -40,12 +40,17 @@ $(info $$PROCESSOR_FLAG is [${PROCESSOR_FLAG}])
 
 LINUX_EXT := .bin
 WIN_EXT := .exe
+LINUX_PRE := ./
+WIN_PRE := 
+
 # astyle detection: isASTYLE is empty unless astyle exists
 ifeq ($(OS_FLAG),WIN32)
 	EXTENSION := $(WIN_EXT)
+    PREFIX := $(WIN_PRE)
 	isASTYLE := $(shell where astyle)
 else
 	EXTENSION := $(LINUX_EXT)
+    PREFIX := $(LINUX_PRE)
 	isASTYLE := $(shell type astyle)
 endif
 
@@ -59,10 +64,10 @@ else
 endif
 
 
-EXEC := test$(EXTENSION)
-EXEC_TCC := test_tcc$(EXTENSION)
-EXEC_GCC := test_gcc$(EXTENSION)
-EXEC_CLANG := test_clang$(EXTENSION)
+EXEC := $(PREFIX)test$(EXTENSION)
+EXEC_TCC := $(PREFIX)test_tcc$(EXTENSION)
+EXEC_GCC := $(PREFIX)test_gcc$(EXTENSION)
+EXEC_CLANG := $(PREFIX)test_clang$(EXTENSION)
 EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
 # FLAGS_BUILD_TYPE = -O0 -g  #Debug
