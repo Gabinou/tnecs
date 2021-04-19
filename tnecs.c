@@ -91,21 +91,21 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     return (out);
 }
 
-void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_component_id) {
+void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, tnecs_component_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_get_component\n");
     size_t typeflag_id = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
     size_t component_bytype_id = 0;
     size_t entities_bytype_id = 0;
 
-    for (size_t i = 0 ; i < in_world->num_componentsbytype; i++) {
+    for (size_t i = 0 ; i < in_world->num_componentsbytype[typeflag_id]; i++) {
         if (in_world->component_idbytype[typeflag_id][i] == in_component_id) {
             component_bytype_id = i;
             break;
         }
     }
 
-    for (size_t i = 0 ; i < in_world->num_entitiesbytype; i++) {
-        if (in_world->entities_idbytype[typeflag_id][i] == in_entity_id) {
+    for (size_t i = 0 ; i < in_world->num_entitiesbytype[typeflag_id]; i++) {
+        if (in_world->entities_bytype[typeflag_id][i] == in_entity_id) {
             entities_bytype_id = i;
             break;
         }
@@ -114,7 +114,7 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
     struct tnecs_Components_Array comp_array = in_world->components_bytype[typeflag_id][component_bytype_id];
     void * out_comp = &comp_array.components[entities_bytype_id];
 
-    [num_componentsbytype]
+    return (out_comp);
 }
 
 
