@@ -165,7 +165,7 @@ int main() {
 
     TNECS_ADD_COMPONENT(test_world, Pirou, Position);
     TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
-    TNECS_ADD_COMPONENTS(test_world, Chasse, Unit, Position);
+    TNECS_ADD_COMPONENTS(test_world, Chasse, 0, Unit, Position);
     printf("\n");
 
     // printf("Getting Components from Entities\n");

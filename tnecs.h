@@ -93,6 +93,9 @@ enum TNECS_RUN_PHASES {
 #define TNECS_FOREACH_1(macro, x)\
     macro(x)
 
+#define TNECS_FOREACH_SUM_1(macro, x)\
+    macro(x)
+
 #define TNECS_FOREACH_SUM_2(macro, x, ...)\
     macro(x)+\
     TNECS_FOREACH_1(macro, __VA_ARGS__)
@@ -214,6 +217,38 @@ enum TNECS_RUN_PHASES {
     macro(#x),\
     TNECS_FOREACH_SCOMMA_7(macro,  __VA_ARGS__)
 
+#define TNECS_FOREACH_SSUM_1(macro, x)\
+    macro(#x)
+
+#define TNECS_FOREACH_SSUM_2(macro, x, ...)\
+    macro(#x)+\
+    TNECS_FOREACH_S1(macro, __VA_ARGS__)
+
+#define TNECS_FOREACH_SSUM_3(macro, x, ...)\
+    macro(#x)+\
+    TNECS_FOREACH_SSUM_2(macro, __VA_ARGS__)
+
+#define TNECS_FOREACH_SSUM_4(macro, x, ...)\
+    macro(#x)+\
+    TNECS_FOREACH_SSUM_3(macro,  __VA_ARGS__)
+
+#define TNECS_FOREACH_SSUM_5(macro, x, ...)\
+    macro(#x)+\
+    TNECS_FOREACH_SSUM_4(macro,  __VA_ARGS__)
+
+#define TNECS_FOREACH_SSUM_6(macro, x, ...)\
+    macro(#x)+\
+    TNECS_FOREACH_SSUM_5(macro,  __VA_ARGS__)
+
+#define TNECS_FOREACH_SSUM_7(macro, x, ...)\
+    macro(#x)+\
+    TNECS_FOREACH_SSUM_6(macro,  __VA_ARGS__)
+
+#define TNECS_FOREACH_SSUM_8(macro, x, ...)\
+    macro(#x)+\
+    TNECS_FOREACH_SSUM_7(macro,  __VA_ARGS__)
+
+
 #define TNECS_VARMACRO_EACH_ARGN(...) TNECS_VARMACRO_EACH_ARGN_(__VA_ARGS__, TNECS_VARMACRO_VARG_SEQ())
 #define TNECS_VARMACRO_EACH_ARGN_(...) TNECS_VARMACRO_ARGN(__VA_ARGS__)
 #define TNECS_VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
@@ -224,6 +259,9 @@ enum TNECS_RUN_PHASES {
 
 #define TNECS_VARMACRO_FOREACH_COMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_COMMA(macro, ...) TNECS_VARMACRO_FOREACH_COMMA_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
+
+#define TNECS_VARMACRO_FOREACH_SSUM_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SSUM_, N)(macro, __VA_ARGS__)
+#define TNECS_VARMACRO_FOREACH_SSUM(macro, ...) TNECS_VARMACRO_FOREACH_SSUM_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 #define TNECS_VARMACRO_FOREACH_SCOMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SCOMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
@@ -330,14 +368,10 @@ struct tnecs_World * tnecs_init();
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define TNECS_ADD_COMPONENT3(world, entity_id, name) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #name), true)
-#define TNECS_ADD_COMPONENT4(world, entity, component, isnewtype) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #name), isnewtype)
+#define TNECS_ADD_COMPONENT3(world, entity_id, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), true)
+#define TNECS_ADD_COMPONENT4(world, entity, isnewtype, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), isnewtype)
 
-#define TNECS_CHOOSE_ADD_COMPONENTS(_1,_2,_3,_4,NAME,...) NAME
-#define TNECS_ADD_COMPONENTS(...) TNECS_CHOOSE_ADD_COMPONENTS(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
-
-#define TNECS_CHOOSE_ADD_COMPONENTS3(world, entity, component, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SUM(TNECS_STRINGIFY, __VA_ARGS__)), true)
-#define TNECS_CHOOSE_ADD_COMPONENTS4(world, entity, component, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SUM(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
+#define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
 
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
