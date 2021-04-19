@@ -40,12 +40,12 @@ extern "C" {
 // ************************ TYPE DEFINITIONS ****************************
 typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
 typedef uint64_t tnecs_entities_t;   // simple 64 bit integer
-//    -> world->entities[entity_id]  
+//    -> world->entities[entity_id]
 // entity_id 0 is reserved for NULL
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
 typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 63 components
 // component_type > 0 -> 1 nonzero bit -> unique for component
-// component_id > 0 -> unique for component, 
+// component_id > 0 -> unique for component,
 //    -> world->component_hashes[component_id]
 //    -> component_type = (1 << (component_id - 1))
 // component type/id 0 are reserved for NULL
@@ -75,7 +75,7 @@ enum TNECS_RUN_PHASES {
     TNECS_PHASE_POSTUPDATE = 2,
 };
 
-// ****************** HACKY DISTRIBUTION FOR VARIADIC MACROS ****************** 
+// ****************** HACKY DISTRIBUTION FOR VARIADIC MACROS ******************
 // Distribution as in algebra: a(x+b) = ax + ab
 // TNECS_VARMACRO_FOREACH_XXXX(foo, __VA_ARGS__) applies foo to each __VA_ARGS__, PLUS
 //      -> _SUM variant puts + after each (except last)

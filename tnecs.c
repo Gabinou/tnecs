@@ -15,15 +15,15 @@ struct tnecs_World * tnecs_init() {
 
     tnecs_world->entity_typeflags = NULL;
     arrsetcap(tnecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
-    // arrput(tnecs_world->entity_typeflags, TNECS_NULL);
+    arrput(tnecs_world->entity_typeflags, TNECS_NULL);
 
     tnecs_world->system_typeflags = NULL;
     arrsetcap(tnecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
-    // arrput(tnecs_world->system_typeflags, TNECS_NULL);
+    arrput(tnecs_world->system_typeflags, TNECS_NULL);
 
     tnecs_world->system_isExclusive = NULL;
     arrsetcap(tnecs_world->system_isExclusive, DEFAULT_SYSTEM_CAP);
-    // arrput(tnecs_world->system_isExclusive, TNECS_NULL);
+    arrput(tnecs_world->system_isExclusive, TNECS_NULL);
 
     tnecs_world->component_hashes = NULL;
     arrsetcap(tnecs_world->component_hashes, MAX_COMPONENT);
@@ -48,13 +48,11 @@ struct tnecs_World * tnecs_init() {
 
     tnecs_world->component_idbytype = NULL;
     arrsetcap(tnecs_world->component_idbytype, DEFAULT_SYSTEM_CAP);
-    // arrput(tnecs_world->component_idbytype, NULL);
+    arrput(tnecs_world->component_idbytype, NULL);
 
     tnecs_world->component_flagbytype = NULL;
     arrsetcap(tnecs_world->component_flagbytype, DEFAULT_SYSTEM_CAP);
-    // arrput(tnecs_world->component_flagbytype, NULL);
-
-    // arrput(tnecs_world->component_flagbytype, NULL);
+    arrput(tnecs_world->component_flagbytype, NULL);
 
     tnecs_world->num_entitiesbytype = NULL;
     arrsetcap(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
