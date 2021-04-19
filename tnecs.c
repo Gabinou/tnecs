@@ -90,6 +90,7 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     in_world->num_entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG]++;
     return (out);
 }
+
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_components_t typeflag_toadd, bool isNew) {
     tnecs_component_t total_typeflag = typeflag_toadd + in_world->entity_typeflags[in_entity];
     if (isNew) {
