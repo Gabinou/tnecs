@@ -31,6 +31,7 @@ Or, if you wish:
 ```c
 tnecs_component_hash2id(test_world, hash_djb2("Position"));
 ```
+A maximal number of 64 components can be registered.
 
 ## Attach components to entities
 ```c
