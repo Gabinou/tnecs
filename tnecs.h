@@ -21,15 +21,22 @@ extern "C" {
 #endif
 
 // ************************ TYPE DEFINITIONS ****************************
-typedef uint64_t tnecs_entity_t;
-typedef uint64_t tnecs_entities_t;
-typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 64 components
-typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 64 components
-// component type > 0 -> 1 nonzero bit -> unique for component
-// component flag > 0 -> sum of component types -> determines tnecs_System_Input
-// component id > 0 -> unique for component (should be exponent of component type)
+typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
+typedef uint64_t tnecs_entities_t;   // simple 64 bit integer
+//    -> world->entities[entity_id]  
+// entity_id 0 is reserved for NULL
+typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
+typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 63 components
+// component_type > 0 -> 1 nonzero bit -> unique for component
+// component_id > 0 -> unique for component, 
+//    -> world->component_hashes[component_id]
+//    -> component_type = (1 << (component_id - 1))
+// component type/id 0 are reserved for NULL
+// typeflag > 0 -> sum of component types -> determines tnecs_System_Input
+// typeflag 0 is reserved for NULL
 typedef uint16_t tnecs_system_t;
-typedef uint16_t tnecs_system_t;
+//    -> world->systems[system_id]
+// system id 0 is reserved for NULL
 
 // ********************** CONSTANT DEFINITIONS ************************
 // entity, component, system: XXXX_id zero ALWAYS reserved for NULL
@@ -222,7 +229,7 @@ struct tnecs_System_Input {
 };
 
 struct tnecs_World {
-    tnecs_entity_t * entities;                      // Deleted Entities are 0
+    tnecs_entity_t * entities; // entities[entity_id] == entity_id unless deleted
     tnecs_components_t * typeflags;                 // [typeflag_id]
     tnecs_components_t * entity_typeflags;          // [entity]
     tnecs_components_t * system_typeflags;          // [system]
