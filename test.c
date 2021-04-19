@@ -246,6 +246,17 @@ int main() {
     // assert(components_list[1] == Component_Unit_id);
     // printf("\n");
 
+    printf("hashing algorithms test\n");
+
+    printf("setbit counting test\n");
+    int8_t got_bitcount = 0;
+    int8_t expected_bitcount = 4 * 8;
+    uint64_t temp_flag = 0xF0F0F0F0F0F0F0F0;
+
+    got_bitcount = setBits_KnR_uint64_t(temp_flag);
+    assert(expected_bitcount == got_bitcount);
+
+
     printf("Homemade tnecs benchmarks\n");
     double t_0;
     double t_1;
@@ -348,6 +359,7 @@ int main() {
     // t_1 = get_time();
     // printf("tnecs: Component adding time: %d iterations \n", ITERATIONS);
     // printf("%.1f [us] \n", t_1 - t_0);
+
 
     printf("tnECS Test End \n \n");
     return (0);

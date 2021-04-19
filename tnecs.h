@@ -351,7 +351,7 @@ uint64_t hash_djb2(const unsigned char * str);
 uint64_t hash_sdbm(const unsigned char * str);
 
 // SET BIT COUNTING
-uint8_t setBits_KnR(uint64_t in_flag); // Credits to Kernighan and Ritchie in the C Programming Language
+int8_t setBits_KnR_uint64_t(uint64_t in_flag);
 
 #ifdef __cplusplus
 }

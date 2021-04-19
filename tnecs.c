@@ -468,3 +468,13 @@ uint64_t hash_sdbm(const unsigned char * str) {
 }
 
 // SET BIT COUNTING
+int8_t setBits_KnR_uint64_t(uint64_t in_flags) {
+    // Credits to Kernighan and Ritchie in the C Programming Language
+    // should ouput -1 on error
+    uint64_t count = 0;
+    while (in_flags) {
+        in_flags &= (in_flags - 1);
+        count++;
+    }
+    return (count);
+}
