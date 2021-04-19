@@ -108,6 +108,9 @@ typedef uint16_t tnecs_system_t;
     macro(x);\
     FOREACH_NEWLINE_7(macro,  __VA_ARGS__)
 
+#define FOREACH_COMMA_1(macro, x, ...)\
+    macro(x)
+
 #define FOREACH_COMMA_2(macro, x, ...)\
     macro(x),\
     FOREACH_1(macro, __VA_ARGS__)
@@ -137,6 +140,9 @@ typedef uint16_t tnecs_system_t;
     FOREACH_COMMA_7(macro,  __VA_ARGS__)
 
 #define FOREACH_S1(macro, x)\
+    macro(#x)
+
+#define FOREACH_SCOMMA_1(macro, x)\
     macro(#x)
 
 #define FOREACH_SCOMMA_2(macro, x, ...)\
