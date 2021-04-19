@@ -121,7 +121,7 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
     if (!typeflag_id) {
         typeflag_id = in_world->num_typeflags++;
         arrput(in_world->typeflags, new_typeflag);
-        struct Components_Array * temp_comparray = NULL;
+        struct tnecs_Components_Array * temp_comparray = NULL;
         arrsetlen(temp_comparray, num_components);
         arrput(in_world->components_bytype, temp_comparray);
         arrput(in_world->entities_bytype, NULL);
@@ -258,7 +258,7 @@ void tnecs_new_component(struct tnecs_World * in_world, tnecs_entity_t in_entity
         }
     }
     if (!found) {
-        struct Components_Array temp;
+        struct tnecs_Components_Array temp;
         temp.components = NULL;
         temp.type = type_toadd;
         arrput(in_world->components_bytype[typeflag], temp);
@@ -309,8 +309,8 @@ bool tnecs_componentsbytype_migrate(struct tnecs_World * in_world, tnecs_entity_
     size_t new_component_num = in_world->num_componentsbytype[new_type_id];
     size_t old_component_num = in_world->num_componentsbytype[old_type_id];
 
-    struct Components_Array * new_type_components_byentity = in_world->components_bytype[new_type_id];
-    struct Components_Array * old_type_components_byentity = in_world->components_bytype[old_type_id];
+    struct tnecs_Components_Array * new_type_components_byentity = in_world->components_bytype[new_type_id];
+    struct tnecs_Components_Array * old_type_components_byentity = in_world->components_bytype[old_type_id];
 
     // Deletes in_entity from old_type_entities
     size_t found_old = 0;
