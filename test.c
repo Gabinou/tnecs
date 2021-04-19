@@ -160,14 +160,7 @@ int main() {
 
     printf("Adding Components to Entities\n");
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
-    // components_list = hmget(test_world->entities_table, Silou);
-    // assert(arrlen(components_list) == 1);
-    // assert(components_list[0] == Component_Position_id);
-    // TNECS_ADD_COMPONENT(test_world, Unit, Silou);
-    // components_list = hmget(test_world->entities_table, Silou);
-    // assert(arrlen(components_list) == 2);
-    // assert(components_list[0] == Component_Position_id);
-    // assert(components_list[1] == Component_Unit_id);
+    TNECS_ADD_COMPONENT(test_world, Silou, Unit);
 
     // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
     // components_list = hmget(test_world->entities_table, Pirou);
