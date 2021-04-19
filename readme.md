@@ -1,13 +1,13 @@
 # tnECS (Tiny nECS)
 
-Tiny C99 Entity-Component-System (ECS) library.
+tnecs: Tiny C99 Entity-Component-System (ECS) library.
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
 
 OOP: Objects/Classes contain data and methods, children objects inherit from parents...
 
 ECS: Components are purely data, user-defined structs.
-Any component can be attached to an entity, which is simply an uint64_t index determined by tnECS.
-Then, entities are acted upon by systems, which are user-defined functions.
+Any component can be attached to an entity, an uint64_t index determined by tnecs.
+Entities are acted upon by systems, user-defined functions.
 The systems iterate only over entities that have a certain set of components.
 In tnECS, the system can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
 
@@ -34,3 +34,6 @@ Add tnecs.c and tnecs.h to your source code.
 - [entt (C++)](https://github.com/skypjack/entt)
 - [gamedev_libraries](https://github.com/raizam/gamedev_libraries)
 - [stb list of single header libraries](https://github.com/nothings/single_file_libs)
+
+## Credits
+    Gabriel Taillon

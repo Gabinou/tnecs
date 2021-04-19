@@ -1,6 +1,23 @@
 #ifndef TNECS_H
 #define TNECS_H
 
+// tnecs: Tiny C99 Entity-Component-System (ECS) library.
+// ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
+
+// OOP: Objects/Classes contain data and methods, children objects inherit from parents...
+
+// ECS: Components are purely data, user-defined structs.
+// Any component can be attached to an entity, an uint64_t index determined by tnecs.
+// Entities are acted upon by systems, user-defined functions.
+// The systems iterate only over entities that have a certain set of components.
+// In tnECS, the system can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
+
+// Videogame Example:
+// - Enemy Entity: AIControlled component, Sprite Component, Physics Component
+// - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
+// - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
+// Credits: Gabriel Taillon
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -59,15 +76,15 @@ enum TNECS_RUN_PHASES {
 };
 
 // ****************** HACKY DISTRIBUTION FOR VARIADIC MACROS ****************** 
-//   Distribution as in algebra: a(x+b) = ax + ab
-//   TNECS_VARMACRO_FOREACH_XXXX(foo, __VA_ARGS__) applies foo to each __VA_ARGS__, PLUS
+// Distribution as in algebra: a(x+b) = ax + ab
+// TNECS_VARMACRO_FOREACH_XXXX(foo, __VA_ARGS__) applies foo to each __VA_ARGS__, PLUS
 //      -> _SUM variant puts + after each (except last)
 //      -> _SCOMMA variant stringifies and puts commas around each (except last)
 //      -> _COMMA puts commas around each (except last)
 //      -> _NEWLINE makes newline for each (except last)
-//       up to 8 input args. Theoretically up to 63, if all TNECS_FOREACH_XXXX_N exist
-//   TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__) counts the number of args
-//   -> up to 63, if TNECS_VARMACRO_ARGN and TNECS_VARMACRO_VARG_SEQ lists have up to 63
+//      up to 8 input args. Theoretically up to 63, if all TNECS_FOREACH_XXXX_N exist
+// TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__) counts the number of args
+//      -> up to 63, if elements in TNECS_VARMACRO_ARGN and TNECS_VARMACRO_VARG_SEQ exist
 #define TNECS_STRINGIFY(x) #x
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
@@ -223,8 +240,9 @@ struct tnecs_Components_Array {
 struct tnecs_System_Input {
     tnecs_entity_t * entities;
     tnecs_components_t typeflag;
-    size_t num;
-    size_t * components_order; // Always equal to the total length of components I guess.
+    size_t num_entities;
+    size_t num_components;
+    size_t * components_order;
     void ** components_lists;
 };
 
@@ -251,7 +269,7 @@ struct tnecs_World {
     size_t num_entities;
     size_t num_typeflags;
 
-    tnecs_entity_t next_entity_id; // ]0,  UINT64_MAX]
+    tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
 
@@ -331,14 +349,12 @@ tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);
 // }\
 }
 
-
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 
 
 void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash);
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
-
 
 // ****************** ENTITY MANIPULATION ************************
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);

@@ -1,21 +1,6 @@
 
 #include "tnecs.h"
 
-// tnecs_world  is a very simple implementation of an entity-component-system (ECS)
-// ECS is very useful in game programming.
-// OOP: objects and methods, children inheriting from parents, etc.
-// ECS: Entities can have any number of independent components, acted upon by systems
-// Example: Videogame
-//      -> main character: Physics component, PlayerControlled Component
-//      -> enemies: Physics component, AIControlled Component
-//      -> environment tiles: Destroyable Component
-// Entities are indices (uint64_t)
-// Component are structures
-// Systems are functions
-// The main loop iterates over systems
-// systems can be inclusive: iterate over entities that have components including the system's
-// or exclusive: iterate over entities that have only the system's components
-
 struct tnecs_World * tnecs_init() {
     TNECS_DEBUG_PRINTF("tnecs_init\n");
 
