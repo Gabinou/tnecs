@@ -12,9 +12,9 @@ The systems iterate only over entities that have a certain set of components.
 In tnECS, the system can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
 
 Videogame Example:
-    - Enemy Entity: AIControlled component, Sprite Component, Physics Component
-    - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
-    - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
+- Enemy Entity: AIControlled component, Sprite Component, Physics Component
+- Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
+- Main Character Entity: UserControlled Component, Sprite Component, Physics Component
 
 ## Features/Objective
 - Compileable using tcc, gcc, clang (msvc untested)
