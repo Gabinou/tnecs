@@ -20,7 +20,7 @@ extern "C" {
 #define TNECS_DEBUG_PRINTF(...) (void)0
 #endif
 
-
+// TYPE DEFINITIONS
 typedef uint64_t tnecs_entity_t;
 typedef uint64_t tnecs_entities_t;
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 64 components
@@ -31,9 +31,10 @@ typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 64 components
 typedef uint16_t tnecs_system_t;
 typedef uint16_t tnecs_system_t;
 
+// CONSTANT DEFINITIONS
+// entity, component, system: XXXX_id zero ALWAYS reserved for NULL
 #define TNECS_NULL 0
 #define TNECS_NOCOMPONENT_TYPEFLAG 0
-// entity, component, system:  XXXX_id zero AKWAYS reserved for NULL
 #define TNECS_ID_START 1
 #define OPEN_IDS_BUFFER 128
 #define STR_BUFFER 128
@@ -44,6 +45,16 @@ typedef uint16_t tnecs_system_t;
 #define DEFAULT_ENTITY_CAP 128
 #define ENTITY_MAX_COMPONENT_NUM 10
 
+// HACKY DISTRIBUTION FOR VARIADIC MACROS
+//   Distribution as in algebra: a(x+b) = ax + ab
+//   TNECS_VARMACRO_FOREACH_XXXX(foo, __VA_ARGS__) applies foo to each __VA_ARGS__, PLUS
+//      -> _SUM variant puts + after each (except last)
+//      -> _SCOMMA variant stringifies and puts commas around each (except last)
+//      -> _COMMA puts commas around each (except last)
+//      -> _NEWLINE makes newline for each (except last)
+//       up to 8 input args. Theoretically up to 63, if all TNECS_FOREACH_XXXX_N exist
+//   TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__) counts the number of args
+//   -> up to 63, if TNECS_VARMACRO_ARGN and TNECS_VARMACRO_VARG_SEQ lists have up to 63
 #define TNECS_STRINGIFY(x) #x
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
