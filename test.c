@@ -162,10 +162,19 @@ int main() {
     printf("Adding Components to Entities\n");
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     TNECS_ADD_COMPONENT(test_world, Silou, Unit);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
 
     TNECS_ADD_COMPONENT(test_world, Pirou, Position);
     TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
+
+
     TNECS_ADD_COMPONENTS(test_world, Chasse, 0, Unit, Position);
+    assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
     printf("\n");
 
     // printf("Getting Components from Entities\n");

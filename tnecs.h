@@ -364,7 +364,7 @@ struct tnecs_World * tnecs_init();
 
 // TNECS_ADD_COMPONENT is overloaded component adder macro
 //      3 inputs required: (world, name, entity_id)
-//      4th input for speed if newtype is false
+//      4th input if newtype is false, to skip checks for execution speed
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 

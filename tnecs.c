@@ -96,9 +96,8 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
 
     tnecs_component_t total_typeflag = typeflag_toadd + in_world->entity_typeflags[in_entity];
     if (isNew) {
-        if (!tnecs_new_typeflag(in_world, num_components, total_typeflag)) {
-            tnecs_entity_typeflag_change(in_world, in_entity, total_typeflag);
-        }
+        tnecs_new_typeflag(in_world, num_components, total_typeflag);
+        tnecs_entity_typeflag_change(in_world, in_entity, total_typeflag);
     }
 }
 
