@@ -161,27 +161,29 @@ int main() {
 
     printf("Adding Components to Entities\n");
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
+    assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
     TNECS_ADD_COMPONENT(test_world, Silou, Unit);
     assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
     assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
     assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
 
     TNECS_ADD_COMPONENT(test_world, Pirou, Position);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
     TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
     assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
     assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
     assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
 
 
-    TNECS_ADD_COMPONENTS(test_world, Chasse, 0, Unit, Position);
-    assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    TNECS_ADD_COMPONENTS(test_world, Chasse, 0, Sprite, Position);
+    assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
+    assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) > 0);
+    assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
     printf("\n");
 
-    // printf("Getting Components from Entities\n");
-    // Position * temp_Pirou = hmget(component_Position, Pirou);
-    // Position * temp_Silou = hmget(component_Position, Silou);
-    // assert(temp_Silou != temp_Pirou);
-    // assert(TNECS_GET_COMPONENT(Position, Silou) != TNECS_GET_COMPONENT(Position, Pirou));
+    printf("Getting Components from Entities\n");
     // temp_position = TNECS_GET_COMPONENT(Position, Silou);
     // assert(temp_position->x == 0);
     // assert(temp_position->y == 0);
@@ -248,7 +250,7 @@ int main() {
     // assert(arrlen(components_list) == 2);
     // assert(components_list[0] == Component_Position_id);
     // assert(components_list[1] == Component_Unit_id);
-    // printf("\n");
+    printf("\n");
 
     printf("hashing algorithms test\n");
 

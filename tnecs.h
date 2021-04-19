@@ -323,9 +323,6 @@ typedef struct tnecs_World tnecs_world_t;
 // ********************* FUNCTIONALITY MACROS AND FUNCTIONS ************************
 struct tnecs_World * tnecs_init();
 
-// Error if component registered twice -> user responsibility
-#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, hash_djb2(#name))
-
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(in_world) // redundancy for API consistency
 // TNECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world,...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
@@ -333,6 +330,7 @@ struct tnecs_World * tnecs_init();
 // UTILITY MACROS
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) hash_djb2(#name)
+#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(in_world, entity_id, tnecs_component_name2id(world, #name))
 
 #define TNECS_COMPONENT_HASH(name) TNECS_HASH(name)
 #define TNECS_COMPONENT_NAME2HASH(name) TNECS_NAME2HASH(name)
@@ -375,7 +373,8 @@ struct tnecs_World * tnecs_init();
 
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-
+#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, hash_djb2(#name))
+// Error if component registered twice -> user responsibility
 
 void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash);
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
@@ -383,6 +382,7 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
 // ****************** ENTITY MANIPULATION ************************
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
+void tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t in_component_id);
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 void tnecs_entity_add_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag);
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_components_t typeflag, bool isNew);
