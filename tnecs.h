@@ -247,12 +247,7 @@ typedef struct tnECS_World tnecs_world_t;
 struct tnECS_World * tnecs_init();
 
 // Error if component registered twice -> user responsibility
-#define TNECS_REGISTER_COMPONENT(world, name) arrput(world->component_hashes, hash_djb2(#name));\
-arrput(world->typeflags, (1ULL << (world->num_components - 1)));\
-printf("world->typeflags[world->num_components] %llu \n", world->typeflags[world->num_components]);\
-printf("%s hash %llu \n", #name, hash_djb2(#name));\
-world->num_components++;
-// printf("world->num_components %llu \n", world->num_components);
+#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, hash_djb2(#name))
 
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(in_world) // redundancy for API consistency
@@ -319,6 +314,7 @@ tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag);
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, VARMACRO_EACH_ARGN(__VA_ARGS__), VARMACRO_FOREACH_COMMA(STRINGIFY, __VA_ARGS__)))
 
 
+void tnecs_register_component(struct tnECS_World * in_world, uint64_t in_hash);
 void tnecs_register_system(struct tnECS_World * in_world, uint64_t in_hash, void (* in_system)(struct tnECS_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_components_t component_typeflag);
 
 

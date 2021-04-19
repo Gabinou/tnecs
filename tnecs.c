@@ -234,6 +234,14 @@ void tnecs_entity_destroy(struct tnECS_World * in_world, tnecs_entity_t in_entit
     }
 }
 
+void tnecs_register_component(struct tnECS_World * in_world, uint64_t in_hash) {
+    TNECS_DEBUG_PRINTF("tnecs_register_component\n");
+    arrput(in_world->component_hashes, in_hash);
+    arrput(in_world->typeflags, (1ULL << (in_world->num_components - 1)));
+    in_world->num_components++;
+}
+
+
 void tnecs_register_system(struct tnECS_World * in_world, uint64_t in_hash, void (* in_system)(struct tnECS_System_Input), uint8_t in_run_phase, bool isExclusive, size_t num_components, tnecs_components_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
