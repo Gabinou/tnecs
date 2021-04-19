@@ -133,20 +133,23 @@ size_t tnecs_new_typeflag(struct tnECS_World * in_world, size_t num_components, 
     return (typeflag_id);
 }
 
-size_t tnecs_component_name2id(struct tnECS_World * in_world, const unsigned char * in_name) {
-    TNECS_DEBUG_PRINTF("tnecs_component_name2id\n");
+size_t tnecs_component_hash2id(struct tnECS_World * in_world, uint64_t in_hash) {
+    TNECS_DEBUG_PRINTF("tnecs_component_hash2id\n");
 
-    size_t   out = 0;
-    uint64_t temp_hash = hash_djb2(in_name);
-    TNECS_DEBUG_PRINTF("%s hash %llu \n", in_name, temp_hash);
-    for (size_t j = 0; j < in_world->num_components; j++) {
-        TNECS_DEBUG_PRINTF("%d id, hash %llu \n", j, in_world->component_hashes[j]);
-        if (in_world->component_hashes[j] == temp_hash) {
-            out = j;
+    size_t out;
+    for (size_t i = 0; i < in_world->num_components; i++) {
+        if (in_world->component_hashes[i] == in_hash) {
+            out = i;
             break;
         }
     }
     return (out);
+}
+
+size_t tnecs_component_name2id(struct tnECS_World * in_world, const unsigned char * in_name) {
+    TNECS_DEBUG_PRINTF("tnecs_component_name2id\n");
+
+    return (tnecs_component_hash2id(in_world, hash_djb2(in_name)));
 }
 
 tnecs_component_t tnecs_names2typeflag(struct tnECS_World * in_world, size_t argnum, ...) {
@@ -179,19 +182,6 @@ tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...) {
         out += TNECS_COMPONENT_ID2TYPEFLAG(va_arg(ap, size_t));
     }
     va_end(ap);
-    return (out);
-}
-
-size_t tnecs_component_hash2id(struct tnECS_World * in_world, uint64_t in_hash) {
-    TNECS_DEBUG_PRINTF("tnecs_component_hash2id\n");
-
-    size_t out;
-    for (size_t i = 0; i < in_world->num_components; i++) {
-        if (in_world->component_hashes[i] == in_hash) {
-            out = i;
-            break;
-        }
-    }
     return (out);
 }
 
