@@ -7,13 +7,13 @@
 #include <stdbool.h>
 #include <stdarg.h>
 // #define STB_DS_IMPLEMENTATION
-#include "stb_ds.h"
+#include "stb_ds.h" // Should I eliminate this dependency?
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// #define TNECS_DEBUG
+// #define TNECS_DEBUG // printf are ignored if defined
 #ifdef TNECS_DEBUG
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
