@@ -5,8 +5,8 @@ ECSs are an alternative way to organize data and functions to Object-Oriented pr
 
 OOP: Objects/Classes contain data and methods, children objects inherit from parents...
 
-ECS: By contrast, components are purely data, user-defined structs.
-Any number of components can be attached to an entity, which is simply an uint64_t index determined by tnECS.
+ECS: Components are purely data, user-defined structs.
+Any component can be attached to an entity, which is simply an uint64_t index determined by tnECS.
 Then, entities are acted upon by systems, which are user-defined functions.
 The systems iterate only over entities that have a certain set of components.
 In tnECS, the system can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
