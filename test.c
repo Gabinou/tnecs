@@ -134,9 +134,6 @@ int main() {
     assert(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == (TNECS_ID_START << 2));
     assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
 
-    printf("New Entity with components \n");
-    TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
-    printf("\n");
 
     printf("System registration\n");
     TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
@@ -146,21 +143,23 @@ int main() {
     assert(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == hash_djb2("SystemMove"));
     printf("\n");
 
-    // printf("Entity Creation/Destruction\n");
-    // assert(test_world->next_entity_id == ENTITY_ID_START);
-    // printf("Making Silou Entity \n");
-    // tnecs_entity_t Silou = tnecs_new_entity(test_world);
-    // assert(Silou == ENTITY_ID_START);
-    // assert(test_world->next_entity_id == (ENTITY_ID_START + 1));
-    // printf("Making Pirou Entity \n");
-    // tnecs_entity_t Pirou = tnecs_new_entity(test_world);
-    // assert(Pirou == (ENTITY_ID_START + 1));
-    // assert(test_world->next_entity_id == (ENTITY_ID_START + 2));
-    // assert(Silou != Pirou);
-    // printf("\n");
+    printf("Entity Creation/Destruction\n");
+    assert(test_world->next_entity_id == TNECS_ID_START);
+    printf("Making Silou Entity \n");
+    tnecs_entity_t Silou = tnecs_new_entity(test_world);
+    assert(Silou == TNECS_ID_START);
+    assert(test_world->next_entity_id == (TNECS_ID_START + 1));
+    printf("Making Pirou Entity \n");
+    tnecs_entity_t Pirou = tnecs_new_entity(test_world);
+    assert(Pirou == (TNECS_ID_START + 1));
+    assert(test_world->next_entity_id == (TNECS_ID_START + 2));
+    assert(Silou != Pirou);
+    printf("New Entity with components \n");
+    TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    printf("\n");
 
-    // printf("Adding Components to Entities\n");
-    // TNECS_ADD_COMPONENT(test_world, Position, Silou);
+    printf("Adding Components to Entities\n");
+    TNECS_ADD_COMPONENT(test_world, Silou, Position);
     // components_list = hmget(test_world->entities_table, Silou);
     // assert(arrlen(components_list) == 1);
     // assert(components_list[0] == Component_Position_id);
@@ -240,8 +239,8 @@ int main() {
     // printf("Destroying Entities\n");
     // tnecs_entity_destroy(test_world, Pirou);
     // Pirou = tnecs_new_entity(test_world);
-    // assert(Pirou == (ENTITY_ID_START + 1));
-    // assert(test_world->next_entity_id == (ENTITY_ID_START + 2));
+    // assert(Pirou == (TNECS_ID_START + 1));
+    // assert(test_world->next_entity_id == (TNECS_ID_START + 2));
     // assert(Silou != Pirou);
     // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
     // components_list = hmget(test_world->entities_table, Pirou);

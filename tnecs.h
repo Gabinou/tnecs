@@ -291,14 +291,14 @@ world->num_components++;
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define TNECS_ADD_COMPONENT3(world, name, entity_id) world->temp_typeflag = TNECS_COMPONENT_NAMES2TYPEFLAG(world, name) + world->entity_typeflags[entity_id];\
+#define TNECS_ADD_COMPONENT3(world, entity_id, component_name) world->temp_typeflag = TNECS_COMPONENT_NAMES2TYPEFLAG(world, component_name) + world->entity_typeflags[entity_id];\
 if (!tnecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
     arrput(world->entity_typeflags, world->temp_typeflag);\
     world->num_typeflags++;\
 }\
 tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag)
 
-#define TNECS_ADD_COMPONENT4(world, name, entity_id, newtype) if (newtype) {\
+#define TNECS_ADD_COMPONENT4(world, entity, component, isnewtype) if (newtype) {\
 strncpy(world->temp_str, #name, sizeof(#name));\
 world->temp_typeflag = (hmget(world->component_typehash, world->temp_str) + world->entity_typeflags[entity_id]);\
 tnecs_new_typeflag(world, temp_typeflag);\
