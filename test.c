@@ -150,7 +150,7 @@ int main() {
     assert(Silou == TNECS_ID_START);
     assert(test_world->next_entity_id == (TNECS_ID_START + 1));
     printf("Making Pirou Entity \n");
-    tnecs_entity_t Pirou = tnecs_new_entity(test_world);
+    tnecs_entity_t Pirou = TNECS_NEW_ENTITY(test_world);
     assert(Pirou == (TNECS_ID_START + 1));
     assert(test_world->next_entity_id == (TNECS_ID_START + 2));
     assert(Silou != Pirou);
