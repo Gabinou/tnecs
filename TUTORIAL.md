@@ -20,12 +20,11 @@ typedef struct Position {
     uint32_t x;
     uint32_t y;
 } Position;
-TNECS_COMPONENT_TYPEFLAG(test_world, Position); 
+tnecs_component_t Pisition_flag = TNECS_COMPONENT_TYPEFLAG(test_world, Position); 
 ```
 tnecs_component_t is a uint64_t flag: each component has a one bit set, at component_id location.
 Component names are stringified, then hashed with hash_djb2 and saved in tnecs_world->component_hashes.
 Any component's id is also its index in component_hashes.
-
 
 You can get a component id with:
 ```c
@@ -39,10 +38,11 @@ Or, if you wish:
 ```c
 tnecs_component_hash2id(tnecs_world, hash_djb2("Position"));
 ```
-A maximal number of 64 components can be registered.
+A maximal number of 63 components can be registered.
 
 ## Attach Components to Entities
 ```c 
+    TNECS_ADD_COMPONENT(test_world, Silou, Position);
 ```
 Entities can be created with any number of components directly. 
 ```c
@@ -61,7 +61,7 @@ void SystemMove(struct tnecs_System_Input in_input) {
         p[i].y += 4;
     }
 }
-TNECS_REGISTER_SYSTEM()
+TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit); 
 ```
 System id 0 is always reserved for NULL.
 ```c
