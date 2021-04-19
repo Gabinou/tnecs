@@ -330,12 +330,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 
-#define TNECS_ADD_COMPONENT3(world, entity_id, component_name) world->temp_typeflag = TNECS_COMPONENT_NAMES2TYPEFLAG(world, component_name) + world->entity_typeflags[entity_id];\
-if (!tnecs_type_id(world->entity_typeflags, world->num_systems, world->temp_typeflag)) {\
-    arrput(world->entity_typeflags, world->temp_typeflag);\
-    world->num_typeflags++;\
-}\
-tnecs_entity_typeflag_change(world, entity_id, world->temp_typeflag)
+#define TNECS_ADD_COMPONENT3(world, entity_id, name) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #name), true)
 
 #define TNECS_ADD_COMPONENT4(world, entity, component, isnewtype) if (newtype) {\
 strncpy(world->temp_str, #name, sizeof(#name));\
@@ -360,6 +355,7 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
+void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_components_t typeflag, bool isNew);
 void tnecs_new_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
 bool tnecs_componentsbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t previous_flag, tnecs_components_t new_flag);
 void tnecs_entity_typeflag_change(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t new_type);

@@ -162,16 +162,9 @@ int main() {
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     TNECS_ADD_COMPONENT(test_world, Silou, Unit);
 
-    // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // assert(arrlen(components_list) == 1);
-    // assert(components_list[0] == Component_Position_id);
-    // TNECS_ADD_COMPONENT(test_world, Unit, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // assert(arrlen(components_list) == 2);
-    // assert(components_list[0] == Component_Position_id);
-    // assert(components_list[1] == Component_Unit_id);
-    // printf("\n");
+    TNECS_ADD_COMPONENT(test_world, Pirou, Position);
+    TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
+    printf("\n");
 
     // printf("Getting Components from Entities\n");
     // Position * temp_Pirou = hmget(component_Position, Pirou);

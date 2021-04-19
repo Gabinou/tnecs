@@ -90,10 +90,19 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     in_world->num_entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG]++;
     return (out);
 }
+void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_components_t typeflag_toadd, bool isNew) {
+    tnecs_component_t total_typeflag = typeflag_toadd + in_world->entity_typeflags[in_entity];
+    if (isNew) {
+        if (!tnecs_new_typeflag(in_world, num_components, total_typeflag)) {
+            tnecs_entity_typeflag_change(in_world, in_entity, total_typeflag);
+        }
+    }
+}
+
 
 size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_components_t new_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_new_typeflag\n");
-
+    // outputs 0 is typeflag is new, its index if not
     size_t typeflag_id = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
         if (new_typeflag == in_world->typeflags[i]) {
@@ -102,7 +111,7 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         }
     }
     if (!typeflag_id) {
-        typeflag_id = in_world->num_typeflags++;
+        in_world->num_typeflags++;
         arrput(in_world->typeflags, new_typeflag);
         struct tnecs_Components_Array * temp_comparray = NULL;
         arrsetlen(temp_comparray, num_components);
@@ -213,7 +222,6 @@ void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash) {
     arrput(in_world->typeflags, (1ULL << (in_world->num_components - 1)));
     in_world->num_components++;
 }
-
 
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isExclusive, size_t num_components, tnecs_components_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
