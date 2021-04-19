@@ -26,7 +26,7 @@ Add tnecs.c and tnecs.h to your source code.
 - Fast (as much as can be measured uing simple benchmarks in test.c)
 - Exclusive/Inclusive systems
     * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
-- Be _mostly_ [STB-style](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt).
+- _Mostly_ [STB-style](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt).
 - Free and Open Source
 
 ## Alternative ECS/Gamedev libraries for C/C++
