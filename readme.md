@@ -5,17 +5,20 @@ Originally developed for use game I am developping: [Codename Firesaga](https://
 
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
 
-OOP: Objects/Classes contain data and methods, children objects inherit from parents...
+* OOP: Objects/Classes contain data and methods, children objects inherit from parents...
 
-ECS: Components are purely data,
-Any number of components can be attached to an entity
+* ECS: Components are purely data.
+Any number of components can be attached to an entity.
 Entities are acted upon by systems. 
-The systems iterate only over entities that have a certain set of components.
 
 In tnecs, an entity is an uint64_t index determined. 
 A component is user-defined struct. 
 A system is a user-defined function.
-Systems can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
+
+The systems iterate only over entities that have a certain set of components.
+They can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
+Systems's execution order happens in phases, set by the user.
+The user can also modify the system execution order in each phase.
 
 Videogame Example:
 - Enemy Entity: AIControlled component, Sprite Component, Physics Component

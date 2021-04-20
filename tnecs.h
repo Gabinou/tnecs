@@ -287,9 +287,10 @@ struct tnecs_System_Input {
 struct tnecs_World {
     tnecs_entity_t * entities; // entities[entity_id] == entity_id unless deleted
     tnecs_components_t * typeflags;                 // [typeflag_id]
-    tnecs_components_t * entity_typeflags;          // [entity]
-    tnecs_components_t * system_typeflags;          // [system]
-    void (** systems)(struct tnecs_System_Input);// [system]
+    tnecs_components_t * entity_typeflags;          // [entity_id]
+    tnecs_components_t * system_typeflags;          // [system_id]
+    void (** systems)(struct tnecs_System_Input);   // [system_id]
+    void (*** systems_byphase)(struct tnecs_System_Input);  // [phase][num_systemssbyphase]
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
@@ -302,6 +303,7 @@ struct tnecs_World {
     tnecs_components_t ** component_flagbytype;     // [typeflag_id][num_componentsbytype]
     size_t * num_componentsbytype;                  // [typeflag_id]
     size_t * num_entitiesbytype;                    // [typeflag_id]
+    size_t * num_systemssbyphase;                    // [phase]
     size_t num_components;                          // includes NULL component
     size_t num_systems;
     size_t num_entities;
