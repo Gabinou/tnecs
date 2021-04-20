@@ -325,12 +325,11 @@ typedef struct tnecs_World tnecs_world_t;
 struct tnecs_World * tnecs_init();
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(in_world) // redundancy for API consistency
-// TNECS_NEW_ENTITY_WCOMPONENTS's __VA_ARGS__ are user-defined component names/tokens
-#define TNECS_NEW_ENTITY_WCOMPONENTS(world,...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
+#define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
 
 // UTILITY MACROS
 #define TNECS_HASH(name) hash_djb2(#name)
-#define TNECS_NAME2HASH(name) hash_djb2(#name)
+#define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(in_world, entity_id, tnecs_component_name2id(world, #name))
 
 #define TNECS_COMPONENT_HASH(name) TNECS_HASH(name)
@@ -353,21 +352,11 @@ struct tnecs_World * tnecs_init();
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
-#define TNECS_COMPONENTARRAY_ADD(world, name, entity, typeflag) world->temp_typeflag = tnecs_component_names2typeflag(world, 1, #name)
-// world->temp_id = tnecs_component_hash2id(world, hash_djb2(#name));\
-// for (size_t i = 0; i < world->num_componentsbytype[]; i++) {
-//     if ()
-
-//     }
-// arraddn(world->components_bytype[world->temp_typeflag][entity], num)
-
-
 // TNECS_ADD_COMPONENT is overloaded component adder macro
 //      3 inputs required: (world, name, entity_id)
 //      4th input if newtype is false, to skip checks for execution speed
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
-
 #define TNECS_ADD_COMPONENT3(world, entity_id, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), true)
 #define TNECS_ADD_COMPONENT4(world, entity, isnewtype, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), isnewtype)
 
