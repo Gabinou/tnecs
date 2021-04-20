@@ -27,7 +27,7 @@ Videogame Example:
 ## Installation
 Add tnecs.c and tnecs.h to your source code.
 
-## Features/Objective
+## Features/Objectives
 - Compileable using tcc, gcc, clang (msvc untested)
 - Simple C99 API
 - Small Codebase, <1000 lines (for now).
