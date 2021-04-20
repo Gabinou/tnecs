@@ -93,6 +93,7 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
 
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, tnecs_component_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_get_component\n");
+
     size_t typeflag_id = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
     size_t component_bytype_id = 0;
     size_t entities_bytype_id = 0;
@@ -117,15 +118,32 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
     return (out_comp);
 }
 
+void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t entity_typeflag, tnecs_components_t type_toinit) {
+    TNECS_DEBUG_PRINTF("tnecs_entity_init_component\n");
+    
+    in_world->components_bytype[entity_typeflag];
+}
+
 
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_components_t typeflag_toadd, bool isNew) {
     TNECS_DEBUG_PRINTF("tnecs_entity_add_components\n");
-
-    tnecs_component_t total_typeflag = typeflag_toadd + in_world->entity_typeflags[in_entity];
+    tnecs_component_t typeflag_old = in_world->entity_typeflags[in_entity]
+    tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
     if (isNew) {
-        tnecs_new_typeflag(in_world, num_components, total_typeflag);
+        tnecs_new_typeflag(in_world, num_components, typeflag_new);
     }
-    tnecs_entity_typeflag_change(in_world, in_entity, total_typeflag);
+    tnecs_entity_typeflag_change(in_world, in_entity, typeflag_new);
+    tnecs_componentsbytype_migrate(in_world, in_entity, typeflag_old, tnecs_components_t new_flag) {
+
+    tnecs_components_t type_toadd;
+    tnecs_components_t typeflag_reduce = typeflag_toadd;
+    while (typeflag_reduced) {
+        typeflag_reduced &= (typeflag_reduced - 1);
+        type_toadd = typeflag_reduced | typeflag_toadd;
+        tnecs_entity_init_component(in_world, in_entity, type_toadd);
+        typeflag_toadd = typeflag_reduced;
+    }
+
 }
 
 

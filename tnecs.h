@@ -289,21 +289,23 @@ struct tnecs_World {
     tnecs_components_t * entity_typeflags;          // [entity_id]
     tnecs_components_t * system_typeflags;          // [system_id]
     void (** systems)(struct tnecs_System_Input);   // [system_id]
-    void (*** systems_byphase)(struct tnecs_System_Input);  // [phase][num_systemssbyphase]
+    void (* ** systems_byphase)(struct tnecs_System_Input); // [phase_id][system_order_type]
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
     // the by_type array are exclusive.
-    struct tnecs_Components_Array ** components_bytype;   // [typeflag_id][num_componentsbytype]
-    tnecs_entity_t ** entities_bytype;              // [typeflag_id][num_entitiesbytype]
-    tnecs_components_t ** component_idbytype;       // [typeflag_id][num_componentsbytype]
-    tnecs_components_t ** component_flagbytype;     // [typeflag_id][num_componentsbytype]
+    struct tnecs_Components_Array *** components_bytype;   // [typeflag_id][component_order_type]
+    tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_type]
+    tnecs_components_t ** component_idbytype;       // [typeflag_id][component_order_type]
+    tnecs_components_t ** component_flagbytype;     // [typeflag_id][component_order_type]
     size_t * num_componentsbytype;                  // [typeflag_id]
     size_t * num_entitiesbytype;                    // [typeflag_id]
-    size_t * num_systemssbyphase;                    // [phase]
-    size_t num_components;                          // includes NULL component
+    size_t * num_systemssbyphase;                   // [phase_id]
+
+    // num_XXXX always include NULL
+    size_t num_components;                          
     size_t num_systems;
     size_t num_entities;
     size_t num_typeflags;
@@ -324,18 +326,17 @@ typedef struct tnecs_World tnecs_world_t;
 // ********************* FUNCTIONALITY MACROS AND FUNCTIONS ************************
 struct tnecs_World * tnecs_init();
 
-#define TNECS_NEW_ENTITY(world) tnecs_new_entity(in_world) // redundancy for API consistency
+#define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
 
 // UTILITY MACROS
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
-#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(in_world, entity_id, tnecs_component_name2id(world, #name))
-
+#define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
+#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
 #define TNECS_COMPONENT_HASH(name) TNECS_HASH(name)
 #define TNECS_COMPONENT_NAME2HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
-#define TNECS_COMPONENT_ID(world, name) tnecs_component_hash2id(world, hash_djb2(#name))
 #define TNECS_COMPONENT_TYPEFLAG(world, name) tnecs_component_names2typeflag(world, 1, #name)
 #define TNECS_COMPONENT_NAME2TYPEFLAG(world, name) TNECS_COMPONENT_TYPEFLAG(world, name)
 #define TNECS_COMPONENT_NAMES2TYPEFLAG(world, ...) tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
@@ -373,9 +374,9 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
 // ****************** ENTITY MANIPULATION ************************
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
-void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t in_component_id);
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
-void tnecs_entity_add_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag);
+void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t in_component_id);
+void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t entity_typeflag, tnecs_components_t type_toadd);
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_components_t typeflag, bool isNew);
 void tnecs_new_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t typeflag, tnecs_components_t type_toadd);
 bool tnecs_componentsbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t previous_flag, tnecs_components_t new_flag);
@@ -391,11 +392,9 @@ size_t tnecs_component_typeflag2id(struct tnecs_World * in_world, tnecs_componen
 size_t tnecs_component_hash2id(struct tnecs_World * in_world, uint64_t in_hash);
 size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
 size_t tnecs_issubtype(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
-
 size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash);
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char * in_name);
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const unsigned char * in_name);
-
 
 // ****************** STRING HASHING ************************
 // hash_djb2 slightly faster than hash_sdbm
