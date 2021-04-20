@@ -6,39 +6,39 @@ struct tnecs_World * tnecs_init() {
 
     struct tnecs_World * tnecs_world = (struct tnecs_World *)calloc(sizeof(struct tnecs_World), 1);
     tnecs_world->entities = NULL;
-    arrsetcap(tnecs_world->entities, DEFAULT_ENTITY_CAP);
+    arrsetcap(tnecs_world->entities, TNECS_INITIAL_ENTITY_CAP);
     arrput(tnecs_world->entities, TNECS_NULL);
 
     tnecs_world->typeflags = NULL;
-    arrsetcap(tnecs_world->typeflags, DEFAULT_ENTITY_CAP);
+    arrsetcap(tnecs_world->typeflags, TNECS_INITIAL_ENTITY_CAP);
     arrput(tnecs_world->typeflags, TNECS_NULL);
 
     tnecs_world->entity_typeflags = NULL;
-    arrsetcap(tnecs_world->entity_typeflags, DEFAULT_ENTITY_CAP);
+    arrsetcap(tnecs_world->entity_typeflags, TNECS_INITIAL_ENTITY_CAP);
     arrput(tnecs_world->entity_typeflags, TNECS_NULL);
 
     tnecs_world->system_typeflags = NULL;
-    arrsetcap(tnecs_world->system_typeflags, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->system_typeflags, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->system_typeflags, TNECS_NULL);
 
     tnecs_world->system_isExclusive = NULL;
-    arrsetcap(tnecs_world->system_isExclusive, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->system_isExclusive, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->system_isExclusive, TNECS_NULL);
 
     tnecs_world->component_hashes = NULL;
-    arrsetcap(tnecs_world->component_hashes, MAX_COMPONENT);
+    arrsetcap(tnecs_world->component_hashes, TNECS_MAX_COMPONENT);
     arrput(tnecs_world->component_hashes, TNECS_NULL);
 
     tnecs_world->system_hashes = NULL;
-    arrsetcap(tnecs_world->system_hashes, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->system_hashes, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->system_hashes, TNECS_NULL);
 
     tnecs_world->entities_bytype = NULL;
-    arrsetcap(tnecs_world->entities_bytype, DEFAULT_SYSTEM_CAP);
-    arrsetlen(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->entities_bytype, TNECS_INITIAL_SYSTEM_CAP);
+    arrsetlen(tnecs_world->num_entitiesbytype, TNECS_INITIAL_SYSTEM_CAP);
     tnecs_world->num_componentsbytype = NULL;
-    arrsetcap(tnecs_world->num_componentsbytype, DEFAULT_SYSTEM_CAP);
-    for (size_t i = 0 ; i < DEFAULT_SYSTEM_CAP; i++) {
+    arrsetcap(tnecs_world->num_componentsbytype, TNECS_INITIAL_SYSTEM_CAP);
+    for (size_t i = 0 ; i < TNECS_INITIAL_SYSTEM_CAP; i++) {
         tnecs_world->num_entitiesbytype[i] = 0;
         tnecs_world->num_componentsbytype[i] = 0;
     }
@@ -47,25 +47,25 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->num_entitiesbytype[TNECS_NULL]++;
 
     tnecs_world->component_idbytype = NULL;
-    arrsetcap(tnecs_world->component_idbytype, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->component_idbytype, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->component_idbytype, NULL);
 
     tnecs_world->component_flagbytype = NULL;
-    arrsetcap(tnecs_world->component_flagbytype, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->component_flagbytype, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->component_flagbytype, NULL);
 
     tnecs_world->num_entitiesbytype = NULL;
-    arrsetcap(tnecs_world->num_entitiesbytype, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->num_entitiesbytype, TNECS_INITIAL_SYSTEM_CAP);
 
     tnecs_world->num_components = TNECS_ID_START;
     tnecs_world->num_systems = TNECS_ID_START;
     tnecs_world->num_typeflags = TNECS_ID_START;
 
     tnecs_world->components_bytype = NULL;
-    arrsetcap(tnecs_world->components_bytype, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->components_bytype, TNECS_INITIAL_SYSTEM_CAP);
 
     tnecs_world->systems = NULL;
-    arrsetcap(tnecs_world->systems, DEFAULT_SYSTEM_CAP);
+    arrsetcap(tnecs_world->systems, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->systems, NULL);
 
     tnecs_world->next_entity_id = TNECS_ID_START;
@@ -239,7 +239,7 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
         }
 
         in_world->entity_typeflags[in_entity] = 0;
-        if (in_world->num_opened_entity_ids < OPEN_IDS_BUFFER) {
+        if (in_world->num_opened_entity_ids < TNECS_OPEN_IDS_BUFFER) {
             in_world->opened_entity_ids[in_world->num_opened_entity_ids++] = in_entity;
         }
     }

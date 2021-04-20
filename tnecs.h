@@ -60,13 +60,12 @@ typedef uint16_t tnecs_system_t;
 #define TNECS_NULL 0
 #define TNECS_NOCOMPONENT_TYPEFLAG 0
 #define TNECS_ID_START 1
-#define OPEN_IDS_BUFFER 128
-#define STR_BUFFER 128
-#define MAX_COMPONENT 63
-#define DEFAULT_COMPONENT_NUM 4
-#define DEFAULT_SYSTEM_CAP 16
-#define DEFAULT_COMPONENT_CAP 64
-#define DEFAULT_ENTITY_CAP 128
+#define TNECS_MAX_COMPONENT 63
+#define TNECS_STR_BUFFER 128
+#define TNECS_OPEN_IDS_BUFFER 128
+#define TNECS_INITIAL_SYSTEM_CAP 16
+#define TNECS_INITIAL_COMPONENT_CAP 64
+#define TNECS_INITIAL_ENTITY_CAP 128
 #define ENTITY_MAX_COMPONENT_NUM 10
 
 enum TNECS_RUN_PHASES {
@@ -310,14 +309,14 @@ struct tnecs_World {
     size_t num_typeflags;
 
     tnecs_entity_t next_entity_id;
-    tnecs_entity_t opened_entity_ids[OPEN_IDS_BUFFER];
+    tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
 
     size_t temp_size;
     tnecs_component_t temp_typeflag;
     size_t temp_id;
     uint64_t temp_hash;
-    char temp_str[STR_BUFFER];
+    char temp_str[TNECS_STR_BUFFER];
 };
 typedef struct tnecs_World tnecs_world_t;
 
