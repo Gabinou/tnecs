@@ -1,6 +1,6 @@
-# tnECS (Tiny nECS)
+# tnecs (Tiny nECS)
 
-tnecs: Tiny C99 Entity-Component-System (ECS) library.
+Tiny C99 Entity-Component-System (ECS) library.
 Originally developed for use game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
 
@@ -44,4 +44,4 @@ Add tnecs.c and tnecs.h to your source code.
 - [stb list of single header libraries](https://github.com/nothings/single_file_libs)
 
 ## Credits
-    Gabriel Taillon
+Gabriel Taillon
