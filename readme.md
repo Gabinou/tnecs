@@ -2,7 +2,6 @@
 
 tnecs: Tiny C99 Entity-Component-System (ECS) library.
 Originally developed for use game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
-
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
 
 * OOP: Objects/Classes contain data and methods, children objects inherit from parents...
