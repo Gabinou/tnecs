@@ -1,13 +1,15 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <assert.h>
 #include <stdbool.h>
+#include <math.h>
+#include <time.h>
+#include <string.h>
 
 #include "us_clock.h"
 #include "tnecs.h"
 
 /* MINCTEST - Minimal C Test Library - 0.2.0
- *
+ *******************************MODIFIED FOR TNECS*************************
  * Copyright (c) 2014-2017 Lewis Van Winkle
  *
  * http://CodePlea.com
@@ -33,17 +35,10 @@
 #ifndef __MINCTEST_H__
 #define __MINCTEST_H__
 
-#include <stdio.h>
-#include <math.h>
-#include <time.h>
-#include <string.h>
-
-
 /* How far apart can floats be before we consider them unequal. */
 #ifndef LTEST_FLOAT_TOLERANCE
 #define LTEST_FLOAT_TOLERANCE 0.001
 #endif
-
 
 /* Track the number of passes, fails. */
 /* NB this is made for all tests to be in one file. */
@@ -60,7 +55,6 @@ static int lfails = 0;
     }\
 } while (0)
 
-
 /* Run a test. Name can be any string to print out, test is the function name to call. */
 #define lrun(name, test) do {\
     const int ts = ltests;\
@@ -73,7 +67,6 @@ static int lfails = 0;
             (int)((clock() - start) * 1000 / CLOCKS_PER_SEC));\
 } while (0)
 
-
 /* Assert a true statement. */
 #define lok(test) do {\
     ++ltests;\
@@ -81,7 +74,6 @@ static int lfails = 0;
         ++lfails;\
         dupprintf(globalf,"%s:%d error \n", __FILE__, __LINE__);\
     }} while (0)
-
 
 /* Prototype to assert equal. */
 #define lequal_base(equality, a, b, format) do {\
@@ -91,26 +83,20 @@ static int lfails = 0;
         dupprintf(globalf,"%s:%d ("format " != " format")\n", __FILE__, __LINE__, (a), (b));\
     }} while (0)
 
-
 /* Assert two integers are equal. */
 #define lequal(a, b)\
     lequal_base((a) == (b), a, b, "%d")
-
 
 /* Assert two floats are equal (Within LTEST_FLOAT_TOLERANCE). */
 #define lfequal(a, b)\
     lequal_base(fabs((double)(a)-(double)(b)) <= LTEST_FLOAT_TOLERANCE\
      && fabs((double)(a)-(double)(b)) == fabs((double)(a)-(double)(b)), (double)(a), (double)(b), "%f")
 
-
 /* Assert two strings are equal. */
 #define lsequal(a, b)\
     lequal_base(strcmp(a, b) == 0, a, b, "%s")
 
-
 #endif /*__MINCTEST_H__*/
-
-
 
 typedef struct Position {
     uint32_t x;
@@ -177,71 +163,51 @@ void SystemMove(struct tnecs_System_Input in_input) {
 }
 
 void tnecs_test_world_init() {
-    // dupprintf(globalf,"tnecs_init\n");
     test_world = tnecs_init();
-    // dupprintf(globalf,"\n");
 }
 
 void tnecs_test_component_registration() {
-    // dupprintf(globalf,"Component registration\n");
-    // dupprintf(globalf,"Registering Position Component \n");
     TNECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
-    // dupprintf(globalf,"Component_Position_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Position));
     TNECS_COMPONENT_TYPEFLAG(test_world, Position);
-    // dupprintf(globalf,"TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
     lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == hash_djb2("Position"));
 
     lok(test_world->num_components == 2);
-    // dupprintf(globalf,"TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
     lok(TNECS_COMPONENT_TYPEFLAG(test_world, Position) == (TNECS_ID_START << 0));
 
-    // dupprintf(globalf,"Registering Position Unit \n");
     TNECS_REGISTER_COMPONENT(test_world, Unit);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == 2);
-    // dupprintf(globalf,"Component_Unit_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Unit));
-    // dupprintf(globalf,"TNECS_NAME2TYPEFLAG(test_world, Unit) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Unit));
     lok(test_world->num_components == 3);
     lok(TNECS_COMPONENT_TYPEFLAG(test_world, Unit) == (TNECS_ID_START << 1));
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == hash_djb2("Unit"));
 
-    // dupprintf(globalf,"Registering Position Sprite \n");
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Sprite) == 3);
     lok(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == (TNECS_ID_START << 2));
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
-    // dupprintf(globalf,"\n");
 }
 
 void tnecs_test_system_registration() {
-    // dupprintf(globalf,"System registration\n");
     TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
-    // dupprintf(globalf,"TNECS_SYSTEM_ID(test_world, SystemMove) %d\n", TNECS_SYSTEM_ID(test_world, SystemMove));
     lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
     lok(TNECS_SYSTEM_HASH(SystemMove) == hash_djb2("SystemMove"));
     lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == hash_djb2("SystemMove"));
-    // dupprintf(globalf,"\n");
 }
 
 void tnecs_test_entity_creation() {
-    // dupprintf(globalf,"Entity Creation/Destruction\n");
     lok(test_world->next_entity_id == TNECS_ID_START);
-    // dupprintf(globalf,"Making Silou Entity \n");
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     lok(Silou == TNECS_ID_START);
     lok(test_world->next_entity_id == (TNECS_ID_START + 1));
-    // dupprintf(globalf,"Making Pirou Entity \n");
     tnecs_entity_t Pirou = TNECS_NEW_ENTITY(test_world);
     lok(Pirou == (TNECS_ID_START + 1));
     lok(test_world->next_entity_id == (TNECS_ID_START + 2));
     lok(Silou != Pirou);
-    // dupprintf(globalf,"New Entity with components \n");
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
 
-    // dupprintf(globalf,"Destroying Entities\n");
     // tnecs_entity_destroy(test_world, Pirou);
     // Pirou = tnecs_new_entity(test_world);
     // lok(Pirou == (TNECS_ID_START + 1));
@@ -256,11 +222,9 @@ void tnecs_test_entity_creation() {
     // lok(arrlen(components_list) == 2);
     // lok(components_list[0] == Component_Position_id);
     // lok(components_list[1] == Component_Unit_id);
-    // dupprintf(globalf,"\n");
 }
 
 void tnecs_test_component_add() {
-    // dupprintf(globalf,"Adding Components to Entities\n");
     // TNECS_ADD_COMPONENT(test_world, Silou, Position);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
@@ -282,9 +246,7 @@ void tnecs_test_component_add() {
     // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
     // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) > 0);
     // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
-    // dupprintf(globalf,"\n");
 
-    // dupprintf(globalf,"Getting Components from Entities\n");
     // temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
     // lok(temp_position->x == 0);
     // lok(temp_position->y == 0);
@@ -338,23 +300,19 @@ void tnecs_test_component_add() {
 }
 
 void tnecs_test_hashing() {
-    // dupprintf(globalf,"hashing algorithms test\n");
-    // dupprintf(globalf,"\n");
 }
 
 void tnecs_test_setbit() {
-    // dupprintf(globalf,"setbit counting test\n");
     int8_t got_bitcount = 0;
     int8_t expected_bitcount = 4 * 8;
     uint64_t temp_flag = 0xF0F0F0F0F0F0F0F0;
 
     got_bitcount = setBits_KnR_uint64_t(temp_flag);
     lok(expected_bitcount == got_bitcount);
-    dupprintf(globalf, "\n");
 }
 
 void tnecs_benchmarks() {
-    // dupprintf(globalf,"Homemade tnecs benchmarks\n");
+    dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
     double t_0;
     double t_1;
 
@@ -462,7 +420,7 @@ void tnecs_benchmarks() {
 }
 
 int main() {
-    dupprintf(globalf, "\n Hello, World! I am testing tnECS.\n");
+    dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     globalf = fopen("test_results.txt", "w+");
     lrun("world_init", tnecs_test_world_init);
     lrun("c_regis", tnecs_test_component_registration);
@@ -474,6 +432,6 @@ int main() {
     lresults();
 
     tnecs_benchmarks();
-    dupprintf(globalf, "tnECS Test End \n \n");
+    dupprintf(globalf, "tnecs Test End \n \n");
     return (0);
 }
