@@ -6,6 +6,112 @@
 #include "us_clock.h"
 #include "tnecs.h"
 
+/* MINCTEST - Minimal C Test Library - 0.2.0
+ *
+ * Copyright (c) 2014-2017 Lewis Van Winkle
+ *
+ * http://CodePlea.com
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgement in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ */
+
+#ifndef __MINCTEST_H__
+#define __MINCTEST_H__
+
+#include <stdio.h>
+#include <math.h>
+#include <time.h>
+#include <string.h>
+
+
+/* How far apart can floats be before we consider them unequal. */
+#ifndef LTEST_FLOAT_TOLERANCE
+#define LTEST_FLOAT_TOLERANCE 0.001
+#endif
+
+
+/* Track the number of passes, fails. */
+/* NB this is made for all tests to be in one file. */
+static int ltests = 0;
+static int lfails = 0;
+
+
+/* Display the test results. */
+#define lresults() do {\
+    if (lfails == 0) {\
+        dupprintf(globalf,"ALL TESTS PASSED (%d/%d)\n", ltests, ltests);\
+    } else {\
+        dupprintf(globalf,"SOME TESTS FAILED (%d/%d)\n", ltests-lfails, ltests);\
+    }\
+} while (0)
+
+
+/* Run a test. Name can be any string to print out, test is the function name to call. */
+#define lrun(name, test) do {\
+    const int ts = ltests;\
+    const int fs = lfails;\
+    const clock_t start = clock();\
+    dupprintf(globalf,"\t%-14s", name);\
+    test();\
+    dupprintf(globalf,"pass:%2d   fail:%2d   %4dms\n",\
+            (ltests-ts)-(lfails-fs), lfails-fs,\
+            (int)((clock() - start) * 1000 / CLOCKS_PER_SEC));\
+} while (0)
+
+
+/* Assert a true statement. */
+#define lok(test) do {\
+    ++ltests;\
+    if (!(test)) {\
+        ++lfails;\
+        dupprintf(globalf,"%s:%d error \n", __FILE__, __LINE__);\
+    }} while (0)
+
+
+/* Prototype to assert equal. */
+#define lequal_base(equality, a, b, format) do {\
+    ++ltests;\
+    if (!(equality)) {\
+        ++lfails;\
+        dupprintf(globalf,"%s:%d ("format " != " format")\n", __FILE__, __LINE__, (a), (b));\
+    }} while (0)
+
+
+/* Assert two integers are equal. */
+#define lequal(a, b)\
+    lequal_base((a) == (b), a, b, "%d")
+
+
+/* Assert two floats are equal (Within LTEST_FLOAT_TOLERANCE). */
+#define lfequal(a, b)\
+    lequal_base(fabs((double)(a)-(double)(b)) <= LTEST_FLOAT_TOLERANCE\
+     && fabs((double)(a)-(double)(b)) == fabs((double)(a)-(double)(b)), (double)(a), (double)(b), "%f")
+
+
+/* Assert two strings are equal. */
+#define lsequal(a, b)\
+    lequal_base(strcmp(a, b) == 0, a, b, "%s")
+
+
+#endif /*__MINCTEST_H__*/
+
+
+
 typedef struct Position {
     uint32_t x;
     uint32_t y;
@@ -37,7 +143,15 @@ typedef struct Unit2 {
     uint32_t str;
 } Unit2;
 
-
+void dupprintf(FILE * f, char const * fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+    va_start(ap, fmt);
+    vfprintf(f, fmt, ap);
+    va_end(ap);
+}
 
 #define ITERATIONS 100000
 #define ITERATIONS_SMALL 1000
@@ -45,6 +159,12 @@ tnecs_entity_t tnecs_entities[ITERATIONS];
 
 #define ARRAY_LEN 100
 struct Unit unit_array[ARRAY_LEN];
+
+tnecs_entity_t * components_list;
+struct Position * temp_position;
+struct Unit * temp_unit;
+struct tnecs_World * test_world;
+FILE * globalf;
 
 void SystemMove(struct tnecs_System_Input in_input) {
     // Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
@@ -56,179 +176,185 @@ void SystemMove(struct tnecs_System_Input in_input) {
     // }
 }
 
-int main() {
-#ifdef _WIN32
-    printf("WINDOWS\n");
-#endif
-    printf("Hello, World! I am testing tnECS. \n\n");
-    tnecs_entity_t * components_list;
-    struct Position * temp_position;
-    struct Unit * temp_unit;
+void tnecs_test_world_init() {
+    // dupprintf(globalf,"tnecs_init\n");
+    test_world = tnecs_init();
+    // dupprintf(globalf,"\n");
+}
 
-    printf("tnecs_init\n");
-    struct tnecs_World * test_world = tnecs_init();
-    printf("\n");
+void tnecs_test_component_registration() {
+    // dupprintf(globalf,"Component registration\n");
+    // dupprintf(globalf,"Registering Position Component \n");
+    TNECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
+    // dupprintf(globalf,"Component_Position_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Position));
+    TNECS_COMPONENT_TYPEFLAG(test_world, Position);
+    // dupprintf(globalf,"TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
+    lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == hash_djb2("Position"));
 
-    // printf("Component registration\n");
-    // printf("Registering Position Component \n");
-    // TNECS_REGISTER_COMPONENT(test_world, Position); // component id is 1
-    // printf("Component_Position_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Position));
-    // TNECS_COMPONENT_TYPEFLAG(test_world, Position);
-    // printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
-    // assert(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
-    // assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == hash_djb2("Position"));
+    lok(test_world->num_components == 2);
+    // dupprintf(globalf,"TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
+    lok(test_world->typeflags[0] == 0);
+    lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
+    lok(TNECS_COMPONENT_TYPEFLAG(test_world, Position) == (TNECS_ID_START << 0));
 
-    // assert(test_world->num_components == 2);
-    // printf("TNECS_COMPONENT_TYPEFLAG(test_world, Position) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Position));
-    // assert(test_world->typeflags[0] == 0);
-    // assert(test_world->typeflags[1] == (TNECS_ID_START << 0));
-    // assert(TNECS_COMPONENT_TYPEFLAG(test_world, Position) == (TNECS_ID_START << 0));
+    // dupprintf(globalf,"Registering Position Unit \n");
+    TNECS_REGISTER_COMPONENT(test_world, Unit);
+    lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == 2);
+    // dupprintf(globalf,"Component_Unit_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Unit));
+    // dupprintf(globalf,"TNECS_NAME2TYPEFLAG(test_world, Unit) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Unit));
+    lok(test_world->num_components == 3);
+    lok(TNECS_COMPONENT_TYPEFLAG(test_world, Unit) == (TNECS_ID_START << 1));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == hash_djb2("Unit"));
 
-    // printf("Registering Position Unit \n");
-    // TNECS_REGISTER_COMPONENT(test_world, Unit);
-    // assert(TNECS_COMPONENT_NAME2ID(test_world, Unit) == 2);
-    // printf("Component_Unit_id %llu \n", TNECS_COMPONENT_NAME2ID(test_world, Unit));
-    // printf("TNECS_NAME2TYPEFLAG(test_world, Unit) %llu\n", TNECS_COMPONENT_TYPEFLAG(test_world, Unit));
-    // assert(test_world->num_components == 3);
-    // assert(TNECS_COMPONENT_TYPEFLAG(test_world, Unit) == (TNECS_ID_START << 1));
-    // assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == hash_djb2("Unit"));
+    // dupprintf(globalf,"Registering Position Sprite \n");
+    TNECS_REGISTER_COMPONENT(test_world, Sprite);
+    lok(TNECS_COMPONENT_NAME2ID(test_world, Sprite) == 3);
+    lok(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == (TNECS_ID_START << 2));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
+    // dupprintf(globalf,"\n");
+}
 
-    // printf("Registering Position Sprite \n");
-    // TNECS_REGISTER_COMPONENT(test_world, Sprite);
-    // assert(TNECS_COMPONENT_NAME2ID(test_world, Sprite) == 3);
-    // assert(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == (TNECS_ID_START << 2));
-    // assert(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
+void tnecs_test_system_registration() {
+    // dupprintf(globalf,"System registration\n");
+    TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
+    // dupprintf(globalf,"TNECS_SYSTEM_ID(test_world, SystemMove) %d\n", TNECS_SYSTEM_ID(test_world, SystemMove));
+    lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
+    lok(TNECS_SYSTEM_HASH(SystemMove) == hash_djb2("SystemMove"));
+    lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == hash_djb2("SystemMove"));
+    // dupprintf(globalf,"\n");
+}
 
+void tnecs_test_entity_creation() {
+    // dupprintf(globalf,"Entity Creation/Destruction\n");
+    lok(test_world->next_entity_id == TNECS_ID_START);
+    // dupprintf(globalf,"Making Silou Entity \n");
+    tnecs_entity_t Silou = tnecs_new_entity(test_world);
+    lok(Silou == TNECS_ID_START);
+    lok(test_world->next_entity_id == (TNECS_ID_START + 1));
+    // dupprintf(globalf,"Making Pirou Entity \n");
+    tnecs_entity_t Pirou = TNECS_NEW_ENTITY(test_world);
+    lok(Pirou == (TNECS_ID_START + 1));
+    lok(test_world->next_entity_id == (TNECS_ID_START + 2));
+    lok(Silou != Pirou);
+    // dupprintf(globalf,"New Entity with components \n");
+    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    tnecs_entity_t Chasse = tnecs_new_entity(test_world);
 
-    // printf("System registration\n");
-    // TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
-    // printf("TNECS_SYSTEM_ID(test_world, SystemMove) %d\n", TNECS_SYSTEM_ID(test_world, SystemMove));
-    // assert(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
-    // assert(TNECS_SYSTEM_HASH(SystemMove) == hash_djb2("SystemMove"));
-    // assert(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == hash_djb2("SystemMove"));
-    // printf("\n");
+    // dupprintf(globalf,"Destroying Entities\n");
+    // tnecs_entity_destroy(test_world, Pirou);
+    // Pirou = tnecs_new_entity(test_world);
+    // lok(Pirou == (TNECS_ID_START + 1));
+    // lok(test_world->next_entity_id == (TNECS_ID_START + 2));
+    // lok(Silou != Pirou);
+    // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
+    // components_list = hmget(test_world->entities_table, Pirou);
+    // lok(arrlen(components_list) == 1);
+    // lok(components_list[0] == Component_Position_id);
+    // TNECS_ADD_COMPONENT(test_world, Unit, Pirou);
+    // components_list = hmget(test_world->entities_table, Pirou);
+    // lok(arrlen(components_list) == 2);
+    // lok(components_list[0] == Component_Position_id);
+    // lok(components_list[1] == Component_Unit_id);
+    // dupprintf(globalf,"\n");
+}
 
-    // printf("Entity Creation/Destruction\n");
-    // assert(test_world->next_entity_id == TNECS_ID_START);
-    // printf("Making Silou Entity \n");
-    // tnecs_entity_t Silou = tnecs_new_entity(test_world);
-    // assert(Silou == TNECS_ID_START);
-    // assert(test_world->next_entity_id == (TNECS_ID_START + 1));
-    // printf("Making Pirou Entity \n");
-    // tnecs_entity_t Pirou = TNECS_NEW_ENTITY(test_world);
-    // assert(Pirou == (TNECS_ID_START + 1));
-    // assert(test_world->next_entity_id == (TNECS_ID_START + 2));
-    // assert(Silou != Pirou);
-    // printf("New Entity with components \n");
-    // tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
-    // tnecs_entity_t Chasse = tnecs_new_entity(test_world);
-    // printf("\n");
-
-    // printf("Adding Components to Entities\n");
+void tnecs_test_component_add() {
+    // dupprintf(globalf,"Adding Components to Entities\n");
     // TNECS_ADD_COMPONENT(test_world, Silou, Position);
-    // assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
-    // assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
+    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
     // TNECS_ADD_COMPONENT(test_world, Silou, Unit);
-    // assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
-    // assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
-    // assert((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
+    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
 
     // TNECS_ADD_COMPONENT(test_world, Pirou, Position);
-    // assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
-    // assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
+    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
     // TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
-    // assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
-    // assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
-    // assert((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
+    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) > 0);
+    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) == 0);
 
 
     // TNECS_ADD_COMPONENTS(test_world, Chasse, 0, Sprite, Position);
-    // assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
-    // assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) > 0);
-    // assert((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
-    // printf("\n");
+    // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
+    // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Sprite)) > 0);
+    // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
+    // dupprintf(globalf,"\n");
 
-    // printf("Getting Components from Entities\n");
+    // dupprintf(globalf,"Getting Components from Entities\n");
     // temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
-    // assert(temp_position->x == 0);
-    // assert(temp_position->y == 0);
+    // lok(temp_position->x == 0);
+    // lok(temp_position->y == 0);
     // temp_position->x = 1;
     // temp_position->y = 2;
-    // assert(temp_position->x == 1);
-    // assert(temp_position->y == 2);
+    // lok(temp_position->x == 1);
+    // lok(temp_position->y == 2);
     // temp_position = TNECS_GET_COMPONENT(Position, Silou);
-    // assert(temp_position->x == 1);
-    // assert(temp_position->y == 2);
+    // lok(temp_position->x == 1);
+    // lok(temp_position->y == 2);
 
     // temp_unit = TNECS_GET_COMPONENT(Unit, Silou);
-    // assert(temp_unit->hp == 0);
-    // assert(temp_unit->str == 0);
+    // lok(temp_unit->hp == 0);
+    // lok(temp_unit->str == 0);
     // temp_unit->hp = 3;
     // temp_unit->str = 4;
-    // assert(temp_unit->hp == 3);
-    // assert(temp_unit->str == 4);
+    // lok(temp_unit->hp == 3);
+    // lok(temp_unit->str == 4);
     // temp_position = TNECS_GET_COMPONENT(Position, Silou);
-    // assert(temp_position->x == 1);
-    // assert(temp_position->y == 2);
+    // lok(temp_position->x == 1);
+    // lok(temp_position->y == 2);
     // temp_unit = TNECS_GET_COMPONENT(Unit, Silou);
-    // assert(temp_unit->hp == 3);
-    // assert(temp_unit->str == 4);
+    // lok(temp_unit->hp == 3);
+    // lok(temp_unit->str == 4);
 
     // temp_position = TNECS_GET_COMPONENT(Position, Pirou);
-    // assert(temp_position->x == 0);
-    // assert(temp_position->y == 0);
+    // lok(temp_position->x == 0);
+    // lok(temp_position->y == 0);
     // temp_position->x = 5;
     // temp_position->y = 6;
-    // assert(temp_position->x == 5);
-    // assert(temp_position->y == 6);
+    // lok(temp_position->x == 5);
+    // lok(temp_position->y == 6);
     // temp_position = TNECS_GET_COMPONENT(Position, Pirou);
-    // assert(temp_position->x == 5);
-    // assert(temp_position->y == 6);
+    // lok(temp_position->x == 5);
+    // lok(temp_position->y == 6);
 
     // temp_unit = TNECS_GET_COMPONENT(Unit, Pirou);
-    // assert(temp_unit->hp == 0);
-    // assert(temp_unit->str == 0);
+    // lok(temp_unit->hp == 0);
+    // lok(temp_unit->str == 0);
     // temp_unit->hp = 7;
     // temp_unit->str = 8;
-    // assert(temp_unit->hp == 7);
-    // assert(temp_unit->str == 8);
+    // lok(temp_unit->hp == 7);
+    // lok(temp_unit->str == 8);
     // temp_position = TNECS_GET_COMPONENT(Position, Pirou);
-    // assert(temp_position->x == 5);
-    // assert(temp_position->y == 6);
+    // lok(temp_position->x == 5);
+    // lok(temp_position->y == 6);
     // temp_unit = TNECS_GET_COMPONENT(Unit, Pirou);
-    // assert(temp_unit->hp == 7);
-    // assert(temp_unit->str == 8);
-    // printf("\n");
+    // lok(temp_unit->hp == 7);
+    // lok(temp_unit->str == 8);
+    // dupprintf(globalf,"\n");
+}
 
-    // printf("Destroying Entities\n");
-    // tnecs_entity_destroy(test_world, Pirou);
-    // Pirou = tnecs_new_entity(test_world);
-    // assert(Pirou == (TNECS_ID_START + 1));
-    // assert(test_world->next_entity_id == (TNECS_ID_START + 2));
-    // assert(Silou != Pirou);
-    // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // assert(arrlen(components_list) == 1);
-    // assert(components_list[0] == Component_Position_id);
-    // TNECS_ADD_COMPONENT(test_world, Unit, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // assert(arrlen(components_list) == 2);
-    // assert(components_list[0] == Component_Position_id);
-    // assert(components_list[1] == Component_Unit_id);
-    printf("\n");
+void tnecs_test_hashing() {
+    // dupprintf(globalf,"hashing algorithms test\n");
+    // dupprintf(globalf,"\n");
+}
 
-    printf("hashing algorithms test\n");
-
-    printf("setbit counting test\n");
+void tnecs_test_setbit() {
+    // dupprintf(globalf,"setbit counting test\n");
     int8_t got_bitcount = 0;
     int8_t expected_bitcount = 4 * 8;
     uint64_t temp_flag = 0xF0F0F0F0F0F0F0F0;
 
     got_bitcount = setBits_KnR_uint64_t(temp_flag);
-    assert(expected_bitcount == got_bitcount);
+    lok(expected_bitcount == got_bitcount);
+    dupprintf(globalf, "\n");
+}
 
-
-    printf("Homemade tnecs benchmarks\n");
+void tnecs_benchmarks() {
+    // dupprintf(globalf,"Homemade tnecs benchmarks\n");
     double t_0;
     double t_1;
 
@@ -240,8 +366,8 @@ int main() {
     //     unit_array[i].str = Unit_default.str;
     // }
     // t_1 = get_us();
-    // printf("unit_array init: %d iterations \n", ARRAY_LEN);
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"unit_array init: %d iterations \n", ARRAY_LEN);
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     // struct Unit temp_unitnp;
     // t_0 = get_us();
@@ -251,8 +377,8 @@ int main() {
     //     hmput(unit_hash, i, temp_unitnp);
     // }
     // t_1 = get_us();
-    // printf("unit_hash init: %d iterations \n", ARRAY_LEN);
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"unit_hash init: %d iterations \n", ARRAY_LEN);
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     // t_0 = get_us();
     // for (size_t i = 0; i < ITERATIONS; i++) {
@@ -260,8 +386,10 @@ int main() {
     //     unit_array[(i % ARRAY_LEN)].str++;
     // }
     // t_1 = get_us();
-    // printf("unit_array operations: %d iterations \n", ITERATIONS);
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"unit_array operations: %d iterations \n", ITERATIONS);
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
+
+
 
     uint64_t res_hash;
     t_0 = get_us();
@@ -270,8 +398,8 @@ int main() {
         res_hash = hash_djb2("Unit");
     }
     t_1 = get_us();
-    printf("hash_djb2: %d iterations \n", ITERATIONS);
-    printf("%.1f [us] \n", t_1 - t_0);
+    dupprintf(globalf, "hash_djb2: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
@@ -279,8 +407,8 @@ int main() {
         res_hash = hash_sdbm("Position");
     }
     t_1 = get_us();
-    printf("hash_sdbm: %d iterations \n", ITERATIONS);
-    printf("%.1f [us] \n", t_1 - t_0);
+    dupprintf(globalf, "hash_sdbm: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
 
     // t_0 = get_us();
@@ -293,21 +421,21 @@ int main() {
     //     hmput(unit_hash, index, temp_unitnp);
     // }
     // t_1 = get_us();
-    // printf("unit_hash operations: %d iterations \n", ITERATIONS);
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"unit_hash operations: %d iterations \n", ITERATIONS);
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     // t_0 = get_us();
     // struct tnecs_World * bench_world = tnecs_init();
     // t_1 = get_us();
-    // printf("tnecs: World Creation time \n");
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"tnecs: World Creation time \n");
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     // t_0 = get_us();
     // TNECS_REGISTER_COMPONENT(bench_world, Position2)
     // TNECS_REGISTER_COMPONENT(bench_world, Unit2)
     // t_1 = get_us();
-    // printf("tnecs: Component Registration \n");
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"tnecs: Component Registration \n");
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     // t_0 = get_us();
     // tnecs_entity_t tnecs_temp_ent;
@@ -316,22 +444,36 @@ int main() {
     //     tnecs_entities[i] = tnecs_temp_ent;
     // }
     // t_1 = get_us();
-    // printf("tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     // t_0 = get_us();
     // TNECS_ADD_COMPONENT(bench_world, Position2, tnecs_entities[1]);
     // TNECS_ADD_COMPONENT(bench_world, Unit2, tnecs_entities[1]);
     // for (size_t i = 2; i < ITERATIONS; i++) {
-    //     // printf("%i \n", i);
+    //     // dupprintf(globalf,"%i \n", i);
     //     TNECS_ADD_COMPONENT(bench_world, Position2, tnecs_entities[i], false);
     //     TNECS_ADD_COMPONENT(bench_world, Unit2, tnecs_entities[i], false);
     // }
     // t_1 = get_us();
-    // printf("tnecs: Component adding time: %d iterations \n", ITERATIONS);
-    // printf("%.1f [us] \n", t_1 - t_0);
+    // dupprintf(globalf,"tnecs: Component adding time: %d iterations \n", ITERATIONS);
+    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
+}
 
-    printf("tnECS Test End \n \n");
+int main() {
+    dupprintf(globalf, "\n Hello, World! I am testing tnECS.\n");
+    globalf = fopen("test_results.txt", "w+");
+    lrun("world_init", tnecs_test_world_init);
+    lrun("c_regis", tnecs_test_component_registration);
+    lrun("s_regis", tnecs_test_system_registration);
+    lrun("e_create", tnecs_test_entity_creation);
+    lrun("c_add", tnecs_test_component_add);
+    lrun("hashing", tnecs_test_hashing);
+    lrun("setbit", tnecs_test_setbit);
+    lresults();
+
+    tnecs_benchmarks();
+    dupprintf(globalf, "tnECS Test End \n \n");
     return (0);
 }
