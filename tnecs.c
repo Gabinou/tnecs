@@ -161,7 +161,7 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         arrput(in_world->typeflags, new_typeflag);
         struct tnecs_Components_Array * temp_comparray = NULL;
         arrsetlen(temp_comparray, num_components);
-        arrput(in_world->components_bytype, NULL);
+        arrput(in_world->components_bytype[new_typeflag], temp_comparray);
         arrput(in_world->entities_bytype, NULL);
         arrput(in_world->num_componentsbytype, num_components);
         arrput(in_world->num_entitiesbytype, 0);

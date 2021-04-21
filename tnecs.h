@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#define STB_DS_IMPLEMENTATION
+// #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h" // Should I eliminate this dependency?
 
 #ifdef __cplusplus
