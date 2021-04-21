@@ -420,8 +420,8 @@ void tnecs_benchmarks() {
 }
 
 int main() {
-    dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     globalf = fopen("test_results.txt", "w+");
+    dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("world_init", tnecs_test_world_init);
     lrun("c_regis", tnecs_test_component_registration);
     lrun("s_regis", tnecs_test_system_registration);
