@@ -305,7 +305,7 @@ struct tnecs_World {
     size_t * num_systemssbyphase;                   // [phase_id]
 
     // num_XXXX always include NULL
-    size_t num_components;                          
+    size_t num_components;
     size_t num_systems;
     size_t num_entities;
     size_t num_typeflags;
@@ -388,7 +388,7 @@ tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t arg
 size_t tnecs_componentflag_order_bytype(struct tnecs_World * in_world, tnecs_component_t in_component_flag, tnecs_component_t in_typeflag);
 size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag);
 size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag);
-size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t system_id, unit8_t in_phase);
+size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t system_id, uint8_t in_phase);
 
 
 size_t tnecs_component_name2id(struct tnecs_World * in_world, const unsigned char * in_name);

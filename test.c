@@ -17,6 +17,9 @@ double get_time() {
     gettimeofday(&t, &tzp);
     return (1e6 * t.tv_sec + t.tv_usec);
 }
+#elif defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 
 #ifndef get_time()
