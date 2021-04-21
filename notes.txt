@@ -6,6 +6,9 @@ Arrays are much faster than hash tables.
 
 TO DO:
 	get_system_order function (DONE?)
+	deal with component_arrays
+		-> Initialization of empty components
+		-> Put component in components_bytype
 	set system phase upon system registration
 		+ overloaded macro?
 	set_system_phase function + associated macro
