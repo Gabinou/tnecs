@@ -1,3 +1,14 @@
 
 
 Arrays are much faster than hash tables.
+
+
+
+TO DO:
+	get_system_order function (DONE?)
+	set system phase upon system registration
+		+ overloaded macro?
+	set_system_phase function + associated macro
+		-> system_migrate function + associated macro
+	get_component_list inside system
+		+ entity_order list? Is it really necessary? Maybe just having the components is enough?

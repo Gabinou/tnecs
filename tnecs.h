@@ -271,7 +271,7 @@ enum TNECS_RUN_PHASES {
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_Components_Array {
     tnecs_components_t type; // single bit on
-    void * components;       // same order as entities_bytype
+    void * components;       // [entity_order_bytype]
 };
 
 struct tnecs_System_Input {
@@ -289,14 +289,16 @@ struct tnecs_World {
     tnecs_components_t * entity_typeflags;          // [entity_id]
     tnecs_components_t * system_typeflags;          // [system_id]
     void (** systems)(struct tnecs_System_Input);   // [system_id]
-    void (* ** systems_byphase)(struct tnecs_System_Input); // [phase_id][system_order_byphase]
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
-    // the by_type array are exclusive.
-    struct tnecs_Components_Array *** components_bytype;   // [typeflag_id][component_order_bytype]
+    // the by_type array are exclusive. Why?
+    //   -> no entity doubles
+    //   -> easier to build inclusive entity lists.
+    struct tnecs_Components_Array *** components_bytype; // [typeflag_id][component_order_bytype]
+    size_t ** system_idbyphase;                     // [phase_id][system_order_byphase]
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
     tnecs_components_t ** component_idbytype;       // [typeflag_id][component_order_bytype]
     tnecs_components_t ** component_flagbytype;     // [typeflag_id][component_order_bytype]

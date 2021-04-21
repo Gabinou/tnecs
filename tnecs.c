@@ -507,7 +507,7 @@ size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t in_syste
 
     size_t order = in_world->num_systems;
     for (size_t i = 0; i < in_world->num_systemssbyphase[in_phase]; i++) {
-        if (in_world->systems_byphase[in_phase][i] == in_system_id) {
+        if (in_world->system_idbyphase[in_phase][i] == in_system_id) {
             order = i;
             break;
         }
