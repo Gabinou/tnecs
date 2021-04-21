@@ -1,5 +1,5 @@
-#ifndef TNECS_H
-#define TNECS_H
+#ifndef __TNECS_H__
+#define __TNECS_H__
 
 // tnecs: Tiny C99 Entity-Component-System (ECS) library.
 // ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
@@ -13,8 +13,8 @@
 // In tnECS, the system can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
 
 // Videogame Example:
-// - Enemy Entity: AIControlled component, Sprite Component, Physics Component
-// - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
+// - Enemy Entity:          AIControlled component, Sprite Component, Physics Component
+// - Bullet Entity:         Sprite Component, Physics Component, DamageonHit Component
 // - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
 // Credits: Gabriel Taillon
 
@@ -415,4 +415,4 @@ int8_t setBits_KnR_uint64_t(uint64_t in_flag);
 }
 #endif
 
-#endif // TNECS
+#endif // __TNECS_H__
