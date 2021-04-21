@@ -1,6 +1,6 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <assert.h>
-#include <time.h>
 #include <stdbool.h>
 
 #include "us_clock.h"
@@ -45,12 +45,6 @@ tnecs_entity_t tnecs_entities[ITERATIONS];
 
 #define ARRAY_LEN 100
 struct Unit unit_array[ARRAY_LEN];
-
-struct Unit_Hash {
-    tnecs_entity_t key; // id
-    struct Unit value; // components_list
-};
-
 
 void SystemMove(struct tnecs_System_Input in_input) {
     // Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);

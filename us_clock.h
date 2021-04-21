@@ -1,10 +1,11 @@
 
 #include <stdint.h>
-
+#include <time.h>
 
 // *************************** HIGH RESOLUTION CLOCK *************************
 //  -> resolution: 0.1[us]
 //  https://gist.github.com/ForeverZer0/0a4f80fc02b96e19380ebb7a3debbee5
+
 #if defined(__linux)
 #  define MICROSECOND_CLOCK
 #  define HAVE_POSIX_TIMER
@@ -66,6 +67,6 @@ double get_us() {
 }
 #else
 #  define FAILSAFE_CLOCK
-//  -> resolution: 0.1[us]
 #  define get_us() (((double)clock())/CLOCKS_PER_SEC*1e6) // [us]
+//  -> resolution: 0.1[us]
 #endif
