@@ -2,7 +2,7 @@
 
 COMPILER := gcc # tcc, gcc, clang
 
-# OS AND Process detection 
+# OS AND Processor detection 
 ifeq ($(OS),Windows_NT)
     OS_FLAG := WIN32
     ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
@@ -62,7 +62,6 @@ ifeq ($(isASTYLE),)
 else
 	ASTYLE := astyle 
 endif
-
 
 EXEC := $(PREFIX)test$(EXTENSION)
 EXEC_TEST_FLECS := $(PREFIX)test_flecs$(EXTENSION)
