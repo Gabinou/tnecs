@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#define STB_DS_IMPLEMENTATION
-#include "stb_ds.h" // Should I eliminate this dependency?
+// #define STB_DS_IMPLEMENTATION
+#include "stb_ds.h" // Should I eliminate this dependency? -> yes
 
 #ifdef __cplusplus
 extern "C" {
@@ -336,6 +336,9 @@ struct tnecs_World * tnecs_init();
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
 #define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
+#define TNECS_ENTITY_TYPEFLAG(world, entity_id) world->entity_typeflags[entity]
+#define TNECS_TYPEFLAGID(world, typeflag) tnecs_typeflagid(in_world, typeflag)
+
 #define TNECS_COMPONENT_HASH(name) TNECS_HASH(name)
 #define TNECS_COMPONENT_NAME2HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
@@ -393,10 +396,12 @@ size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t i
 size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t system_id, uint8_t in_phase);
 
 
+size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t typeflag);
+
 size_t tnecs_component_name2id(struct tnecs_World * in_world, const unsigned char * in_name);
 tnecs_component_t tnecs_component_names2typeflag(struct tnecs_World * in_world, size_t argnum, ...);
 tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...);
-size_t tnecs_component_typeflag2id(struct tnecs_World * in_world, tnecs_component_t in_typeflag);
+size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_typeflag);
 size_t tnecs_component_hash2id(struct tnecs_World * in_world, uint64_t in_hash);
 #define tnecs_flag_id(typelist, len, flag) tnecs_type_id(typelist, len, flag);
 size_t tnecs_type_id(tnecs_components_t * in_typelist, size_t len, tnecs_components_t in_flag);
