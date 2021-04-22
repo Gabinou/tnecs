@@ -91,6 +91,18 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     return (out);
 }
 
+void * tnecs_entity_allocate_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, uint64_t component_hash, void * calloced_component) {
+    TNECS_DEBUG_PRINTF("tnecs_entity_allocate_component\n");
+    size_t component_id = TNECS_COMPONENT_HASH2ID(in_world, component_hash);
+    tnecs_component_t component_flag = TNECS_COMPONENT_ID2TYPEFLAG(component_id);
+    tnecs_component_t entity_typeflag = TNECS_ENTITY_TYPEFLAG(in_world, in_entity_id);
+    size_t component_order = tnecs_componentid_order_bytype(in_world, component_id, entity_typeflag);
+    size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity_id, entity_typeflag);
+   if (in_world->components_bytype[typeflag_id][component_order]=>type == component_flag} {
+    arrput(in_world->components_bytype[typeflag_id][component_order]=>components, calloced_component);
+   } 
+}
+
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, tnecs_component_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_get_component\n");
 
