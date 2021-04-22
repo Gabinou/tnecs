@@ -332,6 +332,9 @@ struct tnecs_World * tnecs_init();
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
 
 // UTILITY MACROS
+#define TNECS_COMPONENT_CALLOC(name) (name *)calloc(1, sizeof(name))
+#define TNECS_COMPONENTS_CALLOC(...) TNECS_VARMACRO_FOREACH_COMMA(TNECS_COMPONENT_CALLOC, __VA_ARGS__)
+
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
@@ -379,6 +382,9 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
 // ****************** ENTITY MANIPULATION ************************
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
+tnecs_entity_t tnecs_entity_allocate_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, uint64_t component_hash, void * calloced_component);
+
+
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t in_component_id);
 void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t entity_typeflag, tnecs_components_t type_toadd);

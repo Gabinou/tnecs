@@ -5,6 +5,9 @@ Arrays are much faster than hash tables.
 
 
 TO DO:
+	add_component
+		-> need component token to add empty components I think.
+		
 	get_system_order function (DONE?)
 	deal with component_arrays
 		-> Initialization of empty components
