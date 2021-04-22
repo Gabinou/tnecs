@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
-// #define STB_DS_IMPLEMENTATION
+#define STB_DS_IMPLEMENTATION
 #include "stb_ds.h" // Should I eliminate this dependency? -> yes
 
 #ifdef __cplusplus
@@ -271,7 +271,7 @@ enum TNECS_RUN_PHASES {
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_Components_Array {
     tnecs_components_t type; // single bit on
-    void * components;       // [entity_order_bytype]
+    void ** components;       // [entity_order_bytype]
 };
 
 struct tnecs_System_Input {
@@ -336,7 +336,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
 #define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
-#define TNECS_ENTITY_TYPEFLAG(world, entity_id) world->entity_typeflags[entity]
+#define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
 #define TNECS_TYPEFLAGID(world, typeflag) tnecs_typeflagid(in_world, typeflag)
 
 #define TNECS_COMPONENT_HASH(name) TNECS_HASH(name)

@@ -94,30 +94,17 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, tnecs_component_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_get_component\n");
 
-    size_t component_typeflag = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
-    size_t component_bytype_id = 0;
-    size_t entities_bytype_id = 0;
-    tnecs_componentflag_order_bytype(in_world, component_typeflag, tnecs_component_t in_typeflag);
-    tnecs_entity_order_bytype(in_world, in_entity_id, component_typeflag);
+    tnecs_component_t component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
+    tnecs_component_t entity_typeflag = TNECS_ENTITY_TYPEFLAG(in_world, in_entity_id);
 
-    // for (size_t i = 0 ; i < in_world->num_componentsbytype[typeflag_id]; i++) {
-    //     if (in_world->component_idbytype[typeflag_id][i] == in_component_id) {
-    //         component_bytype_id = i;
-    //         break;
-    //     }
-    // }
+    size_t typeflag_id = tnecs_typeflagid(in_world, entity_typeflag);
+    size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
+    size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity_id, entity_typeflag);
 
-    // for (size_t i = 0 ; i < in_world->num_entitiesbytype[typeflag_id]; i++) {
-    //     if (in_world->entities_bytype[typeflag_id][i] == in_entity_id) {
-    //         entities_bytype_id = i;
-    //         break;
-    //     }
-    // }
+    struct tnecs_Components_Array * comp_array = in_world->components_bytype[typeflag_id][component_order];
+    void * out_component = comp_array->components[entity_order];
 
-    struct tnecs_Components_Array * comp_array = in_world->components_bytype[typeflag_id][component_bytype_id];
-    // void * out_comp = comp_array->components[entities_bytype_id];
-
-    // return (out_comp);
+    return (out_component);
 }
 
 void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_components_t entity_typeflag, tnecs_components_t type_toinit) {
@@ -467,13 +454,13 @@ size_t tnecs_componentflag_order_bytype(struct tnecs_World * in_world, tnecs_com
     TNECS_DEBUG_PRINTF("tnecs_componentflag_order_bytype\n");
 
     size_t order = TNECS_COMPONENT_CAP;
-    tnecs_component_t in_typeflag_id = tnecs_component_typeflag2id(in_world, in_typeflag);
-    for (size_t i = 0; i < in_world->num_componentsbytype[in_typeflag_id]; i++) {
-        if (in_world->component_flagbytype[in_typeflag_id][i] == in_component_flag) {
-            order = i;
-            break;
-        }
-    }
+    // tnecs_component_t in_typeflag_id = tnecs_component_flag2id(in_world, in_com);
+    // for (size_t i = 0; i < in_world->num_componentsbytype[in_typeflag_id]; i++) {
+    //     if (in_world->component_flagbytype[in_typeflag_id][i] == in_component_flag) {
+    //         order = i;
+    //         break;
+    //     }
+    // }
     return (order);
 }
 
@@ -481,7 +468,7 @@ size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_c
     TNECS_DEBUG_PRINTF("tnecs_componentid_order_bytype\n");
 
     size_t order = TNECS_COMPONENT_CAP;
-    tnecs_component_t in_typeflag_id = tnecs_component_typeflag2id(in_world, in_typeflag);
+    tnecs_component_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     for (size_t i = 0; i < in_world->num_componentsbytype[in_typeflag_id]; i++) {
         if (in_world->component_idbytype[in_typeflag_id][i] == in_component_id) {
             order = i;
@@ -495,7 +482,7 @@ size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t i
     TNECS_DEBUG_PRINTF("tnecs_entity_order_bytype\n");
 
     size_t order = in_world->next_entity_id;
-    tnecs_component_t in_typeflag_id = tnecs_component_typeflag2id(in_world, in_typeflag);
+    tnecs_component_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     for (size_t i = 0; i < in_world->num_entitiesbytype[in_typeflag_id]; i++) {
         if (in_world->entities_bytype[in_typeflag_id][i] == in_entity) {
             order = i;
