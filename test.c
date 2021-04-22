@@ -140,6 +140,8 @@ typedef struct Unit2 {
 } Unit2;
 
 
+/*****************************TEST GLOBALS*****************************/
+FILE * globalf;
 /*****************************TEST CONSTANTS***************************/
 #define ITERATIONS 100000
 #define ITERATIONS_SMALL 1000
@@ -152,7 +154,6 @@ tnecs_entity_t * components_list;
 struct Position * temp_position;
 struct Unit * temp_unit;
 struct tnecs_World * test_world;
-FILE * globalf;
 
 void SystemMove(struct tnecs_System_Input in_input) {
     // Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
@@ -424,7 +425,7 @@ void tnecs_benchmarks() {
 }
 
 int main() {
-    globalf = fopen("test_results.txt", "w+");
+    globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("world_init", tnecs_test_world_init);
     lrun("c_regis", tnecs_test_component_registration);
