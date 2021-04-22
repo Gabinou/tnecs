@@ -99,21 +99,20 @@ compile_test: ${ASTYLE} ${EXEC_TCC}  ${EXEC_GCC} ${EXEC_CLANG} run_tcc run_gcc r
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
-.PHONY : run_test_flecs # Only compiles for gcc or clang
-run_test_flecs: $(EXEC_TEST_FLECS) ; $(EXEC_TEST_FLECS)
+.PHONY : flecs # Only compiles for gcc or clang
+flecs: $(EXEC_TEST_FLECS) ; $(EXEC_TEST_FLECS)
 .PHONY : run_tcc
 run_tcc: $(EXEC_TCC) ; $(EXEC_TCC)
 .PHONY : run_gcc
 run_gcc: $(EXEC_GCC) ; $(EXEC_GCC)
 .PHONY : run_clang
 run_clang: $(EXEC_CLANG) ; $(EXEC_CLANG)
-
+.PHONY: bench_flecs
+bench_flecs: ${ASTYLE} $(EXEC_TEST_FLECS) flecs
 .PHONY : astyle
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
 
-.PHONY: bench_flecs
-bench_flecs: ${ASTYLE} $(EXEC_TEST_FLECS) run_test_flecs
 
 $(TARGETS_FLECS) : $(SOURCES_FLECS) ; $(COMPILER) $< -c -o $@
 $(TARGETS_TEST_FLECS) : $(TARGETS_TNECS) $(TARGETS_FLECS) $(SOURCES_TEST_FLECS) $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
