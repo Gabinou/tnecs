@@ -59,9 +59,7 @@ extern "C" {
 
 // ************************ TYPE DEFINITIONS ****************************
 typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
-typedef uint64_t tnecs_entities_t;   // simple 64 bit integer
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
-typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 63 components
 // typeflag > 0 -> sum of component types -> determines tnecs_System_Input
 typedef uint16_t tnecs_system_t;
 
