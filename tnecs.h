@@ -280,7 +280,7 @@ enum TNECS_RUN_PHASES {
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_Components_Array {
     tnecs_components_t type; // single bit on
-    void ** components;       // [entity_order_bytype]
+    void ** components;      // [entity_order_bytype]
 };
 
 struct tnecs_System_Input {
@@ -293,7 +293,7 @@ struct tnecs_System_Input {
 };
 
 struct tnecs_World {
-    tnecs_entity_t * entities; // entities[entity_id] == entity_id unless deleted
+    tnecs_entity_t * entities; // (entities[entity_id] == entity_id) unless deleted
     tnecs_components_t * typeflags;                 // [typeflag_id]
     tnecs_components_t * entity_typeflags;          // [entity_id]
     tnecs_components_t * system_typeflags;          // [system_id]
@@ -341,6 +341,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
 
 // COMPONENT CALLOC AND CAST
+// no vararg calloc/cast -> enable assign (Component * temp = ...)
 #define TNECS_COMPONENT_CALLOC(name) TNECS_COMPONENT_CALLOCN(1, name)
 #define TNECS_COMPONENT_CALLOCN(N, name) calloc(N, sizeof(name))
 #define TNECS_COMPONENT_CAST(compvec, name) (name *)compvec
@@ -348,7 +349,6 @@ struct tnecs_World * tnecs_init();
 // UTILITY MACROS
 
 
-#define TNECS_COMPONENTS_CALLOC(...) TNECS_VARMACRO_FOREACH_COMMA(TNECS_COMPONENT_CALLOC, __VA_ARGS__)
 
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
