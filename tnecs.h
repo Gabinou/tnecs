@@ -1,29 +1,49 @@
 #ifndef __TNECS_H__
 #define __TNECS_H__
 
-// tnecs: Tiny C99 Entity-Component-System (ECS) library.
-// ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
+/* Tiny C99 Entity-Component-System (ECS) library.
+* Originally developed for use in a game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
+* ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
+* OOP: Objects/Classes contain data and methods, children objects inherit from parents...
+* ECS: Components are purely data.
+* Any number of components can be attached to an entity.
+* Entities are acted upon by systems. 
+* In tnecs, an entity is an uint64_t index. 
+* A component is user-defined struct. 
+* A system is a user-defined function.
+* The systems iterate only over entities that have a certain set of components.
+* They can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
+* Systems's execution order happens in phases, set by the user.
+* The user can also modify the system execution order in each phase.
+* Videogame Example:
+* - Enemy Entity: AIControlled component, Sprite Component, Physics Component
+* - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
+* - Main Character Entity: UserControlled Component, Sprite Component, Physics Component */
 
-// OOP: Objects/Classes contain data and methods, children objects inherit from parents...
-
-// ECS: Components are purely data, user-defined structs.
-// Any component can be attached to an entity, an uint64_t index determined by tnecs.
-// Entities are acted upon by systems, user-defined functions.
-// The systems iterate only over entities that have a certain set of components.
-// In tnECS, the system can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
-
-// Videogame Example:
-// - Enemy Entity:          AIControlled component, Sprite Component, Physics Component
-// - Bullet Entity:         Sprite Component, Physics Component, DamageonHit Component
-// - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
-// Credits: Gabriel Taillon
+/* Un-viral MIT License
+* Copyright (c) 2021 Gabriel Taillon
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so.
+* 
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE. */
 
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#define STB_DS_IMPLEMENTATION
+// #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h" // Should I eliminate this dependency? -> yes
 
 #ifdef __cplusplus
@@ -344,7 +364,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
-#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
+#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) (name *)tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
 #define TNECS_TYPEFLAGID(world, typeflag) tnecs_typeflagid(in_world, typeflag)
 
