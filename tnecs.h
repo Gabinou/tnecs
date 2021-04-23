@@ -331,8 +331,14 @@ struct tnecs_World * tnecs_init();
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
 
+// COMPONENT CALLOC AND CAST
+#define TNECS_COMPONENT_CALLOC(name) TNECS_COMPONENT_CALLOCN(1, name)
+#define TNECS_COMPONENT_CALLOCN(N, name) calloc(N, sizeof(name))
+#define TNECS_COMPONENT_CAST(compvec, name) (name *)compvec
+
 // UTILITY MACROS
-#define TNECS_COMPONENT_CALLOC(name) calloc(1, sizeof(name))
+
+
 #define TNECS_COMPONENTS_CALLOC(...) TNECS_VARMACRO_FOREACH_COMMA(TNECS_COMPONENT_CALLOC, __VA_ARGS__)
 
 #define TNECS_HASH(name) hash_djb2(#name)

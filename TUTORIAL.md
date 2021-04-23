@@ -58,7 +58,9 @@ A maximal number of 63 components can be registered.
 ```c 
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
 ```
-
+```c 
+    struct Position * pos_Silou = TNECS_GET_COMPONENT(test_world, Silou, Position);
+```
 ## Register System to the world
 A system is a user-defined function, with ```struct tnecs_System_Input``` as input:
 ```c
