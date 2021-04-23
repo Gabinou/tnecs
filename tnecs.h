@@ -2,14 +2,14 @@
 #define __TNECS_H__
 
 /* Tiny C99 Entity-Component-System (ECS) library.
-* Originally developed for use in a game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
+* Originally developed for use in a game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending.
 * ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
 * OOP: Objects/Classes contain data and methods, children objects inherit from parents...
 * ECS: Components are purely data.
 * Any number of components can be attached to an entity.
-* Entities are acted upon by systems. 
-* In tnecs, an entity is an uint64_t index. 
-* A component is user-defined struct. 
+* Entities are acted upon by systems.
+* In tnecs, an entity is an uint64_t index.
+* A component is user-defined struct.
 * A system is a user-defined function.
 * The systems iterate only over entities that have a certain set of components.
 * They can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
@@ -29,7 +29,7 @@
 * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 * copies of the Software, and to permit persons to whom the Software is
 * furnished to do so.
-* 
+*
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -280,7 +280,7 @@ enum TNECS_RUN_PHASES {
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_Components_Array {
     tnecs_components_t type; // single bit on
-    void ** components;      // [entity_order_bytype]
+    void * components;       // [entity_order_bytype]
 };
 
 struct tnecs_System_Input {
@@ -298,16 +298,16 @@ struct tnecs_World {
     tnecs_components_t * entity_typeflags;          // [entity_id]
     tnecs_components_t * system_typeflags;          // [system_id]
     void (** systems)(struct tnecs_System_Input);   // [system_id]
+    void (** systems_byphase)(struct tnecs_System_Input);// [system_id]
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
-    // the by_type array are exclusive. Why?
+    // the by_type array are exclusive
     //   -> no entity doubles
     //   -> easier to build inclusive entity lists.
     struct tnecs_Components_Array *** components_bytype; // [typeflag_id][component_order_bytype]
-    size_t ** system_idbyphase;                     // [phase_id][system_order_byphase]
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
     tnecs_components_t ** component_idbytype;       // [typeflag_id][component_order_bytype]
     tnecs_components_t ** component_flagbytype;     // [typeflag_id][component_order_bytype]
@@ -347,9 +347,6 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_CAST(compvec, name) (name *)compvec
 
 // UTILITY MACROS
-
-
-
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
@@ -376,7 +373,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
-// TNECS_ADD_COMPONENT is overloaded component adder macro
+// TNECS_ADD_COMPONENT is overloaded
 //      3 inputs required: (world, name, entity_id)
 //      4th input if newtype is false, to skip checks for execution speed
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
