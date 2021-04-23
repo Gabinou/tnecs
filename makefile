@@ -112,8 +112,6 @@ bench_flecs: ${ASTYLE} $(EXEC_TEST_FLECS) flecs
 .PHONY : astyle
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
-
-
 $(TARGETS_FLECS) : $(SOURCES_FLECS) ; $(COMPILER) $< -c -o $@
 $(TARGETS_TEST_FLECS) : $(TARGETS_TNECS) $(TARGETS_FLECS) $(SOURCES_TEST_FLECS) $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
 $(EXEC_TEST_FLECS): $(SOURCES_TEST_FLECS) ${SOURCES_FLECS} ${SOURCES_TNECS} $(TARGETS_FLECS) $(TARGETS_TNECS) $(TARGETS_TEST_FLECS); gcc $< $(TARGETS_FLECS) $(TARGETS_TNECS) -o $@ $(CFLAGS)
