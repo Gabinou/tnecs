@@ -60,23 +60,13 @@ extern "C" {
 // ************************ TYPE DEFINITIONS ****************************
 typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
 typedef uint64_t tnecs_entities_t;   // simple 64 bit integer
-//    -> world->entities[entity_id]
-// entity_id 0 is reserved for NULL
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
 typedef uint64_t tnecs_components_t; // 64 bit flags -> MAX 63 components
-// component_type > 0 -> 1 nonzero bit -> unique for component
-// component_id > 0 -> unique for component,
-//    -> world->component_hashes[component_id]
-//    -> component_type = (1 << (component_id - 1))
-// component type/id 0 are reserved for NULL
 // typeflag > 0 -> sum of component types -> determines tnecs_System_Input
-// typeflag 0 is reserved for NULL
 typedef uint16_t tnecs_system_t;
-//    -> world->systems[system_id]
-// system id 0 is reserved for NULL
 
 // ********************** CONSTANT DEFINITIONS ************************
-// entity, component, system: XXXX_id zero ALWAYS reserved for NULL
+// entity, component, system, id, typeflag: 0 ALWAYS reserved for NULL
 #define TNECS_NULL 0
 #define TNECS_NOCOMPONENT_TYPEFLAG 0
 #define TNECS_ID_START 1
@@ -104,6 +94,7 @@ enum TNECS_RUN_PHASES {
 //      up to 8 input args. Theoretically up to 63, if all TNECS_FOREACH_XXXX_N exist
 // TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__) counts the number of args
 //      -> up to 63, if elements in TNECS_VARMACRO_ARGN and TNECS_VARMACRO_VARG_SEQ exist
+
 #define TNECS_STRINGIFY(x) #x
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
