@@ -115,15 +115,36 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
     size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity_id, entity_typeflag);
 
     struct tnecs_Components_Array * comp_array = in_world->components_bytype[typeflag_id][component_order];
-    void * out_component = &comp_array->components[entity_order];
+    // void * out_component = &comp_array->components[entity_order];
 
-    return (out_component);
+    // return (out_component);
 }
+
+void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit) {
+    TNECS_DEBUG_PRINTF("tnecs_component_array_realloc\n");
+
+    size_t component_order = tnecs_componentid_order_bytype(in_world, id_toinit, entity_typeflag);
+    struct tnecs_Components_Array * current_array = in_world->components_bytype[entity_typeflag][component_order];
+    size_t old_len = current_array->len_components;
+    current_array->len_components*=2;
+    void * temp = calloc(current_array->len_components, in_world->component_size[component_id]);
+    memcpy(temp, current_array->len_components, old_len * in_world->component_size[component_id]);
+    free(current_array->components);
+    current_array->components = temp; 
+}
+
 
 void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t type_toinit) {
     TNECS_DEBUG_PRINTF("tnecs_entity_init_component\n");
 
-    in_world->components_bytype[entity_typeflag];
+    size_t component_order = tnecs_componentid_order_bytype(in_world, component_id, entity_typeflag);
+    size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity, entity_typeflag);
+    struct tnecs_Components_Array *** current_array = in_world->components_bytype[entity_typeflag][component_order];
+    if (current_array->type == type_toinit) {
+        if (++current_array->num_components >= current_array->len_components) {
+
+        }
+    }
 
     // check if component=array exists
     // check len of component_array
@@ -273,11 +294,14 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     }
 }
 
-void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash) {
+void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, size_t in_bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_register_component\n");
 
     arrput(in_world->component_hashes, in_hash);
+    uint8_t component_id = 
+
     arrput(in_world->typeflags, (1ULL << (in_world->num_components - 1)));
+    in_world->component_sizes[in_world->num_components] = in_bytesize;
     in_world->num_components++;
 }
 

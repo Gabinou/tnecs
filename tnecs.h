@@ -69,10 +69,10 @@ typedef uint16_t tnecs_system_t;
 #define TNECS_NOCOMPONENT_TYPEFLAG 0
 #define TNECS_ID_START 1
 #define TNECS_MAX_COMPONENT 63
+#define TNECS_COMPONENT_CAP 64
 #define TNECS_STR_BUFFER 128
 #define TNECS_OPEN_IDS_BUFFER 128
 #define TNECS_INITIAL_SYSTEM_CAP 16
-#define TNECS_COMPONENT_CAP 64
 #define TNECS_INITIAL_ENTITY_CAP 128
 #define ENTITY_MAX_COMPONENT_NUM 10
 
@@ -304,6 +304,7 @@ struct tnecs_World {
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
+    size_t * component_sizes[TNECS_COMPONENT_CAP];  // [component_id] in bytes
     uint64_t * system_hashes;                       // [system_id]
 
     // the by_type array are exclusive
@@ -388,10 +389,10 @@ struct tnecs_World * tnecs_init();
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)));\
 
-#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, hash_djb2(#name))
+#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, hash_djb2(#name), sizeof(name))
 // Error if component registered twice -> user responsibility
 
-void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash);
+void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, size_t in_bytesize);
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_component_t component_typeflag);
 
 // ****************** ENTITY MANIPULATION ************************
