@@ -45,13 +45,13 @@ Add tnecs.c and tnecs.h to your source code.
 - [gamedev_libraries](https://github.com/raizam/gamedev_libraries)
 - [stb list of single header libraries](https://github.com/nothings/single_file_libs)
 
-# tnecw Tutorial
+# tnecs Tutorial
 
 ## Initializing the world
 ```c
     struct tnECS_World * tnecs_world = tnecs_init();
 ```
-The world contains everything tnecs needs. 
+The world contains everything tnecs needs.
 
 ## Entity creation/destruction
 ```c
