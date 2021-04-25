@@ -308,7 +308,7 @@ struct tnecs_World {
     uint64_t * system_hashes;                       // [system_id]
 
     // the by_type array are exclusive
-    //   -> no entity doubles
+    //   -> entities are unique in components_bytype
     //   -> easier to build inclusive entity lists.
     struct tnecs_Components_Array ** components_bytype; // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
