@@ -1,6 +1,10 @@
 
 #include "tnecs.h"
 
+#define STB_DS_IMPLEMENTATION
+#include "stb_ds.h" // Should I eliminate this dependency? -> yes
+
+
 struct tnecs_World * tnecs_init() {
     TNECS_DEBUG_PRINTF("tnecs_init\n");
 
@@ -127,7 +131,7 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t
     struct tnecs_Components_Array * current_array = in_world->components_bytype[entity_typeflag][component_order];
     size_t old_len = current_array->len_components;
     if (old_len < TNECS_INITIAL_ENTITY_CAP) {
-        current_array->len_components = TNECS_INITIAL_ENTITY_CAP*2;
+        current_array->len_components = TNECS_INITIAL_ENTITY_CAP * 2;
     } else {
         current_array->len_components *= 2;
     }
@@ -149,7 +153,7 @@ void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t component_id = TNECS_COMPONENT_TYPE2ID(type_toinit);
     size_t component_order = tnecs_componentid_order_bytype(in_world, component_id, entity_typeflag);
     size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity, entity_typeflag);
-    struct tnecs_Components_Array *** current_array = in_world->components_bytype[entity_typeflag][component_order];
+    struct tnecs_Components_Array * current_array = in_world->components_bytype[entity_typeflag][component_order];
     if (current_array->type == type_toinit) {
         if (++current_array->num_components >= current_array->len_components) {
             tnecs_component_array_realloc(in_world, in_entity, entity_typeflag, component_id);
@@ -618,11 +622,11 @@ int8_t setBits_KnR_uint64_t(uint64_t in_flags) {
 int8_t setBits_first(uint64_t in_flag) {
     // untested. Broken.
     int8_t index = 0;
-    while(((in_flag >> 1) != 0) && (index < 65)) {
-        index++
-    }
-    if (index == 65) {
-        index = -1;
-    }
-    return(index);
+    // while (((in_flag >> 1) != 0) && (index < 65)) {
+    //     index++
+    // }
+    // if (index == 65) {
+    //     index = -1;
+    // }
+    // return (index);
 }

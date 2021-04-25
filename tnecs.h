@@ -44,8 +44,6 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <math.h>
-// #define STB_DS_IMPLEMENTATION
-#include "stb_ds.h" // Should I eliminate this dependency? -> yes
 
 #ifdef __cplusplus
 extern "C" {
