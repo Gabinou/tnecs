@@ -43,7 +43,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#define STB_DS_IMPLEMENTATION
+// #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h" // Should I eliminate this dependency? -> yes
 
 #ifdef __cplusplus
@@ -299,12 +299,12 @@ struct tnecs_World {
     tnecs_component_t * typeflags;                 // [typeflag_id]
     tnecs_component_t * entity_typeflags;          // [entity_id]
     tnecs_component_t * system_typeflags;          // [system_id]
-    void (** systems)(struct tnecs_System_Input);   // [system_id]
+    void (** systems)(struct tnecs_System_Input);  // [system_id]
     void (** systems_byphase)(struct tnecs_System_Input);// [system_id]
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t * component_hashes;                    // [component_id]
-    size_t * component_sizes[TNECS_COMPONENT_CAP];  // [component_id] in bytes
+    size_t component_bytesizes[TNECS_COMPONENT_CAP];// [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
     // the by_type array are exclusive
@@ -312,8 +312,8 @@ struct tnecs_World {
     //   -> easier to build inclusive entity lists.
     struct tnecs_Components_Array *** components_bytype; // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
-    tnecs_component_t ** component_idbytype;       // [typeflag_id][component_order_bytype]
-    tnecs_component_t ** component_flagbytype;     // [typeflag_id][component_order_bytype]
+    tnecs_component_t ** component_idbytype;        // [typeflag_id][component_order_bytype]
+    tnecs_component_t ** component_flagbytype;      // [typeflag_id][component_order_bytype]
     size_t * num_componentsbytype;                  // [typeflag_id]
     size_t * num_entitiesbytype;                    // [typeflag_id]
     size_t * num_systemssbyphase;                   // [phase_id]
@@ -367,6 +367,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_ID_START))
+#define TNECS_COMPONENT_TYPE2ID(id) setBits_first()
 
 #define TNECS_SYSTEM_HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)

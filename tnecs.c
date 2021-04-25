@@ -126,29 +126,37 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t
     size_t component_order = tnecs_componentid_order_bytype(in_world, id_toinit, entity_typeflag);
     struct tnecs_Components_Array * current_array = in_world->components_bytype[entity_typeflag][component_order];
     size_t old_len = current_array->len_components;
-    current_array->len_components*=2;
-    void * temp = calloc(current_array->len_components, in_world->component_size[component_id]);
-    memcpy(temp, current_array->len_components, old_len * in_world->component_size[component_id]);
+    if (old_len < TNECS_INITIAL_ENTITY_CAP) {
+        current_array->len_components = TNECS_INITIAL_ENTITY_CAP*2;
+    } else {
+        current_array->len_components *= 2;
+    }
+    void * temp = calloc(current_array->len_components, in_world->component_bytesizes[id_toinit]);
+    memcpy(temp, current_array->components, old_len * in_world->component_bytesizes[id_toinit]);
     free(current_array->components);
-    current_array->components = temp; 
+    current_array->components = temp;
 }
 
 
 void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t type_toinit) {
     TNECS_DEBUG_PRINTF("tnecs_entity_init_component\n");
 
+    // check if component=array exists
+    // check len of component_array
+    // add to component_array
+    //      -> increase num_component
+    //      -> check if needs to be realloced.
+
     size_t component_order = tnecs_componentid_order_bytype(in_world, component_id, entity_typeflag);
     size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity, entity_typeflag);
     struct tnecs_Components_Array *** current_array = in_world->components_bytype[entity_typeflag][component_order];
     if (current_array->type == type_toinit) {
         if (++current_array->num_components >= current_array->len_components) {
+void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit) {
 
         }
     }
 
-    // check if component=array exists
-    // check len of component_array
-    // if num>=len, allocate len*2 memory and copy over
 }
 
 
@@ -298,10 +306,10 @@ void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, s
     TNECS_DEBUG_PRINTF("tnecs_register_component\n");
 
     arrput(in_world->component_hashes, in_hash);
-    uint8_t component_id = 
+    uint8_t component_id =
 
-    arrput(in_world->typeflags, (1ULL << (in_world->num_components - 1)));
-    in_world->component_sizes[in_world->num_components] = in_bytesize;
+        arrput(in_world->typeflags, (1ULL << (in_world->num_components - 1)));
+    in_world->component_bytesizes[in_world->num_components] = in_bytesize;
     in_world->num_components++;
 }
 
@@ -598,11 +606,22 @@ uint64_t hash_sdbm(const unsigned char * str) {
 // SET BIT COUNTING
 int8_t setBits_KnR_uint64_t(uint64_t in_flags) {
     // Credits to Kernighan and Ritchie in the C Programming Language
-    // should ouput -1 on error
+    // should output -1 on error
     uint64_t count = 0;
     while (in_flags) {
         in_flags &= (in_flags - 1);
         count++;
     }
     return (count);
+}
+
+int8_t setBits_first(uint64_t in_flag) {
+    int8_t index = 0;
+    while(((in_flag >> 1) != 0) && (index < 65)) {
+        index++
+    }
+    if (index == 65) {
+        index = -1;
+    }
+    return(index);
 }
