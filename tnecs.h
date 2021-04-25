@@ -309,7 +309,7 @@ struct tnecs_World {
     // the by_type array are exclusive
     //   -> no entity doubles
     //   -> easier to build inclusive entity lists.
-    struct tnecs_Components_Array *** components_bytype; // [typeflag_id][component_order_bytype]
+    struct tnecs_Components_Array ** components_bytype; // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** component_idbytype;        // [typeflag_id][component_order_bytype]
     tnecs_component_t ** component_flagbytype;      // [typeflag_id][component_order_bytype]
