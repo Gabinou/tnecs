@@ -43,6 +43,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdarg.h>
+#include <math.h>
 // #define STB_DS_IMPLEMENTATION
 #include "stb_ds.h" // Should I eliminate this dependency? -> yes
 
@@ -350,6 +351,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_CAST(compvec, name) (name *)compvec
 
 // UTILITY MACROS
+#define log2(x) (log(x)/log(2.0f))
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
@@ -367,7 +369,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_ID_START))
-#define TNECS_COMPONENT_TYPE2ID(id) setBits_first()
+#define TNECS_COMPONENT_TYPE2ID(type) (tnecs_component_t)log2(type)
 
 #define TNECS_SYSTEM_HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)

@@ -146,13 +146,13 @@ void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t i
     // add to component_array
     //      -> increase num_component
     //      -> check if needs to be realloced.
-
+    tnecs_component_t component_id = TNECS_COMPONENT_TYPE2ID(type_toinit);
     size_t component_order = tnecs_componentid_order_bytype(in_world, component_id, entity_typeflag);
     size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity, entity_typeflag);
     struct tnecs_Components_Array *** current_array = in_world->components_bytype[entity_typeflag][component_order];
     if (current_array->type == type_toinit) {
         if (++current_array->num_components >= current_array->len_components) {
-void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit) {
+            tnecs_component_array_realloc(in_world, in_entity, entity_typeflag, component_id);
 
         }
     }
@@ -616,6 +616,7 @@ int8_t setBits_KnR_uint64_t(uint64_t in_flags) {
 }
 
 int8_t setBits_first(uint64_t in_flag) {
+    // untested. Broken.
     int8_t index = 0;
     while(((in_flag >> 1) != 0) && (index < 65)) {
         index++
