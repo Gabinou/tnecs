@@ -5,6 +5,7 @@
 #include <time.h>
 #include <string.h>
 
+
 #include "us_clock.h"
 #include "tnecs.h"
 
@@ -166,6 +167,27 @@ void SystemMove(struct tnecs_System_Input in_input) {
 }
 
 /*******************************ACTUAL TESTS***************************/
+void tnecs_test_utilities() {
+    lok(TNECS_COMPONENT_TYPE2ID(1) == 1);
+    lok(TNECS_COMPONENT_TYPE2ID(2) == 2);
+    lok(TNECS_COMPONENT_TYPE2ID(4) == 3);
+    lok(TNECS_COMPONENT_TYPE2ID(8) == 4);
+    lok(TNECS_COMPONENT_TYPE2ID(16) == 5);
+    lok(TNECS_COMPONENT_TYPE2ID(32) == 6);
+    lok(TNECS_COMPONENT_TYPE2ID(64) == 7);
+    lok(TNECS_COMPONENT_TYPE2ID(128) == 8);
+    lok(TNECS_COMPONENT_TYPE2ID(256) == 9);
+
+    lok(TNECS_COMPONENT_ID2TYPE(1) == 1);
+    lok(TNECS_COMPONENT_ID2TYPE(2) == 2);
+    lok(TNECS_COMPONENT_ID2TYPE(3) == 4);
+    lok(TNECS_COMPONENT_ID2TYPE(4) == 8);
+    lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
+    lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
+
+}
+
+
 void tnecs_test_world_init() {
     test_world = tnecs_init();
 }
@@ -429,6 +451,7 @@ int main() {
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("world_init", tnecs_test_world_init);
     lrun("c_regis", tnecs_test_component_registration);
+    lrun("utilities", tnecs_test_utilities);
     lrun("s_regis", tnecs_test_system_registration);
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
