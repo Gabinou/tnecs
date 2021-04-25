@@ -133,7 +133,7 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t
     if (old_len < TNECS_INITIAL_ENTITY_CAP) {
         current_array->len_components = TNECS_INITIAL_ENTITY_CAP * 2;
     } else {
-        current_array->len_components *= 2;
+        current_array->len_components += TNECS_INITIAL_ENTITY_CAP;
     }
     void * temp = calloc(current_array->len_components, in_world->component_bytesizes[id_toinit]);
     memcpy(temp, current_array->components, old_len * in_world->component_bytesizes[id_toinit]);
@@ -155,11 +155,14 @@ void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t i
     size_t entity_order = tnecs_entity_order_bytype(in_world, in_entity, entity_typeflag);
     struct tnecs_Components_Array * current_array = in_world->components_bytype[entity_typeflag][component_order];
     if (current_array->type == type_toinit) {
+        tnecs_new_typeflag(in_world, num_components, typeflag_new);
+
+    } else  {
+
+    }
         if (++current_array->num_components >= current_array->len_components) {
             tnecs_component_array_realloc(in_world, in_entity, entity_typeflag, component_id);
-
         }
-    }
 
 }
 
@@ -188,10 +191,18 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
 void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag) {
     struct tnecs_Components_Array * temp_comparray = NULL;
     arrsetlen(temp_comparray, num_components);
+    for (size_t i =0; i <num_components; i++) {
+        temp_comparray[i].type
+        temp_comparray[i].num_components = 0;
+        temp_comparray[i].len_components = 0;
+        components = NULL;  
+    }
+    
     arrput(in_world->components_bytype[typeflag], temp_comparray);
     arrput(in_world->entities_bytype, NULL);
     arrput(in_world->num_componentsbytype, num_components);
     arrput(in_world->num_entitiesbytype, 0);
+
 }
 
 size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_component_t new_typeflag) {
