@@ -74,6 +74,7 @@ typedef uint16_t tnecs_system_t;
 #define TNECS_OPEN_IDS_BUFFER 128
 #define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_INITIAL_ENTITY_CAP 128
+#define TNECS_COMPONENT_ALLOCBLOCK 16
 #define ENTITY_MAX_COMPONENT_NUM 10
 
 enum TNECS_RUN_PHASES {
@@ -407,9 +408,7 @@ void * tnecs_entity_allocate_component(struct tnecs_World * in_world, tnecs_enti
 
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_component_id);
-void tnecs_entity_init_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t type_toadd);
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag, bool isNew);
-void tnecs_new_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag, tnecs_component_t type_toadd);
 bool tnecs_componentsbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t previous_flag, tnecs_component_t new_flag);
 void tnecs_entity_typeflag_change(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
 size_t tnecs_new_entity_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag);

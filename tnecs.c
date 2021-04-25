@@ -131,9 +131,9 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t
     struct tnecs_Components_Array * current_array = &in_world->components_bytype[entity_typeflag][component_order];
     size_t old_len = current_array->len_components;
     if (old_len < TNECS_INITIAL_ENTITY_CAP) {
-        current_array->len_components = TNECS_INITIAL_ENTITY_CAP * 2;
+        current_array->len_components = TNECS_COMPONENT_ALLOCBLOCK * 2;
     } else {
-        current_array->len_components += TNECS_INITIAL_ENTITY_CAP;
+        current_array->len_components += TNECS_COMPONENT_ALLOCBLOCK;
     }
     void * temp = calloc(current_array->len_components, in_world->component_bytesizes[id_toinit]);
     memcpy(temp, current_array->components, old_len * in_world->component_bytesizes[id_toinit]);
