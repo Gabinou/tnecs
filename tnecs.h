@@ -351,7 +351,9 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_CAST(compvec, name) (name *)compvec
 
 // UTILITY MACROS
+#ifndef log2 // because tcc SUCKS, does NOT DEFINE log2
 #define log2(x) (log(x)/log(2.0f))
+#endif
 #define TNECS_HASH(name) hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
