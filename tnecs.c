@@ -155,7 +155,6 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     }
     // 2- Migrate entity in entities_bytype old_typeflag->new_typeflag, old_order->new_order
     tnecs_entitiesbytye_migrate(in_world, in_entity, new_typeflag);
-    // size_t new_entity_order = tnecs_entity_order_bytype(in_world, in_entity, new_typeflag);
     tnecs_component_t typeflag_id_new = tnecs_typeflagid(in_world, new_typeflag);
 
     // 3- Make new components in component_array[new_typeflag_id][component_order_bytype].components[entity_order_bytype]
@@ -163,7 +162,6 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t typeflag_reduced = new_typeflag;
     while (typeflag_reduced) {
         printf("typeflag_reduced %d\n", typeflag_reduced);
-
         typeflag_reduced &= (typeflag_reduced - 1);
         printf("typeflag_reduced %d\n", typeflag_reduced);
         component_type_toadd = typeflag_reduced | new_typeflag;
@@ -181,8 +179,10 @@ void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_ent
     TNECS_DEBUG_PRINTF("tnecs_component_array_newcomponent\n");
 
     size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, in_typeflag);
+    printf("component_order %d\n", component_order);
     size_t entity_order_new = tnecs_entity_order_bytype(in_world, in_entity, in_typeflag);
     size_t typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
+    printf("typeflag_id %d\n", typeflag_id);
     struct tnecs_Components_Array * current_array = &in_world->components_bytype[typeflag_id][component_order];
     printf("current_array->type %d\n", current_array->type);
     printf("in_component_id %d\n", in_component_id);
@@ -203,10 +203,10 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
     tnecs_component_t typeflag_reduced = typeflag;
     tnecs_component_t type_toadd;
     size_t i = 0;
-    while (typeflag_reduced > 1) {
+    while (typeflag_reduced) {
         typeflag_reduced &= (typeflag_reduced - 1);
         type_toadd = typeflag_reduced | typeflag;
-
+        printf("type_toadd %d \n", type_toadd);
         temp_comparray[i].type = type_toadd;
         temp_comparray[i].num_components = 0;
         temp_comparray[i].len_components = 0;
@@ -233,12 +233,29 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         }
     }
     if (!typeflag_id) {
-        // 2- Add new components_bytype at [typeflag_id]
+        // 1- Add new components_bytype at [typeflag_id]
         arrput(in_world->typeflags, new_typeflag);
         in_world->num_typeflags++;
+        size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
+        printf("new_typeflag_id %d \n", new_typeflag_id);
+        assert(new_typeflag_id == (in_world->num_typeflags - 1));
+
         // 2- Add arrays to components_bytype[typeflag_id] for each component
         tnecs_new_component_array(in_world, num_components, new_typeflag); // should this be outside of new_typeflag? maybe...
-        // } else {
+
+        // 3- Add all components to component_idbytype and component_flagbytype
+        tnecs_component_t component_id_toadd, component_type_toadd;
+        tnecs_component_t typeflag_reduced = new_typeflag;
+        arrput(in_world->component_idbytype, NULL);
+        arrput(in_world->component_flagbytype, NULL);
+        while (typeflag_reduced) {
+            typeflag_reduced &= (typeflag_reduced - 1);
+            component_type_toadd = typeflag_reduced | new_typeflag;
+            component_id_toadd = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+            arrput(in_world->component_idbytype[new_typeflag_id], component_id_toadd);
+            arrput(in_world->component_flagbytype[new_typeflag_id], component_type_toadd);
+        }
+
         // TNECS_DEBUG_PRINTF("tnecs_new_typeflag: new_typeflag already exists!");
     }
     return (typeflag_id);
