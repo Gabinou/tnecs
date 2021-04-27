@@ -150,14 +150,25 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t new_typeflag = typeflag_toadd + typeflag_old;
     size_t old_entity_order = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
 
+    // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
-        // 1- Checks if the new entity_typeflag exists, if not create empty component array
         tnecs_new_typeflag(in_world, num_components, new_typeflag);
     }
     // 2- Migrate entity in entities_bytype old_typeflag->new_typeflag, old_order->new_order
     tnecs_entitiesbytye_migrate(in_world, in_entity, new_typeflag);
     // size_t new_entity_order = tnecs_entity_order_bytype(in_world, in_entity, new_typeflag);
     tnecs_component_t typeflag_id_new = tnecs_typeflagid(in_world, new_typeflag);
+
+    // 2- Make new components in component_array[new_typeflag_id][component_order_bytype].components[entity_order_bytype]
+    tnecs_component_t component_id_toadd, component_type_toadd;
+    tnecs_component_t typeflag_reduced = new_typeflag;
+        while (typeflag_reduced) {
+            typeflag_reduced &= (typeflag_reduced - 1);
+            component_type_toadd = typeflag_reduced | new_typeflag;
+            component_id_toadd = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+            tnecs_component_array_newcomponent(in_world, in_entity, new_typeflag, component_id);
+        }
+
 
     // 4- Migrate components in components_bytype old_typeflag->new_typeflag
     tnecs_componentsbytype_migrate(in_world, in_entity, typeflag_old, new_typeflag);
@@ -217,19 +228,8 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         // 2- Add new components_bytype at [typeflag_id]
         arrput(in_world->typeflags, new_typeflag);
         in_world->num_typeflags++;
-        tnecs_new_component_array(in_world, num_components, new_typeflag);
-
-
         // 2- Add arrays to components_bytype[typeflag_id] for each component
-        tnecs_component_t component_id_toadd, component_type_toadd;
-        tnecs_component_t typeflag_reduced = new_typeflag;
-        while (typeflag_reduced) {
-            typeflag_reduced &= (typeflag_reduced - 1);
-            component_type_toadd = typeflag_reduced | new_typeflag;
-            component_id_toadd = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
-            tnecs_component_array_newcomponent(in_world, in_entity, new_typeflag, component_id);
-        }
-
+        tnecs_new_component_array(in_world, num_components, new_typeflag); // should this be outside of new_typeflag? maybe...
         // } else {
         // TNECS_DEBUG_PRINTF("tnecs_new_typeflag: new_typeflag already exists!");
     }
