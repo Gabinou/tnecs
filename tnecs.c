@@ -237,7 +237,6 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         arrput(in_world->typeflags, new_typeflag);
         in_world->num_typeflags++;
         size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
-        printf("new_typeflag_id %d \n", new_typeflag_id);
         assert(new_typeflag_id == (in_world->num_typeflags - 1));
 
         // 2- Add arrays to components_bytype[typeflag_id] for each component
@@ -356,9 +355,9 @@ void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, s
     TNECS_DEBUG_PRINTF("tnecs_register_component\n");
 
     arrput(in_world->component_hashes, in_hash);
-    uint8_t component_id =
+    tnecs_component_t new_component_flag =  TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
+    size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
 
-        arrput(in_world->typeflags, (1ULL << (in_world->num_components - 1)));
     in_world->component_bytesizes[in_world->num_components] = in_bytesize;
     in_world->num_components++;
 }
@@ -473,7 +472,7 @@ size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_type
     TNECS_DEBUG_PRINTF("tnecs_component_typeflag2id \n");
 
     size_t id = 0;
-    for (size_t i = 0; i < in_world->num_typeflags; i++) {
+    for (size_t i = 0; i <= in_world->num_typeflags; i++) {
         if (in_typeflag == in_world->typeflags[i]) {
             id = i;
             break;
