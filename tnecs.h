@@ -411,8 +411,8 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_component_id);
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag, bool isNew);
 bool tnecs_componentsbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t previous_flag, tnecs_component_t new_flag);
-void tnecs_entity_typeflag_change(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
-size_t tnecs_new_entity_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag);
+void tnecs_entitiesbytye_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
+size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag);
 void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag);
 
 tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t argnum, ...);
