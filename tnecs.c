@@ -357,7 +357,6 @@ void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, s
     arrput(in_world->component_hashes, in_hash);
     tnecs_component_t new_component_flag =  TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
     size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
-
     in_world->component_bytesizes[in_world->num_components] = in_bytesize;
     in_world->num_components++;
 }
@@ -372,8 +371,8 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
     arrput(in_world->systems, in_system);
     arrput(in_world->num_componentsbytype, num_components);
 
-    in_world->num_systems++;
     size_t typeflag_id = tnecs_new_typeflag(in_world, num_components, components_typeflag);
+    in_world->num_systems++;
 }
 
 void tnecs_entitiesbytye_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type) {
