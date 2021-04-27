@@ -423,13 +423,13 @@ size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_c
 size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag);
 size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t system_id, uint8_t in_phase);
 
-
 size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t typeflag);
 
 size_t tnecs_component_name2id(struct tnecs_World * in_world, const unsigned char * in_name);
 tnecs_component_t tnecs_component_names2typeflag(struct tnecs_World * in_world, size_t argnum, ...);
 tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...);
 size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_typeflag);
+tnecs_component_t tnecs_component_hash2id(struct tnecs_World * in_world, uint64_t in_hash);
 size_t tnecs_component_hash2id(struct tnecs_World * in_world, uint64_t in_hash);
 #define tnecs_flag_id(typelist, len, flag) tnecs_type_id(typelist, len, flag);
 size_t tnecs_type_id(tnecs_component_t * in_typelist, size_t len, tnecs_component_t in_flag);

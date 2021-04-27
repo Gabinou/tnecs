@@ -320,7 +320,7 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
     tnecs_component_t typeflag = 0;
     for (size_t i = 0; i < argnum; i++) {
         TNECS_DEBUG_PRINTF("Current hash %llu\n", va_arg(ap, uint64_t));
-        typeflag += tnecs_component_hash2id(in_world, va_arg(ap, uint64_t));
+        typeflag += tnecs_component_hash2typeflag(in_world, va_arg(ap, uint64_t));
     }
     va_end(ap);
     tnecs_entity_t new_entity = tnecs_new_entity(in_world);
@@ -506,6 +506,10 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash) {
         }
     }
     return (found);
+}
+
+tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, uint64_t in_hash) {
+    return(TNECS_COMPONENT_ID2TYPEFLAG (tnecs_system_hash2id(in_world, in_hash)));
 }
 
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char * in_name) {
