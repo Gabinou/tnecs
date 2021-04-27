@@ -67,6 +67,7 @@ struct tnecs_World * tnecs_init() {
 
     tnecs_world->components_bytype = NULL;
     arrsetcap(tnecs_world->components_bytype, TNECS_INITIAL_SYSTEM_CAP);
+    arrput(tnecs_world->components_bytype, NULL);
 
     tnecs_world->systems = NULL;
     arrsetcap(tnecs_world->systems, TNECS_INITIAL_SYSTEM_CAP);
@@ -159,7 +160,6 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
         tnecs_new_entity_typeflag(in_world, num_components, typeflag_new);
     }
     tnecs_entity_typeflag_change(in_world, in_entity, typeflag_new);
-    size_t entity_order_new = tnecs_entity_order_bytype(in_world, in_entity, typeflag_new);
 
     tnecs_component_t component_id, component_type;
     tnecs_component_t typeflag_reduced = typeflag_toadd;
@@ -175,14 +175,15 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_componentsbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
 }
 
-void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id) {
-        size_t component_order = tnecs_componentid_order_bytype(in_world, component_id, typeflag_new);
-        struct tnecs_Components_Array * current_array = & in_world->components_bytype[in_typeflag][component_order];
-        assert(current_array->type == component_type);
-        if (++current_array->num_components >= current_array->len_components) {
-            tnecs_component_array_realloc(in_world, in_entity, in_typeflag, in_component_id);
-        }    
-        assert(current_array->num_components == entity_order_new);
+void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_type, size_t in_component_id) {
+    size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, in_type);
+    size_t entity_order_new = tnecs_entity_order_bytype(in_world, in_entity, in_type);
+    struct tnecs_Components_Array * current_array = &in_world->components_bytype[in_type][component_order];
+    assert(current_array->type == in_type);
+    if (++current_array->num_components >= current_array->len_components) {
+        tnecs_component_array_realloc(in_world, in_entity, in_type, in_component_id);
+    }
+    assert(current_array->num_components == entity_order_new);
 }
 
 

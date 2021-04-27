@@ -404,6 +404,7 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
 void * tnecs_entity_allocate_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, uint64_t component_hash, void * calloced_component);
+void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id);
 
 
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
