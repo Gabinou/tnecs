@@ -371,7 +371,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_ID_START))
-#define TNECS_COMPONENT_TYPE2ID(type) (tnecs_component_t)log2(type)
+#define TNECS_COMPONENT_TYPE2ID(type) (tnecs_component_t)(log2(type) + 1.0f)
 
 #define TNECS_SYSTEM_HASH(name) TNECS_NAME2HASH(name)
 #define TNECS_SYSTEM_NAME2HASH(name) TNECS_NAME2HASH(name)

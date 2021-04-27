@@ -145,7 +145,6 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag_toadd, bool isNew) {
     TNECS_DEBUG_PRINTF("tnecs_entity_add_components\n");
 
-
     tnecs_component_t typeflag_old = in_world->entity_typeflags[in_entity];
     tnecs_component_t new_typeflag = typeflag_toadd + typeflag_old;
     size_t old_entity_order = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
@@ -163,22 +162,30 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t component_id_toadd, component_type_toadd;
     tnecs_component_t typeflag_reduced = new_typeflag;
     while (typeflag_reduced) {
+        printf("typeflag_reduced %d\n", typeflag_reduced);
+
         typeflag_reduced &= (typeflag_reduced - 1);
+        printf("typeflag_reduced %d\n", typeflag_reduced);
         component_type_toadd = typeflag_reduced | new_typeflag;
+        printf("component_type_toadd %d\n", component_type_toadd);
         component_id_toadd = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+        printf("component_id_toadd %d\n", component_id_toadd);
         tnecs_component_array_newcomponent(in_world, in_entity, new_typeflag, component_id_toadd);
     }
-
 
     // 4- Migrate components in components_bytype old_typeflag->new_typeflag
     tnecs_componentsbytype_migrate(in_world, in_entity, typeflag_old, new_typeflag);
 }
 
 void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id) {
+    TNECS_DEBUG_PRINTF("tnecs_component_array_newcomponent\n");
+
     size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, in_typeflag);
     size_t entity_order_new = tnecs_entity_order_bytype(in_world, in_entity, in_typeflag);
     size_t typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     struct tnecs_Components_Array * current_array = &in_world->components_bytype[typeflag_id][component_order];
+    printf("current_array->type %d\n", current_array->type);
+    printf("in_component_id %d\n", in_component_id);
     assert(current_array->type == (1 << (in_component_id - TNECS_ID_START)));
     if (++current_array->num_components >= current_array->len_components) {
         tnecs_component_array_realloc(in_world, in_entity, in_typeflag, in_component_id);
@@ -196,7 +203,7 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
     tnecs_component_t typeflag_reduced = typeflag;
     tnecs_component_t type_toadd;
     size_t i = 0;
-    while (typeflag_reduced) {
+    while (typeflag_reduced > 1) {
         typeflag_reduced &= (typeflag_reduced - 1);
         type_toadd = typeflag_reduced | typeflag;
 
