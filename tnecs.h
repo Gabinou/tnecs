@@ -50,8 +50,15 @@
 extern "C" {
 #endif
 
-// #define TNECS_DEBUG // printf are ignored if defined
-#ifdef TNECS_DEBUG
+#define TNECS_DEBUG_A // asserts are ignored if defined
+#ifdef TNECS_DEBUG_A
+#define TNECS_DEBUG_ASSERT(in) do {assert(in);}while(0)
+#else
+#define TNECS_DEBUG_ASSERT(...) (void)0
+#endif
+
+// #define TNECS_DEBUG_P // printf are ignored if defined
+#ifdef TNECS_DEBUG_P
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
 #define TNECS_DEBUG_PRINTF(...) (void)0
@@ -257,7 +264,6 @@ enum TNECS_RUN_PHASES {
     macro(#x)+\
     TNECS_FOREACH_SSUM_7(macro,  __VA_ARGS__)
 
-
 #define TNECS_VARMACRO_EACH_ARGN(...) TNECS_VARMACRO_EACH_ARGN_(__VA_ARGS__, TNECS_VARMACRO_VARG_SEQ())
 #define TNECS_VARMACRO_EACH_ARGN_(...) TNECS_VARMACRO_ARGN(__VA_ARGS__)
 #define TNECS_VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
@@ -372,6 +378,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_ID_START))
+#define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_ID_START))
 #define TNECS_COMPONENT_TYPE2ID(type) (tnecs_component_t)(log2(type) + 1.0f)
 
 #define TNECS_SYSTEM_HASH(name) TNECS_NAME2HASH(name)

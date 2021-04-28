@@ -186,11 +186,11 @@ void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_ent
     struct tnecs_Components_Array * current_array = &in_world->components_bytype[typeflag_id][component_order];
     printf("current_array->type %d\n", current_array->type);
     printf("in_component_id %d\n", in_component_id);
-    assert(current_array->type == (1 << (in_component_id - TNECS_ID_START)));
+    TNECS_DEBUG_TNECS_DEBUG_ASSERT(current_array->type == (1 << (in_component_id - TNECS_ID_START)));
     if (++current_array->num_components >= current_array->len_components) {
         tnecs_component_array_realloc(in_world, in_entity, in_typeflag, in_component_id);
     }
-    assert(current_array->num_components == entity_order_new);
+    TNECS_DEBUG_ASSERT(current_array->num_components == entity_order_new);
 }
 
 
@@ -237,7 +237,7 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         arrput(in_world->typeflags, new_typeflag);
         in_world->num_typeflags++;
         size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
-        assert(new_typeflag_id == (in_world->num_typeflags - 1));
+        TNECS_DEBUG_ASSERT(new_typeflag_id == (in_world->num_typeflags - 1));
 
         // 2- Add arrays to components_bytype[typeflag_id] for each component
         tnecs_new_component_array(in_world, num_components, new_typeflag); // should this be outside of new_typeflag? maybe...
