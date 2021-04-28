@@ -32,8 +32,8 @@ Add tnecs.c and tnecs.h to your source code.
 ## Features/Objectives
 - Compileable using tcc, gcc, clang (msvc untested)
 - Simple C99 API
-- Small Codebase, <2000 lines (for now).
-- Fast (as much as can be measured uing simple benchmarks in test.c)
+- Small Codebase, <2000 lines for now.
+- Fast, see simple benchmarks in test.c
 - Exclusive/Inclusive systems
     * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
 - _Mostly_ [STB-style](https://github.com/nothings/stb/blob/master/docs/stb_howto.txt).
