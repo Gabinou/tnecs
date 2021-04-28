@@ -90,6 +90,7 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     if (out == TNECS_NULL) {
         out = in_world->next_entity_id++;
     }
+    TNECS_DEBUG_ASSERT(out!= TNECS_NULL);
     arrput(in_world->entities, out);
     arrput(in_world->entities_bytype[TNECS_NOCOMPONENT_TYPEFLAG], out);
     in_world->num_entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG]++;
@@ -186,7 +187,7 @@ void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_ent
     struct tnecs_Components_Array * current_array = &in_world->components_bytype[typeflag_id][component_order];
     printf("current_array->type %d\n", current_array->type);
     printf("in_component_id %d\n", in_component_id);
-    TNECS_DEBUG_TNECS_DEBUG_ASSERT(current_array->type == (1 << (in_component_id - TNECS_ID_START)));
+    TNECS_DEBUG_ASSERT(current_array->type == (1 << (in_component_id - TNECS_ID_START)));
     if (++current_array->num_components >= current_array->len_components) {
         tnecs_component_array_realloc(in_world, in_entity, in_typeflag, in_component_id);
     }
