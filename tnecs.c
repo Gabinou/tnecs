@@ -508,7 +508,8 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash) {
     return (found);
 }
 
-tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, uint64_t in_hash) {
+tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, uint64_t in_hash) {
+    TNECS_DEBUG_PRINTF("tnecs_component_hash2type \n");
     return(TNECS_COMPONENT_ID2TYPEFLAG (tnecs_system_hash2id(in_world, in_hash)));
 }
 
