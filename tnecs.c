@@ -409,7 +409,6 @@ bool tnecs_componentsbytype_migrate(struct tnecs_World * in_world, tnecs_entity_
     //      -> deletes attachated components old_flag, reorders.
     //      -> deletes in_entity from entities_by_type of old_flag, reorders.
 
-
     size_t new_type_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, new_flag);
     size_t old_type_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, old_flag);
 
