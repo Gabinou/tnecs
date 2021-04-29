@@ -301,6 +301,11 @@ struct tnecs_System_Input {
     void ** components_lists;
 };
 
+#define new_arrput(world, arr, elem) if (world->num_##arr>=world->len_##arr) {
+    
+}
+    world->arr[world->num_##arr++] = elem
+
 struct tnecs_World {
     tnecs_entity_t * entities; // (entities[entity_id] == entity_id) unless deleted
     tnecs_component_t * typeflags;                 // [typeflag_id]
@@ -338,8 +343,6 @@ struct tnecs_World {
     size_t * len_entitiesbytype;
     size_t * len_componentsbytype;
     size_t * len_systembyphase;
-
-
 
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
