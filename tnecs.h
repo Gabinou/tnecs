@@ -310,7 +310,7 @@ struct tnecs_World {
     void (** systems_byphase)(struct tnecs_System_Input);// [system_id]
     bool * system_isExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
-    uint64_t * component_hashes;                    // [component_id]
+    uint64_t component_hashes[TNECS_COMPONENT_CAP]; // [component_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];// [component_id]
     uint64_t * system_hashes;                       // [system_id]
 
@@ -330,6 +330,16 @@ struct tnecs_World {
     size_t num_systems;
     size_t num_entities;
     size_t num_typeflags;
+    
+    // len is allocated size
+    size_t len_entities;
+    size_t len_typeflags;
+    size_t len_systems;
+    size_t * len_entitiesbytype;
+    size_t * len_componentsbytype;
+    size_t * len_systembyphase;
+
+
 
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
