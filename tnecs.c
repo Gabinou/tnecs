@@ -493,7 +493,7 @@ bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_en
     //      -> copies attached components in componentsbytype old_flag -> new_flag
     //      -> deletes attachated components old_flag, reorders.
     //      -> deletes in_entity from entities_by_type of old_flag, reorders.
-    old_flag = in_world->entity_typeflags[in_entity];
+    tnecs_component_t old_flag = in_world->entity_typeflags[in_entity];
     tnecs_component_copy(in_world, in_entity, old_flag, new_flag);
     tnecs_component_del(in_world, in_entity, old_flag);
     tnecs_entitiesbytype_migrate(in_world, in_entity, new_flag);
