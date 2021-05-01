@@ -48,10 +48,12 @@ ifeq ($(OS_FLAG),WIN32)
 	EXTENSION := $(WIN_EXT)
     PREFIX := $(WIN_PRE)
 	isASTYLE := $(shell where astyle)
+    CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 else
 	EXTENSION := $(LINUX_EXT)
     PREFIX := $(LINUX_PRE)
 	isASTYLE := $(shell type astyle)
+    CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR} -lm
 endif
 
 # $(info $$isASTYLE is [$(isASTYLE)])
@@ -77,7 +79,6 @@ FLAGS_BUILD_TYPE =  #Debug
 FLAGS_ERROR :=
 INCLUDE_ALL := -I. 
 
-CFLAGS := ${INCLUDE_ALL} ${FLAGS_BUILD_TYPE} ${FLAGS_ERROR}
 
 .PHONY: all 
 all: ${ASTYLE} $(EXEC) run 
