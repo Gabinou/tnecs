@@ -60,7 +60,7 @@ extern "C" {
 #define TNECS_DEBUG_ASSERT(...) (void)0
 #endif
 
-// #define TNECS_DEBUG_P // printf are ignored if defined
+#define TNECS_DEBUG_P // printf are ignored if defined
 #ifdef TNECS_DEBUG_P
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
