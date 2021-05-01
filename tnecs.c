@@ -455,7 +455,6 @@ void tnecs_componentsbytype_copy(struct tnecs_World * in_world, tnecs_entity_t i
     TNECS_DEBUG_PRINTF("tnecs_componentsbytype_copy \n");
 
     // For use by componentsbytype_migrate
-    // Assumes in_entity was added in entitiesbytype are new
     size_t old_typeflag_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, old_typeflag);
     size_t new_typeflag_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, new_typeflag);
     size_t old_component_num = in_world->num_componentsbytype[old_type_id];
@@ -463,25 +462,20 @@ void tnecs_componentsbytype_copy(struct tnecs_World * in_world, tnecs_entity_t i
     size_t old_component_id, new_component_id; 
     size_t old_entity_order = tnecs_entity_order_bytypeid(in_world, tnecs_entity_t in_entity, old_typeflag_id);
     size_t new_entity_order = tnecs_entity_order_bytypeid(in_world, tnecs_entity_t in_entity, new_typeflag_id);
-    size_t temp_component_bytesptr;
-    void * old_component_ptr, new_component_ptr;
-    tnecs_byte_t * temp_components_bytes;
+    size_t component_bytesize;
+    tnecs_byte_t * old_component_ptr, new_component_ptr;
+    tnecs_byte_t * temp_component_bytesptr;
     for (size_t old_corder = 0; old_corder < in_world->num_componentsbytype[old_typeflag_id]; old_corder++) {
         old_component_id = in_world->component_idbytype[old_typeflag_id][old_corder];
         for (size_t new_corder = 0; new_corder < in_world->num_componentsbytype[new_typeflag_id]; new_corder++) {
             new_component_id = in_world->component_idbytype[new_typeflag_id][new_corder];
             if (old_component_id == new_component_id) {
-
-                // Copy bytes from componentsbytype old -> new
-                component_array_bytes = in_world->component_bytesizes[old_component_id];
+                component_bytesize = in_world->component_bytesizes[old_component_id];
                 temp_component_bytesptr = (tnecs_byte_t*)in_world->componentsbytype[old_typeflag_id][old_corder]->components; 
-                old_component_ptr = temp_components_bytes + (component_array_bytes * old_entity_order);
+                old_component_ptr = temp_components_bytes + (component_bytesize * old_entity_order);
                 temp_component_bytesptr = (tnecs_byte_t*)in_world->componentsbytype[new_typeflag_id][new_corder]->components; 
-                new_component_ptr = temp_components_bytes + (component_array_bytes * new_entity_order);
-                memcpy(new_component_ptr, old_component_ptr, component_array_bytes);
-                // Deletes bytes from componentsbytype at old
-
-                tnecs_component_array_add(in_world, in_entity, new_typeflag_id, old_component_id, );
+                new_component_ptr = temp_components_bytes + (component_bytesize * new_entity_order);
+                memcpy(new_component_ptr, old_component_ptr, component_bytesize);
                 break;
             }
         }
