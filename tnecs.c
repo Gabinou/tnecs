@@ -29,9 +29,7 @@ struct tnecs_World * tnecs_init() {
     arrsetcap(tnecs_world->system_isExclusive, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->system_isExclusive, TNECS_NULL);
 
-    tnecs_world->component_hashes = NULL;
-    arrsetcap(tnecs_world->component_hashes, TNECS_MAX_COMPONENT);
-    arrput(tnecs_world->component_hashes, TNECS_NULL);
+    tnecs_world->component_hashes[TNECS_NULL] = TNECS_NULL;
 
     tnecs_world->system_hashes = NULL;
     arrsetcap(tnecs_world->system_hashes, TNECS_INITIAL_SYSTEM_CAP);
@@ -90,7 +88,7 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     if (out == TNECS_NULL) {
         out = in_world->next_entity_id++;
     }
-    TNECS_DEBUG_ASSERT(out!= TNECS_NULL);
+    TNECS_DEBUG_ASSERT(out != TNECS_NULL);
     arrput(in_world->entities, out);
     arrput(in_world->entities_bytype[TNECS_NOCOMPONENT_TYPEFLAG], out);
     in_world->num_entitiesbytype[TNECS_NOCOMPONENT_TYPEFLAG]++;
@@ -313,6 +311,17 @@ tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...) {
     return (out);
 }
 
+tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, uint64_t in_hash) {
+    tnecs_component_t out = TNECS_NULL;
+    for (size_t i = 0; i < in_world->num_components; i++) {
+        if (in_world->component_hashes[i] == in_hash) {
+            out = TNECS_COMPONENT_ID2TYPE(i);
+        }
+    }
+    return (out);
+}
+
+
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...) {
     TNECS_DEBUG_PRINTF("tnecs_new_entity_wcomponents \n");
 
@@ -355,11 +364,15 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, size_t in_bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_register_component\n");
 
-    arrput(in_world->component_hashes, in_hash);
-    tnecs_component_t new_component_flag =  TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
-    size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
-    in_world->component_bytesizes[in_world->num_components] = in_bytesize;
-    in_world->num_components++;
+    if (in_world->num_components < TNECS_COMPONENT_CAP) {
+        in_world->component_hashes[in_world->num_components] = in_hash;
+        tnecs_component_t new_component_flag =  TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
+        size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
+        in_world->component_bytesizes[in_world->num_components] = in_bytesize;
+        in_world->num_components++;
+    } else {
+        printf("TNECS ERROR: Cannot register more than 63 components");
+    }
 }
 
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
@@ -510,7 +523,7 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash) {
 
 tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, uint64_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_component_hash2type \n");
-    return(TNECS_COMPONENT_ID2TYPEFLAG (tnecs_system_hash2id(in_world, in_hash)));
+    return (TNECS_COMPONENT_ID2TYPEFLAG(tnecs_system_hash2id(in_world, in_hash)));
 }
 
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char * in_name) {
