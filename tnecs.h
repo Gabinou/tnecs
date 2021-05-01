@@ -46,6 +46,9 @@
 #include <stdarg.h>
 #include <math.h>
 
+// GLOSSARY:
+// allocate component to entity: attach commponent to existing entity, adding 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -309,7 +312,7 @@ struct tnecs_Components_Array {
     tnecs_component_t type; // single bit on
     size_t num_components;
     size_t len_components;
-    void * components;       // [entity_order_bytype]
+    void * components;  // [entity_order_bytype]
 };
 
 struct tnecs_System_Input {
