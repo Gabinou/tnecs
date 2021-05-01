@@ -448,11 +448,6 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
 void * tnecs_entity_allocate_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, uint64_t component_hash, void * calloced_component);
 
-void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id);
-void tnecs_component_array_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id, void * in_component_data);
-void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit);
-
-
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_component_id);
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag, bool isNew);
@@ -463,6 +458,9 @@ bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_en
 void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag);
 void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag);
 void tnecs_component_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_flag);
+void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id);
+void tnecs_component_array_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id, void * in_component_data);
+void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit);
 
 
 size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);

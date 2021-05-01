@@ -184,7 +184,7 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     // 3- Migrate components_bytype old_typeflag->typeflag_new
     tnecs_component_t component_id_toadd, component_type_toadd;
     tnecs_component_t typeflag_reduced = typeflag_new;
-    tnecs_component_migrate(in_world, in_entity, entity_order_old, entity_order_new, typeflag_old, typeflag_new);
+    tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
     // 4- Make new components in component_array[new_typeflag_id][component_order_bytype].components[entity_order_bytype]
     while (typeflag_reduced) {
         printf("typeflag_reduced %d\n", typeflag_reduced);
@@ -488,16 +488,29 @@ bool tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity
 
     // for input entity, delete ALL components from componentsbytype
     size_t old_typeflag_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, old_typeflag);
-    size_t old_component_num = in_world->num_componentsbytype[old_type_id];
+    size_t old_component_num = in_world->num_componentsbytype[old_typeflag_id];
     size_t entity_order_old = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
-    size_t component_order_current
-    for (size_t i = 0; i < in_world->num_componentsbytype[old_typeflag_id]; i++) {
-        component_order_current = tnecs_componentid_order_bytype(in_world, in_world->component_idbytype[old_typeflag_id][i], entity_typeflag);
-        arrdel(in_world->componentsbytype[old_typeflag][component_order_current], entity_order_old);
+    size_t component_order_current;
+    size_t current_component_id;
+    tnecs_byte_t * current_component_bytesptr, next_component_bytesptr, temp_component_bytesptr;
+    for (size_t corder = 0; corder < old_component_num; corder++) {
+        current_component_id = in_world->component_idbytype[i];
+        temp_component_bytesptr = (tnecs_byte_t *)in_world->componentsbytype[old_typeflag_id][corder]->components;
+        component_bytesize = in_world->component_bytesizes[current_component_id];
+
+        for (size_t eorder = entity_order_old; eorder < (in_world->num_entitiesbytype[old_typeflag_id] - 1); eorder++) {    
+            current_component_ptr = temp_components_bytes + (component_bytesize * eorder);
+            next_component_ptr = temp_components_bytes + (component_bytesize * (eorder + 1));
+            next_component_ptr = temp_components_bytes + (component_bytesize * (eorder + 1));
+            memcpy(current_component, current_component, component_bytesize);
+        }
+        memset(next_component_ptr, 0, component_bytesize);
+
     }
+    num_entitiesbytype[old_typeflag]--;
 }
 
-bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag) {
+bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t entity_order_new, tnecs_component_t new_flag) {
     TNECS_DEBUG_PRINTF("tnecs_component_migrate \n");
 
     // Migrates components associated with in_entity: old_flag -> new_flag
