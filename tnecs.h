@@ -72,6 +72,7 @@ typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
 // typeflag > 0 -> sum of component types -> determines tnecs_System_Input
 typedef uint16_t tnecs_system_t;
+typedef unsigned char tnecs_byte_t;
 
 // ********************** CONSTANT DEFINITIONS ************************
 // entity, component, system, id, typeflag: 0 ALWAYS reserved for NULL
@@ -313,6 +314,7 @@ struct tnecs_Components_Array {
     size_t num_components;
     size_t len_components;
     void * components;  // [entity_order_bytype]
+    // how to access components[n]? need to cast always I guess?
 };
 
 struct tnecs_System_Input {
@@ -445,7 +447,9 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
 void * tnecs_entity_allocate_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, uint64_t component_hash, void * calloced_component);
+
 void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id);
+void tnecs_component_array_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id, void * in_component_data);
 void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit);
 
 
@@ -457,11 +461,11 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
 
 bool tnecs_componentsbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t entity_order_new, tnecs_component_t new_flag);
 void tnecs_componentsbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag);
-void tnecs_componentsbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_flag);
+void tnecs_componentsbytype_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag);
 
 
 size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
-size_t tnecs_entitiesbytype_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_type);
+size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_type);
 void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
 
 tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t argnum, ...);
@@ -471,6 +475,7 @@ tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, u
 size_t tnecs_componentflag_order_bytype(struct tnecs_World * in_world, tnecs_component_t in_component_flag, tnecs_component_t in_typeflag);
 size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag);
 size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag);
+size_t tnecs_entity_order_bytypeid(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag_id);
 size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t system_id, uint8_t in_phase);
 
 size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t typeflag);
