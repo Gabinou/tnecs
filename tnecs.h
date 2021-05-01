@@ -47,7 +47,7 @@
 #include <math.h>
 
 // GLOSSARY:
-// allocate component to entity: attach commponent to existing entity, adding 
+// allocate component to entity: attach commponent to existing entity, adding
 
 #ifdef __cplusplus
 extern "C" {
