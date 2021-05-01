@@ -141,19 +141,29 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_entity_t
     current_array->components = temp;
 }
 
-size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_old, tnecs_component_t typeflag_new) {
-    TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_migrate\n");
-    size_t old_entity_order = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
+size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_new) {
+    TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_add\n");
+
     typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
+    arrput(in_world->entities_bytype[typeflag_id_new], in_entity);
+    return(in_world->num_entitiesbytype[typeflag_id_new]++);
+}
+
+size_t tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_old) {
+    TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_del\n");
+    size_t old_entity_order = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
     typeflag_id_old = tnecs_typeflagid(in_world, typeflag_old);
 
     if (in_world->entities_bytype[typeflag_id_old][old_entity_order] == in_entity) {
         arrdel(entities_bytype[typeflag_id_old], old_entity_order);
     }
     in_world->num_entitiesbytype[typeflag_id_old]--;
-    arrput(in_world->entities_bytype[typeflag_id_new], in_entity);
+}
 
-    return(in_world->num_entitiesbytype[typeflag_id_new]++);
+size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_old, tnecs_component_t typeflag_new) {
+    TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_migrate\n");
+    tnecs_entitiesbytype_del(in_world, in_entity, typeflag_old);
+    return(tnecs_entitiesbytype_add(in_world, in_entity, typeflag_new));
 }
 
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag_toadd, bool isNew) {
