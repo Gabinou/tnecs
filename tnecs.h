@@ -84,6 +84,7 @@ typedef unsigned char tnecs_byte_t;
 #define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_INITIAL_ENTITY_CAP 128
 #define TNECS_ARRAY_INCREMENT 128
+#define TNECS_ARRAY_GROWTH_FACTOR 2 // in general 2 or 1.5
 #define TNECS_COMPONENT_ALLOCBLOCK 16
 #define ENTITY_MAX_COMPONENT_NUM 10
 
@@ -495,6 +496,14 @@ size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char *
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const unsigned char * in_name);
 
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize);
+
+#define TNECS_REALLOC(ptr, old_len, new_len, bytesize) tnecs_realloc(ptr, old_len, new_len, bytesize)
+
+#define TNECS_ARRAY_GROWS(world, arrname) if ((world->num_##arrname + 1) >= world->len_##arrname) { \
+            size_t old_len = in_world->len_##arrname; \
+            in_world->len_##arrname *= TNECS_ARRAY_GROWTH_FACTOR; \
+            tnecs_realloc(in_world->arrname, old_len, in_world->len_##arrname, sizeof(*in_world->arrname)); \
+        }
 
 // ****************** STRING HASHING ************************
 // hash_djb2 slightly faster than hash_sdbm
