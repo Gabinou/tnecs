@@ -505,13 +505,13 @@ int main() {
     lrun("c_regis", tnecs_test_component_registration);
     lrun("utilities", tnecs_test_utilities);
     lrun("s_regis", tnecs_test_system_registration);
-    // lrun("e_create", tnecs_test_entity_creation);
-    // lrun("c_add", tnecs_test_component_add);
-    // lrun("hashing", tnecs_test_hashing);
-    // lrun("setbit", tnecs_test_setbit);
+    lrun("e_create", tnecs_test_entity_creation);
+    lrun("c_add", tnecs_test_component_add);
+    lrun("hashing", tnecs_test_hashing);
+    lrun("setbit", tnecs_test_setbit);
     lresults();
 
-    // tnecs_benchmarks();
+    tnecs_benchmarks();
     dupprintf(globalf, "tnecs Test End \n \n");
     return (0);
 }

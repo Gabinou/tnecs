@@ -430,6 +430,13 @@ void tnecs_component_array_add(struct tnecs_World * in_world, tnecs_entity_t in_
     memcpy((in_world->components_bytype[in_typeflag_id][component_order].components + in_world->num_components), in_component_data, in_world->component_bytesizes[in_component_id]);
 }
 
+void tnecs_component_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_flag) {
+    TNECS_DEBUG_PRINTF("tnecs_component_add \n");
+
+    size_t new_type_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, new_flag);
+
+}
+
 
 void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag) {
     TNECS_DEBUG_PRINTF("tnecs_component_copy \n");
@@ -448,6 +455,8 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     printf("HERE1\n");
     for (size_t old_corder = 0; old_corder < in_world->num_componentsbytype[old_type_id]; old_corder++) {
         printf("HERE2\n");
+        printf("old_type_id %d\n", old_type_id);
+        printf("old_corder %d\n", old_corder);
         old_component_id = in_world->component_idbytype[old_type_id][old_corder];
         printf("HERE3\n");
         for (size_t new_corder = 0; new_corder < in_world->num_componentsbytype[new_type_id]; new_corder++) {
@@ -508,8 +517,12 @@ bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_en
     //      -> deletes attachated components old_flag, reorders.
     //      -> deletes in_entity from entities_by_type of old_flag, reorders.
     tnecs_component_t old_flag = in_world->entity_typeflags[in_entity];
-    tnecs_component_copy(in_world, in_entity, old_flag, new_flag);
-    tnecs_component_del(in_world, in_entity, old_flag);
+    if (old_flag > TNECS_NULL) {
+        tnecs_component_copy(in_world, in_entity, old_flag, new_flag);
+        tnecs_component_del(in_world, in_entity, old_flag);
+    } else {
+
+    }
     tnecs_entitiesbytype_migrate(in_world, in_entity, new_flag);
 
 
