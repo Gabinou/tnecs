@@ -286,9 +286,12 @@ void tnecs_test_entity_creation() {
     lok(Silou != Pirou);
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
     lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
-    struct Position * temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
-    lok(temp_position->x == 0);
+    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    lok(temp_position->x  == 0);
     lok(temp_position->y == 0);
+    temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
+    lok(temp_unit->hp  == 0);
+    lok(temp_unit->str == 0);
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
 
