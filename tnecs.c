@@ -17,9 +17,10 @@ struct tnecs_World * tnecs_init() {
     arrsetcap(tnecs_world->typeflags, TNECS_INITIAL_ENTITY_CAP);
     arrput(tnecs_world->typeflags, TNECS_NULL);
 
-    tnecs_world->entity_typeflags = NULL;
-    arrsetcap(tnecs_world->entity_typeflags, TNECS_INITIAL_ENTITY_CAP);
-    arrput(tnecs_world->entity_typeflags, TNECS_NULL);
+    // tnecs_world->entity_typeflags = NULL;
+    // arrsetcap(tnecs_world->entity_typeflags, TNECS_INITIAL_ENTITY_CAP);
+    // arrput(tnecs_world->entity_typeflags, TNECS_NULL);
+    tnecs_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->entity_typeflags));
     tnecs_world->len_entity_typeflags = TNECS_INITIAL_ENTITY_CAP;
     tnecs_world->num_entity_typeflags = 1;
 
