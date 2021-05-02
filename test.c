@@ -511,7 +511,7 @@ int main() {
     lrun("setbit", tnecs_test_setbit);
     lresults();
 
-    tnecs_benchmarks();
+    // tnecs_benchmarks();
     dupprintf(globalf, "tnecs Test End \n \n");
     return (0);
 }
