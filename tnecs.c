@@ -148,6 +148,8 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_componen
 }
 
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
+    TNECS_DEBUG_PRINTF("tnecs_realloc\n");
+
     void * temp = calloc(new_len, elem_bytesize);
     memcpy(temp, ptr, old_len * elem_bytesize);
     free(ptr);
@@ -155,25 +157,28 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
 }
 
 void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_add\n");
+    TNECS_DEBUG_PRINTF("tnecs_entity_typeflag_add\n");
+
+    // BOTTLENECK OF NEW_ENTITY.
 
     if (in_entity > in_world->len_entity_typeflags) {
         size_t old_len = in_world->len_entity_typeflags;
         size_t bytesize = sizeof(in_world->entity_typeflags[0]);
+        in_world->len_entity_typeflags = in_entity * 2;
 
-        in_world->len_entity_typeflags = in_entity + TNECS_INITIAL_ENTITY_CAP;
         in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entity_typeflags, bytesize);
     }
 
-    if (++in_world->num_entity_typeflags < in_world->len_entity_typeflags) {
+    if (++in_world->num_entity_typeflags > in_world->len_entity_typeflags) {
         size_t old_len = in_world->len_entity_typeflags;
         size_t bytesize = sizeof(in_world->entity_typeflags[0]);
+        in_world->len_entity_typeflags *= 2;
 
-        in_world->len_entity_typeflags += TNECS_INITIAL_ENTITY_CAP;
         in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entity_typeflags, bytesize);
     }
 
     in_world->entity_typeflags[in_entity] = in_typeflag;
+
 }
 
 size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_new) {
