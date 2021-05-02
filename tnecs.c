@@ -154,7 +154,6 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
     return (temp);
 }
 
-
 void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_add\n");
 

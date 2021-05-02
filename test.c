@@ -145,7 +145,7 @@ typedef struct Unit2 {
 /*****************************TEST GLOBALS*****************************/
 FILE * globalf;
 /*****************************TEST CONSTANTS***************************/
-#define ITERATIONS 100000
+#define ITERATIONS 10000
 #define ITERATIONS_SMALL 1000
 #define ARRAY_LEN 100
 
@@ -517,7 +517,7 @@ int main() {
     lrun("setbit", tnecs_test_setbit);
     lresults();
 
-    // tnecs_benchmarks();
+    tnecs_benchmarks();
     dupprintf(globalf, "tnecs Test End \n \n");
     return (0);
 }
