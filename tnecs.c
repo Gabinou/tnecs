@@ -20,7 +20,7 @@ struct tnecs_World * tnecs_init() {
     // tnecs_world->entity_typeflags = NULL;
     // arrsetcap(tnecs_world->entity_typeflags, TNECS_INITIAL_ENTITY_CAP);
     // arrput(tnecs_world->entity_typeflags, TNECS_NULL);
-    tnecs_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->entity_typeflags));
+    tnecs_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(tnecs_component_t));
     tnecs_world->len_entity_typeflags = TNECS_INITIAL_ENTITY_CAP;
     tnecs_world->num_entity_typeflags = 1;
 
@@ -93,7 +93,9 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     }
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
     arrput(in_world->entities, out);
-    arrput(in_world->entity_typeflags, TNECS_NOCOMPONENT_TYPEFLAG);
+    tnecs_entity_typeflag_add(in_world, out, TNECS_NOCOMPONENT_TYPEFLAG);
+
+    // arrput(in_world->entity_typeflags, TNECS_NOCOMPONENT_TYPEFLAG);
     tnecs_entitiesbytype_add(in_world, out, TNECS_NOCOMPONENT_TYPEFLAG);
     return (out);
 }
