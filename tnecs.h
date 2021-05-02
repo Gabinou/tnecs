@@ -46,9 +46,6 @@
 #include <stdarg.h>
 #include <math.h>
 
-// GLOSSARY:
-// allocate component to entity: attach commponent to existing entity, adding
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -426,6 +423,8 @@ struct tnecs_World * tnecs_init();
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
+
+
 // TNECS_ADD_COMPONENT is overloaded
 //      3 inputs required: (world, name, entity_id)
 //      4th input if newtype is false, to skip checks for execution speed
@@ -460,8 +459,7 @@ bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_en
 void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag);
 void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag);
 void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_flag);
-void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id);
-void tnecs_component_array_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id, void * in_component_data);
+void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Components_Array * in_array, size_t in_component_id);
 void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit);
 
 void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag);

@@ -275,6 +275,7 @@ void tnecs_test_system_registration() {
 }
 
 void tnecs_test_entity_creation() {
+    dupprintf(globalf, "tnecs_test_entity_creation");
     lok(test_world->next_entity_id == TNECS_ID_START);
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     lok(Silou == TNECS_ID_START);
@@ -284,8 +285,10 @@ void tnecs_test_entity_creation() {
     lok(test_world->next_entity_id == (TNECS_ID_START + 2));
     lok(Silou != Pirou);
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
-    printf("test_world->entity_typeflags[Perignon] %d \n", test_world->entity_typeflags[Perignon]);
     lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
+    struct Position * temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    lok(temp_position->x == 0);
+    lok(temp_position->y == 0);
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
 
