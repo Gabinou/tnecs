@@ -155,6 +155,7 @@ struct Unit unit_array[ARRAY_LEN];
 tnecs_entity_t * components_list;
 struct Position * temp_position;
 struct Unit * temp_unit;
+struct Sprite * temp_sprite;
 struct tnecs_World * test_world;
 
 void SystemMove(struct tnecs_System_Input in_input) {
@@ -287,31 +288,25 @@ void tnecs_test_entity_creation() {
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
     lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
-    lok(temp_position->x  == 0);
+    lok(temp_position->x == 0);
     lok(temp_position->y == 0);
+    temp_position->x = 3;
+    temp_position->y = 6;
+
+    temp_position = NULL;
+    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    lok(temp_position->x == 3);
+    lok(temp_position->y == 6);
+
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
     lok(temp_unit->hp  == 0);
     lok(temp_unit->str == 0);
 
+    temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
+    lok(temp_sprite == NULL);
+
+
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
-
-
-
-
-    // tnecs_entity_destroy(test_world, Pirou);
-    // Pirou = tnecs_new_entity(test_world);
-    // lok(Pirou == (TNECS_ID_START + 1));
-    // lok(test_world->next_entity_id == (TNECS_ID_START + 2));
-    // lok(Silou != Pirou);
-    // TNECS_ADD_COMPONENT(test_world, Position, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // lok(arrlen(components_list) == 1);
-    // lok(components_list[0] == Component_Position_id);
-    // TNECS_ADD_COMPONENT(test_world, Unit, Pirou);
-    // components_list = hmget(test_world->entities_table, Pirou);
-    // lok(arrlen(components_list) == 2);
-    // lok(components_list[0] == Component_Position_id);
-    // lok(components_list[1] == Component_Unit_id);
 }
 
 void tnecs_test_component_add() {
