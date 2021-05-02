@@ -84,6 +84,7 @@ typedef unsigned char tnecs_byte_t;
 #define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_INITIAL_ENTITY_CAP 128
 #define TNECS_ARRAY_INCREMENT 128
+#define TNECS_ARRAY_GROWTH_FACTOR 2 // in general 2 or 1.5
 #define TNECS_COMPONENT_ALLOCBLOCK 16
 #define ENTITY_MAX_COMPONENT_NUM 10
 

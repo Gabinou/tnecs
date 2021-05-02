@@ -160,11 +160,12 @@ void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_
     TNECS_DEBUG_PRINTF("tnecs_entity_typeflag_add\n");
 
     // BOTTLENECK OF NEW_ENTITY.
+    // exponential growth of arrays achieves amortized constant time
 
     if (in_entity > in_world->len_entity_typeflags) {
         size_t old_len = in_world->len_entity_typeflags;
         size_t bytesize = sizeof(in_world->entity_typeflags[0]);
-        in_world->len_entity_typeflags = in_entity * 2;
+        in_world->len_entity_typeflags = in_entity > (in_world->len_entity_typeflags * TNECS_ARRAY_GROWTH_FACTOR) ? (in_entity * TNECS_ARRAY_GROWTH_FACTOR) : (in_world->len_entity_typeflags * TNECS_ARRAY_GROWTH_FACTOR);
 
         in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entity_typeflags, bytesize);
     }
@@ -172,7 +173,7 @@ void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_
     if (++in_world->num_entity_typeflags > in_world->len_entity_typeflags) {
         size_t old_len = in_world->len_entity_typeflags;
         size_t bytesize = sizeof(in_world->entity_typeflags[0]);
-        in_world->len_entity_typeflags *= 2;
+        in_world->len_entity_typeflags *= TNECS_ARRAY_GROWTH_FACTOR;
 
         in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entity_typeflags, bytesize);
     }
