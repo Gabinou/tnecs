@@ -276,7 +276,7 @@ void tnecs_test_system_registration() {
 }
 
 void tnecs_test_entity_creation() {
-    dupprintf(globalf, "tnecs_test_entity_creation");
+    dupprintf(globalf, "tnecs_test_entity_creation \n");
     lok(test_world->next_entity_id == TNECS_ID_START);
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     lok(Silou == TNECS_ID_START);
@@ -304,7 +304,6 @@ void tnecs_test_entity_creation() {
 
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_sprite == NULL);
-
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
 }
