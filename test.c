@@ -284,7 +284,13 @@ void tnecs_test_entity_creation() {
     lok(test_world->next_entity_id == (TNECS_ID_START + 2));
     lok(Silou != Pirou);
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    printf("test_world->entity_typeflags[Perignon] %d \n", test_world->entity_typeflags[Perignon]);
+    lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
+
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
+
+
+
 
     // tnecs_entity_destroy(test_world, Pirou);
     // Pirou = tnecs_new_entity(test_world);

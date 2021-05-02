@@ -356,10 +356,12 @@ struct tnecs_World {
     size_t num_systems;
     size_t num_entities;
     size_t num_typeflags;
+    size_t num_entity_typeflags;
 
     // len is allocated size
     size_t len_entities;
     size_t len_typeflags;
+    size_t len_entity_typeflags;
     size_t len_systems;
     size_t * len_entitiesbytype;
     size_t * len_componentsbytype;
@@ -382,7 +384,7 @@ typedef struct tnecs_World tnecs_world_t;
 struct tnecs_World * tnecs_init();
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
-#define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__));
+#define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__))
 
 // COMPONENT CALLOC AND CAST
 // no vararg calloc/cast -> enable assign (Component * temp = ...)
@@ -462,6 +464,7 @@ void tnecs_component_array_newcomponent(struct tnecs_World * in_world, tnecs_ent
 void tnecs_component_array_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag, size_t in_component_id, void * in_component_data);
 void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit);
 
+void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag);
 
 size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
 size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_type);
@@ -491,6 +494,8 @@ size_t tnecs_issubtype(tnecs_component_t * in_typelist, size_t len, tnecs_compon
 size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash);
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char * in_name);
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const unsigned char * in_name);
+
+void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize);
 
 // ****************** STRING HASHING ************************
 // hash_djb2 slightly faster than hash_sdbm
