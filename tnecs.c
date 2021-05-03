@@ -44,13 +44,16 @@ struct tnecs_World * tnecs_init() {
     arrsetlen(tnecs_world->num_entitiesbytype, TNECS_INITIAL_SYSTEM_CAP);
     tnecs_world->num_componentsbytype = NULL;
     arrsetcap(tnecs_world->num_componentsbytype, TNECS_INITIAL_SYSTEM_CAP);
+    tnecs_world->num_entitiesbytype = NULL;
+    arrsetcap(tnecs_world->num_entitiesbytype, TNECS_INITIAL_SYSTEM_CAP);
     for (size_t i = 0 ; i < TNECS_INITIAL_SYSTEM_CAP; i++) {
-        tnecs_world->num_entitiesbytype[i] = 0;
-        tnecs_world->num_componentsbytype[i] = 0;
+        tnecs_world->num_entitiesbytype[i] = 1;
+        tnecs_world->num_componentsbytype[i] = 1;
     }
+    TNECS_DEBUG_ASSERT(tnecs_world->num_entitiesbytype[TNECS_NULL] == 1);
+    TNECS_DEBUG_ASSERT(tnecs_world->num_componentsbytype[TNECS_NULL] == 1);
     arrput(tnecs_world->entities_bytype, NULL);
     arrput(tnecs_world->entities_bytype[TNECS_NULL], TNECS_NULL);
-    tnecs_world->num_entitiesbytype[TNECS_NULL]++;
 
     tnecs_world->component_idbytype = NULL;
     arrsetcap(tnecs_world->component_idbytype, TNECS_INITIAL_SYSTEM_CAP);
@@ -59,9 +62,6 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->component_flagbytype = NULL;
     arrsetcap(tnecs_world->component_flagbytype, TNECS_INITIAL_SYSTEM_CAP);
     arrput(tnecs_world->component_flagbytype, NULL);
-
-    tnecs_world->num_entitiesbytype = NULL;
-    arrsetcap(tnecs_world->num_entitiesbytype, TNECS_INITIAL_SYSTEM_CAP);
 
     tnecs_world->num_components = TNECS_ID_START;
     tnecs_world->num_systems = TNECS_ID_START;
@@ -172,14 +172,19 @@ size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in
 
     size_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
     arrput(in_world->entities_bytype[typeflag_id_new], in_entity);
-    return (in_world->num_entitiesbytype[typeflag_id_new]++);
+    return (++in_world->num_entitiesbytype[typeflag_id_new]);
 }
 
 void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_old) {
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_del\n");
 
-    size_t entity_order_old = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
     size_t typeflag_id_old = tnecs_typeflagid(in_world, typeflag_old);
+    size_t entity_order_old = tnecs_entity_order_bytypeid(in_world, in_entity, typeflag_id_old);
+    TNECS_DEBUG_PRINTF("entity_order_old %d\n", entity_order_old);
+    TNECS_DEBUG_PRINTF("typeflag_id_old %d\n", typeflag_id_old);
+    TNECS_DEBUG_PRINTF("typeflag_old %d\n", typeflag_old);
+    TNECS_DEBUG_PRINTF("in_entity %d\n", in_entity);
+    TNECS_DEBUG_PRINTF("in_world->entities_bytype[typeflag_id_old][entity_order_old] %d\n", in_world->entities_bytype[typeflag_id_old][entity_order_old]);
 
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_id_old][entity_order_old] == in_entity);
     arrdel(in_world->entities_bytype[typeflag_id_old], entity_order_old);
@@ -240,7 +245,7 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
     size_t typeflag_id = TNECS_TYPEFLAGID(world, in_typeflag);
     arrput(in_world->components_bytype, temp_comparray);
     arrput(in_world->num_componentsbytype, num_components);
-    arrput(in_world->num_entitiesbytype, 0);
+    arrput(in_world->num_entitiesbytype, 1);
 }
 
 size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag_new) {
@@ -646,9 +651,9 @@ size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t i
 size_t tnecs_entity_order_bytypeid(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_order_bytypeid\n");
 
-    size_t order = in_world->next_entity_id;
+    size_t order = 0;
     for (size_t i = 0; i < in_world->num_entitiesbytype[in_typeflag_id]; i++) {
-        // TNECS_DEBUG_PRINTF("i %d\n", i);
+        TNECS_DEBUG_PRINTF("in_world->entities_bytype[in_typeflag_id][i], i %d, %d\n", in_world->entities_bytype[in_typeflag_id][i], i);
         if (in_world->entities_bytype[in_typeflag_id][i] == in_entity) {
             order = i;
             break;
