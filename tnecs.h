@@ -81,8 +81,9 @@ typedef unsigned char tnecs_byte_t;
 #define TNECS_COMPONENT_CAP 64
 #define TNECS_STR_BUFFER 128
 #define TNECS_OPEN_IDS_BUFFER 128
-#define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_INITIAL_ENTITY_CAP 128
+#define TNECS_INITIAL_COMPONENT_CAP 8
+#define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_ARRAY_INCREMENT 128
 #define TNECS_ARRAY_GROWTH_FACTOR 2 // in general 2 or 1.5
 #define TNECS_COMPONENT_ALLOCBLOCK 16
@@ -346,9 +347,14 @@ struct tnecs_World {
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** component_idbytype;        // [typeflag_id][component_order_bytype]
     tnecs_component_t ** component_flagbytype;      // [typeflag_id][component_order_bytype]
-    size_t * num_components_bytype;                  // [typeflag_id]
-    size_t * num_entitiesbytype;                    // [typeflag_id]
-    size_t * num_systems_byphase;                   // [phase_id]
+    size_t * num_components_bytype;                 // [typeflag_id]
+    size_t * num_entities_bytype;                   // [typeflag_id]
+    size_t * num_systems_byphase;                   // [phase_id]    
+    size_t * len_components_bytype;                 // [typeflag_id]
+    size_t * len_components_idbytype;               // [typeflag_id]
+    size_t * len_components_flagbytype;             // [typeflag_id]
+    size_t * len_entities_bytype;                   // [typeflag_id]
+    size_t * len_systems_byphase;                   // [phase_id]
 
     // num_XXXX always include NULL
     size_t num_components;
@@ -359,7 +365,9 @@ struct tnecs_World {
     size_t num_entity_typeflags;
     size_t num_system_typeflags;
     size_t num_system_exclusive;
-
+    size_t * num_components_idbytype;               // [typeflag_id]
+    size_t * num_components_flagbytype;             // [typeflag_id]
+    
     // len is allocated size
     size_t len_entities;
     size_t len_typeflags;
@@ -369,7 +377,6 @@ struct tnecs_World {
     size_t len_system_exclusive;
     size_t len_system_typeflags;
     size_t * len_entitiesbytype;
-    size_t * len_componentsbytype;
     size_t * len_systembyphase;
 
     tnecs_entity_t next_entity_id;
