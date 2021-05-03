@@ -136,15 +136,11 @@ void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_componen
     struct tnecs_Components_Array * current_array = &in_world->components_bytype[entity_typeflag][component_order];
     size_t old_len = current_array->len_components;
     if (old_len < TNECS_INITIAL_ENTITY_CAP) {
-        current_array->len_components = TNECS_COMPONENT_ALLOCBLOCK * 2;
+        current_array->len_components = TNECS_COMPONENT_ALLOCBLOCK * TNECS_ARRAY_GROWTH_FACTOR;
     } else {
-        current_array->len_components += TNECS_COMPONENT_ALLOCBLOCK;
+        current_array->len_components *= TNECS_ARRAY_GROWTH_FACTOR;
     }
-    void * temp = calloc(current_array->len_components, in_world->component_bytesizes[in_component_id]);
-
-    memcpy(temp, current_array->components, old_len * in_world->component_bytesizes[in_component_id]);
-    free(current_array->components);
-    current_array->components = temp;
+    current_array->components = tnecs_realloc(current_array->components, old_len, current_array->len_components, in_world->component_bytesizes[in_component_id]);
 }
 
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
@@ -256,8 +252,7 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
 
 size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag_new) {
     TNECS_DEBUG_PRINTF("tnecs_new_typeflag\n");
-
-    // outputs 0 is typeflag is new, its index if not
+ 
     size_t typeflag_id = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
         if (typeflag_new == in_world->typeflags[i]) {
