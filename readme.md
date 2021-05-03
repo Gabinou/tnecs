@@ -39,8 +39,10 @@ Add tnecs.c and tnecs.h to your source code.
 
 ## To do
 - Make tnecs independent from ```stb_ds.h```
+- World updating function
 - Exclusive/Inclusive systems
     * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
+- Post V1.0 pruning
 
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
