@@ -43,12 +43,12 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->component_idbytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->component_flagbytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     for (size_t i = 0 ; i < TNECS_INITIAL_SYSTEM_CAP; i++) {
-        tnecs_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(tnecs_component_t))
+        tnecs_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(tnecs_component_t));
         tnecs_world->num_entities_bytype[i] = 1;
         tnecs_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_CAP;
-        
-        tnecs_world->component_flagbytype[i] = calloc(TNECS_INITIAL_COMPONENT_CAP, sizeof(tnecs_component_t))
-        tnecs_world->component_idbytype[i] = calloc(TNECS_INITIAL_COMPONENT_CAP, sizeof(tnecs_component_t))
+
+        tnecs_world->component_flagbytype[i] = calloc(TNECS_INITIAL_COMPONENT_CAP, sizeof(tnecs_component_t));
+        tnecs_world->component_idbytype[i] = calloc(TNECS_INITIAL_COMPONENT_CAP, sizeof(tnecs_component_t));
         tnecs_world->num_components_bytype[i] = 1;
         tnecs_world->len_components_bytype[i] = TNECS_INITIAL_COMPONENT_CAP;
     }

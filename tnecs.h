@@ -349,7 +349,7 @@ struct tnecs_World {
     tnecs_component_t ** component_flagbytype;      // [typeflag_id][component_order_bytype]
     size_t * num_components_bytype;                 // [typeflag_id]
     size_t * num_entities_bytype;                   // [typeflag_id]
-    size_t * num_systems_byphase;                   // [phase_id]    
+    size_t * num_systems_byphase;                   // [phase_id]
     size_t * len_components_bytype;                 // [typeflag_id]
     size_t * len_components_idbytype;               // [typeflag_id]
     size_t * len_components_flagbytype;             // [typeflag_id]
@@ -367,7 +367,7 @@ struct tnecs_World {
     size_t num_system_exclusive;
     size_t * num_components_idbytype;               // [typeflag_id]
     size_t * num_components_flagbytype;             // [typeflag_id]
-    
+
     // len is allocated size
     size_t len_entities;
     size_t len_typeflags;
