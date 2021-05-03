@@ -58,7 +58,7 @@ extern "C" {
 #define TNECS_DEBUG_ASSERT(...) (void)0
 #endif
 
-#define TNECS_DEBUG_P // printf are ignored if undefined
+ #define TNECS_DEBUG_P // printf are ignored if undefined
 #ifdef TNECS_DEBUG_P
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
@@ -81,8 +81,9 @@ typedef unsigned char tnecs_byte_t;
 #define TNECS_COMPONENT_CAP 64
 #define TNECS_STR_BUFFER 128
 #define TNECS_OPEN_IDS_BUFFER 128
-#define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_INITIAL_ENTITY_CAP 128
+#define TNECS_INITIAL_COMPONENT_CAP 8
+#define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_ARRAY_INCREMENT 128
 #define TNECS_ARRAY_GROWTH_FACTOR 2 // in general 2 or 1.5
 #define TNECS_COMPONENT_ALLOCBLOCK 16
@@ -325,7 +326,6 @@ struct tnecs_System_Input {
     void ** components_lists;
 };
 
-
 struct tnecs_World {
     tnecs_entity_t * entities; // (entities[entity_id] == entity_id) unless deleted
     tnecs_component_t * typeflags;                  // [typeflag_id]
@@ -333,7 +333,7 @@ struct tnecs_World {
     tnecs_component_t * system_typeflags;           // [system_id]
     void (** systems)(struct tnecs_System_Input);   // [system_id]
     void (** systems_byphase)(struct tnecs_System_Input);// [system_id]
-    bool * system_isExclusive;                      // [system_id]
+    bool * system_exclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t component_hashes[TNECS_COMPONENT_CAP]; // [component_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];// [component_id]
@@ -344,26 +344,40 @@ struct tnecs_World {
     //   -> easier to build inclusive entity lists.
     struct tnecs_Components_Array ** components_bytype; // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
-    tnecs_component_t ** component_idbytype;        // [typeflag_id][component_order_bytype]
-    tnecs_component_t ** component_flagbytype;      // [typeflag_id][component_order_bytype]
-    size_t * num_componentsbytype;                  // [typeflag_id]
-    size_t * num_entitiesbytype;                    // [typeflag_id]
-    size_t * num_systemssbyphase;                   // [phase_id]
+    tnecs_component_t ** components_idbytype;        // [typeflag_id][component_order_bytype]
+    tnecs_component_t ** components_flagbytype;      // [typeflag_id][component_order_bytype]
+    size_t * num_components_bytype;                 // [typeflag_id]
+    size_t * num_entities_bytype;                   // [typeflag_id]
+    size_t * num_systems_byphase;                   // [phase_id]
+    size_t * len_components_bytype;                 // [typeflag_id]
+    size_t * len_components_idbytype;               // [typeflag_id]
+    size_t * len_components_flagbytype;             // [typeflag_id]
+    size_t * len_entities_bytype;                   // [typeflag_id]
+    size_t * len_systems_byphase;                   // [phase_id]
 
     // num_XXXX always include NULL
     size_t num_components;
     size_t num_systems;
+    size_t num_phases;
+    size_t len_phases;
+    size_t num_system_hashes;
     size_t num_entities;
     size_t num_typeflags;
     size_t num_entity_typeflags;
+    size_t num_system_typeflags;
+    size_t num_system_exclusive;
+    size_t * num_components_idbytype;               // [typeflag_id]
+    size_t * num_components_flagbytype;             // [typeflag_id]
 
     // len is allocated size
     size_t len_entities;
     size_t len_typeflags;
     size_t len_entity_typeflags;
     size_t len_systems;
+    size_t len_system_hashes;
+    size_t len_system_exclusive;
+    size_t len_system_typeflags;
     size_t * len_entitiesbytype;
-    size_t * len_componentsbytype;
     size_t * len_systembyphase;
 
     tnecs_entity_t next_entity_id;
