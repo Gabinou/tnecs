@@ -155,8 +155,6 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
 void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_entity_typeflag_add\n");
 
-    // BOTTLENECK OF NEW_ENTITY.
-    // exponential growth of arrays achieves amortized constant time
 
     if (in_entity > in_world->len_entity_typeflags) {
         size_t old_len = in_world->len_entity_typeflags;
@@ -252,7 +250,7 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
 
 size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag_new) {
     TNECS_DEBUG_PRINTF("tnecs_new_typeflag\n");
- 
+
     size_t typeflag_id = 0;
     for (size_t i = 0 ; i < in_world->num_typeflags; i++) {
         if (typeflag_new == in_world->typeflags[i]) {
