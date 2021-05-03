@@ -333,7 +333,7 @@ struct tnecs_World {
     tnecs_component_t * system_typeflags;           // [system_id]
     void (** systems)(struct tnecs_System_Input);   // [system_id]
     void (** systems_byphase)(struct tnecs_System_Input);// [system_id]
-    bool * system_isExclusive;                      // [system_id]
+    bool * system_exclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t component_hashes[TNECS_COMPONENT_CAP]; // [component_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];// [component_id]
@@ -353,15 +353,21 @@ struct tnecs_World {
     // num_XXXX always include NULL
     size_t num_components;
     size_t num_systems;
+    size_t num_system_hashes;
     size_t num_entities;
     size_t num_typeflags;
     size_t num_entity_typeflags;
+    size_t num_system_typeflags;
+    size_t num_system_exclusive;
 
     // len is allocated size
     size_t len_entities;
     size_t len_typeflags;
     size_t len_entity_typeflags;
     size_t len_systems;
+    size_t len_system_hashes;
+    size_t len_system_exclusive;
+    size_t len_system_typeflags;
     size_t * len_entitiesbytype;
     size_t * len_componentsbytype;
     size_t * len_systembyphase;
