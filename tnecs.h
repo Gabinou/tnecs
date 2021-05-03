@@ -346,9 +346,9 @@ struct tnecs_World {
     tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** component_idbytype;        // [typeflag_id][component_order_bytype]
     tnecs_component_t ** component_flagbytype;      // [typeflag_id][component_order_bytype]
-    size_t * num_componentsbytype;                  // [typeflag_id]
+    size_t * num_components_bytype;                  // [typeflag_id]
     size_t * num_entitiesbytype;                    // [typeflag_id]
-    size_t * num_systemssbyphase;                   // [phase_id]
+    size_t * num_systems_byphase;                   // [phase_id]
 
     // num_XXXX always include NULL
     size_t num_components;
