@@ -276,7 +276,7 @@ void tnecs_test_system_registration() {
 }
 
 void tnecs_test_entity_creation() {
-    dupprintf(globalf, "tnecs_test_entity_creation \n");
+    // dupprintf(globalf, "tnecs_test_entity_creation \n");
     lok(test_world->next_entity_id == TNECS_ID_START);
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     lok(Silou == TNECS_ID_START);
@@ -309,9 +309,10 @@ void tnecs_test_entity_creation() {
 }
 
 void tnecs_test_component_add() {
-    tnecs_entity_t Silou;
     tnecs_entity_t Pirou;
-    // TNECS_ADD_COMPONENT(test_world, Silou, Position);
+
+    tnecs_entity_t Silou = tnecs_new_entity(test_world);
+    TNECS_ADD_COMPONENT(test_world, Silou, Position);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Unit)) == 0);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPEFLAG(test_world, Position)) > 0);
     // TNECS_ADD_COMPONENT(test_world, Silou, Unit);
@@ -386,6 +387,7 @@ void tnecs_test_component_add() {
 }
 
 void tnecs_test_hashing() {
+
 }
 
 void tnecs_test_setbit() {
@@ -507,17 +509,17 @@ void tnecs_benchmarks() {
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
-    // lrun("world_init", tnecs_test_world_init);
-    // lrun("c_regis", tnecs_test_component_registration);
-    // lrun("utilities", tnecs_test_utilities);
-    // lrun("s_regis", tnecs_test_system_registration);
-    // lrun("e_create", tnecs_test_entity_creation);
-    // lrun("c_add", tnecs_test_component_add);
-    // lrun("hashing", tnecs_test_hashing);
-    // lrun("setbit", tnecs_test_setbit);
+    lrun("world_init", tnecs_test_world_init);
+    lrun("c_regis", tnecs_test_component_registration);
+    lrun("utilities", tnecs_test_utilities);
+    lrun("s_regis", tnecs_test_system_registration);
+    lrun("e_create", tnecs_test_entity_creation);
+    lrun("c_add", tnecs_test_component_add);
+    lrun("hashing", tnecs_test_hashing);
+    lrun("setbit", tnecs_test_setbit);
     lresults();
 
-    tnecs_benchmarks();
+    // tnecs_benchmarks();
     dupprintf(globalf, "tnecs Test End \n \n");
     return (0);
 }

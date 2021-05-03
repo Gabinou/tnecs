@@ -197,15 +197,19 @@ size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag_toadd, bool isNew) {
     TNECS_DEBUG_PRINTF("tnecs_entity_add_components\n");
 
+    TNECS_DEBUG_PRINTF("HERE3\n");
     tnecs_component_t typeflag_old = in_world->entity_typeflags[in_entity];
+    TNECS_DEBUG_PRINTF("HERE4\n");
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
     size_t entity_order_old = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
 
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
+    TNECS_DEBUG_PRINTF("HERE2\n");
     if (isNew) {
         tnecs_new_typeflag(in_world, num_components, typeflag_new);
     }
     // 2- Migrate entity in entities_bytype old_typeflag->typeflag_new, old_order->new_order
+    TNECS_DEBUG_PRINTF("HERE1\n");
     size_t entity_order_new = tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_new);
     tnecs_component_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
 
@@ -235,7 +239,6 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
     TNECS_DEBUG_ASSERT(num_flags == num_components);
     size_t typeflag_id = TNECS_TYPEFLAGID(world, in_typeflag);
     arrput(in_world->components_bytype, temp_comparray);
-    arrput(in_world->entities_bytype, NULL);
     arrput(in_world->num_componentsbytype, num_components);
     arrput(in_world->num_entitiesbytype, 0);
 }
@@ -263,6 +266,8 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         // 3- Add all components to component_idbytype and component_flagbytype
         arrput(in_world->component_idbytype, NULL);
         arrput(in_world->component_flagbytype, NULL);
+        arrput(in_world->entities_bytype, NULL);
+
         tnecs_component_t component_id_toadd, component_type_toadd;
         tnecs_component_t typeflag_reduced = typeflag_new;
         tnecs_component_t typeflag_added = 0;
