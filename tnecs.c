@@ -13,9 +13,13 @@ struct tnecs_World * tnecs_init() {
     arrsetcap(tnecs_world->entities, TNECS_INITIAL_ENTITY_CAP);
     arrput(tnecs_world->entities, TNECS_NULL);
 
-    tnecs_world->typeflags = NULL;
-    arrsetcap(tnecs_world->typeflags, TNECS_INITIAL_ENTITY_CAP);
-    arrput(tnecs_world->typeflags, TNECS_NULL);
+    // tnecs_world->typeflags = NULL;
+    // arrsetcap(tnecs_world->typeflags, TNECS_INITIAL_ENTITY_CAP);
+    // arrput(tnecs_world->typeflags, TNECS_NULL);
+
+    tnecs_world->typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->typeflags));
+    tnecs_world->len_typeflags = TNECS_INITIAL_ENTITY_CAP;
+    tnecs_world->num_typeflags = 1;
 
     tnecs_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(tnecs_component_t));
     tnecs_world->len_entity_typeflags = TNECS_INITIAL_ENTITY_CAP;
@@ -152,7 +156,6 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
 void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_entity_typeflag_add\n");
 
-
     if ((in_entity > in_world->len_entity_typeflags) || (++in_world->num_entity_typeflags > in_world->len_entity_typeflags)) {
         size_t old_len = in_world->len_entity_typeflags;
         size_t bytesize = sizeof(in_world->entity_typeflags[0]);
@@ -175,6 +178,7 @@ size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in
 
 void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_old) {
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_del\n");
+
     size_t entity_order_old = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
     size_t typeflag_id_old = tnecs_typeflagid(in_world, typeflag_old);
 
@@ -185,6 +189,7 @@ void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_e
 
 size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_new) {
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_migrate\n");
+
     tnecs_component_t typeflag_old = in_world->entity_typeflags[in_entity];
     tnecs_entitiesbytype_del(in_world, in_entity, typeflag_old);
     return (tnecs_entitiesbytype_add(in_world, in_entity, typeflag_new));
@@ -249,8 +254,14 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
     }
     if (!typeflag_id) {
         // 1- Add new components_bytype at [typeflag_id]
-        arrput(in_world->typeflags, typeflag_new);
-        in_world->num_typeflags++;
+
+        if ((in_world->num_typeflags + 1) >= in_world->len_typeflags) {
+            size_t old_len = in_world->len_typeflags;
+            in_world->len_typeflags *= TNECS_ARRAY_GROWTH_FACTOR;
+            tnecs_realloc(in_world->typeflags, old_len, in_world->len_typeflags, sizeof(*in_world->typeflags));
+        }
+
+        in_world->typeflags[in_world->num_typeflags++] = typeflag_new;
         size_t new_typeflag_id = tnecs_typeflagid(in_world, typeflag_new);
         TNECS_DEBUG_ASSERT(new_typeflag_id == (in_world->num_typeflags - 1));
 
