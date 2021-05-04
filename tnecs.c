@@ -35,6 +35,10 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->len_system_hashes = TNECS_INITIAL_SYSTEM_CAP;
     tnecs_world->num_system_hashes = 1;
 
+    tnecs_world->system_phase = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(*tnecs_world->system_phase));
+    tnecs_world->len_system_hashes = TNECS_INITIAL_SYSTEM_CAP;
+    tnecs_world->num_system_hashes = 0;
+
     tnecs_world->entities_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->len_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->num_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
@@ -219,17 +223,11 @@ void tnecs_growArray_phase(struct tnecs_World * in_world) {
     in_world->len_phases *= TNECS_ARRAY_GROWTH_FACTOR;
 
     // void * temp;
-    // temp = calloc(in_world->len_phases, sizeof(*in_world->system_phase));
-    // memcpy(temp, in_world->system_phase, old_len * sizeof(*in_world->system_phase));
-    // free(in_world->system_phase);
-    // in_world->system_phase = temp;
-
     // temp = calloc(in_world->len_phases, sizeof(*in_world->systems_byphase));
     // memcpy(temp, in_world->system_phase, old_len * sizeof(*in_world->system_phase));
     // free(in_world->system_phase);
     // in_world->system_phase = temp;
 
-    in_world->system_phase = tnecs_realloc(in_world->system_phase, old_len, in_world->len_systems, sizeof(*in_world->system_phase));
     in_world->systems_byphase = tnecs_realloc(in_world->systems_byphase, old_len, in_world->len_systems, sizeof(*in_world->systems_byphase));
 
 }
@@ -246,19 +244,31 @@ void tnecs_growArray_system(struct tnecs_World * in_world) {
     // free(in_world->systems);
     // in_world->entities = temp;
 
+    // temp = calloc(in_world->len_phases, sizeof(*in_world->system_phase));
+    // memcpy(temp, in_world->system_phase, old_len * sizeof(*in_world->system_phase));
+    // free(in_world->system_phase);
+    // in_world->system_phase = temp;
+
     // temp = calloc(in_world->system_typeflags, sizeof(*in_world->system_typeflags));
     // memcpy(temp, in_world->system_typeflags, old_len * sizeof(*in_world->system_typeflags));
     // free(in_world->system_typeflags);
     // in_world->system_typeflags = temp;
 
-    // temp = calloc(in_world->len_systems, sizeof(*in_world->));
+    // temp = calloc(in_world->len_systems, sizeof(*in_world->system_hashes));
     // memcpy(temp, in_world->system_hashes, old_len * sizeof(*in_world->system_hashes));
     // free(in_world->system_hashes);
     // in_world->system_hashes = temp;
 
+    // temp = calloc(in_world->len_systems, sizeof(*in_world->system_exclusive));
+    // memcpy(temp, in_world->system_exclusive, old_len * sizeof(*in_world->system_exclusive));
+    // free(in_world->system_exclusive);
+    // in_world->system_exclusive = temp;
+
     in_world->systems = tnecs_realloc(in_world->systems, old_len, in_world->len_systems, sizeof(*in_world->systems));
+    in_world->system_phase = tnecs_realloc(in_world->system_phase, old_len, in_world->len_systems, sizeof(*in_world->system_phase));
     in_world->system_typeflags = tnecs_realloc(in_world->system_typeflags, old_len, in_world->len_systems, sizeof(*in_world->system_typeflags));
     in_world->system_hashes = tnecs_realloc(in_world->system_hashes, old_len, in_world->len_systems, sizeof(*in_world->system_hashes));
+    in_world->system_exclusive = tnecs_realloc(in_world->system_exclusive, old_len, in_world->len_systems, sizeof(*in_world->system_exclusive));
 }
 
 void tnecs_growArray_entity(struct tnecs_World * in_world) {
@@ -558,12 +568,20 @@ void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, s
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
-    arrput(in_world->system_exclusive, isExclusive);
-    arrput(in_world->system_phase, in_run_phase);
-    arrput(in_world->system_hashes, in_hash);
-    arrput(in_world->system_typeflags, components_typeflag);
-    arrput(in_world->systems, in_system);
-    arrput(in_world->num_components_bytype, num_components);
+    printf("HER2\n");
+    if ((in_world->num_systems + 1) >= in_world->len_systems) {
+        tnecs_growArray_system(in_world);
+    }
+    printf("HERE\n");
+    in_world->system_exclusive[in_world->num_systems] = isExclusive;
+    printf("HERW1\n");
+    in_world->system_phase[in_world->num_systems] = in_run_phase;
+    printf("HERW2\n");
+    in_world->system_hashes[in_world->num_systems] = in_hash;
+    printf("HERW3\n");
+    in_world->system_typeflags[in_world->num_systems] = components_typeflag;
+    printf("HERW4\n");
+    in_world->systems[in_world->num_systems] = in_system;
 
     size_t typeflag_id = tnecs_new_typeflag(in_world, num_components, components_typeflag);
     in_world->num_systems++;
@@ -574,26 +592,17 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t new_ty
 
     // 1- Check if component array has enough room
     size_t new_typeflag_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, new_typeflag);
-    TNECS_DEBUG_PRINTF("HERE1 \n");
     size_t new_component_num = in_world->num_components_bytype[new_typeflag_id];
-    TNECS_DEBUG_PRINTF("HERE2 \n");
     struct tnecs_Components_Array * current_array;
-    TNECS_DEBUG_PRINTF("HERE3 \n");
     tnecs_component_t component_id;
-    TNECS_DEBUG_PRINTF("HERE4 \n");
     for (size_t corder = 0; corder < new_component_num; corder++) {
-        TNECS_DEBUG_PRINTF("HERE5 \n");
         current_array = &in_world->components_bytype[new_typeflag_id][corder];
 
         TNECS_DEBUG_ASSERT((current_array != NULL));
-        TNECS_DEBUG_PRINTF("HERE6 \n");
         component_id = in_world->components_idbytype[new_typeflag_id][corder];
-        TNECS_DEBUG_PRINTF("HERE7 \n");
         if (++current_array->num_components >= current_array->len_components) {
-            TNECS_DEBUG_PRINTF("HERE9 \n");
             tnecs_component_array_realloc(in_world, new_typeflag, component_id);
         }
-        TNECS_DEBUG_PRINTF("HERE8 \n");
     }
 }
 
