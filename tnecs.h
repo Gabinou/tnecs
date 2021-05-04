@@ -359,6 +359,8 @@ struct tnecs_World {
     // num_XXXX always include NULL
     size_t num_components;
     size_t num_systems;
+    size_t num_phases;
+    size_t len_phases;
     size_t num_system_hashes;
     size_t num_entities;
     size_t num_typeflags;
