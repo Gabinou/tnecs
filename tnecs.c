@@ -49,6 +49,7 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->components_idbytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->components_flagbytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     for (size_t i = 0 ; i < TNECS_INITIAL_SYSTEM_CAP; i++) {
+
         tnecs_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(tnecs_component_t));
         tnecs_world->num_entities_bytype[i] = 1;
         tnecs_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_CAP;
@@ -390,6 +391,7 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
     tnecs_component_t typeflag_reduced = in_typeflag;
     tnecs_component_t typeflag_added = 0;
     tnecs_component_t type_toadd;
+    tnecs_component_t typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     size_t id_toadd, num_flags = 0;
     while (typeflag_reduced) {
         typeflag_reduced &= (typeflag_reduced - 1);
@@ -399,6 +401,8 @@ void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_compone
         num_flags++;
         typeflag_added += type_toadd;
     }
+    in_world->components_bytype[typeflag_id] = temp_comparray;
+
     TNECS_DEBUG_ASSERT(num_flags == num_components);
 }
 
@@ -568,19 +572,13 @@ void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, s
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
-    printf("HER2\n");
     if ((in_world->num_systems + 1) >= in_world->len_systems) {
         tnecs_growArray_system(in_world);
     }
-    printf("HERE\n");
     in_world->system_exclusive[in_world->num_systems] = isExclusive;
-    printf("HERW1\n");
     in_world->system_phase[in_world->num_systems] = in_run_phase;
-    printf("HERW2\n");
     in_world->system_hashes[in_world->num_systems] = in_hash;
-    printf("HERW3\n");
     in_world->system_typeflags[in_world->num_systems] = components_typeflag;
-    printf("HERW4\n");
     in_world->systems[in_world->num_systems] = in_system;
 
     size_t typeflag_id = tnecs_new_typeflag(in_world, num_components, components_typeflag);
@@ -594,14 +592,20 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t new_ty
     size_t new_typeflag_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, new_typeflag);
     size_t new_component_num = in_world->num_components_bytype[new_typeflag_id];
     struct tnecs_Components_Array * current_array;
-    tnecs_component_t component_id;
+    size_t current_component_id;
+
+
+
+
+
     for (size_t corder = 0; corder < new_component_num; corder++) {
         current_array = &in_world->components_bytype[new_typeflag_id][corder];
+        current_component_id = in_world->components_idbytype[new_typeflag_id][corder];
 
-        TNECS_DEBUG_ASSERT((current_array != NULL));
-        component_id = in_world->components_idbytype[new_typeflag_id][corder];
+        // TNECS_DEBUG_ASSERT(current_array == NULL);
+
         if (++current_array->num_components >= current_array->len_components) {
-            tnecs_component_array_realloc(in_world, new_typeflag, component_id);
+            tnecs_component_array_realloc(in_world, new_typeflag, current_component_id);
         }
     }
 }
@@ -621,27 +625,16 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     size_t component_bytesize;
     tnecs_byte_t * old_component_ptr, * new_component_ptr;
     tnecs_byte_t * temp_component_bytesptr;
-    printf("HERE1\n");
     for (size_t old_corder = 0; old_corder < in_world->num_components_bytype[old_type_id]; old_corder++) {
-        printf("HERE2\n");
-        printf("old_type_id %d\n", old_type_id);
-        printf("old_corder %d\n", old_corder);
         old_component_id = in_world->components_idbytype[old_type_id][old_corder];
-        printf("HERE3\n");
         for (size_t new_corder = 0; new_corder < in_world->num_components_bytype[new_type_id]; new_corder++) {
             new_component_id = in_world->components_idbytype[new_type_id][new_corder];
             if (old_component_id == new_component_id) {
-                printf("HERE2\n");
                 component_bytesize = in_world->component_bytesizes[old_component_id];
-                printf("HERE3\n");
                 temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[old_type_id][old_corder].components);
-                printf("HERE4\n");
                 old_component_ptr = temp_component_bytesptr + (component_bytesize * old_entity_order);
-                printf("HERE5\n");
                 temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[new_type_id][new_corder].components);
-                printf("HERE6\n");
                 new_component_ptr = (tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * new_entity_order));
-                printf("HERE7\n");
                 memcpy(new_component_ptr, old_component_ptr, component_bytesize);
                 break;
             }
