@@ -418,24 +418,18 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         tnecs_component_t component_id_toadd, component_type_toadd;
         tnecs_component_t typeflag_reduced = typeflag_new;
         tnecs_component_t typeflag_added = 0;
+        in_world->components_idbytype[new_typeflag_id] =  calloc(num_components, sizeof(*in_world->components_idbytype[new_typeflag_id]));
+        in_world->components_flagbytype[new_typeflag_id] =  calloc(num_components, sizeof(*in_world->components_flagbytype[new_typeflag_id]));
 
+        size_t i = 0;
         while (typeflag_reduced) {
-            printf("HERE1\n");
             typeflag_reduced &= (typeflag_reduced - 1);
-            printf("HERE2\n");
             component_type_toadd = (typeflag_reduced + typeflag_added) ^ typeflag_new;
-            printf("HERE3\n");
             component_id_toadd = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
-            printf("HERE4\n");
-            TNECS_ARRAY_GROWS(in_world, components_idbytype[new_typeflag_id]);
-            printf("HERE5\n");
-            TNECS_ARRAY_GROWS(in_world, components_flagbytype[new_typeflag_id]);
-            printf("HERE6\n");
-            in_world->components_idbytype[new_typeflag_id][in_world->num_components_idbytype[new_typeflag_id]++] = component_id_toadd;
-            printf("HERE7\n");
-            in_world->components_flagbytype[new_typeflag_id][in_world->num_components_flagbytype[new_typeflag_id]++] = component_type_toadd;
-            printf("HERE8\n");
+            in_world->components_idbytype[new_typeflag_id][i] = component_id_toadd;
+            in_world->components_flagbytype[new_typeflag_id][i] = component_type_toadd;
             typeflag_added += component_type_toadd;
+            i++;
         }
     }
     return (typeflag_id);
