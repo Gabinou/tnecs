@@ -210,14 +210,22 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
 }
 
+void tnecs_growArray_system(struct tnecs_World * in_world) {
+} 
+void tnecs_growArray_entity(struct tnecs_World * in_world) {
+    
+} 
 void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
     size_t old_len = in_world->len_typeflags;
     in_world->len_typeflags *= TNECS_ARRAY_GROWTH_FACTOR;
     
+   
    void * temp = calloc(in_world->len_typeflags, sizeof(*in_world->typeflags));
     memcpy(temp, in_world->typeflags, old_len * sizeof(*in_world->typeflags) );
     free(in_world->typeflags);
     in_world->typeflags = temp;
+    in_world->typeflags = tnecs_realloc(
+       in_world->typeflags, old_len, in_world->, sizeof(*in_world->typeflags));
     
     calloc(in_world->len_typeflags, sizeof(*in_world->components_bytype ));
     memcpy(temp, in_world->components_bytype, old_len * sizeof(*in_world->components_bytype) );
@@ -238,6 +246,24 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
     memcpy(temp, in_world->components_flagbytype, old_len * sizeof(*in_world->components_flagbytype) );
     free(in_world->components_flagbytype );
     in_world->components_flagbytype = temp;
+    
+    calloc(in_world->len_typeflags, sizeof(*in_world->num_components_bytype ));
+    memcpy(temp, in_world->num_components_bytype, old_len * sizeof(*in_world->num_components_bytype) );
+    free(in_world->num_components_bytype );
+    
+    calloc(in_world->len_typeflags, sizeof(*in_world->len_components_bytype ));
+    memcpy(temp, in_world->len_components_bytype, old_len * sizeof(*in_world->len_components_bytype) );
+    free(in_world->len_components_bytype );
+    
+    calloc(in_world->len_typeflags, sizeof(*in_world->num_entities_bytype ));
+    memcpy(temp, in_world->num_entities_bytype, old_len * sizeof(*in_world->num_entities_bytype));
+    free(in_world->num_entities_bytype );
+    in_world->num_entities_bytype = temp;
+    
+    calloc(in_world->len_typeflags, sizeof(*in_world->len_entities_bytype ));
+    memcpy(temp, in_world->len_entities_bytype, old_len * sizeof(*in_world->len_entities_bytype));
+    free(in_world->len_entities_bytype );
+    in_world->len_entities_bytype = temp;
     
     
     
