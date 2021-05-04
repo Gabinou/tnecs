@@ -350,7 +350,7 @@ struct tnecs_World {
     size_t * num_components_bytype;                 // [typeflag_id]
     size_t * num_entities_bytype;                   // [typeflag_id]
     size_t * num_systems_byphase;                   // [phase_id]
-    size_t * len_components_bytype;                 // [typeflag_id]
+    size_t * len_components_bytype;                 // [typeflag_id] 
     size_t * len_components_idbytype;               // [typeflag_id]
     size_t * len_components_flagbytype;             // [typeflag_id]
     size_t * len_entities_bytype;                   // [typeflag_id]

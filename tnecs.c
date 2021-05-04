@@ -210,6 +210,16 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
 }
 
+void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
+    size_t len_typeflags_old = in_world->len_typeflags;
+    in_world->len_typeflags *= TNECS_ARRAY_GROWTH_FACTOR;
+    
+   void * temp = calloc(in_world->len_typeflags, sizeof(*in_world->typeflags));
+    memcpy(temp, ptr, old_len * elem_bytesize);
+    free(ptr);
+    return (temp);
+}
+
 void tnecs_new_component_array(struct tnecs_World * in_world, size_t num_components, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_new_component_array\n");
     // assumes new typeflag was added on top of world->typeflags

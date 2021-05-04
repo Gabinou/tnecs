@@ -6,7 +6,6 @@
 #include <time.h>
 #include <string.h>
 
-
 #include "us_clock.h"
 #include "tnecs.h"
 
