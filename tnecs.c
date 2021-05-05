@@ -592,11 +592,16 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
     size_t current_component_id;
 
     for (size_t corder = 0; corder < new_component_num; corder++) {
-        
         current_array = &in_world->components_bytype[in_typeflag_id][corder];
         current_component_id = in_world->components_idbytype[in_typeflag_id][corder];
 
         TNECS_DEBUG_ASSERT(current_array != NULL);
+        if (++current_array->num_components >= current_array->len_components) {
+            size_t old_len = current_array->len_components;
+            size_t bytesize = in_world->component_bytesizes[current_component_id];
+            current_array->len_components *= TNECS_ARRAY_GROWTH_FACTOR;
+            tnecs_realloc(current_array->components, old_len, current_array->len_components,bytesize );
+        }
     }
 }
 
