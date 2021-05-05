@@ -275,7 +275,8 @@ void tnecs_test_system_registration() {
 }
 
 void tnecs_test_entity_creation() {
-    // dupprintf(globalf, "tnecs_test_entity_creation \n");
+    dupprintf(globalf, "tnecs_test_entity_creation \n");
+    dupprintf(globalf, "segfault here? \n");
     lok(test_world->next_entity_id == TNECS_ID_START);
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     lok(Silou == TNECS_ID_START);
@@ -284,7 +285,9 @@ void tnecs_test_entity_creation() {
     lok(Pirou == (TNECS_ID_START + 1));
     lok(test_world->next_entity_id == (TNECS_ID_START + 2));
     lok(Silou != Pirou);
+    dupprintf(globalf, "segfault here1? \n");
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    dupprintf(globalf, "segfault here2? \n");
     lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     lok(temp_position->x == 0);
@@ -292,11 +295,13 @@ void tnecs_test_entity_creation() {
     temp_position->x = 3;
     temp_position->y = 6;
 
+    dupprintf(globalf, "segfault here? \n");
     temp_position = NULL;
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     lok(temp_position->x == 3);
     lok(temp_position->y == 6);
 
+    dupprintf(globalf, "segfault here? \n");
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_sprite == NULL);
 
