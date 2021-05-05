@@ -10,8 +10,7 @@ struct tnecs_World * tnecs_init() {
 
     struct tnecs_World * tnecs_world = (struct tnecs_World *)calloc(sizeof(struct tnecs_World), 1);
     tnecs_world->entities = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->entities));
-    tnecs_world->len_typeflags = TNECS_INITIAL_ENTITY_CAP;
-    tnecs_world->num_typeflags = 1;
+    tnecs_world->len_entities = TNECS_INITIAL_ENTITY_CAP;
 
     tnecs_world->typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->typeflags));
     tnecs_world->len_typeflags = TNECS_INITIAL_ENTITY_CAP;
@@ -89,9 +88,10 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
         out = in_world->next_entity_id++;
     }
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
-    TNECS_ARRAY_GROWS(in_world, typeflags);
+    if (in_world->next_entity_id >= in_world->len_entities) {
+        tnecs_growArray_entity(in_world);
+    }
     in_world->entities[out] =  out;
-    tnecs_entity_typeflag_add(in_world, out, TNECS_NOCOMPONENT_TYPEFLAG);
     tnecs_entitiesbytype_add(in_world, out, TNECS_NOCOMPONENT_TYPEFLAG);
     return (out);
 }
@@ -104,23 +104,23 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
     void * out_component = NULL;
     printf("component_flag %d \n", component_flag);
     printf("entity_typeflag %d \n", entity_typeflag);
-    printf("& %d \n", ((component_flag & entity_typeflag) > 0) );
+    printf("& %d \n", ((component_flag & entity_typeflag) > 0));
     if ((component_flag & entity_typeflag) > 0) {
-    printf("HERE \n");
+        printf("HERE \n");
         size_t typeflag_id = tnecs_typeflagid(in_world, entity_typeflag);
-    printf("HERE1 \n");
+        printf("HERE1 \n");
         size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
-    printf("HERE2 \n");
+        printf("HERE2 \n");
         size_t entity_order = tnecs_entity_order_bytypeid(in_world, in_entity_id, typeflag_id);
-    printf("HERE3 \n");
+        printf("HERE3 \n");
         size_t bytesize = in_world->component_bytesizes[in_component_id];
-    printf("HERE4 \n");
+        printf("HERE4 \n");
         struct tnecs_Components_Array * comp_array = &in_world->components_bytype[typeflag_id][component_order];
-    printf("HERE5 \n");
+        printf("HERE5 \n");
         tnecs_byte_t * temp_component_bytesptr = (tnecs_byte_t *)(comp_array->components);
-    printf("HERE6 \n");
+        printf("HERE6 \n");
         out_component = temp_component_bytesptr + (bytesize * entity_order);
-    printf("HERE7 \n");
+        printf("HERE7 \n");
     }
     return (out_component);
 }
@@ -146,20 +146,17 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
     return (temp);
 }
 
-void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_entity_typeflag_add\n");
+// void tnecs_entity_typeflag_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {
+//     TNECS_DEBUG_PRINTF("tnecs_entity_typeflag_add\n");
 
-    if ((in_entity > in_world->len_entity_typeflags) || (++in_world->num_entity_typeflags > in_world->len_entity_typeflags)) {
-        size_t old_len = in_world->len_entity_typeflags;
-        size_t bytesize = sizeof(in_world->entity_typeflags[0]);
-        in_world->len_entity_typeflags = in_entity > (in_world->len_entity_typeflags * TNECS_ARRAY_GROWTH_FACTOR) ? (in_entity * TNECS_ARRAY_GROWTH_FACTOR) : (in_world->len_entity_typeflags * TNECS_ARRAY_GROWTH_FACTOR);
+//     if ((in_entity > in_world->len_entity_typeflags) || (++in_world->num_entity_typeflags > in_world->len_entity_typeflags)) {
+//         size_t old_len = in_world->len_entity_typeflags;
+//         size_t bytesize = sizeof(in_world->entity_typeflags[0]);
+//         in_world->len_entity_typeflags = in_entity > (in_world->len_entity_typeflags * TNECS_ARRAY_GROWTH_FACTOR) ? (in_entity * TNECS_ARRAY_GROWTH_FACTOR) : (in_world->len_entity_typeflags * TNECS_ARRAY_GROWTH_FACTOR);
 
-        in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entity_typeflags, bytesize);
-    }
-
-    in_world->entity_typeflags[in_entity] = in_typeflag;
-
-}
+//         in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entity_typeflags, bytesize);
+//     }
+// }
 
 size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_new) {
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_add\n");
@@ -517,14 +514,17 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
     uint64_t current_hash;
     for (size_t i = 0; i < argnum; i++) {
         current_hash = va_arg(ap, uint64_t);
-        TNECS_DEBUG_PRINTF("Current hash %llu\n", current_hash);
+        TNECS_DEBUG_PRINTF("  Current hash %llu\n", current_hash);
         typeflag += tnecs_component_hash2typeflag(in_world, current_hash);
 
     }
     va_end(ap);
+    TNECS_DEBUG_PRINTF("  typeflag to add %d\n", typeflag);
     tnecs_entity_t new_entity = tnecs_new_entity(in_world);
     size_t typeflag_id = tnecs_new_typeflag(in_world, argnum, typeflag);
-    tnecs_entity_typeflag_add(in_world, new_entity, typeflag);
+    in_world->entity_typeflags[in_entity] = in_typeflag;
+
+    // tnecs_entity_typeflag_add(in_world, new_entity, typeflag);
     tnecs_entitiesbytype_add(in_world, new_entity, typeflag);
     tnecs_component_add(in_world, typeflag);
     return (new_entity);
@@ -599,7 +599,7 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
             size_t old_len = current_array->len_components;
             size_t bytesize = in_world->component_bytesizes[current_component_id];
             current_array->len_components *= TNECS_ARRAY_GROWTH_FACTOR;
-            tnecs_realloc(current_array->components, old_len, current_array->len_components,bytesize );
+            tnecs_realloc(current_array->components, old_len, current_array->len_components, bytesize);
         }
     }
 }

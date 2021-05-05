@@ -297,14 +297,15 @@ void tnecs_test_entity_creation() {
     lok(temp_position->x == 3);
     lok(temp_position->y == 6);
 
+    temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
+    lok(temp_sprite == NULL);
+
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
     dupprintf(globalf, "segfault here? \n");
     lok(temp_unit->hp  == 0);
     dupprintf(globalf, "segfault or here? \n");
     lok(temp_unit->str == 0);
 
-    temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
-    lok(temp_sprite == NULL);
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
 }
