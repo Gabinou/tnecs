@@ -507,7 +507,8 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
     in_world->entity_typeflags[new_entity] = typeflag;
 
     tnecs_entitiesbytype_migrate(in_world, new_entity, TNECS_NOCOMPONENT_TYPEFLAG, typeflag);
-    tnecs_component_add(in_world, typeflag);
+    // tnecs_component_add(in_world, typeflag);
+    tnecs_entity_add_components(in_world, new_entity, argnum, typeflag, false);
     return (new_entity);
 }
 
