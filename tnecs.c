@@ -437,7 +437,7 @@ size_t tnecs_component_hash2id(struct tnecs_World * in_world, uint64_t in_hash) 
 size_t tnecs_component_name2id(struct tnecs_World * in_world, const unsigned char * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_component_name2id\n");
 
-    return (tnecs_component_hash2id(in_world, hash_djb2(in_name)));
+    return (tnecs_component_hash2id(in_world, tnecs_hash_djb2(in_name)));
 }
 
 tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t argnum, ...) {
@@ -448,7 +448,7 @@ tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t arg
     va_start(ap, argnum);
     uint64_t temp_hash;
     for (size_t i = 0; i < argnum; i++) {
-        temp_hash = hash_djb2(va_arg(ap, const unsigned char *));
+        temp_hash = tnecs_hash_djb2(va_arg(ap, const unsigned char *));
         for (size_t j = 0; j < in_world->num_components; j++) {
             if (in_world->component_hashes[j] == temp_hash) {
                 out += TNECS_COMPONENT_ID2TYPEFLAG(j);
@@ -721,12 +721,12 @@ tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, uint6
 
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_system_name2id\n");
-    return (tnecs_system_hash2id(in_world, hash_djb2(in_name)));
+    return (tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name)));
 }
 
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const unsigned char * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_system_name2typeflag\n");
-    size_t id = tnecs_system_hash2id(in_world, hash_djb2(in_name));
+    size_t id = tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name));
     return (in_world->system_typeflags[id]);
 }
 
@@ -808,7 +808,7 @@ size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t in_syste
 
 
 // STRING HASHING
-uint64_t hash_djb2(const unsigned char * str) {
+uint64_t tnecs_hash_djb2(const unsigned char * str) {
     /* djb2 hashing algorithm by Dan Bernstein.
     * Description: This algorithm (k=33) was first reported by dan bernstein many
     * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
@@ -816,7 +816,7 @@ uint64_t hash_djb2(const unsigned char * str) {
     * (why it works better than many other constants, prime or not) has never been adequately explained.
     * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
     * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    TNECS_DEBUG_PRINTF("hash_djb2\n");
+    TNECS_DEBUG_PRINTF("tnecs_hash_djb2\n");
 
     uint64_t hash = 5381;
     int32_t str_char;
@@ -826,7 +826,7 @@ uint64_t hash_djb2(const unsigned char * str) {
     return (hash);
 }
 
-uint64_t hash_sdbm(const unsigned char * str) {
+uint64_t tnecs_hash_sdbm(const unsigned char * str) {
     /* sdbm hashing algorithm by Dan Bernstein.
     * Description: This algorithm was created for sdbm (a public-domain
     * reimplementation of ndbm) database library. It was found to do
@@ -841,7 +841,7 @@ uint64_t hash_sdbm(const unsigned char * str) {
     * berkeley db (see sleepycat) and elsewhere.
     * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
     * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    TNECS_DEBUG_PRINTF("hash_djb2\n");
+    TNECS_DEBUG_PRINTF("tnecs_hash_djb2\n");
 
     uint64_t hash = 0;
     uint32_t str_char;

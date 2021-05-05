@@ -397,7 +397,7 @@ typedef struct tnecs_World tnecs_world_t;
 struct tnecs_World * tnecs_init();
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
-#define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(hash_djb2, __VA_ARGS__))
+#define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(tnecs_hash_djb2, __VA_ARGS__))
 
 // COMPONENT CALLOC AND CAST
 // no vararg calloc/cast -> enable assign (Component * temp = ...)
@@ -409,7 +409,7 @@ struct tnecs_World * tnecs_init();
 #ifndef log2 // because tcc SUCKS, does NOT DEFINE log2
 #define log2(x) (log(x)/log(2.0f))
 #endif
-#define TNECS_HASH(name) hash_djb2(#name)
+#define TNECS_HASH(name) tnecs_hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
 #define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) (name *)tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
@@ -452,9 +452,9 @@ struct tnecs_World * tnecs_init();
 #define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
 
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
-#define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)));\
+#define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, tnecs_hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)));\
 
-#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, hash_djb2(#name), sizeof(name))
+#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, tnecs_hash_djb2(#name), sizeof(name))
 // Error if component registered twice -> user responsibility
 
 void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, size_t in_bytesize);
@@ -529,14 +529,11 @@ void tnecs_growArray_system(struct tnecs_World * in_world);
 void tnecs_growArray_typeflag(struct tnecs_World * in_world);
 
 
-
 // ****************** STRING HASHING ************************
-// hash_djb2 slightly faster than hash_sdbm
-uint64_t hash_djb2(const unsigned char * str);
-uint64_t hash_sdbm(const unsigned char * str);
+// tnecs_hash_djb2 slightly faster than tnecs_hash_sdbm
+uint64_t tnecs_hash_djb2(const unsigned char * str);
+uint64_t tnecs_hash_sdbm(const unsigned char * str);
 
-// ***************** SET BIT COUNTING ***********************
-int8_t setBits_KnR_uint64_t(uint64_t in_flag);
 
 #ifdef __cplusplus
 }
