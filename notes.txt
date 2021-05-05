@@ -1,0 +1,27 @@
+
+
+Arrays are much faster than hash tables.
+
+INDEPENDENCE FROM stb_ds:
+	arrput
+	arrdel
+	arrsetcap
+	arrsetlen
+	how to implement the "storing extra data "before" the pointer." trick? NO IDEA DON'T CARE.
+		FORGET IT -> store lengths in WORLD. I NEVER USE ARRLEN ALREADY.
+
+TO DO:
+	add_component
+		-> need component token to add empty components I think.
+		
+	get_system_order function (DONE?)
+	deal with component_arrays (DONE?)
+		-> Initialization of empty components
+		-> Put component in components_bytype
+	set system phase upon system registration
+		+ overloaded macro?
+	set_system_phase function + associated macro
+		-> system_migrate function + associated macro
+	get_component_list inside system
+		+ entity_order list? Is it really necessary? Maybe just having the components is enough?
+	component_remove from entity
