@@ -298,6 +298,7 @@ void tnecs_test_entity_creation() {
     lok(temp_position->y == 6);
 
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
+    dupprintf(globalf, "segfault here? \n");
     lok(temp_unit->hp  == 0);
     lok(temp_unit->str == 0);
 
