@@ -585,7 +585,6 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
     TNECS_DEBUG_PRINTF("tnecs_component_add \n");
 
     // 1- Check if component array has enough room
-    // 2- if it does leave new element initted
     size_t in_typeflag_id = tnecs_type_id(in_world->typeflags, in_world->num_typeflags, in_typeflag);
     size_t new_component_num = in_world->num_components_bytype[in_typeflag_id];
     struct tnecs_Components_Array * current_array;
