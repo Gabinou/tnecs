@@ -102,25 +102,14 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
     tnecs_component_t component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
     tnecs_component_t entity_typeflag = TNECS_ENTITY_TYPEFLAG(in_world, in_entity_id);
     void * out_component = NULL;
-    printf("component_flag %d \n", component_flag);
-    printf("entity_typeflag %d \n", entity_typeflag);
-    printf("& %d \n", ((component_flag & entity_typeflag) > 0));
     if ((component_flag & entity_typeflag) > 0) {
-        printf("HERE \n");
         size_t typeflag_id = tnecs_typeflagid(in_world, entity_typeflag);
-        printf("HERE1 \n");
         size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
-        printf("HERE2 \n");
         size_t entity_order = tnecs_entity_order_bytypeid(in_world, in_entity_id, typeflag_id);
-        printf("HERE3 \n");
         size_t bytesize = in_world->component_bytesizes[in_component_id];
-        printf("HERE4 \n");
         struct tnecs_Components_Array * comp_array = &in_world->components_bytype[typeflag_id][component_order];
-        printf("HERE5 \n");
         tnecs_byte_t * temp_component_bytesptr = (tnecs_byte_t *)(comp_array->components);
-        printf("HERE6 \n");
         out_component = temp_component_bytesptr + (bytesize * entity_order);
-        printf("HERE7 \n");
     }
     return (out_component);
 }
