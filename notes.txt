@@ -1,0 +1,34 @@
+
+
+Arrays are much faster than hash tables.
+
+TO DO:
+	RENAME MACROS/FUNCTIONS/EVERYTHING
+
+	get_system_order function
+		
+	set system phase upon system registration (DONE?)
+		+ overloaded macro?
+	set_system_phase function + associated macro
+		-> system_migrate function + associated macro
+
+	get_component_list inside system
+		+ entity_order list? Is it really necessary? Maybe just having the components is enough?
+
+	component_remove from entity 
+
+	World Progress. HOW TO NAME IT?
+		-> Input time since last frame
+		-> measure frame time anyway -> unless input non->zero.
+
+	World destruction	
+
+DONE:
+	INDEPENDENCE FROM stb_ds!
+	
+	deal with component_arrays
+		-> Initialization of empty components
+		-> Put component in components_bytype
+
+	add_component
+		-> need component token to add empty components I think.

@@ -90,7 +90,7 @@ Then, the component's typeflag and id can be obtained using:
     Position_flag == (1 << (Position_id - 1));
     Position_flag == TNECS_COMPONENT_ID2TYPEFLAG(Position_id);
 ```
-When registered, the component names are stringified, then hashed with hash_djb2 and saved in ```tnecs_world->component_hashes```.
+When registered, the component names are stringified, then hashed with tnecs_hash_djb2 and saved in ```tnecs_world->component_hashes```.
 Any component's id is also its index in ```world->component_hashes```.
 
 You can get a component id with:
@@ -103,7 +103,7 @@ You can get a component id with:
 ```
 Or, if you wish:
 ```c
-    tnecs_component_hash2id(tnecs_world, hash_djb2("Position"));
+    tnecs_component_hash2id(tnecs_world, tnecs_hash_djb2("Position"));
 ```
 A maximal number of 63 components can be registered.
 
