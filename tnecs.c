@@ -1,10 +1,6 @@
 
 #include "tnecs.h"
 
-#define STB_DS_IMPLEMENTATION
-#include "stb_ds.h" // Should I eliminate this dependency? -> yes
-
-
 struct tnecs_World * tnecs_init() {
     TNECS_DEBUG_PRINTF("tnecs_init\n");
 
@@ -517,7 +513,7 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
         if (previous_flag == in_world->system_typeflags[i]) {
             for (size_t j = 0 ; j < in_world->num_entities_bytype[i]; j++) {
                 if (in_world->entities_bytype[i][j] == in_entity) {
-                    arrdel(in_world->entities_bytype[i], j);
+                    tnecs_arrdel(in_world->entities_bytype[i], j, in_world->len_entities_bytype[i], sizeof(**in_world->entities_bytype));
                     break;
                 }
             }

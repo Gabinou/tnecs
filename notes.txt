@@ -2,13 +2,7 @@
 
 Arrays are much faster than hash tables.
 
-INDEPENDENCE FROM stb_ds:
-	arrput
-	arrdel
-	arrsetcap
-	arrsetlen
-	how to implement the "storing extra data "before" the pointer." trick? NO IDEA DON'T CARE.
-		FORGET IT -> store lengths in WORLD. I NEVER USE ARRLEN ALREADY.
+INDEPENDENCE FROM stb_ds (DONE):
 
 TO DO:
 	add_component
