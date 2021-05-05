@@ -326,7 +326,6 @@ struct tnecs_System_Input {
     void ** components_lists;
 };
 
-
 struct tnecs_World {
     tnecs_entity_t * entities; // (entities[entity_id] == entity_id) unless deleted
     tnecs_component_t * typeflags;                  // [typeflag_id]

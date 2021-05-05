@@ -137,20 +137,6 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
 }
 
 
-void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_component_t entity_typeflag, tnecs_component_t in_component_id) {
-    TNECS_DEBUG_PRINTF("tnecs_component_array_realloc\n");
-
-    size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
-    struct tnecs_Components_Array * current_array = &in_world->components_bytype[entity_typeflag][component_order];
-    size_t old_len = current_array->len_components;
-    if (old_len < TNECS_INITIAL_ENTITY_CAP) {
-        current_array->len_components = TNECS_COMPONENT_ALLOCBLOCK * TNECS_ARRAY_GROWTH_FACTOR;
-    } else {
-        current_array->len_components *= TNECS_ARRAY_GROWTH_FACTOR;
-    }
-    current_array->components = tnecs_realloc(current_array->components, old_len, current_array->len_components, in_world->component_bytesizes[in_component_id]);
-}
-
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_realloc\n");
 
@@ -611,10 +597,6 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
         current_component_id = in_world->components_idbytype[in_typeflag_id][corder];
 
         TNECS_DEBUG_ASSERT(current_array != NULL);
-
-        if (++current_array->num_components >= current_array->len_components) {
-            tnecs_component_array_realloc(in_world, in_typeflag, current_component_id);
-        }
     }
 }
 

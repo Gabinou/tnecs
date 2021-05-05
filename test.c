@@ -300,6 +300,7 @@ void tnecs_test_entity_creation() {
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
     dupprintf(globalf, "segfault here? \n");
     lok(temp_unit->hp  == 0);
+    dupprintf(globalf, "segfault or here? \n");
     lok(temp_unit->str == 0);
 
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
