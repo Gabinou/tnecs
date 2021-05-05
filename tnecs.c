@@ -522,9 +522,8 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
     TNECS_DEBUG_PRINTF("  typeflag to add %d\n", typeflag);
     tnecs_entity_t new_entity = tnecs_new_entity(in_world);
     size_t typeflag_id = tnecs_new_typeflag(in_world, argnum, typeflag);
-    in_world->entity_typeflags[in_entity] = in_typeflag;
+    in_world->entity_typeflags[new_entity] = typeflag;
 
-    // tnecs_entity_typeflag_add(in_world, new_entity, typeflag);
     tnecs_entitiesbytype_add(in_world, new_entity, typeflag);
     tnecs_component_add(in_world, typeflag);
     return (new_entity);

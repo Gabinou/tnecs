@@ -519,6 +519,14 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
             tnecs_realloc(in_world->arrname, old_len, in_world->len_##arrname, sizeof(*in_world->arrname)); \
         }
 
+// ****************** ARRAY GROWTH ************************
+void tnecs_growArray_phase(struct tnecs_World * in_world);
+void tnecs_growArray_entity(struct tnecs_World * in_world);
+void tnecs_growArray_system(struct tnecs_World * in_world);
+void tnecs_growArray_typeflag(struct tnecs_World * in_world);
+
+
+
 // ****************** STRING HASHING ************************
 // hash_djb2 slightly faster than hash_sdbm
 uint64_t hash_djb2(const unsigned char * str);
