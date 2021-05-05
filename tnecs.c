@@ -136,6 +136,8 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
 }
 
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize) {
+    TNECS_DEBUG_PRINTF("tnecs_arrdel\n");
+
     return(memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1)));
 }
 
@@ -859,16 +861,4 @@ int8_t setBits_KnR_uint64_t(uint64_t in_flags) {
         count++;
     }
     return (count);
-}
-
-int8_t setBits_first(uint64_t in_flag) {
-    // untested. Broken.
-    int8_t index = 0;
-    // while (((in_flag >> 1) != 0) && (index < 65)) {
-    //     index++
-    // }
-    // if (index == 65) {
-    //     index = -1;
-    // }
-    // return (index);
 }
