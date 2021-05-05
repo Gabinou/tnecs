@@ -439,8 +439,6 @@ struct tnecs_World * tnecs_init();
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 
-
-
 // TNECS_ADD_COMPONENT is overloaded
 //      3 inputs required: (world, name, entity_id)
 //      4th input if newtype is false, to skip checks for execution speed
@@ -509,8 +507,13 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash);
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char * in_name);
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const unsigned char * in_name);
 
+// ****************** ARRAYs  ************************
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize);
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize);
+void tnecs_growArray_phase(struct tnecs_World * in_world);
+void tnecs_growArray_entity(struct tnecs_World * in_world);
+void tnecs_growArray_system(struct tnecs_World * in_world);
+void tnecs_growArray_typeflag(struct tnecs_World * in_world);
 
 #define TNECS_REALLOC(ptr, old_len, new_len, bytesize) tnecs_realloc(ptr, old_len, new_len, bytesize)
 #define TNECS_DEL(arr, elem, len, bytesize) tnecs_arrdel(arr, elem, len, bytesize)
@@ -521,13 +524,6 @@ void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize);
             in_world->len_##arrname *= TNECS_ARRAY_GROWTH_FACTOR; \
             tnecs_realloc(in_world->arrname, old_len, in_world->len_##arrname, sizeof(*in_world->arrname)); \
         }
-
-// ****************** ARRAY GROWTH ************************
-void tnecs_growArray_phase(struct tnecs_World * in_world);
-void tnecs_growArray_entity(struct tnecs_World * in_world);
-void tnecs_growArray_system(struct tnecs_World * in_world);
-void tnecs_growArray_typeflag(struct tnecs_World * in_world);
-
 
 // ****************** STRING HASHING ************************
 // tnecs_hash_djb2 slightly faster than tnecs_hash_sdbm

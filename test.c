@@ -230,7 +230,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == hash_djb2("Position"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == tnecs_hash_djb2("Position"));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
     lok(test_world->typeflags[1] == temp_comp_flag);
@@ -248,7 +248,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == hash_djb2("Unit"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
     lok(test_world->typeflags[2] == (TNECS_ID_START << 1));
@@ -256,7 +256,7 @@ void tnecs_test_component_registration() {
     lok(test_world->num_components == 3);
     lok(TNECS_COMPONENT_TYPEFLAG(test_world, Unit) == (TNECS_ID_START << 1));
     lok(TNECS_COMPONENT_TYPEFLAG(test_world, Unit) == test_world->typeflags[temp_typeflag_id]);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == hash_djb2("Unit"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
 
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     temp_comp_flag = 4;
@@ -268,7 +268,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
     lok(test_world->typeflags[2] == (TNECS_ID_START << 1));
@@ -277,7 +277,7 @@ void tnecs_test_component_registration() {
     lok(test_world->num_components == 4);
     lok(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == (TNECS_ID_START << 2));
     lok(TNECS_COMPONENT_TYPEFLAG(test_world, Sprite) == test_world->typeflags[temp_typeflag_id]);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == hash_djb2("Sprite"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
 
 }
 
@@ -290,8 +290,8 @@ void tnecs_test_system_registration() {
     size_t temp_typeflag = 1 + 2;
 
     lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
-    lok(TNECS_SYSTEM_HASH(SystemMove) == hash_djb2("SystemMove"));
-    lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == hash_djb2("SystemMove"));
+    lok(TNECS_SYSTEM_HASH(SystemMove) == tnecs_hash_djb2("SystemMove"));
+    lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == tnecs_hash_djb2("SystemMove"));
 
 
     lok(test_world->components_idbytype[temp_typeflag_id][0] == TNECS_COMPONENT_NAME2ID(test_world, Position));
@@ -416,15 +416,6 @@ void tnecs_test_hashing() {
 
 }
 
-void tnecs_test_setbit() {
-    int8_t got_bitcount = 0;
-    int8_t expected_bitcount = 4 * 8;
-    uint64_t temp_flag = 0xF0F0F0F0F0F0F0F0;
-
-    got_bitcount = setBits_KnR_uint64_t(temp_flag);
-    lok(expected_bitcount == got_bitcount);
-}
-
 void tnecs_benchmarks() {
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
     double t_0;
@@ -466,20 +457,20 @@ void tnecs_benchmarks() {
     uint64_t res_hash;
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        res_hash = hash_djb2("Position");
-        res_hash = hash_djb2("Unit");
+        res_hash = tnecs_hash_djb2("Position");
+        res_hash = tnecs_hash_djb2("Unit");
     }
     t_1 = get_us();
-    dupprintf(globalf, "hash_djb2: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "tnecs_hash_djb2: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        res_hash = hash_sdbm("Unit");
-        res_hash = hash_sdbm("Position");
+        res_hash = tnecs_hash_sdbm("Unit");
+        res_hash = tnecs_hash_sdbm("Position");
     }
     t_1 = get_us();
-    dupprintf(globalf, "hash_sdbm: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "tnecs_hash_sdbm: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
 
@@ -542,7 +533,6 @@ int main() {
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
     lrun("hashing", tnecs_test_hashing);
-    lrun("setbit", tnecs_test_setbit);
     lresults();
 
     // tnecs_benchmarks();
