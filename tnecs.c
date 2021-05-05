@@ -160,14 +160,9 @@ void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_e
 
     size_t typeflag_id_old = tnecs_typeflagid(in_world, typeflag_old);
     size_t entity_order_old = tnecs_entity_order_bytypeid(in_world, in_entity, typeflag_id_old);
-    TNECS_DEBUG_PRINTF("entity_order_old %d\n", entity_order_old);
-    TNECS_DEBUG_PRINTF("typeflag_id_old %d\n", typeflag_id_old);
-    TNECS_DEBUG_PRINTF("typeflag_old %d\n", typeflag_old);
-    TNECS_DEBUG_PRINTF("in_entity %d\n", in_entity);
-    TNECS_DEBUG_PRINTF("in_world->entities_bytype[typeflag_id_old][entity_order_old] %d\n", in_world->entities_bytype[typeflag_id_old][entity_order_old]);
-
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_id_old][entity_order_old] == in_entity);
-    // arrdel(in_world->entities_bytype[typeflag_id_old], entity_order_old);
+
+    memcpy(&in_world->entities_bytype[typeflag_id_old][entity_order_old], &in_world->entities_bytype[typeflag_id_old][entity_order_old + 1], sizeof(**in_world->entities_bytype) * (in_world->num_entities_bytype[typeflag_id_old] - entity_order_old));
     in_world->num_entities_bytype[typeflag_id_old]--;
 }
 
