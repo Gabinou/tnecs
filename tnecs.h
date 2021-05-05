@@ -510,8 +510,11 @@ size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char *
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const unsigned char * in_name);
 
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize);
+void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize);
 
 #define TNECS_REALLOC(ptr, old_len, new_len, bytesize) tnecs_realloc(ptr, old_len, new_len, bytesize)
+#define TNECS_DEL(arr, elem, len, bytesize) tnecs_arrdel(arr, elem, len, bytesize)
+#define TNECS_DELMACRO(arr, elem, len, bytesize) memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1))
 
 #define TNECS_ARRAY_GROWS(world, arrname) if ((world->num_##arrname + 1) >= world->len_##arrname) { \
             size_t old_len = in_world->len_##arrname; \

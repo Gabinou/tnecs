@@ -186,6 +186,32 @@ void tnecs_test_utilities() {
     lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
     lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
 
+    size_t arrtest1[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+    size_t arrtest2[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+    tnecs_arrdel(arrtest2, 1, 10, sizeof(*arrtest2));
+    tnecs_arrdel(arrtest1, 2, 10, sizeof(*arrtest2));
+    lok(arrtest2[0] == 9);
+    lok(arrtest2[1] == 7);
+    lok(arrtest2[2] == 6);
+    lok(arrtest2[3] == 5);
+    lok(arrtest2[4] == 4);
+    lok(arrtest2[5] == 3);
+    lok(arrtest2[6] == 2);
+    lok(arrtest2[7] == 1);
+    lok(arrtest2[8] == 0);
+    lok(arrtest2[9] == 0);
+    lok(arrtest1[0] == 0);
+    lok(arrtest1[1] == 1);
+    lok(arrtest1[2] == 3);
+    lok(arrtest1[3] == 4);
+    lok(arrtest1[4] == 5);
+    lok(arrtest1[5] == 6);
+    lok(arrtest1[6] == 7);
+    lok(arrtest1[7] == 8);
+    lok(arrtest1[8] == 9);
+    lok(arrtest1[9] == 9);
+
+
 }
 
 
@@ -509,9 +535,9 @@ void tnecs_benchmarks() {
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
+    lrun("utilities", tnecs_test_utilities);
     lrun("world_init", tnecs_test_world_init);
     lrun("c_regis", tnecs_test_component_registration);
-    lrun("utilities", tnecs_test_utilities);
     lrun("s_regis", tnecs_test_system_registration);
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
