@@ -5,8 +5,11 @@ struct tnecs_World * tnecs_init() {
     TNECS_DEBUG_PRINTF("tnecs_init\n");
 
     struct tnecs_World * tnecs_world = (struct tnecs_World *)calloc(sizeof(struct tnecs_World), 1);
+
     tnecs_world->entities = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->entities));
     tnecs_world->len_entities = TNECS_INITIAL_ENTITY_CAP;
+    
+    tnecs_world->entity_orders = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->entity_orders));
 
     tnecs_world->typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(*tnecs_world->typeflags));
     tnecs_world->len_typeflags = TNECS_INITIAL_ENTITY_CAP;
@@ -206,7 +209,7 @@ void tnecs_growArray_phase(struct tnecs_World * in_world) {
 }
 
 void tnecs_growArray_system(struct tnecs_World * in_world) {
-    TNECS_DEBUG_PRINTF("tnecs_growArray_entity\n");
+    TNECS_DEBUG_PRINTF("tnecs_growArray_system\n");
 
     size_t old_len = in_world->len_systems;
     in_world->len_systems *= TNECS_ARRAY_GROWTH_FACTOR;
@@ -259,10 +262,16 @@ void tnecs_growArray_entity(struct tnecs_World * in_world) {
     // temp = calloc(in_world->len_entities, sizeof(*in_world->entity_typeflags));
     // memcpy(temp, in_world->entity_typeflags, old_len * sizeof(*in_world->entity_typeflags));
     // free(in_world->entity_typeflags);
-    // in_world ->entity_typeflags = temp;
+    // in_world->entity_typeflags = temp;
+
+    // temp = calloc(in_world->entity_orders, sizeof(*in_world->entity_orders));
+    // memcpy(temp, in_world->entity_orders, old_len * sizeof(*in_world->entity_orders));
+    // free(in_world->entity_orders);
+    // in_world->entity_orders = temp;
 
     in_world->entities = tnecs_realloc(in_world->entities, old_len, in_world->len_entities, sizeof(*in_world->entities));
     in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entities, sizeof(*in_world->entity_typeflags));
+    in_world->entity_orders = tnecs_realloc(in_world->entity_orders, old_len, in_world->len_entities, sizeof(*in_world->entity_orders));
 }
 
 void tnecs_growArray_typeflag(struct tnecs_World * in_world) {

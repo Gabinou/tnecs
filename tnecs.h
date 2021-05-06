@@ -325,7 +325,8 @@ struct tnecs_World {
     //   -> entities are unique in components_bytype
     //   -> easier to build inclusive entity lists.
     struct tnecs_Components_Array ** components_bytype; // [typeflag_id][component_order_bytype]
-    tnecs_entity_t ** entities_bytype;              // [typeflag_id][entity_order_bytype]
+    size_t entity_orders;                            // [entity_id] 
+    tnecs_entity_t ** entities_bytype;               // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;        // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;      // [typeflag_id][component_order_bytype]
     size_t * num_components_bytype;                 // [typeflag_id]
