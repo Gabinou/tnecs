@@ -164,7 +164,7 @@ void flecs_Move(ecs_iter_t * it) {
 /*****************************TEST GLOBALS*****************************/
 FILE * globalf;
 /*****************************TEST CONSTANTS***************************/
-#define ITERATIONS 100000
+#define ITERATIONS 10000
 #define ITERATIONS_SMALL 1000
 #define ARRAY_LEN 100
 

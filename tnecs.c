@@ -171,7 +171,6 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
 
     tnecs_component_t typeflag_old = in_world->entity_typeflags[in_entity];
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
-    size_t entity_order_old = tnecs_entity_order_bytype(in_world, in_entity, typeflag_old);
 
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
@@ -179,9 +178,9 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     }
     // 2- Migrate entity in entities_bytype old_typeflag->typeflag_new, old_order->new_order
     size_t entity_order_new = tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
-    tnecs_component_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
+    // tnecs_component_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
     // 3- Migrate components_bytype old_typeflag->typeflag_new
-    tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
+    // tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
 }
 
 void tnecs_growArray_phase(struct tnecs_World * in_world) {
