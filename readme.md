@@ -12,7 +12,7 @@ Children classes inherit methods and data structure from parents.
 Any number of components can be attached to an entity.
 Entities are acted upon by systems. 
 
-In tnecs, an entity is an uint64_t index. 
+In tnecs, an entity is an ```uint64_t``` index. 
 A component is user-defined struct. 
 A system is a user-defined function.
 
@@ -29,19 +29,22 @@ Videogame Example:
 ## Installation
 Add tnecs.c and tnecs.h to your source code.
 
+## Motivation
+Make the _simplest possible_ ECS library, only with the _minimum necessary features_.
+C99, compile with ```tcc```.
+
 ## Features
-- Compileable using tcc, gcc, clang (msvc untested)
-- Runs on Windows, Linux (Manjaro), Android (termux)
-- Simple C99 API
-- Small Codebase, <2000 lines for now.
-- Fast, see simple benchmarks in test.c
-- Free and Open Source
+- Compatible: compiles with ```tcc```, ```gcc```, ```clang```
+- Cross-platform: Windows, Linux, Android (termux)
+- Small: <2000 lines for now.
+- Fast: see simple benchmarks in test.c
+- Simple: C99 API
+- FOSS: Free and Open Source
 
 ## To do
-- Make tnecs independent from ```stb_ds.h```
-- World updating function
+- System input/iterator.
+- World progress function
 - Exclusive/Inclusive systems
-    * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
 - Post V1.0 pruning
 
 ## Alternative ECS/Gamedev libraries for C/C++
@@ -64,6 +67,7 @@ The world contains everything tnecs needs.
     tnecs_entity_t Pirou = TNECS_NEW_ENTITY(world);
 ```
 ```tnecs_entity_t``` is a ```uint64_t``` index. 
+
 Entity 0 is always reserved for NULL.
 
 Entities can be created with any number of components directly with this variadic macro: 
@@ -80,17 +84,28 @@ A component is a user-defined struct:
 
     TNECS_REGISTER_COMPONENT(test_world, Position);
 ```
-Then, the component's typeflag and id can be obtained using:
+Then, the component's type and id can be obtained using:
 ```c
-    tnecs_component_t Position_flag = TNECS_COMPONENT_TYPEFLAG(test_world, Position); 
+    tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(test_world, Position); 
     size_t Position_id = TNECS_COMPONENT_ID(test_world, Position);
 ```
-```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag has a one bit set, at component_id location. So the following is always true:
+```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag only has one bit set, at component_id location. This implies that a maximal number of 63 components can be registered. 
+
+NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. for a component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. for system typeflags. 
+
+The relation between component ids and flags is:
 ```c
     Position_flag == (1 << (Position_id - 1));
-    Position_flag == TNECS_COMPONENT_ID2TYPEFLAG(Position_id);
+    Position_id == ((tnecs_component_t)(log2(Position_id) + 1.1f));  // casting to int truncates to 0
 ```
-When registered, the component names are stringified, then hashed with tnecs_hash_djb2 and saved in ```tnecs_world->component_hashes```.
+which are accessible through the macros:
+```c
+    Position_id == TNECS_COMPONENT_ID2TYPE(Position_flag);
+    Position_flag == TNECS_COMPONENT_TYPE2ID(Position_id);
+```
+
+When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and saved in ```tnecs_world->component_hashes```.
+```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
 Any component's id is also its index in ```world->component_hashes```.
 
 You can get a component id with:
@@ -103,9 +118,9 @@ You can get a component id with:
 ```
 Or, if you wish:
 ```c
-    tnecs_component_hash2id(tnecs_world, tnecs_hash_djb2("Position"));
+    tnecs_component_hash2id(tnecs_world, TNECS_HASH("Position"));
 ```
-A maximal number of 63 components can be registered.
+
 
 ## Attach Components to Entities
 ```c 
@@ -113,7 +128,10 @@ A maximal number of 63 components can be registered.
 ```
 ```c 
     struct Position * pos_Silou = TNECS_GET_COMPONENT(test_world, Silou, Position);
+    pos_Silou->x += 1;
+    pos_Silou->y += 2;
 ```
+
 ## Register System to the world
 A system is a user-defined function, with ```struct tnecs_System_Input``` as input:
 ```c
@@ -139,5 +157,8 @@ System_id 0 is always reserved for NULL.
 ```c
 ```
 
+## Special Thanks
+Sanders Mertens for [his blog](https://ajmmertens.medium.com/) on ECS design
+
 ## Credits
-Gabriel Taillon
+Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
