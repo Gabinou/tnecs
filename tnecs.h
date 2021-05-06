@@ -329,6 +329,9 @@ struct tnecs_World {
     tnecs_entity_t ** entities_bytype;               // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;        // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;      // [typeflag_id][component_order_bytype]
+
+    // len is allocated size
+    // num is active elements in array
     size_t * num_components_bytype;                 // [typeflag_id]
     size_t * num_entities_bytype;                   // [typeflag_id]
     size_t * num_systems_byphase;                   // [phase_id]
@@ -336,42 +339,25 @@ struct tnecs_World {
     size_t * len_components_idbytype;               // [typeflag_id]
     size_t * len_components_flagbytype;             // [typeflag_id]
     size_t * len_entities_bytype;                   // [typeflag_id]
-    size_t * len_systems_byphase;                   // [phase_id]
 
-    // num_XXXX always include NULL
     size_t num_components;
     size_t num_systems;
     size_t num_phases;
     size_t len_phases;
-    size_t num_system_hashes;
     size_t num_entities;
     size_t num_typeflags;
-    size_t num_entity_typeflags;
-    size_t num_system_typeflags;
-    size_t num_system_exclusive;
     size_t * num_components_idbytype;               // [typeflag_id]
     size_t * num_components_flagbytype;             // [typeflag_id]
 
-    // len is allocated size
     size_t len_entities;
     size_t len_typeflags;
-    size_t len_entity_typeflags;
     size_t len_systems;
-    size_t len_system_hashes;
-    size_t len_system_exclusive;
-    size_t len_system_typeflags;
     size_t * len_entitiesbytype;
     size_t * len_systembyphase;
 
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
-
-    size_t temp_size;
-    tnecs_component_t temp_typeflag;
-    size_t temp_id;
-    uint64_t temp_hash;
-    char temp_str[TNECS_STR_BUFFER];
 };
 typedef struct tnecs_World tnecs_world_t;
 
