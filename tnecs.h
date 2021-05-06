@@ -59,7 +59,7 @@ extern "C" {
 #define TNECS_DEBUG_ASSERT(...) (void)0
 #endif
 
-// #define TNECS_DEBUG_P // printf are ignored if undefined
+#define TNECS_DEBUG_P // printf are ignored if undefined
 #ifdef TNECS_DEBUG_P
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
@@ -82,7 +82,7 @@ typedef unsigned char tnecs_byte_t;
 #define TNECS_COMPONENT_CAP 64
 #define TNECS_STR_BUFFER 128
 #define TNECS_OPEN_IDS_BUFFER 128
-#define TNECS_INITIAL_ENTITY_CAP 100
+#define TNECS_INITIAL_ENTITY_CAP 128
 #define TNECS_INITIAL_COMPONENT_CAP 8
 #define TNECS_INITIAL_SYSTEM_CAP 16
 #define TNECS_ARRAY_INCREMENT 128
