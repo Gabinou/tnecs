@@ -29,8 +29,12 @@ Videogame Example:
 ## Installation
 Add tnecs.c and tnecs.h to your source code.
 
+## Motivation
+Make the _simplest possible_ ECS library, with _minimum necessary features_.
+Be compileable with ```tcc```.
+
 ## Features
-- Compileable using tcc, gcc, clang (msvc untested)
+- Compileable using ```tcc```, ```gcc```, ```clang``` (```msvc``` untested)
 - Runs on Windows, Linux (Manjaro), Android (termux)
 - Simple C99 API
 - Small Codebase, <2000 lines for now.
@@ -38,7 +42,6 @@ Add tnecs.c and tnecs.h to your source code.
 - Free and Open Source
 
 ## To do
-- Make tnecs independent from ```stb_ds.h```
 - World updating function
 - Exclusive/Inclusive systems
     * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
