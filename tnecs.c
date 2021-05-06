@@ -127,8 +127,8 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
 
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_realloc\n");
-
-    void * temp = calloc(new_len, elem_bytesize);
+    // void * temp = (void *)calloc(new_len, elem_bytesize);
+    void * temp = malloc(new_len * elem_bytesize);
     memcpy(temp, ptr, old_len * elem_bytesize);
     free(ptr);
     return (temp);
@@ -151,6 +151,7 @@ size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_add\n");
 
     size_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
+    TNECS_ARRAY_GROWS(in_world, entities_bytype[typeflag_id_new]);
     in_world->entities_bytype[typeflag_id_new][in_world->num_entities_bytype[typeflag_id_new]] = in_entity;
     in_world->entity_orders[in_entity] = in_world->num_entities_bytype[typeflag_id_new];
     return (++in_world->num_entities_bytype[typeflag_id_new]);
@@ -269,10 +270,10 @@ void tnecs_growArray_entity(struct tnecs_World * in_world) {
     // memcpy(temp, in_world->entity_orders, old_len * sizeof(*in_world->entity_orders));
     // free(in_world->entity_orders);
     // in_world->entity_orders = temp;
-    
-    in_world->entities = tnecs_realloc(in_world->entities, old_len, in_world->len_entities, sizeof(*in_world->entities));
+
     in_world->entity_typeflags = tnecs_realloc(in_world->entity_typeflags, old_len, in_world->len_entities, sizeof(*in_world->entity_typeflags));
     in_world->entity_orders = tnecs_realloc(in_world->entity_orders, old_len, in_world->len_entities, sizeof(*in_world->entity_orders));
+    in_world->entities = tnecs_realloc(in_world->entities, old_len, in_world->len_entities, sizeof(*in_world->entities));
 }
 
 void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
