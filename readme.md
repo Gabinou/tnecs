@@ -30,7 +30,7 @@ Videogame Example:
 Add tnecs.c and tnecs.h to your source code.
 
 ## Motivation
-Make the _simplest possible_ ECS library, with _minimum necessary features_.
+Make the _simplest possible_ ECS library, only with the _minimum necessary features_.
 Be compileable with ```tcc```.
 
 ## Features
