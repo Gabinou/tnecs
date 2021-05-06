@@ -16,26 +16,16 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->num_typeflags = 1;
 
     tnecs_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(tnecs_component_t));
-    tnecs_world->len_entity_typeflags = TNECS_INITIAL_ENTITY_CAP;
-    tnecs_world->num_entity_typeflags = 1;
 
     tnecs_world->system_typeflags = calloc(TNECS_INITIAL_ENTITY_CAP, sizeof(tnecs_component_t));
-    tnecs_world->len_system_typeflags = TNECS_INITIAL_ENTITY_CAP;
-    tnecs_world->num_system_typeflags = 1;
 
     tnecs_world->system_exclusive = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
-    tnecs_world->len_system_exclusive = TNECS_INITIAL_SYSTEM_CAP;
-    tnecs_world->num_system_exclusive = 1;
 
     tnecs_world->component_hashes[TNECS_NULL] = TNECS_NULL;
 
     tnecs_world->system_hashes = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
-    tnecs_world->len_system_hashes = TNECS_INITIAL_SYSTEM_CAP;
-    tnecs_world->num_system_hashes = 1;
 
     tnecs_world->system_phase = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(*tnecs_world->system_phase));
-    tnecs_world->len_system_hashes = TNECS_INITIAL_SYSTEM_CAP;
-    tnecs_world->num_system_hashes = 0;
 
     tnecs_world->entities_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->len_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
