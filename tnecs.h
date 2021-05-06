@@ -290,25 +290,6 @@ enum TNECS_RUN_PHASES {
 #define TNECS_VARMACRO_FOREACH_NEWLINE_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_NEWLINE(macro, ...) TNECS_VARMACRO_FOREACH_NEWLINE_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
-// ************************ DYNAMIC ARRAY MACROS *****************************
-#define new_arrdel(world, arr, id) for (size_t i = id; i < (world->num_##arr - 1); i++) { \
-      world->arr[i] = world->arr[i + 1];\
-}\
-world->arr[world->num_##arr - 1] = TNECS_NULL
-
-
-#define new_arrsetlen(world, arr, newlen) if (world->arr_##len < newlen) {\
-    world->len_##arr = newlen;\
-    world->arr = realloc(world->arr, sizeof(*world->arr)* world->len_##arr);\
-}
-
-
-#define new_arrput(world, arr, elem) if (world->num_##arr>=world->len_##arr) {\
-    world->len_##arr += TNECS_ARRAY_INCREMENT;\
-    world->arr = realloc(world->arr, sizeof(*world->arr)* world->len_##arr);\
-}\
-world->arr[world->num_##arr++] = elem
-
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_Components_Array {
     tnecs_component_t type; // single bit on
