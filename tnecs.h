@@ -47,6 +47,9 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <math.h>
+#ifndef log2 // because tcc SUCKS, does NOT DEFINE log2
+#define log2(x) (log(x)/log(2.0f))
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -368,16 +371,7 @@ struct tnecs_World * tnecs_init();
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(tnecs_hash_djb2, __VA_ARGS__))
 
-// COMPONENT CALLOC AND CAST
-// no vararg calloc/cast -> enable assign (Component * temp = ...)
-#define TNECS_COMPONENT_CALLOC(name) TNECS_COMPONENT_CALLOCN(1, name)
-#define TNECS_COMPONENT_CALLOCN(N, name) calloc(N, sizeof(name))
-#define TNECS_COMPONENT_CAST(compvec, name) (name *)compvec
 
-// UTILITY MACROS
-#ifndef log2 // because tcc SUCKS, does NOT DEFINE log2
-#define log2(x) (log(x)/log(2.0f))
-#endif
 #define TNECS_HASH(name) tnecs_hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 #define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
