@@ -141,6 +141,13 @@ size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_add\n");
 
     size_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
+    // if ((in_world->num_entities_bytype[typeflag_id_new] + 2) >= in_world->len_entities_bytype[typeflag_id_new]) {
+    //     size_t old_len = in_world->len_entities_bytype[typeflag_id_new];
+    //     in_world->len_entities_bytype[typeflag_id_new] *= TNECS_ARRAY_GROWTH_FACTOR;
+    //     printf("len: %d\n", in_world->len_entities_bytype[typeflag_id_new]);
+    //     in_world->entities_bytype[typeflag_id_new] = tnecs_realloc(in_world->entities_bytype[typeflag_id_new], old_len, in_world->len_entities_bytype[typeflag_id_new], sizeof(**in_world->entities_bytype));
+    // }
+
     TNECS_ARRAY_GROWS(in_world, entities_bytype[typeflag_id_new]);
     in_world->entities_bytype[typeflag_id_new][in_world->num_entities_bytype[typeflag_id_new]] = in_entity;
     return (++in_world->num_entities_bytype[typeflag_id_new]);

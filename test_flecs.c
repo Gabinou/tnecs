@@ -204,7 +204,7 @@ void flecs_benchmarks() {
     ECS_COMPONENT(world, Unit);
     t_1 = get_us();
     dupprintf(globalf, "flecs: Component registration \n");
-    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
 
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
@@ -326,21 +326,23 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
 
     t_0 = get_us();
-    TNECS_REGISTER_COMPONENT(bench_world, Position2);
-    TNECS_REGISTER_COMPONENT(bench_world, Unit2);
-    t_1 = get_us();
-    dupprintf(globalf, "tnecs: Component Registration \n");
-    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
-
-    t_0 = get_us();
     tnecs_entity_t tnecs_temp_ent;
     for (size_t i = 0; i < ITERATIONS; i++) {
+        // printf("i %d \n", i);
         tnecs_temp_ent = tnecs_new_entity(bench_world);
         tnecs_entities[i] = tnecs_temp_ent;
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
+
+    t_0 = get_us();
+    TNECS_REGISTER_COMPONENT(bench_world, Position2);
+    TNECS_REGISTER_COMPONENT(bench_world, Unit2);
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: Component Registration \n");
+    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
+
 
     t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
