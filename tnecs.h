@@ -335,13 +335,16 @@ struct tnecs_World {
 
     // len is allocated size
     // num is active elements in array
-    size_t * num_components_bytype;                 // [typeflag_id]
-    size_t * num_entities_bytype;                   // [typeflag_id]
-    size_t * num_systems_byphase;                   // [phase_id]
     size_t * len_components_bytype;                 // [typeflag_id]
-    size_t * len_components_idbytype;               // [typeflag_id]
-    size_t * len_components_flagbytype;             // [typeflag_id]
+    size_t * num_components_bytype;                 // [typeflag_id]
     size_t * len_entities_bytype;                   // [typeflag_id]
+    size_t * num_entities_bytype;                   // [typeflag_id]
+    size_t * len_components_idbytype;               // [typeflag_id]
+    size_t * num_components_idbytype;               // [typeflag_id]
+    size_t * len_components_flagbytype;             // [typeflag_id]
+    size_t * num_components_flagbytype;             // [typeflag_id]
+    size_t * len_system_byphase;                    // [phase_id]
+    size_t * num_system_byphase;                    // [phase_id]
 
     size_t num_components;
     size_t num_systems;
@@ -349,14 +352,10 @@ struct tnecs_World {
     size_t len_phases;
     size_t num_entities;
     size_t num_typeflags;
-    size_t * num_components_idbytype;               // [typeflag_id]
-    size_t * num_components_flagbytype;             // [typeflag_id]
 
     size_t len_entities;
     size_t len_typeflags;
     size_t len_systems;
-    size_t * len_entitiesbytype;
-    size_t * len_systembyphase;
 
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
