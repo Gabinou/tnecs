@@ -131,6 +131,13 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
     return (temp);
 }
 
+void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesize) {
+    TNECS_DEBUG_PRINTF("tnecs_arrdel_scramble\n");
+
+    return (memcpy(arr + (elem * bytesize), arr + ((len - 1) * bytesize), bytesize));
+}
+
+
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_arrdel\n");
 
@@ -151,11 +158,10 @@ void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_e
 
     size_t typeflag_id_old = tnecs_typeflagid(in_world, typeflag_old);
     size_t entity_order_old = tnecs_entity_order_bytypeid(in_world, in_entity, typeflag_id_old);
-    if (entity_order_old < in_world->len_entities) {
-        TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_id_old][entity_order_old] == in_entity);
-        memcpy(&in_world->entities_bytype[typeflag_id_old][entity_order_old], &in_world->entities_bytype[typeflag_id_old][entity_order_old + 1], sizeof(**in_world->entities_bytype) * (in_world->num_entities_bytype[typeflag_id_old] - entity_order_old));
-        in_world->num_entities_bytype[typeflag_id_old]--;
-    }
+    // if (entity_order_old < in_world->len_entities) {
+    // TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_id_old][entity_order_old] == in_entity);
+    // in_world->entities_bytype[typeflag_id_old][entity_order_old] = in_world->entities_bytype[typeflag_id_old][--in_world->num_entities_bytype[typeflag_id_old]];
+    // }
 
 }
 
@@ -163,7 +169,7 @@ size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_migrate\n");
 
     tnecs_entitiesbytype_del(in_world, in_entity, typeflag_old);
-    return (tnecs_entitiesbytype_add(in_world, in_entity, typeflag_new));
+    // return (tnecs_entitiesbytype_add(in_world, in_entity, typeflag_new));
 }
 
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag_toadd, bool isNew) {

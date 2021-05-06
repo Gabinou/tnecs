@@ -491,6 +491,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
 // ****************** "DYNAMIC" ARRAYS  *****************************
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize);
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize);
+void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesize);
 void tnecs_growArray_phase(struct tnecs_World * in_world);
 void tnecs_growArray_entity(struct tnecs_World * in_world);
 void tnecs_growArray_system(struct tnecs_World * in_world);
