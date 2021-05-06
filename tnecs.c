@@ -64,6 +64,18 @@ struct tnecs_World * tnecs_init() {
     return (tnecs_world);
 }
 
+void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
+    TNECS_DEBUG_PRINTF("tnecs_progress\n");
+    // NEED have variable that tracks if systems were changed
+
+    // 0- Compute current time.
+    // 1- Make list of all systems (get from previous iteration)
+    // 2- Make System_inputs for all systems (get from previous iteration)
+    // 3- Run all systems on their respective inputs
+    // 4- compute 
+
+}
+
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_new_entity\n");
 

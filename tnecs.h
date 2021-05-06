@@ -74,6 +74,7 @@ typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
 // typeflag > 0 -> sum of component types -> determines tnecs_System_Input
 typedef uint16_t tnecs_system_t;
+typedef uint64_t tnecs_time_ns_t;
 typedef unsigned char tnecs_byte_t;
 
 // ********************** CONSTANT DEFINITIONS ************************
@@ -335,6 +336,16 @@ struct tnecs_World {
 
     // len is allocated size
     // num is active elements in array
+    size_t len_entities;
+    size_t num_entities;
+    size_t len_typeflags;
+    size_t num_typeflags;
+    size_t len_systems;
+    size_t num_systems;
+    size_t len_phases;
+    size_t num_phases;
+    size_t num_components;
+
     size_t * len_components_bytype;                 // [typeflag_id]
     size_t * num_components_bytype;                 // [typeflag_id]
     size_t * len_entities_bytype;                   // [typeflag_id]
@@ -345,17 +356,6 @@ struct tnecs_World {
     size_t * num_components_flagbytype;             // [typeflag_id]
     size_t * len_system_byphase;                    // [phase_id]
     size_t * num_system_byphase;                    // [phase_id]
-
-    size_t num_components;
-    size_t num_systems;
-    size_t num_phases;
-    size_t len_phases;
-    size_t num_entities;
-    size_t num_typeflags;
-
-    size_t len_entities;
-    size_t len_typeflags;
-    size_t len_systems;
 
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
