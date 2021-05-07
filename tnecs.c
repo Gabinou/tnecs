@@ -79,6 +79,10 @@ void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     current_input.current_limit = in_world->num_entities_bytype[current_input.typeflag_ids[current_input.current_typeflag_order]];
 }
 
+void * tnecs_iterate_exclusive(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash) {
+
+}
+
 void * tnecs_iterate(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_hash_t");
 

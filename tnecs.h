@@ -101,6 +101,12 @@ enum TNECS_RUN_PHASES {
     TNECS_PHASE_POSTUPDATE = 2,
 };
 
+// PROS/CONS Exclusive/Inclusive systems
+// + convenient
+// - iterator for system's entities much slower (?) and more complex
+//      -> can't just (struct Position *)component_array.components
+// - BECAUSE all bytype arrays are exclusive....
+
 // ****************** HACKY DISTRIBUTION FOR VARIADIC MACROS ******************
 // Distribution as in algebra: a(x+b) = ax + ab
 // TNECS_VARMACRO_FOREACH_XXXX(foo, __VA_ARGS__) applies foo to each __VA_ARGS__, PLUS
@@ -368,10 +374,9 @@ struct tnecs_Components_Array {
 
 #define TNECS_ITERATEID(input, index, component_id) tnecs_iterate(input, index, component_id)
 #define TNECS_ITERATE(input, index, component_name) tnecs_iterate(input, index, tnecs_system_name2id(input->world, #component_name))
+#define TNECS_ITERATEEXCLUSIVEONLY(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][tnecs_system_name2id(input->world, #component_name)].components)
 
 void * tnecs_iterate(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash);
-
-
 
 
 // ********************* FUNCTIONALITY MACROS AND FUNCTIONS ************************
