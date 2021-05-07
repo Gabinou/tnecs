@@ -90,11 +90,20 @@ Then, the component's typeflag and id can be obtained using:
 ```
 ```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag has a one bit set, at component_id location. 
 
-This implies that a maximal number of 63 components can be registered, and this relation between ids and flags:
+NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. for a component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. for system typeflags. 
+
+This implies that a maximal number of 63 components can be registered. 
+The relation between component ids and flags is:
 ```c
     Position_flag == (1 << (Position_id - 1));
     Position_id == ((tnecs_component_t)(log2(Position_id) + 1.1f));  // casting to int truncates to 0
 ```
+which are accessible through the macros:
+```c
+    Position_id == TNECS_COMPONENT_ID2TYPE(Position_flag);
+    Position_flag == TNECS_COMPONENT_TYPE2ID(Position_id);
+```
+
 When registered, the component names are stringified, then hashed with tnecs_hash_djb2 and saved in ```tnecs_world->component_hashes```.
 Any component's id is also its index in ```world->component_hashes```.
 

@@ -491,7 +491,7 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world);
 // tnecs_hash_djb2 slightly faster than tnecs_hash_sdbm
 uint64_t tnecs_hash_djb2(const unsigned char * str);
 uint64_t tnecs_hash_sdbm(const unsigned char * str);
-
+#define tnecs_hash tnecs_hash_djb2
 
 #ifdef __cplusplus
 }
