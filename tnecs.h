@@ -21,7 +21,7 @@
 * - Main Character Entity: UserControlled Component, Sprite Component, Physics Component */
 
 /* Un-viral MIT License
-* Copyright (c) 2021 Gabriel Taillon
+* Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal

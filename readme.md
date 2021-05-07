@@ -157,8 +157,8 @@ System_id 0 is always reserved for NULL.
 ```c
 ```
 
-## Credits
-Gabriel Taillon
-
 ## Special Thanks
 Sanders Mertens for [his blog](https://ajmmertens.medium.com/) on ECS design
+
+## Credits
+Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
