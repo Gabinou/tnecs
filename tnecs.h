@@ -102,7 +102,7 @@ enum TNECS_RUN_PHASES {
 };
 
 // PROS/CONS Exclusive/Inclusive systems
-// + convenient
+// + convenience
 // - iterator for system's entities much slower (?) and more complex
 //      -> can't just (struct Position *)component_array.components
 // - BECAUSE all bytype arrays are exclusive....

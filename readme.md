@@ -16,9 +16,7 @@ In tnecs, an entity is an ```uint64_t``` index.
 A component is user-defined struct. 
 A system is a user-defined function.
 
-The systems iterate only over entities that have a certain set of components.
-They can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
-Systems's execution order happens in phases, set by the user.
+The systems iterate exclusively over the entities that have a certain set of components.
 The user can also modify the system execution order in each phase.
 
 Videogame Example:
@@ -44,7 +42,6 @@ C99, compile with ```tcc```.
 ## To do
 - System input/iterator.
 - World progress function
-- Exclusive/Inclusive systems
 - Post V1.0 pruning
 
 ## Alternative ECS/Gamedev libraries for C/C++
