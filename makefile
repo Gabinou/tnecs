@@ -43,6 +43,14 @@ WIN_EXT := .exe
 LINUX_PRE := ./
 WIN_PRE := 
 
+# FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
+# FLAGS_BUILD_TYPE = -O0 -g  #Debug
+FLAGS_BUILD_TYPE =  #Debug
+
+# FLAGS_ERROR := -Wall -pedantic-errors
+FLAGS_ERROR := -w
+INCLUDE_ALL := -I. 
+
 # astyle detection: isASTYLE is empty unless astyle exists
 ifeq ($(OS_FLAG),WIN32)
 	EXTENSION := $(WIN_EXT)
@@ -71,13 +79,6 @@ EXEC_TCC := $(PREFIX)test_tcc$(EXTENSION)
 EXEC_GCC := $(PREFIX)test_gcc$(EXTENSION)
 EXEC_CLANG := $(PREFIX)test_clang$(EXTENSION)
 EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} ${EXEC_TEST_FLECS} 
-# FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
-# FLAGS_BUILD_TYPE = -O0 -g  #Debug
-FLAGS_BUILD_TYPE =  #Debug
-
-# FLAGS_ERROR := -Wall -pedantic-errors
-FLAGS_ERROR :=
-INCLUDE_ALL := -I. 
 
 
 .PHONY: all 
