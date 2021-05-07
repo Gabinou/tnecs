@@ -31,7 +31,7 @@ Add tnecs.c and tnecs.h to your source code.
 
 ## Motivation
 Make the _simplest possible_ ECS library, only with the _minimum necessary features_.
-Be compileable with ```tcc```.
+C99, compileable with ```tcc```.
 
 ## Features
 - Compileable using ```tcc```, ```gcc```, ```clang``` (```msvc``` untested)
@@ -44,20 +44,14 @@ Be compileable with ```tcc```.
 ## To do
 - World updating function
 - Exclusive/Inclusive systems
-    * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
 - Post V1.0 pruning
-
-## Codebase Style and Conventions
-- snake_case: variable_names, function_names
-- UPPER_SNAKE_CASE: MACRO_NAMES
-- len_array : calloc'ed length of array
-- num_array : active elements in array
 
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
 - [entt (C++)](https://github.com/skypjack/entt)
 - [gamedev_libraries](https://github.com/raizam/gamedev_libraries)
 - [stb list of single header libraries](https://github.com/nothings/single_file_libs)
+
 
 # tnecs Tutorial
 
