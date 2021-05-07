@@ -92,7 +92,7 @@ void * tnecs_iterate(struct tnecs_System_Input * in_input, size_t index, tnecs_h
     }
 
     tnecs_component_t current_typeflag_id = in_input->typeflag_ids[in_input->current_typeflag_order];
-    size_t component_order = tnecs_componentid_order_bytypeid(in_input->world, component_id, current_typeflag_id);
+    size_t component_order = in_input->world->components_orderbytype[current_typeflag_id][component_id];
     tnecs_byte_t component_bytesize = in_input->world->components_bytesizes[component_id];
 
     void * temp_component_bytesptr = (tnecs_byte_t *)(in_input->world->components_bytype[current_typeflag_id][component_order].components);
@@ -393,6 +393,10 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
     in_world->len_components_flagbytype = tnecs_realloc(in_world->len_components_flagbytype, old_len, in_world->len_typeflags, sizeof(*in_world->len_components_flagbytype));
     in_world->num_components_flagbytype = tnecs_realloc(in_world->num_components_flagbytype, old_len, in_world->len_typeflags, sizeof(*in_world->num_components_flagbytype));
     in_world->components_orderbytype = tnecs_realloc(in_world->components_orderbytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_orderbytype));
+    for (size_t i = old_len; i < in_world->len_typeflags; i++) {
+        in_world->components_orderbytype[i] = calloc(TNECS_INITIAL_COMPONENT_CAP, sizeof(size_t));
+    }
+
 }
 
 void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_components, tnecs_component_t in_typeflag) {

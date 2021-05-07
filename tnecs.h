@@ -310,7 +310,7 @@ struct tnecs_System_Input {
     tnecs_world_t * world;
     tnecs_component_t * typeflag_ids;
     tnecs_component_t num_typeflag_ids;
-    size_t current_typeflag_id;
+    size_t current_typeflag_order;
 };
 
 #define TNECS_ITERATEMACRO(input, index, name)
