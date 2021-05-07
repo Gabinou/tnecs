@@ -34,11 +34,11 @@ Make the _simplest possible_ ECS library, only with the _minimum necessary featu
 C99, compileable with ```tcc```.
 
 ## Features
-- Compileable using ```tcc```, ```gcc```, ```clang``` (```msvc``` untested)
-- Runs on Windows, Linux (Manjaro), Android (termux)
+- Compatible: compiles with ```tcc```, ```gcc```, ```clang``` (```msvc``` untested)
+- Cross-platform: Windows, Linux, Android (termux)
+- Small: <2000 lines for now.
+- Fast: see simple benchmarks in test.c
 - Simple C99 API
-- Small Codebase, <2000 lines for now.
-- Fast, see simple benchmarks in test.c
 - Free and Open Source
 
 ## To do
