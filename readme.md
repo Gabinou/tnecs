@@ -47,6 +47,12 @@ Be compileable with ```tcc```.
     * Exclusive systems iterate over the entities that only have the system's components. Inclusive system iterate over entities that may have components other than the system's.
 - Post V1.0 pruning
 
+## Codebase Style and Conventions
+- snake_case: variable_names, function_names
+- UPPER_SNAKE_CASE: MACRO_NAMES
+- len_array : calloc'ed length of array
+- num_array : active elements in array
+
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
 - [entt (C++)](https://github.com/skypjack/entt)
@@ -89,11 +95,10 @@ Then, the component's type and id can be obtained using:
     tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(test_world, Position); 
     size_t Position_id = TNECS_COMPONENT_ID(test_world, Position);
 ```
-```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag has a one bit set, at component_id location. 
+```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag only has one bit set, at component_id location. This implies that a maximal number of 63 components can be registered. 
 
 NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. for a component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. for system typeflags. 
 
-This implies that a maximal number of 63 components can be registered. 
 The relation between component ids and flags is:
 ```c
     Position_flag == (1 << (Position_id - 1));
@@ -105,7 +110,8 @@ which are accessible through the macros:
     Position_flag == TNECS_COMPONENT_TYPE2ID(Position_id);
 ```
 
-When registered, the component names are stringified, then hashed with tnecs_hash_djb2 and saved in ```tnecs_world->component_hashes```.
+When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and saved in ```tnecs_world->component_hashes```.
+```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
 Any component's id is also its index in ```world->component_hashes```.
 
 You can get a component id with:
@@ -118,7 +124,7 @@ You can get a component id with:
 ```
 Or, if you wish:
 ```c
-    tnecs_component_hash2id(tnecs_world, tnecs_hash_djb2("Position"));
+    tnecs_component_hash2id(tnecs_world, TNECS_HASH("Position"));
 ```
 
 

@@ -320,6 +320,7 @@ struct tnecs_World {
     void (** systems)(struct tnecs_System_Input);   // [system_id]
     void (** systems_byphase)(struct tnecs_System_Input);// [system_id]
     bool * system_exclusive;                      // [system_id]
+    bool * SystemExclusive;                      // [system_id]
     uint8_t * system_phase;                         // [system_id]
     uint64_t component_hashes[TNECS_COMPONENT_CAP]; // [component_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];// [component_id]
@@ -491,7 +492,7 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world);
 // tnecs_hash_djb2 slightly faster than tnecs_hash_sdbm
 uint64_t tnecs_hash_djb2(const unsigned char * str);
 uint64_t tnecs_hash_sdbm(const unsigned char * str);
-#define tnecs_hash tnecs_hash_djb2
+#define TNECS_HASH tnecs_hash_djb2
 
 #ifdef __cplusplus
 }
