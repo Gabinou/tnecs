@@ -341,7 +341,7 @@ struct tnecs_World {
     tnecs_entity_t ** entities_bytype;                   // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;            // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;          // [typeflag_id][component_order_bytype]
-    size_t * component_orderbytype[TNECS_COMPONENT_CAP]; // [typeflag_id][component_id]
+    size_t ** component_orderbytype;                     // [typeflag_id][component_id]
 
     // len is allocated size
     // num is active elements in array
