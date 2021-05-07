@@ -128,7 +128,10 @@ Or, if you wish:
 ```
 ```c 
     struct Position * pos_Silou = TNECS_GET_COMPONENT(test_world, Silou, Position);
+    pos_Silou->x += 1;
+    pos_Silou->y += 2;
 ```
+
 ## Register System to the world
 A system is a user-defined function, with ```struct tnecs_System_Input``` as input:
 ```c
@@ -156,3 +159,6 @@ System_id 0 is always reserved for NULL.
 
 ## Credits
 Gabriel Taillon
+
+## Special Thanks
+Sanders Mertens for [his blog](https://ajmmertens.medium.com/) on ECS design
