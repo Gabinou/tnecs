@@ -158,6 +158,7 @@ struct Sprite * temp_sprite;
 struct tnecs_World * test_world;
 
 void SystemMove(struct tnecs_System_Input in_input) {
+    // flecs structure: 
     // Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
     // Unit *v = TNECS_COMPONENTS_LIST(entity_list, Unit);
 
@@ -165,6 +166,16 @@ void SystemMove(struct tnecs_System_Input in_input) {
     //     p[i].x += 2;
     //     p[i].y += 4;
     // }
+
+    // tnecs structure: 
+    // Position *p = NULL;
+    // Unit *u = NULL;
+    for (int i = 0; i < in_input->count, i ++) {
+        Position *p = tnecs_it(in_input, i, Position);
+        Unit *u = tnecs_it(in_input, i, Unit);
+        // p[i].x += v[i].x;
+        // p[i].y += v[i].y;
+    }
 }
 
 /*******************************ACTUAL TESTS***************************/

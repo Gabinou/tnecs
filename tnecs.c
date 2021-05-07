@@ -73,7 +73,30 @@ void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     // 2- Make System_inputs for all systems (get from previous iteration)
     // 3- Run all systems on their respective inputs
     // 4- compute 
+    struct tnecs_System_Input;
+    tnecs_System_Input.current_typeflag_order = 0;
+    tnecs_System_Input.current_limit = in_world->num_entities_bytype[tnecs_System_Input.typeflag_ids[tnecs_System_Input.current_typeflag_order]];
+}
 
+void * tnecs_iterate(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash) {
+    TNECS_DEBUG_PRINTF("tnecs_hash_t");
+    
+    size_t component_id = tnecs_component_hash2id(in_input->world, in_hash);
+    tnecs_byte_t * temp_component_bytesptr;
+
+    while(index >= in_input->current_limit) && (in_input->current_typeflag_id < (in_input->num_typeflag_ids - 1)) {
+        tnecs_component_t new_typeflag_id = in_input->typeflag_ids[++in_input->current_typeflag_id];
+        in_input->current_shift = in_input->current_limit;
+        in_input->current_limit += in_input->world->num_entitiesbytype[new_typeflag_id];
+    }
+
+    tnecs_component_t current_typeflag_id = in_input->typeflag_ids[in_input->current_typeflag_order];
+    size_t component_order = tnecs_componentid_order_bytypeid(in_input->world, component_id, current_typeflag_id);
+    tnecs_byte_t component_bytesize = in_input->world->components_bytesizes[component_id];
+
+    void * temp_component_bytesptr = (tnecs_byte_t *)(in_input->world->components_bytype[current_typeflag_id][component_order].components);
+
+    return((tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * (index - in_input->current_shift - 1))));
 }
 
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
@@ -774,11 +797,10 @@ size_t tnecs_componentflag_order_bytype(struct tnecs_World * in_world, tnecs_com
     return (order);
 }
 
-size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_componentid_order_bytype\n");
+size_t tnecs_componentid_order_bytypeid(struct tnecs_World * in_world, size_t in_component_id, size_t in_typeflag_id) {
+    TNECS_DEBUG_PRINTF("tnecs_componentid_order_bytypeid\n");
 
     size_t order = TNECS_COMPONENT_CAP;
-    tnecs_component_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     for (size_t i = 0; i < in_world->num_components_bytype[in_typeflag_id]; i++) {
         if (in_world->components_idbytype[in_typeflag_id][i] == in_component_id) {
             order = i;
@@ -786,6 +808,14 @@ size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_c
         }
     }
     return (order);
+}
+
+
+size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag) {
+    TNECS_DEBUG_PRINTF("tnecs_componentid_order_bytype\n");
+
+    tnecs_component_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
+    return(tnecs_componentid_order_bytypeid(in_world, in_component_id, in_typeflag_id));
 }
 
 size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {

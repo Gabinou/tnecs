@@ -12,7 +12,7 @@ Children classes inherit methods and data structure from parents.
 Any number of components can be attached to an entity.
 Entities are acted upon by systems. 
 
-In tnecs, an entity is an uint64_t index. 
+In tnecs, an entity is an ```uint64_t``` index. 
 A component is user-defined struct. 
 A system is a user-defined function.
 
@@ -31,18 +31,19 @@ Add tnecs.c and tnecs.h to your source code.
 
 ## Motivation
 Make the _simplest possible_ ECS library, only with the _minimum necessary features_.
-C99, compileable with ```tcc```.
+C99, compile with ```tcc```.
 
 ## Features
-- Compatible: compiles with ```tcc```, ```gcc```, ```clang``` (```msvc``` untested)
+- Compatible: compiles with ```tcc```, ```gcc```, ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
 - Small: <2000 lines for now.
 - Fast: see simple benchmarks in test.c
-- Simple C99 API
-- Free and Open Source
+- Simple: C99 API
+- FOSS: Free and Open Source
 
 ## To do
-- World updating function
+- System input/iterator.
+- World progress function
 - Exclusive/Inclusive systems
 - Post V1.0 pruning
 
@@ -51,7 +52,6 @@ C99, compileable with ```tcc```.
 - [entt (C++)](https://github.com/skypjack/entt)
 - [gamedev_libraries](https://github.com/raizam/gamedev_libraries)
 - [stb list of single header libraries](https://github.com/nothings/single_file_libs)
-
 
 # tnecs Tutorial
 

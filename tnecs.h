@@ -74,6 +74,7 @@ typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
 // typeflag > 0 -> sum of component types -> determines tnecs_System_Input
 typedef uint16_t tnecs_system_t;
+typedef uint64_t tnecs_hash_t;
 typedef uint64_t tnecs_time_ns_t;
 typedef unsigned char tnecs_byte_t;
 
@@ -303,13 +304,22 @@ struct tnecs_Components_Array {
 };
 
 struct tnecs_System_Input {
-    tnecs_entity_t * entities;
-    tnecs_component_t typeflag;
-    size_t num_entities;
-    size_t num_components;
-    size_t * components_order;
-    void ** components_lists;
+    size_t count;
+    size_t current_limit;
+    size_t current_shift;
+    tnecs_world_t * world;
+    tnecs_component_t * typeflag_ids;
+    tnecs_component_t num_typeflag_ids;
+    size_t current_typeflag_id;
 };
+
+#define TNECS_ITERATEMACRO(input, index, name)
+
+#define TNECS_ITERATEID(input, index, component_id) tnecs_iterate(input, index, component_id)
+#define TNECS_ITERATE(input, index, component_name) tnecs_iterate(input, index, tnecs_system_name2id(world, #component_name))
+
+void * tnecs_iterate(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash);
+
 
 struct tnecs_World {
     tnecs_entity_t * entities; // (entities[entity_id] == entity_id) unless deleted
@@ -331,6 +341,7 @@ struct tnecs_World {
     tnecs_entity_t ** entities_bytype;                   // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;            // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;          // [typeflag_id][component_order_bytype]
+    size_t * component_orderbytype[TNECS_COMPONENT_CAP]; // [typeflag_id][component_id]
 
     // len is allocated size
     // num is active elements in array
@@ -448,6 +459,7 @@ tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t arg
 tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, uint64_t in_hash);
 size_t tnecs_componentflag_order_bytype(struct tnecs_World * in_world, tnecs_component_t in_component_flag, tnecs_component_t in_typeflag);
 size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag);
+size_t tnecs_componentid_order_bytypeid(struct tnecs_World * in_world, size_t in_component_id, size_t in_typeflag_id);
 size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag);
 size_t tnecs_entity_order_bytypeid(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag_id);
 size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t system_id, uint8_t in_phase);
