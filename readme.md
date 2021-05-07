@@ -67,6 +67,7 @@ The world contains everything tnecs needs.
     tnecs_entity_t Pirou = TNECS_NEW_ENTITY(world);
 ```
 ```tnecs_entity_t``` is a ```uint64_t``` index. 
+
 Entity 0 is always reserved for NULL.
 
 Entities can be created with any number of components directly with this variadic macro: 
@@ -83,9 +84,9 @@ A component is a user-defined struct:
 
     TNECS_REGISTER_COMPONENT(test_world, Position);
 ```
-Then, the component's typeflag and id can be obtained using:
+Then, the component's type and id can be obtained using:
 ```c
-    tnecs_component_t Position_flag = TNECS_COMPONENT_TYPEFLAG(test_world, Position); 
+    tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(test_world, Position); 
     size_t Position_id = TNECS_COMPONENT_ID(test_world, Position);
 ```
 ```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag has a one bit set, at component_id location. 
