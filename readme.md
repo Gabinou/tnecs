@@ -88,10 +88,12 @@ Then, the component's typeflag and id can be obtained using:
     tnecs_component_t Position_flag = TNECS_COMPONENT_TYPEFLAG(test_world, Position); 
     size_t Position_id = TNECS_COMPONENT_ID(test_world, Position);
 ```
-```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag has a one bit set, at component_id location. So the following is always true:
+```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag has a one bit set, at component_id location. 
+
+This implies that a maximal number of 63 components can be registered, and this relation between ids and flags:
 ```c
     Position_flag == (1 << (Position_id - 1));
-    Position_flag == TNECS_COMPONENT_ID2TYPEFLAG(Position_id);
+    Position_id == ((tnecs_component_t)(log2(Position_id) + 1.1f));  // casting to int truncates to 0
 ```
 When registered, the component names are stringified, then hashed with tnecs_hash_djb2 and saved in ```tnecs_world->component_hashes```.
 Any component's id is also its index in ```world->component_hashes```.
@@ -108,7 +110,7 @@ Or, if you wish:
 ```c
     tnecs_component_hash2id(tnecs_world, tnecs_hash_djb2("Position"));
 ```
-A maximal number of 63 components can be registered.
+
 
 ## Attach Components to Entities
 ```c 
