@@ -303,13 +303,9 @@ enum TNECS_RUN_PHASES {
 
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_System_Input {
-    size_t count;
-    size_t current_limit;
-    size_t current_shift;
     struct tnecs_World * world;
-    tnecs_component_t * typeflag_ids;
-    tnecs_component_t num_typeflag_ids;
-    size_t current_typeflag_order;
+    size_t num_entities;
+    tnecs_component_t typeflag_id;
 };
 
 struct tnecs_World {
@@ -370,14 +366,7 @@ struct tnecs_Components_Array {
     void * components;  // [entity_order_bytype]
 };
 
-#define TNECS_ITERATEMACRO(input, index, name)
-
-#define TNECS_ITERATEID(input, index, component_id) tnecs_iterate(input, index, component_id)
-#define TNECS_ITERATE(input, index, component_name) tnecs_iterate(input, index, tnecs_system_name2id(input->world, #component_name))
-#define TNECS_ITERATEEXCLUSIVEONLY(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][tnecs_system_name2id(input->world, #component_name)].components)
-
-void * tnecs_iterate(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash);
-
+#define TNECS_ITERATE(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][tnecs_system_name2id(input->world, #component_name)].components)
 
 // ********************* FUNCTIONALITY MACROS AND FUNCTIONS ************************
 struct tnecs_World * tnecs_init();

@@ -79,31 +79,6 @@ void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     current_input.current_limit = in_world->num_entities_bytype[current_input.typeflag_ids[current_input.current_typeflag_order]];
 }
 
-void * tnecs_iterate_exclusive(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash) {
-
-}
-
-void * tnecs_iterate(struct tnecs_System_Input * in_input, size_t index, tnecs_hash_t in_hash) {
-    TNECS_DEBUG_PRINTF("tnecs_hash_t");
-
-    size_t component_id = tnecs_component_hash2id(in_input->world, in_hash);
-    tnecs_byte_t * temp_component_bytesptr;
-
-    while ((index >= in_input->current_limit) && (in_input->current_typeflag_order < (in_input->num_typeflag_ids - 1))) {
-        tnecs_component_t new_typeflag_id = in_input->typeflag_ids[++in_input->current_typeflag_order];
-        in_input->current_shift = in_input->current_limit;
-        in_input->current_limit += in_input->world->num_entities_bytype[new_typeflag_id];
-    }
-
-    tnecs_component_t current_typeflag_id = in_input->typeflag_ids[in_input->current_typeflag_order];
-    size_t component_order = in_input->world->component_orderbytype[current_typeflag_id][component_id];
-    tnecs_byte_t component_bytesize = in_input->world->component_bytesizes[component_id];
-
-    temp_component_bytesptr = (tnecs_byte_t *)(in_input->world->components_bytype[current_typeflag_id][component_order].components);
-
-    return ((tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * (index - in_input->current_shift - 1))));
-}
-
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_new_entity\n");
 
