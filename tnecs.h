@@ -1,24 +1,29 @@
 #ifndef __TNECS_H__
 #define __TNECS_H__
 
-/* Tiny C99 Entity-Component-System (ECS) library.
-* Originally developed for use in a game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending.
-* ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
-* OOP: Objects/Classes contain data and methods, children objects inherit from parents...
-* ECS: Components are purely data.
-* Any number of components can be attached to an entity.
-* Entities are acted upon by systems.
-* In tnecs, an entity is an uint64_t index.
-* A component is user-defined struct.
-* A system is a user-defined function.
-* The systems iterate only over entities that have a certain set of components.
-* They can either be exclusive or inclusive, as in including/excluding entities that have components other than the system's set.
-* Systems's execution order happens in phases, set by the user.
-* The user can also modify the system execution order in each phase.
-* Videogame Example:
-* - Enemy Entity: AIControlled component, Sprite Component, Physics Component
-* - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
-* - Main Character Entity: UserControlled Component, Sprite Component, Physics Component */
+// Tiny C99 Entity-Component-System (ECS) library.
+// Originally created for use in a game I am developping using C99: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending.
+
+// ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
+// * OOP: Objects/Classes contain data and methods.
+// Methods act on objects.
+// Children classes inherit methods and data structure from parents.
+// * ECS: Components are purely data.
+// Any number of components can be attached to an entity.
+// Entities are acted upon by systems.
+
+// In tnecs, an entity is an ```uint64_t``` index.
+// A component is user-defined ```struct```.
+// A system is a user-defined ```function```.
+// All live inside the ```world```.
+
+// The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
+// The user can also modify the system execution order in each phase.
+
+// Videogame Example:
+// - Enemy Entity: AIControlled component, Sprite Component, Physics Component
+// - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
+// - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
 
 /* Un-viral MIT License
 * Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
@@ -47,6 +52,7 @@
 #include <stdbool.h>
 #include <stdarg.h>
 #include <math.h>
+#include <time.h>
 #ifndef log2 // because tcc SUCKS, does NOT DEFINE log2
 #define log2(x) (log(x)/log(2.0f))
 #endif
@@ -54,6 +60,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+// ************************ DEBUGGING ****************************
 
 #define TNECS_DEBUG_A // asserts are ignored if undefined
 #ifdef TNECS_DEBUG_A
@@ -62,12 +69,38 @@ extern "C" {
 #define TNECS_DEBUG_ASSERT(...) (void)0
 #endif
 
-// #define TNECS_DEBUG_P // printf are ignored if undefined
+#define TNECS_DEBUG_P // printf are ignored if undefined
 #ifdef TNECS_DEBUG_P
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
 #define TNECS_DEBUG_PRINTF(...) (void)0
 #endif
+
+// ******************** 0.1 MICROSECOND RESOLUTION CLOCK *********************
+//  Modified from: https://gist.github.com/ForeverZer0/0a4f80fc02b96e19380ebb7a3debbee5
+
+#if defined(__linux)
+#  define MICROSECOND_CLOCK
+#  define HAVE_POSIX_TIMER
+#  include <time.h>
+#  ifdef CLOCK_MONOTONIC
+#     define CLOCKID CLOCK_MONOTONIC
+#  else
+#     define CLOCKID CLOCK_REALTIME
+#  endif
+#elif defined(__APPLE__)
+#  define MICROSECOND_CLOCK
+#  define HAVE_MACH_TIMER
+#  include <mach/mach_time.h>
+#elif defined(_WIN32)
+#  define MICROSECOND_CLOCK
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+#endif
+
+extern uint64_t get_ns();
+extern double get_us();
+
 
 // ************************ TYPE DEFINITIONS ****************************
 typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
@@ -81,19 +114,14 @@ typedef unsigned char tnecs_byte_t;
 // ********************** CONSTANT DEFINITIONS ************************
 // entity, component, system, id, typeflag: 0 ALWAYS reserved for NULL
 #define TNECS_NULL 0
-#define TNECS_NOCOMPONENT_TYPEFLAG 0
-#define TNECS_ID_START 1
-#define TNECS_MAX_COMPONENT 63
+#define TNECS_NULLSHIFT 1
 #define TNECS_COMPONENT_CAP 64
 #define TNECS_STR_BUFFER 128
 #define TNECS_OPEN_IDS_BUFFER 128
-#define TNECS_INITIAL_ENTITY_CAP 128
-#define TNECS_INITIAL_COMPONENT_CAP 8
-#define TNECS_INITIAL_SYSTEM_CAP 16
-#define TNECS_ARRAY_INCREMENT 128
+#define TNECS_INITIAL_ENTITY_LEN 128
+#define TNECS_INITIAL_COMPONENT_LEN 8
+#define TNECS_INITIAL_SYSTEM_LEN 16
 #define TNECS_ARRAY_GROWTH_FACTOR 2 // in general 2 or 1.5
-#define TNECS_COMPONENT_ALLOCBLOCK 16
-#define ENTITY_MAX_COMPONENT_NUM 10
 
 enum TNECS_RUN_PHASES {
     TNECS_PHASE_PREUPDATE = 0,
@@ -125,65 +153,6 @@ enum TNECS_RUN_PHASES {
 
 #define TNECS_FOREACH_1(macro, x)\
     macro(x)
-
-#define TNECS_FOREACH_SUM_1(macro, x)\
-    macro(x)
-
-#define TNECS_FOREACH_SUM_2(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_1(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_3(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_2(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_4(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_3(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_5(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_4(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_6(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_5(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_7(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_6(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_8(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_7(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_2(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_1(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_3(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_2(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_4(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_3(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_5(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_4(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_6(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_5(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_7(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_6(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_8(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_7(macro,  __VA_ARGS__)
 
 #define TNECS_FOREACH_COMMA_1(macro, x, ...)\
     macro(x)
@@ -250,56 +219,16 @@ enum TNECS_RUN_PHASES {
     macro(#x),\
     TNECS_FOREACH_SCOMMA_7(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_SSUM_1(macro, x)\
-    macro(#x)
-
-#define TNECS_FOREACH_SSUM_2(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_S1(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_3(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_2(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_4(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_3(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_5(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_4(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_6(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_5(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_7(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_6(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_8(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_7(macro,  __VA_ARGS__)
-
 #define TNECS_VARMACRO_EACH_ARGN(...) TNECS_VARMACRO_EACH_ARGN_(__VA_ARGS__, TNECS_VARMACRO_VARG_SEQ())
 #define TNECS_VARMACRO_EACH_ARGN_(...) TNECS_VARMACRO_ARGN(__VA_ARGS__)
 #define TNECS_VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
 #define TNECS_VARMACRO_VARG_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
 
-#define TNECS_VARMACRO_FOREACH_SUM_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SUM_, N)(macro, __VA_ARGS__)
-#define TNECS_VARMACRO_FOREACH_SUM(macro, ...) TNECS_VARMACRO_FOREACH_SUM_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
-
 #define TNECS_VARMACRO_FOREACH_COMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_COMMA(macro, ...) TNECS_VARMACRO_FOREACH_COMMA_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
-#define TNECS_VARMACRO_FOREACH_SSUM_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SSUM_, N)(macro, __VA_ARGS__)
-#define TNECS_VARMACRO_FOREACH_SSUM(macro, ...) TNECS_VARMACRO_FOREACH_SSUM_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
-
 #define TNECS_VARMACRO_FOREACH_SCOMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SCOMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
-
-#define TNECS_VARMACRO_FOREACH_NEWLINE_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_COMMA_, N)(macro, __VA_ARGS__)
-#define TNECS_VARMACRO_FOREACH_NEWLINE(macro, ...) TNECS_VARMACRO_FOREACH_NEWLINE_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_System_Input {
@@ -329,6 +258,7 @@ struct tnecs_World {
     tnecs_component_t ** components_idbytype;            // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;          // [typeflag_id][component_order_bytype]
     size_t ** component_orderbytype;                     // [typeflag_id][component_id]
+    char ** component_names;
 
     // len is allocated size
     // num is active elements in array
@@ -389,8 +319,8 @@ struct tnecs_World * tnecs_init();
 #define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
-#define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_ID_START))
-#define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_ID_START))
+#define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_NULLSHIFT))
+#define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_TYPE2ID(type) ((tnecs_component_t)(log2(type) + 1.1f)) // casting to int floors
 
 #define TNECS_SYSTEM_HASH(name) TNECS_NAME2HASH(name)
@@ -402,9 +332,8 @@ struct tnecs_World * tnecs_init();
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
 #define TNECS_ENTITY_ORDER(world, ent) world->entity_orders[ent];
 
-// TNECS_ADD_COMPONENT is overloaded
-//      3 inputs required: (world, name, entity_id)
-//      4th input if newtype is false, to skip checks for execution speed
+// TNECS_ADD_COMPONENT is overloaded 3/4 inputs
+//      skip checks if 4th input is true
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 #define TNECS_ADD_COMPONENT3(world, entity_id, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), true)
@@ -415,16 +344,14 @@ struct tnecs_World * tnecs_init();
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, tnecs_hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)));\
 
-#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, tnecs_hash_djb2(#name), sizeof(name))
-// Error if component registered twice -> user responsibility
+#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 
-void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, size_t in_bytesize);
+void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_component_t component_typeflag);
 
 // ****************** ENTITY MANIPULATION ************************
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
-void * tnecs_entity_allocate_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, uint64_t component_hash, void * calloced_component);
 
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_component_id);
@@ -478,6 +405,8 @@ void tnecs_growArray_phase(struct tnecs_World * in_world);
 void tnecs_growArray_entity(struct tnecs_World * in_world);
 void tnecs_growArray_system(struct tnecs_World * in_world);
 void tnecs_growArray_typeflag(struct tnecs_World * in_world);
+
+#define TNECS_IS_SUBTYPE(typeflag, type) ((type & typeflag) > 0)
 
 #define TNECS_REALLOC(ptr, old_len, new_len, bytesize) tnecs_realloc(ptr, old_len, new_len, bytesize)
 #define TNECS_DEL(arr, elem, len, bytesize) tnecs_arrdel(arr, elem, len, bytesize)
