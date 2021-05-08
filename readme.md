@@ -1,22 +1,22 @@
 # tnecs (Tiny nECS)
 
 Tiny C99 Entity-Component-System (ECS) library.
-Originally created for use in a game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
-ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
+Originally created for use in a game I am developping using C99: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
 
-* OOP: Objects/Classes contain data and methods. 
+ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
+    * OOP: Objects/Classes contain data and methods. 
 Methods act on objects. 
 Children classes inherit methods and data structure from parents. 
-
-* ECS: Components are purely data.
+    * ECS: Components are purely data.
 Any number of components can be attached to an entity.
 Entities are acted upon by systems. 
 
 In tnecs, an entity is an ```uint64_t``` index. 
-A component is user-defined struct. 
-A system is a user-defined function.
+A component is user-defined ```struct```. 
+A system is a user-defined ```function```.
+All live inside the ```world```. 
 
-The systems iterate exclusively over the entities that have a user-defined set of components exactly.
+The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
 The user can also modify the system execution order in each phase.
 
 Videogame Example:
@@ -155,7 +155,8 @@ System_id 0 is always reserved for NULL.
 ```
 
 ## Special Thanks
-Sanders Mertens for [his blog](https://ajmmertens.medium.com/) on ECS design
+Sanders Mertens for [his blog on ECS design](https://ajmmertens.medium.com/). 
+He created [many other resources on ECSs](). 
 
 ## Credits
 Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
