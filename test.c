@@ -231,10 +231,10 @@ void tnecs_test_component_registration() {
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == tnecs_hash_djb2("Position"));
     lok(test_world->typeflags[0] == 0);
-    lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
+    lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->typeflags[1] == temp_comp_flag);
     lok(test_world->num_components == 2);
-    lok(TNECS_COMPONENT_TYPE(test_world, Position) == (TNECS_ID_START << 0));
+    lok(TNECS_COMPONENT_TYPE(test_world, Position) == (TNECS_NULLSHIFT << 0));
     lok(TNECS_COMPONENT_TYPE(test_world, Position) == test_world->typeflags[temp_typeflag_id]);
 
     TNECS_REGISTER_COMPONENT(test_world, Unit);
@@ -249,11 +249,11 @@ void tnecs_test_component_registration() {
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
     lok(test_world->typeflags[0] == 0);
-    lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
-    lok(test_world->typeflags[2] == (TNECS_ID_START << 1));
+    lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
+    lok(test_world->typeflags[2] == (TNECS_NULLSHIFT << 1));
     lok(test_world->typeflags[2] == temp_comp_flag);
     lok(test_world->num_components == 3);
-    lok(TNECS_COMPONENT_TYPE(test_world, Unit) == (TNECS_ID_START << 1));
+    lok(TNECS_COMPONENT_TYPE(test_world, Unit) == (TNECS_NULLSHIFT << 1));
     lok(TNECS_COMPONENT_TYPE(test_world, Unit) == test_world->typeflags[temp_typeflag_id]);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
 
@@ -269,12 +269,12 @@ void tnecs_test_component_registration() {
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
     lok(test_world->typeflags[0] == 0);
-    lok(test_world->typeflags[1] == (TNECS_ID_START << 0));
-    lok(test_world->typeflags[2] == (TNECS_ID_START << 1));
-    lok(test_world->typeflags[3] == (TNECS_ID_START << 2));
+    lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
+    lok(test_world->typeflags[2] == (TNECS_NULLSHIFT << 1));
+    lok(test_world->typeflags[3] == (TNECS_NULLSHIFT << 2));
     lok(test_world->typeflags[3] == temp_comp_flag);
     lok(test_world->num_components == 4);
-    lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == (TNECS_ID_START << 2));
+    lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == (TNECS_NULLSHIFT << 2));
     lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == test_world->typeflags[temp_typeflag_id]);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
 
@@ -301,33 +301,40 @@ void tnecs_test_system_registration() {
 
 void tnecs_test_entity_creation() {
     // dupprintf(globalf, "tnecs_test_entity_creation \n");
-    lok(test_world->next_entity_id == TNECS_ID_START);
+    lok(test_world->next_entity_id == TNECS_NULLSHIFT);
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
-    lok(Silou == TNECS_ID_START);
-    lok(test_world->next_entity_id == (TNECS_ID_START + 1));
+    lok(Silou == TNECS_NULLSHIFT);
+    lok(test_world->next_entity_id == (TNECS_NULLSHIFT + 1));
     tnecs_entity_t Pirou = TNECS_NEW_ENTITY(test_world);
-    lok(Pirou == (TNECS_ID_START + 1));
-    lok(test_world->next_entity_id == (TNECS_ID_START + 2));
+    lok(Pirou == (TNECS_NULLSHIFT + 1));
+    lok(test_world->next_entity_id == (TNECS_NULLSHIFT + 2));
     lok(Silou != Pirou);
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
-    lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
-    lok(temp_position->x == 0);
-    lok(temp_position->y == 0);
-    temp_position->x = 3;
-    temp_position->y = 6;
+    if (temp_position != NULL) {
+        lok(temp_position->x == 0);
+        lok(temp_position->y == 0);
+        temp_position->x = 3;
+        temp_position->y = 6;
+    } else {
+        lok(false);
+    }
 
-    temp_position = NULL;
-    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
-    lok(temp_position->x == 3);
-    lok(temp_position->y == 6);
+    lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
+    lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == 2);
+    lok((TNECS_COMPONENT_NAME2ID(test_world, Unit) + TNECS_COMPONENT_NAME2ID(test_world, Position)) == 3);
+    lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
 
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_sprite == NULL);
-
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
-    lok(temp_unit->hp  == 0);
-    lok(temp_unit->str == 0);
+    // lok(temp_unit != NULL);
+    if (temp_unit != NULL) {
+        lok(temp_unit->hp  == 0);
+        lok(temp_unit->str == 0);
+    } else {
+        lok(false);
+    }
 
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
@@ -338,7 +345,8 @@ void tnecs_test_component_add() {
 
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
-    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
+    lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
+    TNECS_ADD_COMPONENT(test_world, Silou, Unit);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     // TNECS_ADD_COMPONENT(test_world, Silou, Unit);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
@@ -359,7 +367,8 @@ void tnecs_test_component_add() {
     // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Sprite)) > 0);
     // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
 
-    // temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
+    temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
+    lok(temp_position != NULL);
     // lok(temp_position->x == 0);
     // lok(temp_position->y == 0);
     // temp_position->x = 1;
@@ -370,7 +379,8 @@ void tnecs_test_component_add() {
     // lok(temp_position->x == 1);
     // lok(temp_position->y == 2);
 
-    // temp_unit = TNECS_GET_COMPONENT(Unit, Silou);
+    temp_unit = TNECS_GET_COMPONENT(test_world, Silou, Unit);
+    lok(temp_unit != NULL);
     // lok(temp_unit->hp == 0);
     // lok(temp_unit->str == 0);
     // temp_unit->hp = 3;
@@ -531,7 +541,7 @@ int main() {
     lrun("s_regis", tnecs_test_system_registration);
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
-    lrun("hashing", tnecs_test_hashing);
+    // lrun("hashing", tnecs_test_hashing);
     lresults();
 
     // tnecs_benchmarks();
