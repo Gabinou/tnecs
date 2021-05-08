@@ -75,8 +75,12 @@ void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     // 3- Run all systems on their respective inputs
     // 4- compute
     struct tnecs_System_Input current_input;
-    current_input.current_typeflag_order = 0;
-    current_input.current_limit = in_world->num_entities_bytype[current_input.typeflag_ids[current_input.current_typeflag_order]];
+    current_input.world = in_world;
+    for(size_t system_id = 0; system_id < in_world->num_systems; system_id++) {
+        current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]) ;
+        current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
+        in_world->systems[system_id](&current_input);
+    } 
 }
 
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {

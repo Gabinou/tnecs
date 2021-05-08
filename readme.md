@@ -16,7 +16,7 @@ In tnecs, an entity is an ```uint64_t``` index.
 A component is user-defined struct. 
 A system is a user-defined function.
 
-The systems iterate exclusively over the entities that have a certain set of components.
+The systems iterate exclusively over the entities that have a user-defined set of components exactly.
 The user can also modify the system execution order in each phase.
 
 Videogame Example:

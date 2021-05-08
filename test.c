@@ -161,8 +161,8 @@ void SystemMove(struct tnecs_System_Input * in_input) {
     struct Position * p = TNECS_ITERATE(in_input, Position);
     struct Unit * u = TNECS_ITERATE(in_input, Unit);
     for (int i = 0; i < in_input->num_entities; i++) {
-        p[i].x += v[i].x;
-        p[i].y += v[i].y;
+        p[i].x += u[i].hp;
+        p[i].y += u[i].str;
     }
 }
 
