@@ -68,5 +68,5 @@ double get_us() {
 #else
 #  define FAILSAFE_CLOCK
 #  define get_us() (((double)clock())/CLOCKS_PER_SEC*1e6) // [us]
-//  -> resolution: 0.1[us]
+#  define get_ns() (((double)clock())/CLOCKS_PER_SEC*1e9) // [ns]
 #endif

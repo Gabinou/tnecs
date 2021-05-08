@@ -76,13 +76,13 @@ void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     // 4- compute
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
-    tnecs_time_ns_t progress_time = 1000*get_us();
+    tnecs_time_ns_t progress_time = get_ns();
     for(size_t system_id = 0; system_id < in_world->num_systems; system_id++) {
         current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]) ;
         current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
         in_world->systems[system_id](&current_input);
     } 
-    progress_time = 1e3*get_us() - progress_time;
+    progress_time = get_ns() - progress_time;
 }
 
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
