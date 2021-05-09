@@ -338,7 +338,7 @@ void tnecs_test_component_add() {
 
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
-    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
+    lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     // TNECS_ADD_COMPONENT(test_world, Silou, Unit);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
