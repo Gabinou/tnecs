@@ -666,7 +666,7 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
             size_t old_len = current_array->len_components;
             size_t bytesize = in_world->component_bytesizes[current_component_id];
             current_array->len_components *= TNECS_ARRAY_GROWTH_FACTOR;
-            tnecs_realloc(current_array->components, old_len, current_array->len_components, bytesize);
+            current_array->components = tnecs_realloc(current_array->components, old_len, current_array->len_components, bytesize);
         }
     }
 }

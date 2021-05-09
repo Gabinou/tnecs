@@ -45,7 +45,7 @@ WIN_PRE :=
 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
 # FLAGS_BUILD_TYPE = -O0 -g  #Debug
-FLAGS_BUILD_TYPE =  #Debug
+FLAGS_BUILD_TYPE = -g #Debug
 
 # FLAGS_ERROR := -Wall -pedantic-errors
 FLAGS_ERROR := -w

@@ -304,6 +304,7 @@ void tnecs_benchmarks() {
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Unit2);
     for (size_t i = 2; i < ITERATIONS; i++) {
+        printf("i %d\n", i);
         TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Position2);
         TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Unit2);
     }
