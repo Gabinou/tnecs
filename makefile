@@ -1,6 +1,6 @@
 
 
-COMPILER := tcc # tcc, gcc, clang
+COMPILER := gcc # tcc, gcc, clang
 
 # OS AND Processor detection 
 ifeq ($(OS),Windows_NT)
@@ -44,8 +44,7 @@ LINUX_PRE := ./
 WIN_PRE := 
 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
-# FLAGS_BUILD_TYPE = -O0 -g  #Debug
-FLAGS_BUILD_TYPE =  #Debug
+FLAGS_BUILD_TYPE = -O0 -g  #Debug
 
 # FLAGS_ERROR := -Wall -pedantic-errors
 FLAGS_ERROR := -w
