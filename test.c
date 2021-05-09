@@ -185,6 +185,15 @@ void tnecs_test_utilities() {
     lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
     lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
 
+
+    lok(setBits_KnR_uint64_t(1) == 1);
+    lok(setBits_KnR_uint64_t(2) == 1);
+    lok(setBits_KnR_uint64_t(3) == 2);
+    lok(setBits_KnR_uint64_t(4) == 1);
+    lok(setBits_KnR_uint64_t(5) == 2);
+    lok(setBits_KnR_uint64_t(6) == 2);
+    lok(setBits_KnR_uint64_t(7) == 3);
+
     size_t arrtest1[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     size_t arrtest2[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
     tnecs_arrdel(arrtest2, 1, 10, sizeof(*arrtest2));
@@ -352,18 +361,19 @@ void tnecs_test_component_add() {
 
     tnecs_entity_t Pirou = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENT(test_world, Pirou, Position);
-    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
-    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
-    // TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
-    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
-    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
-    // lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
+    lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
+    lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
+    TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
+    lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
+    lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
+    lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
 
 
-    // TNECS_ADD_COMPONENTS(test_world, Chasse, 0, Sprite, Position);
-    // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
-    // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Sprite)) > 0);
-    // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
+    tnecs_entity_t Chassé = tnecs_new_entity(test_world);
+    TNECS_ADD_COMPONENTS(test_world, Chassé, 1, Sprite, Position);
+    lok((test_world->entity_typeflags[Chassé] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
+    lok((test_world->entity_typeflags[Chassé] & TNECS_COMPONENT_TYPE(test_world, Sprite)) > 0);
+    lok((test_world->entity_typeflags[Chassé] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
 
     temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
     lok(temp_position != NULL);

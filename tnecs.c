@@ -89,17 +89,14 @@ struct tnecs_World * tnecs_init() {
     for (size_t i = 0 ; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
 
         tnecs_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(tnecs_component_t));
-        tnecs_world->num_entities_bytype[i] = 1;
+        tnecs_world->num_entities_bytype[i] = 0;
         tnecs_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
         tnecs_world->components_flagbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(tnecs_component_t));
         tnecs_world->components_idbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(tnecs_component_t));
         tnecs_world->component_orderbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(size_t));
-        tnecs_world->num_components_bytype[i] = 1;
+        tnecs_world->num_components_bytype[i] = 0;
         tnecs_world->len_components_bytype[i] = TNECS_INITIAL_COMPONENT_LEN;
     }
-    TNECS_DEBUG_ASSERT(tnecs_world->num_entities_bytype[TNECS_NULL] == 1);
-    TNECS_DEBUG_ASSERT(tnecs_world->num_components_bytype[TNECS_NULL] == 1);
-
 
     tnecs_world->num_components = TNECS_NULLSHIFT;
     tnecs_world->num_systems = TNECS_NULLSHIFT;
@@ -164,7 +161,7 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
     if ((component_flag & entity_typeflag) > 0) {
         size_t typeflag_id = tnecs_typeflagid(in_world, entity_typeflag);
         size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
-        TNECS_DEBUG_ASSERT(component_order < in_world->num_entities_bytype[typeflag_id]);
+        TNECS_DEBUG_ASSERT(component_order <= in_world->num_entities_bytype[typeflag_id]);
         size_t entity_order = tnecs_entity_order_bytypeid(in_world, in_entity_id, typeflag_id);
         size_t bytesize = in_world->component_bytesizes[in_component_id];
         struct tnecs_Components_Array * comp_array = &in_world->components_bytype[typeflag_id][component_order];
@@ -250,6 +247,9 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
     tnecs_component_t flags_incommon = typeflag_new & typeflag_old;
     size_t num_incommon = setBits_KnR_uint64_t(flags_incommon);
+
+    printf("flags_incommon, typeflag_new, typeflag_old %d %d %d \n", flags_incommon, typeflag_new, typeflag_old);
+    printf("num_incommon %d \n", num_incommon);
 
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
@@ -458,6 +458,8 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
     }
     in_world->components_bytype[typeflag_id] = temp_comparray;
 
+
+    printf("num_flags, num_components %d %d \n", num_flags, num_components);
     TNECS_DEBUG_ASSERT(typeflag_added == in_typeflag);
     TNECS_DEBUG_ASSERT(num_flags == num_components);
 }
