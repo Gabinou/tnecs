@@ -413,20 +413,20 @@ void tnecs_test_component_add() {
     lok(temp_position->x == 5);
     lok(temp_position->y == 6);
 
-    // temp_unit = TNECS_GET_COMPONENT(Unit, Pirou);
-    // lok(temp_unit->hp == 0);
-    // lok(temp_unit->str == 0);
-    // temp_unit->hp = 7;
-    // temp_unit->str = 8;
-    // lok(temp_unit->hp == 7);
-    // lok(temp_unit->str == 8);
-    // temp_position = TNECS_GET_COMPONENT(Position, Pirou);
-    // lok(temp_position->x == 5);
-    // lok(temp_position->y == 6);
-    // temp_unit = TNECS_GET_COMPONENT(Unit, Pirou);
-    // lok(temp_unit->hp == 7);
-    // lok(temp_unit->str == 8);
-    // dupprintf(globalf,"\n");
+    temp_unit = TNECS_GET_COMPONENT(test_world, Pirou, Unit);
+    lok(temp_unit->hp == 0);
+    lok(temp_unit->str == 0);
+    temp_unit->hp = 7;
+    temp_unit->str = 8;
+    lok(temp_unit->hp == 7);
+    lok(temp_unit->str == 8);
+    temp_position = TNECS_GET_COMPONENT(test_world, Pirou, Position);
+    lok(temp_position->x == 5);
+    lok(temp_position->y == 6);
+    temp_unit = TNECS_GET_COMPONENT(test_world, Pirou, Unit);
+    lok(temp_unit->hp == 7);
+    lok(temp_unit->str == 8);
+    dupprintf(globalf, "\n");
 }
 
 void tnecs_test_hashing() {

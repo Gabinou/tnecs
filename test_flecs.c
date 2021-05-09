@@ -347,10 +347,10 @@ void tnecs_benchmarks() {
     t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Unit2);
-    for (size_t i = 2; i < ITERATIONS; i++) {
-        TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Position2);
-        TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Unit2);
-    }
+    // for (size_t i = 2; i < ITERATIONS; i++) {
+    //     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Position2);
+    //     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Unit2);
+    // }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);

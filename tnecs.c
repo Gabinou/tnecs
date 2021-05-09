@@ -33,14 +33,12 @@ uint64_t get_ns() {
     }
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
-    return (uint64_t)((1e9 * now.QuadPart)  / win_frequency.QuadPart);
+    return (uint64_t)((1e9 * now.QuadPart) / win_frequency.QuadPart);
 #endif
 }
 
 #ifdef MICROSECOND_CLOCK
-double get_us() {
-    return (get_ns() / 1e3);
-}
+extern double get_us();
 #else
 #  define FAILSAFE_CLOCK
 #  define get_us() (((double)clock())/CLOCKS_PER_SEC*1e6) // [us]
@@ -241,16 +239,13 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
 
     tnecs_component_t typeflag_old = in_world->entity_typeflags[in_entity];
     TNECS_DEBUG_ASSERT((typeflag_toadd != typeflag_old));
-
-    tnecs_component_t typeflag_old_id = tnecs_typeflagid(in_world, typeflag_old);
-    size_t num_components_previous = in_world->num_components_bytype[typeflag_old_id];
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
-    tnecs_component_t flags_incommon = typeflag_new & typeflag_old;
-    size_t num_incommon = setBits_KnR_uint64_t(flags_incommon);
 
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
-        tnecs_new_typeflag(in_world, num_components_toadd + num_components_previous - num_incommon, typeflag_new);
+        tnecs_new_typeflag(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
+        // } else {
+        // in_world->num_components_bytype[tnecs_typeflagid(in_world, typeflag_new)][in_entity] = num_components_toadd + num_components_previous - num_incommon;
     }
     tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
 
@@ -457,6 +452,8 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
 
 
     TNECS_DEBUG_ASSERT(typeflag_added == in_typeflag);
+    printf("in_typeflag %d \n", in_typeflag);
+    printf("num_flags, num_components %d %d \n", num_flags, num_components);
     TNECS_DEBUG_ASSERT(num_flags == num_components);
 }
 

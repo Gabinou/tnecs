@@ -1,6 +1,6 @@
 
 
-COMPILER := tcc # tcc, gcc, clang
+COMPILER := gcc # tcc, gcc, clang
 
 # OS AND Processor detection 
 ifeq ($(OS),Windows_NT)
