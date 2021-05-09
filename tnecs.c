@@ -160,25 +160,19 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
 
     tnecs_component_t component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
     tnecs_component_t entity_typeflag = TNECS_ENTITY_TYPEFLAG(in_world, in_entity_id);
-    printf("component_flag %d \n", component_flag);
-    printf("entity_typeflag %d \n", entity_typeflag);
 
     if ((component_flag & entity_typeflag) > 0) {
         size_t typeflag_id = tnecs_typeflagid(in_world, entity_typeflag);
-        // printf("typeflag_id %d \n", typeflag_id);
         size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
         TNECS_DEBUG_ASSERT(component_order < in_world->num_entities_bytype[typeflag_id]);
         size_t entity_order = tnecs_entity_order_bytypeid(in_world, in_entity_id, typeflag_id);
         size_t bytesize = in_world->component_bytesizes[in_component_id];
         struct tnecs_Components_Array * comp_array = &in_world->components_bytype[typeflag_id][component_order];
         tnecs_byte_t * temp_component_bytesptr = (tnecs_byte_t *)(comp_array->components);
-        // out_component = ;
         return (temp_component_bytesptr + (bytesize * entity_order));
     } else {
         return (NULL);
     }
-    // printf("HERE6\n");
-    // return (out_component);
 }
 
 void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Components_Array * in_array, size_t in_component_id) {
@@ -257,10 +251,10 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
         tnecs_new_typeflag(in_world, num_components_toadd + num_components_previous, typeflag_new);
     }
     // 2- Migrate entity in entities_bytype old_typeflag->typeflag_new, old_order->new_order
-    size_t entity_order_new = tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
+    tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
     // tnecs_component_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
     // 3- Migrate components_bytype old_typeflag->typeflag_new
-    // tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
+    size_t entity_order_new = tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
 }
 
 void tnecs_growArray_phase(struct tnecs_World * in_world) {
@@ -443,6 +437,7 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
 void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_components, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_array_new\n");
     // assumes new typeflag was added on top of world->typeflags
+    printf("in_typeflag %d \n", in_typeflag);
 
     struct tnecs_Components_Array * temp_comparray = (struct tnecs_Components_Array *)calloc(num_components, sizeof(struct tnecs_Components_Array));
     tnecs_component_t typeflag_reduced = in_typeflag;
@@ -453,6 +448,8 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
     while (typeflag_reduced) {
         typeflag_reduced &= (typeflag_reduced - 1);
         type_toadd = (typeflag_reduced + typeflag_added) ^ in_typeflag;
+        printf("type_toadd %d \n", type_toadd);
+
         id_toadd = TNECS_COMPONENT_TYPE2ID(type_toadd);
         tnecs_component_array_init(in_world, &temp_comparray[num_flags], id_toadd);
         num_flags++;
@@ -460,6 +457,10 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
     }
     in_world->components_bytype[typeflag_id] = temp_comparray;
 
+    printf("num_flags %d \n", num_flags);
+    printf("typeflag_added %d \n", typeflag_added);
+    printf("num_components %d \n", num_components);
+    TNECS_DEBUG_ASSERT(typeflag_added == in_typeflag);
     TNECS_DEBUG_ASSERT(num_flags == num_components);
 }
 
@@ -665,9 +666,7 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
     struct tnecs_Components_Array * current_array;
     size_t current_component_id;
 
-    printf("new_component_num %d \n", new_component_num);
     for (size_t corder = 0; corder < new_component_num; corder++) {
-        printf("corder %d \n", corder);
         current_array = &in_world->components_bytype[in_typeflag_id][corder];
         current_component_id = in_world->components_idbytype[in_typeflag_id][corder];
 

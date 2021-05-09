@@ -347,10 +347,10 @@ void tnecs_test_component_add() {
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
     TNECS_ADD_COMPONENT(test_world, Silou, Unit);
-    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
-    // TNECS_ADD_COMPONENT(test_world, Silou, Unit);
-    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
-    // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
+    lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
+    TNECS_ADD_COMPONENT(test_world, Silou, Unit);
+    lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
+    lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
 
     // TNECS_ADD_COMPONENT(test_world, Pirou, Position);
