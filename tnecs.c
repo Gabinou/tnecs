@@ -258,7 +258,7 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     size_t entity_order_new = tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
     // tnecs_component_t typeflag_id_new = tnecs_typeflagid(in_world, typeflag_new);
     // 3- Migrate components_bytype old_typeflag->typeflag_new
-    // tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
+    tnecs_component_migrate(in_world, in_entity, entity_order_new, typeflag_new);
 }
 
 void tnecs_growArray_phase(struct tnecs_World * in_world) {
@@ -591,10 +591,9 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
     TNECS_DEBUG_PRINTF("  typeflag to add %d\n", typeflag);
     tnecs_entity_t new_entity = tnecs_new_entity(in_world);
     size_t typeflag_id = tnecs_new_typeflag(in_world, argnum, typeflag);
-    in_world->entity_typeflags[new_entity] = typeflag;
 
     tnecs_entitiesbytype_migrate(in_world, new_entity, TNECS_NOCOMPONENT_TYPEFLAG, typeflag);
-    // tnecs_component_add(in_world, typeflag);
+    tnecs_component_add(in_world, typeflag);
     return (new_entity);
 }
 
@@ -652,7 +651,7 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
     TNECS_DEBUG_PRINTF("tnecs_component_add \n");
 
     // 1- Check if component array has enough room
-    size_t in_typeflag_id = tnecs_type_id(in_world->typeflags, in_world->num_typeflags, in_typeflag);
+    size_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     size_t new_component_num = in_world->num_components_bytype[in_typeflag_id];
     struct tnecs_Components_Array * current_array;
     size_t current_component_id;
@@ -671,44 +670,56 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
     }
 }
 
-void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag) {
+void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_typeflag, tnecs_component_t new_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_copy \n");
+    printf("old_flag %d \n", old_typeflag);
+    TNECS_DEBUG_ASSERT(old_typeflag != NULL);
 
-    // For use by componentsbytype_migrate
-    size_t old_type_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, old_flag);
-    size_t new_type_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, new_flag);
-    size_t old_component_num = in_world->num_components_bytype[old_type_id];
-    size_t new_component_num = in_world->num_components_bytype[new_type_id];
+    size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
+    size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
+
+
+    size_t old_component_num = in_world->num_components_bytype[old_typeflag_id];
+    size_t new_component_num = in_world->num_components_bytype[new_typeflag_id];
     size_t old_component_id, new_component_id;
-    size_t old_entity_order = tnecs_entity_order_bytypeid(in_world, in_entity, old_type_id);
-    size_t new_entity_order = in_world->num_entities_bytype[new_type_id]++;
+    size_t old_entity_order = tnecs_entity_order_bytypeid(in_world, in_entity, old_typeflag_id);
+    size_t new_entity_order = in_world->num_entities_bytype[new_typeflag_id]++;
     size_t component_bytesize;
     tnecs_byte_t * old_component_ptr, * new_component_ptr;
     tnecs_byte_t * temp_component_bytesptr;
-    for (size_t old_corder = 0; old_corder < in_world->num_components_bytype[old_type_id]; old_corder++) {
-        old_component_id = in_world->components_idbytype[old_type_id][old_corder];
-        for (size_t new_corder = 0; new_corder < in_world->num_components_bytype[new_type_id]; new_corder++) {
-            new_component_id = in_world->components_idbytype[new_type_id][new_corder];
+    printf("HERE\n");
+    for (size_t old_corder = 0; old_corder < in_world->num_components_bytype[old_typeflag_id]; old_corder++) {
+        old_component_id = in_world->components_idbytype[old_typeflag_id][old_corder];
+        printf("HERE2\n");
+        for (size_t new_corder = 0; new_corder < in_world->num_components_bytype[new_typeflag_id]; new_corder++) {
+            new_component_id = in_world->components_idbytype[new_typeflag_id][new_corder];
+            printf("HERE3\n");
             if (old_component_id == new_component_id) {
                 component_bytesize = in_world->component_bytesizes[old_component_id];
-                temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[old_type_id][old_corder].components);
+                printf("HERE4\n");
+                printf("old_type_id, old_corder %d %d \n", old_typeflag_id, old_corder);
+                temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[old_typeflag_id][old_corder].components);
+                TNECS_DEBUG_ASSERT(temp_component_bytesptr != NULL);
+
                 old_component_ptr = temp_component_bytesptr + (component_bytesize * old_entity_order);
-                temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[new_type_id][new_corder].components);
+
+                TNECS_DEBUG_ASSERT(old_component_ptr != NULL);
+                temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[new_typeflag_id][new_corder].components);
                 new_component_ptr = (tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * new_entity_order));
+                TNECS_DEBUG_ASSERT(new_component_ptr != NULL);
                 memcpy(new_component_ptr, old_component_ptr, component_bytesize);
                 break;
             }
         }
     }
-    // in_world->num_entities_bytype[old_type_id]++;
+
 }
 
 void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_del \n");
 
     // for input entity, delete ALL components from componentsbytype
-    // DOES NOT TOUCHE ENTITIES_BY TYPE OR ANYTHING.
-    size_t old_typeflag_id = tnecs_type_id(in_world->system_typeflags, in_world->num_typeflags, old_typeflag);
+    size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
     size_t old_component_num = in_world->num_components_bytype[old_typeflag_id];
     size_t entity_order_old = tnecs_entity_order_bytype(in_world, in_entity, old_typeflag);
     size_t component_order_current;
@@ -729,37 +740,23 @@ void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity
         memset(next_component_ptr, 0, component_bytesize);
 
     }
-    // in_world->num_entities_bytype[old_typeflag]--;
 }
 
-bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t entity_order_new, tnecs_component_t new_flag) {
+bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t entity_order_new, tnecs_component_t new_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_migrate \n");
 
     // Migrates components associated with in_entity: old_flag -> new_flag
     //      -> copies attached components in componentsbytype old_flag -> new_flag
     //      -> deletes attachated components old_flag, reorders.
     //      -> deletes in_entity from entities_by_type of old_flag, reorders.
-    tnecs_component_t old_flag = in_world->entity_typeflags[in_entity];
-    if (old_flag > TNECS_NULL) {
-        tnecs_component_copy(in_world, in_entity, old_flag, new_flag);
-        tnecs_component_del(in_world, in_entity, old_flag);
+    tnecs_component_t old_typeflag = in_world->entity_typeflags[in_entity];
+    if (old_typeflag > TNECS_NULL) {
+        tnecs_component_copy(in_world, in_entity, old_typeflag, new_typeflag);
+        tnecs_component_del(in_world, in_entity, old_typeflag);
     } else {
-        tnecs_component_add(in_world, new_flag);
+        tnecs_component_add(in_world, new_typeflag);
     }
-    tnecs_entitiesbytype_migrate(in_world, in_entity, old_flag, new_flag);
-}
-
-size_t tnecs_type_id(tnecs_component_t * in_typelist, size_t len, tnecs_component_t in_flag) {
-    TNECS_DEBUG_PRINTF("tnecs_type_id \n");
-
-    size_t found = TNECS_NULL;
-    for (size_t i = 0; i < len; i++) {
-        if (in_typelist[i] == in_flag) {
-            found = i;
-            break;
-        }
-    }
-    return (found);
+    tnecs_entitiesbytype_migrate(in_world, in_entity, old_typeflag, new_typeflag);
 }
 
 size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_typeflag) {

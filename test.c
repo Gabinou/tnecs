@@ -323,8 +323,8 @@ void tnecs_test_entity_creation() {
     temp_position = NULL;
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     if (temp_unit != NULL) {
-        lok(temp_position->x == 3);
-        lok(temp_position->y == 6);
+        lok(temp_unit->hp == 3);
+        lok(temp_unit->str == 6);
     } else {
         lok(false);
     }
@@ -546,7 +546,7 @@ int main() {
     lrun("s_regis", tnecs_test_system_registration);
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
-    lrun("hashing", tnecs_test_hashing);
+    // lrun("hashing", tnecs_test_hashing);
     lresults();
 
     // tnecs_benchmarks();
