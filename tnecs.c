@@ -251,10 +251,6 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t flags_incommon = typeflag_new & typeflag_old;
     size_t num_incommon = setBits_KnR_uint64_t(flags_incommon);
 
-    printf("num_components_previous, typeflag_old %d,%d \n", num_components_previous, typeflag_old);
-    printf("num_components_toadd, typeflag_toadd %d,%d \n", num_components_toadd, typeflag_toadd);
-    printf("flags_incommon, num_incommon %d,%d \n", flags_incommon, num_incommon);
-
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
         tnecs_new_typeflag(in_world, num_components_toadd + num_components_previous - num_incommon, typeflag_new);
@@ -444,7 +440,6 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
 void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_components, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_array_new\n");
     // assumes new typeflag was added on top of world->typeflags
-    printf("in_typeflag %d \n", in_typeflag);
 
     struct tnecs_Components_Array * temp_comparray = (struct tnecs_Components_Array *)calloc(num_components, sizeof(struct tnecs_Components_Array));
     tnecs_component_t typeflag_reduced = in_typeflag;
@@ -455,7 +450,6 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
     while (typeflag_reduced) {
         typeflag_reduced &= (typeflag_reduced - 1);
         type_toadd = (typeflag_reduced + typeflag_added) ^ in_typeflag;
-        printf("type_toadd %d \n", type_toadd);
 
         id_toadd = TNECS_COMPONENT_TYPE2ID(type_toadd);
         tnecs_component_array_init(in_world, &temp_comparray[num_flags], id_toadd);
@@ -464,9 +458,6 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
     }
     in_world->components_bytype[typeflag_id] = temp_comparray;
 
-    printf("num_flags %d \n", num_flags);
-    printf("typeflag_added %d \n", typeflag_added);
-    printf("num_components %d \n", num_components);
     TNECS_DEBUG_ASSERT(typeflag_added == in_typeflag);
     TNECS_DEBUG_ASSERT(num_flags == num_components);
 }
