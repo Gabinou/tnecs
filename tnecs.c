@@ -248,11 +248,12 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t typeflag_old_id = tnecs_typeflagid(in_world, typeflag_old);
     size_t num_components_previous = in_world->num_components_bytype[typeflag_old_id];
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
-    tnecs_component_t flags_incommon = typeflag_new & typeflag_old
-                                       size_t num_incommon;
+    tnecs_component_t flags_incommon = typeflag_new & typeflag_old;
+    size_t num_incommon = setBits_KnR_uint64_t(flags_incommon);
 
     printf("num_components_previous, typeflag_old %d,%d \n", num_components_previous, typeflag_old);
     printf("num_components_toadd, typeflag_toadd %d,%d \n", num_components_toadd, typeflag_toadd);
+    printf("flags_incommon, num_incommon %d,%d \n", flags_incommon, num_incommon);
 
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
@@ -957,9 +958,9 @@ uint64_t tnecs_hash_sdbm(const unsigned char * str) {
     return (hash);
 }
 
-int8_t setBits_KnR_uint64_t(uint64_t in_flags) {
+size_t setBits_KnR_uint64_t(uint64_t in_flags) {
 // Credits to Kernighan and Ritchie in the C Programming Language
-// should output -1 on error     uint64_t count = 0;
+    size_t count = 0;
     while (in_flags) {
         in_flags &= (in_flags - 1);
         count++;
