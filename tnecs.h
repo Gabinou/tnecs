@@ -357,7 +357,7 @@ struct tnecs_World {
     tnecs_component_t ** components_idbytype;            // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;          // [typeflag_id][component_order_bytype]
     size_t ** component_orderbytype;                     // [typeflag_id][component_id]
-    char ** component_str;
+    char ** component_names;
 
     // len is allocated size
     // num is active elements in array
@@ -444,10 +444,10 @@ struct tnecs_World * tnecs_init();
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, tnecs_hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)));\
 
-#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, tnecs_hash_djb2(#name), sizeof(name))
+#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 // Error if component registered twice -> user responsibility
 
-void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, size_t in_bytesize);
+void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isexclusive, size_t component_num, tnecs_component_t component_typeflag);
 
 // ****************** ENTITY MANIPULATION ************************

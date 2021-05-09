@@ -77,6 +77,9 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->len_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->num_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
 
+    tnecs_world->component_names = calloc(TNECS_COMPONENT_CAP, sizeof(*tnecs_world->component_names));
+
+
     tnecs_world->components_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->num_components_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
     tnecs_world->len_components_bytype = calloc(TNECS_INITIAL_SYSTEM_CAP, sizeof(tnecs_component_t));
@@ -619,14 +622,19 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     }
 }
 
-void tnecs_register_component(struct tnecs_World * in_world, uint64_t in_hash, size_t in_bytesize) {
+void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_register_component\n");
+
+    tnecs_hash_t in_hash = tnecs_hash_djb2(in_name);
 
     if (in_world->num_components < TNECS_COMPONENT_CAP) {
         in_world->component_hashes[in_world->num_components] = in_hash;
         tnecs_component_t new_component_flag =  TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
         size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
         in_world->component_bytesizes[in_world->num_components] = in_bytesize;
+        char * temp_str = malloc(strlen(in_name));
+        strcpy(temp_str, in_name);
+        in_world->component_names[in_world->num_components] = temp_str;
         in_world->num_components++;
     } else {
         printf("TNECS ERROR: Cannot register more than 63 components");
