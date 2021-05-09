@@ -1,6 +1,54 @@
 
 #include "tnecs.h"
 
+// uint64_t get_ns() {
+//     static uint64_t is_init = 0;
+// #if defined(__APPLE__)
+//     static mach_timebase_info_data_t info;
+//     if (0 == is_init) {
+//         mach_timebase_info(&info);
+//         is_init = 1;
+//     }
+//     uint64_t now;
+//     now = mach_absolute_time();
+//     now *= info.numer;
+//     now /= info.denom;
+//     return now;
+// #elif defined(__linux)
+//     static struct timespec linux_rate;
+//     if (0 == is_init) {
+//         clock_getres(CLOCKID, &linux_rate);
+//         is_init = 1;
+//     }
+//     uint64_t now;
+//     struct timespec spec;
+//     clock_gettime(CLOCKID, &spec);
+//     now = spec.tv_sec * 1.0e9 + spec.tv_nsec;
+//     return now;
+// #elif defined(_WIN32)
+//     static LARGE_INTEGER win_frequency;
+//     if (0 == is_init) {
+//         QueryPerformanceFrequency(&win_frequency);
+//         is_init = 1;
+//     }
+//     LARGE_INTEGER now;
+//     QueryPerformanceCounter(&now);
+//     return (uint64_t)((1e9 * now.QuadPart)  / win_frequency.QuadPart);
+// #endif
+// }
+
+
+// #ifdef MICROSECOND_CLOCK
+// double get_us() {
+//     return (get_ns() / 1e3);
+// }
+// #else
+// #  define FAILSAFE_CLOCK
+// #  define get_us() (((double)clock())/CLOCKS_PER_SEC*1e6) // [us]
+// #  define get_ns() (((double)clock())/CLOCKS_PER_SEC*1e9) // [ns]
+// #endif
+
+
 struct tnecs_World * tnecs_init() {
     TNECS_DEBUG_PRINTF("tnecs_init\n");
 
@@ -77,11 +125,11 @@ void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
     tnecs_time_ns_t progress_time = get_ns();
-    for(size_t system_id = 0; system_id < in_world->num_systems; system_id++) {
+    for (size_t system_id = 0; system_id < in_world->num_systems; system_id++) {
         current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]) ;
         current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
         in_world->systems[system_id](&current_input);
-    } 
+    }
     progress_time = get_ns() - progress_time;
 }
 
