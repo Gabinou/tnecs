@@ -329,8 +329,6 @@ void tnecs_test_entity_creation() {
         lok(false);
     }
 
-    printf("test_world->entity_typeflags[Perignon] %d %d %d \n", test_world->entity_typeflags[Perignon], (TNECS_COMPONENT_NAME2ID(test_world, Position) +  TNECS_COMPONENT_NAME2ID(test_world, Unit)));
-
     lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == 2);
     lok((TNECS_COMPONENT_NAME2ID(test_world, Unit) + TNECS_COMPONENT_NAME2ID(test_world, Position)) == 3);
