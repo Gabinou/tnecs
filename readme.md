@@ -4,10 +4,10 @@ Tiny C99 Entity-Component-System (ECS) library.
 Originally created for use in a game I am developping using C99: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
 
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
-    * OOP: Objects/Classes contain data and methods. 
+* OOP: Objects/Classes contain data and methods. 
 Methods act on objects. 
 Children classes inherit methods and data structure from parents. 
-    * ECS: Components are purely data.
+* ECS: Components are purely data.
 Any number of components can be attached to an entity.
 Entities are acted upon by systems. 
 
