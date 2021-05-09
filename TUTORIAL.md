@@ -24,14 +24,17 @@ A component is a user-defined struct:
 
     TNECS_REGISTER_COMPONENT(test_world, Position);
 ```
-Then, the component's type and id can be obtained using:
-```c
-    tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(test_world, Position); 
-    size_t Position_id = TNECS_COMPONENT_ID(test_world, Position);
-```
+When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and stored at ```tnecs_world->component_hashes[component_id]```.
+```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
+
 ```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag only has one bit set, at component_id location. For now, this implies that a maximal number of 63 components can be registered.
 
 NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. for a component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. for system typeflags. 
+
+The component's type can be obtained with:
+```c
+    tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(test_world, Position); 
+```
 
 The relation between component ids and flags is:
 ```c
@@ -43,9 +46,6 @@ which are accessible through the macros:
     Position_id == TNECS_COMPONENT_ID2TYPE(Position_flag);
     Position_flag == TNECS_COMPONENT_TYPE2ID(Position_id);
 ```
-
-When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and stored at ```tnecs_world->component_hashes[component_id]```.
-```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
 
 You can get a component id with:
 ```c
@@ -69,8 +69,7 @@ Or, if you wish:
     pos_Silou->x += 1;
     pos_Silou->y += 2;
 ```
-
-By default, all component bits are set to zero.
+By default, all component bits are set to zero with ```calloc```.
 
 Entities can be created with any number of components directly with this variadic macro: 
 ```c
