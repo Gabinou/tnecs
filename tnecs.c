@@ -192,7 +192,6 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
     in_array->components = calloc(TNECS_INITIAL_ENTITY_LEN, bytesize);
 }
 
-
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_realloc\n");
     // void * temp = (void *)calloc(new_len, elem_bytesize);

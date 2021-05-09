@@ -303,11 +303,9 @@ struct tnecs_World * tnecs_init();
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(tnecs_hash_djb2, __VA_ARGS__))
-
-#define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
-#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) (name *)tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
 #define TNECS_TYPEFLAGID(world, typeflag) tnecs_typeflagid(in_world, typeflag)
+
 
 #define TNECS_COMPONENT_HASH(name) TNECS_HASH(name)
 #define TNECS_COMPONENT_NAME2HASH(name) TNECS_NAME2HASH(name)
@@ -340,6 +338,9 @@ struct tnecs_World * tnecs_init();
 #define TNECS_ADD_COMPONENT4(world, entity_id, isnewtype, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), isnewtype)
 
 #define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
+
+#define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
+#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) (name *)tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
 
 // ************************ COMPONENT AND SYSTEM REGISTERING ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, phase, isexcl, ...) tnecs_register_system(world, tnecs_hash_djb2(#pfunc), &pfunc, phase, isexcl,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)));\
