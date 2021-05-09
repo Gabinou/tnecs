@@ -248,13 +248,15 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t typeflag_old_id = tnecs_typeflagid(in_world, typeflag_old);
     size_t num_components_previous = in_world->num_components_bytype[typeflag_old_id];
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
+    tnecs_component_t flags_incommon = typeflag_new & typeflag_old
+                                       size_t num_incommon;
 
     printf("num_components_previous, typeflag_old %d,%d \n", num_components_previous, typeflag_old);
     printf("num_components_toadd, typeflag_toadd %d,%d \n", num_components_toadd, typeflag_toadd);
 
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
-        tnecs_new_typeflag(in_world, num_components_toadd + num_components_previous, typeflag_new);
+        tnecs_new_typeflag(in_world, num_components_toadd + num_components_previous - num_incommon, typeflag_new);
     }
     tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
 
@@ -750,7 +752,6 @@ void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity
             memcpy(current_component_ptr, next_component_ptr, component_bytesize);
             memset(next_component_ptr, 0, component_bytesize);
         }
-
     }
 }
 
@@ -955,3 +956,14 @@ uint64_t tnecs_hash_sdbm(const unsigned char * str) {
     }
     return (hash);
 }
+
+int8_t setBits_KnR_uint64_t(uint64_t in_flags) {
+// Credits to Kernighan and Ritchie in the C Programming Language
+// should output -1 on error     uint64_t count = 0;
+    while (in_flags) {
+        in_flags &= (in_flags - 1);
+        count++;
+    }
+    return (count);
+}
+

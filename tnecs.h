@@ -426,6 +426,10 @@ uint64_t tnecs_hash_sdbm(const unsigned char * str);
 #define TNECS_HASH(name) tnecs_hash_djb2(#name)
 #define TNECS_NAME2HASH(name) TNECS_HASH(name)
 
+// ****************** SET BIT COUNTING ************************
+int8_t setBits_KnR_uint64_t(uint64_t in_flags);
+
+
 
 #ifdef __cplusplus
 }
