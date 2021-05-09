@@ -248,9 +248,6 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t flags_incommon = typeflag_new & typeflag_old;
     size_t num_incommon = setBits_KnR_uint64_t(flags_incommon);
 
-    printf("flags_incommon, typeflag_new, typeflag_old %d %d %d \n", flags_incommon, typeflag_new, typeflag_old);
-    printf("num_incommon %d \n", num_incommon);
-
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
         tnecs_new_typeflag(in_world, num_components_toadd + num_components_previous - num_incommon, typeflag_new);
@@ -459,7 +456,6 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
     in_world->components_bytype[typeflag_id] = temp_comparray;
 
 
-    printf("num_flags, num_components %d %d \n", num_flags, num_components);
     TNECS_DEBUG_ASSERT(typeflag_added == in_typeflag);
     TNECS_DEBUG_ASSERT(num_flags == num_components);
 }
