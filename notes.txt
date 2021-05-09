@@ -5,8 +5,6 @@ Arrays are much faster than hash tables.
 TO DO:
 	RENAME MACROS/FUNCTIONS/EVERYTHING
 
-	get_system_order function
-		
 	set system phase upon system registration (DONE?)
 		+ overloaded macro?
 	set_system_phase function + associated macro
@@ -17,7 +15,7 @@ TO DO:
 
 	component_remove from entity 
 
-	World Progress. HOW TO NAME IT?
+	World Progress. DONE BUT HOW TO NAME IT?
 		-> Input time since last frame
 		-> measure frame time anyway -> unless input non->zero.
 
