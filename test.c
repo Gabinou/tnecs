@@ -354,6 +354,7 @@ void tnecs_test_component_add() {
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
+    TNECS_ADD_COMPONENT(test_world, Silou, Unit);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     // TNECS_ADD_COMPONENT(test_world, Silou, Unit);
     // lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
@@ -374,7 +375,8 @@ void tnecs_test_component_add() {
     // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Sprite)) > 0);
     // lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
 
-    // temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
+    temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
+    lok(temp_position != NULL);
     // lok(temp_position->x == 0);
     // lok(temp_position->y == 0);
     // temp_position->x = 1;
@@ -385,7 +387,8 @@ void tnecs_test_component_add() {
     // lok(temp_position->x == 1);
     // lok(temp_position->y == 2);
 
-    // temp_unit = TNECS_GET_COMPONENT(Unit, Silou);
+    temp_unit = TNECS_GET_COMPONENT(test_world, Silou, Unit);
+    lok(temp_unit != NULL);
     // lok(temp_unit->hp == 0);
     // lok(temp_unit->str == 0);
     // temp_unit->hp = 3;
