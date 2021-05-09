@@ -155,19 +155,38 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, tnecs_component_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_get_component\n");
 
+    printf("HERE0\n");
     tnecs_component_t component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
+    printf("HERE1\n");
     tnecs_component_t entity_typeflag = TNECS_ENTITY_TYPEFLAG(in_world, in_entity_id);
-    void * out_component = NULL;
+    printf("HERE2\n");
+    printf("component_flag %d \n", component_flag);
+    printf("entity_typeflag %d \n", entity_typeflag);
+
+    // void * out_component = NULL;
+    printf("HEREO\n");
     if ((component_flag & entity_typeflag) > 0) {
+        printf("HERE3\n");
         size_t typeflag_id = tnecs_typeflagid(in_world, entity_typeflag);
+        printf("typeflag_id %d \n", typeflag_id);
+        printf("HERE4\n");
         size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
+        printf("HERE5\n");
+        TNECS_DEBUG_ASSERT(component_order < in_world->num_entities_bytype[typeflag_id]);
+        printf("HERE6\n");
         size_t entity_order = tnecs_entity_order_bytypeid(in_world, in_entity_id, typeflag_id);
+        printf("HERE7\n");
         size_t bytesize = in_world->component_bytesizes[in_component_id];
         struct tnecs_Components_Array * comp_array = &in_world->components_bytype[typeflag_id][component_order];
         tnecs_byte_t * temp_component_bytesptr = (tnecs_byte_t *)(comp_array->components);
-        out_component = temp_component_bytesptr + (bytesize * entity_order);
+        // out_component = ;
+        return (temp_component_bytesptr + (bytesize * entity_order));
+    } else {
+        printf("HEREFALSE\n");
+        return (NULL);
     }
-    return (out_component);
+    // printf("HERE6\n");
+    // return (out_component);
 }
 
 void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Components_Array * in_array, size_t in_component_id) {

@@ -310,24 +310,41 @@ void tnecs_test_entity_creation() {
     lok(test_world->next_entity_id == (TNECS_ID_START + 2));
     lok(Silou != Pirou);
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
-    lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
+    printf("TEST HERE\n");
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
-    lok(temp_position->x == 0);
-    lok(temp_position->y == 0);
-    temp_position->x = 3;
-    temp_position->y = 6;
+    printf("TEST HERE\n");
+    if (temp_unit != NULL) {
+        lok(temp_position->x == 0);
+        lok(temp_position->y == 0);
+        temp_position->x = 3;
+        temp_position->y = 6;
+    } else {
+        lok(false);
+    }
 
     temp_position = NULL;
+    printf("TEST HERE\n");
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
-    lok(temp_position->x == 3);
-    lok(temp_position->y == 6);
+    if (temp_unit != NULL) {
+        lok(temp_position->x == 3);
+        lok(temp_position->y == 6);
+    } else {
+        lok(false);
+    }
 
+    lok(test_world->entity_typeflags[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world, Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
+
+    printf("TEST HERE\n");
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_sprite == NULL);
-
+    printf("TEST HERE\n");
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
-    lok(temp_unit->hp  == 0);
-    lok(temp_unit->str == 0);
+    if (temp_unit != NULL) {
+        lok(temp_unit->hp  == 0);
+        lok(temp_unit->str == 0);
+    } else {
+        lok(false);
+    }
 
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
