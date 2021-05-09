@@ -154,65 +154,6 @@ enum TNECS_RUN_PHASES {
 #define TNECS_FOREACH_1(macro, x)\
     macro(x)
 
-#define TNECS_FOREACH_SUM_1(macro, x)\
-    macro(x)
-
-#define TNECS_FOREACH_SUM_2(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_1(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_3(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_2(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_4(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_3(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_5(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_4(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_6(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_5(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_7(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_6(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SUM_8(macro, x, ...)\
-    macro(x)+\
-    TNECS_FOREACH_SUM_7(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_2(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_1(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_3(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_2(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_4(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_3(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_5(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_4(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_6(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_5(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_7(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_6(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_NEWLINE_8(macro, x, ...)\
-    macro(x);\
-    TNECS_FOREACH_NEWLINE_7(macro,  __VA_ARGS__)
-
 #define TNECS_FOREACH_COMMA_1(macro, x, ...)\
     macro(x)
 
@@ -278,56 +219,17 @@ enum TNECS_RUN_PHASES {
     macro(#x),\
     TNECS_FOREACH_SCOMMA_7(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_SSUM_1(macro, x)\
-    macro(#x)
-
-#define TNECS_FOREACH_SSUM_2(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_S1(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_3(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_2(macro, __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_4(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_3(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_5(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_4(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_6(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_5(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_7(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_6(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SSUM_8(macro, x, ...)\
-    macro(#x)+\
-    TNECS_FOREACH_SSUM_7(macro,  __VA_ARGS__)
-
 #define TNECS_VARMACRO_EACH_ARGN(...) TNECS_VARMACRO_EACH_ARGN_(__VA_ARGS__, TNECS_VARMACRO_VARG_SEQ())
 #define TNECS_VARMACRO_EACH_ARGN_(...) TNECS_VARMACRO_ARGN(__VA_ARGS__)
 #define TNECS_VARMACRO_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
 #define TNECS_VARMACRO_VARG_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
 
-#define TNECS_VARMACRO_FOREACH_SUM_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SUM_, N)(macro, __VA_ARGS__)
-#define TNECS_VARMACRO_FOREACH_SUM(macro, ...) TNECS_VARMACRO_FOREACH_SUM_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
-
 #define TNECS_VARMACRO_FOREACH_COMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_COMMA(macro, ...) TNECS_VARMACRO_FOREACH_COMMA_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
-
-#define TNECS_VARMACRO_FOREACH_SSUM_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SSUM_, N)(macro, __VA_ARGS__)
-#define TNECS_VARMACRO_FOREACH_SSUM(macro, ...) TNECS_VARMACRO_FOREACH_SSUM_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 #define TNECS_VARMACRO_FOREACH_SCOMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SCOMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
-#define TNECS_VARMACRO_FOREACH_NEWLINE_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_COMMA_, N)(macro, __VA_ARGS__)
-#define TNECS_VARMACRO_FOREACH_NEWLINE(macro, ...) TNECS_VARMACRO_FOREACH_NEWLINE_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 // ************************ TNECS STRUCTS DEFINITIONS *****************************
 struct tnecs_System_Input {
