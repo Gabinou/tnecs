@@ -275,50 +275,6 @@ void tnecs_benchmarks() {
     double t_0;
     double t_1;
 
-    // struct Unit_Hash * unit_hash = NULL;
-
-    // t_0 = get_us();
-    // for (size_t i = 0; i < ARRAY_LEN; i++) {
-    //     unit_array[i].hp = Unit_default.hp;
-    //     unit_array[i].str = Unit_default.str;
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_array init: %d iterations \n", ARRAY_LEN);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
-
-    // struct Unit temp_unitnp;
-    // t_0 = get_us();
-    // for (size_t i = 0; i < ARRAY_LEN; i++) {
-    //     temp_unitnp.hp = i;
-    //     temp_unitnp.str = i * 2;
-    //     hmput(unit_hash, i, temp_unitnp);
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_hash init: %d iterations \n", ARRAY_LEN);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
-
-    // t_0 = get_us();
-    // for (size_t i = 0; i < ITERATIONS; i++) {
-    //     unit_array[(i % ARRAY_LEN)].hp++;
-    //     unit_array[(i % ARRAY_LEN)].str++;
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_array operations: %d iterations \n", ITERATIONS);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
-
-    // t_0 = get_us();
-    // size_t index;
-    // for (size_t i = 0; i < ITERATIONS; i++) {
-    //     index = (i % ARRAY_LEN);
-    //     temp_unitnp = hmget(unit_hash, index);
-    //     temp_unitnp.hp++;
-    //     temp_unitnp.str++;
-    //     hmput(unit_hash, index, temp_unitnp);
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_hash operations: %d iterations \n", ITERATIONS);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
-
     t_0 = get_us();
     struct tnecs_World * bench_world = tnecs_init();
     t_1 = get_us();
@@ -347,10 +303,10 @@ void tnecs_benchmarks() {
     t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Unit2);
-    // for (size_t i = 2; i < ITERATIONS; i++) {
-    //     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Position2);
-    //     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Unit2);
-    // }
+    for (size_t i = 2; i < ITERATIONS; i++) {
+        TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Position2);
+        TNECS_ADD_COMPONENT(bench_world, tnecs_entities[i], false, Unit2);
+    }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);

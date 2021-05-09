@@ -452,8 +452,6 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
 
 
     TNECS_DEBUG_ASSERT(typeflag_added == in_typeflag);
-    printf("in_typeflag %d \n", in_typeflag);
-    printf("num_flags, num_components %d %d \n", num_flags, num_components);
     TNECS_DEBUG_ASSERT(num_flags == num_components);
 }
 
