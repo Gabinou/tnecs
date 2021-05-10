@@ -48,6 +48,15 @@ extern double get_us();
 void tnecs_world_death(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_world_death\n");
     free(in_world->entities);
+    free(in_world->entity_order);
+    free(in_world->typeflags);
+    free(in_world->entity_typeflags);
+    free(in_world->system_typeflags);
+    free(in_world->system_exclusive);
+    free(in_world->system_phase);
+    free(in_world->system_hashes);
+    free(in_world->systems);
+    
     free(in_world);
 }
 
