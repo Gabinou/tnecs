@@ -257,7 +257,7 @@ struct tnecs_World {
     tnecs_entity_t ** entities_bytype;                   // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;            // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;          // [typeflag_id][component_order_bytype]
-    size_t ** component_orderbytype;                     // [typeflag_id][component_id]
+    size_t ** components_orderbytype;                     // [typeflag_id][component_id]
     char ** component_names;
 
     // len is allocated size
