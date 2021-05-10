@@ -90,10 +90,6 @@ struct tnecs_World * tnecs_init() {
         tnecs_world->num_entities_bytype[i] = 0;
         tnecs_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
 
-        // tnecs_world->components_flagbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(**tnecs_world->components_flagbytype));
-        // tnecs_world->components_idbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(**tnecs_world->components_idbytype));
-        // tnecs_world->components_orderbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(**tnecs_world->components_orderbytype));
-
         tnecs_world->num_components_bytype[i] = 0;
         tnecs_world->len_components_bytype[i] = TNECS_INITIAL_COMPONENT_LEN;
     }
@@ -175,8 +171,11 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
 void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Components_Array * in_array, size_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_component_array_init\n");
 
+    TNECS_DEBUG_ASSERT(in_component_id > 0);
     tnecs_component_t in_type = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
     size_t bytesize = in_world->component_bytesizes[in_component_id];
+    printf("in_component_id %d \n", in_component_id);
+    TNECS_DEBUG_ASSERT(bytesize > 0);
     in_array->type = in_type;
     in_array->num_components = 0;
     in_array->len_components = TNECS_INITIAL_ENTITY_LEN;
@@ -446,6 +445,7 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
         type_toadd = (typeflag_reduced + typeflag_added) ^ in_typeflag;
 
         id_toadd = TNECS_COMPONENT_TYPE2ID(type_toadd);
+        TNECS_DEBUG_ASSERT(id_toadd > 0);
         tnecs_component_array_init(in_world, &temp_comparray[num_flags], id_toadd);
         num_flags++;
         typeflag_added += type_toadd;
@@ -623,12 +623,13 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
 
     if (in_world->num_components < TNECS_COMPONENT_CAP) {
         in_world->component_hashes[in_world->num_components] = in_hash;
-        tnecs_component_t new_component_flag =  TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
-        size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
+        tnecs_component_t new_component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
         in_world->component_bytesizes[in_world->num_components] = in_bytesize;
+        TNECS_DEBUG_ASSERT(in_bytesize > 0);
         char * temp_str = malloc(strlen(in_name));
         strncpy(temp_str, in_name, strlen(in_name));
         in_world->component_names[in_world->num_components] = temp_str;
+        size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
         in_world->num_components++;
     } else {
         printf("TNECS ERROR: Cannot register more than 63 components");
@@ -682,8 +683,6 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
 
 
-    size_t old_component_num = in_world->num_components_bytype[old_typeflag_id];
-    size_t new_component_num = in_world->num_components_bytype[new_typeflag_id];
     size_t old_component_id, new_component_id;
     size_t old_entity_order = tnecs_entity_order_bytypeid(in_world, in_entity, old_typeflag_id);
     size_t new_entity_order = in_world->num_entities_bytype[new_typeflag_id]++;
@@ -699,7 +698,7 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
                 temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[old_typeflag_id][old_corder].components);
                 TNECS_DEBUG_ASSERT(temp_component_bytesptr != NULL);
 
-                old_component_ptr = temp_component_bytesptr + (component_bytesize * old_entity_order);
+                old_component_ptr = (tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * old_entity_order));
 
                 TNECS_DEBUG_ASSERT(old_component_ptr != NULL);
                 temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[new_typeflag_id][new_corder].components);
