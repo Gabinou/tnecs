@@ -45,8 +45,15 @@ extern double get_us();
 #  define get_ns() (((double)clock())/CLOCKS_PER_SEC*1e9) // [ns]
 #endif
 
-struct tnecs_World * tnecs_init() {
-    TNECS_DEBUG_PRINTF("tnecs_init\n");
+void tnecs_world_death(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_death\n");
+    free(in_world->entities);
+    free(in_world);
+}
+
+
+struct tnecs_World * tnecs_world_genesis() {
+    TNECS_DEBUG_PRINTF("tnecs_world_genesis\n");
 
     struct tnecs_World * tnecs_world = (struct tnecs_World *)calloc(sizeof(struct tnecs_World), 1);
 
@@ -174,7 +181,6 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
     TNECS_DEBUG_ASSERT(in_component_id > 0);
     tnecs_component_t in_type = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
     size_t bytesize = in_world->component_bytesizes[in_component_id];
-    printf("in_component_id %d \n", in_component_id);
     TNECS_DEBUG_ASSERT(bytesize > 0);
     in_array->type = in_type;
     in_array->num_components = 0;

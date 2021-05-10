@@ -224,7 +224,7 @@ void tnecs_test_utilities() {
 
 
 void tnecs_test_world_init() {
-    test_world = tnecs_init();
+    test_world = tnecs_world_genesis();
 }
 
 void tnecs_test_component_registration() {
@@ -505,7 +505,7 @@ void tnecs_benchmarks() {
     // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
-    struct tnecs_World * bench_world = tnecs_init();
+    struct tnecs_World * bench_world = tnecs_world_genesis();
     t_1 = get_us();
     dupprintf(globalf, "tnecs: World Creation time \n");
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);

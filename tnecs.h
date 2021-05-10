@@ -69,7 +69,7 @@ extern "C" {
 #define TNECS_DEBUG_ASSERT(...) (void)0
 #endif
 
-#define TNECS_DEBUG_P // printf are ignored if undefined
+// #define TNECS_DEBUG_P // printf are ignored if undefined
 #ifdef TNECS_DEBUG_P
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
@@ -299,7 +299,8 @@ struct tnecs_Components_Array {
 #define TNECS_ITERATE(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][tnecs_system_name2id(input->world, #component_name)].components)
 
 // ********************* FUNCTIONALITY MACROS AND FUNCTIONS ************************
-struct tnecs_World * tnecs_init();
+struct tnecs_World * tnecs_world_genesis();
+void tnecs_world_death(struct tnecs_World * in_world);
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(tnecs_hash_djb2, __VA_ARGS__))
