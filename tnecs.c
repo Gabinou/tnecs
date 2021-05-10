@@ -86,12 +86,14 @@ struct tnecs_World * tnecs_init() {
     tnecs_world->component_orderbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(tnecs_component_t));
     for (size_t i = 0 ; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
 
-        tnecs_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(tnecs_component_t));
+        tnecs_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(**tnecs_world->entities_bytype));
         tnecs_world->num_entities_bytype[i] = 0;
         tnecs_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
-        tnecs_world->components_flagbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(tnecs_component_t));
-        tnecs_world->components_idbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(tnecs_component_t));
-        tnecs_world->component_orderbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(size_t));
+
+        tnecs_world->components_flagbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(**tnecs_world->components_flagbytype));
+        tnecs_world->components_idbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(**tnecs_world->components_idbytype));
+        tnecs_world->component_orderbytype[i] = calloc(TNECS_INITIAL_COMPONENT_LEN, sizeof(**tnecs_world->component_orderbytype));
+
         tnecs_world->num_components_bytype[i] = 0;
         tnecs_world->len_components_bytype[i] = TNECS_INITIAL_COMPONENT_LEN;
     }
@@ -624,7 +626,7 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
         size_t typeflag_id = tnecs_new_typeflag(in_world, 1, new_component_flag);
         in_world->component_bytesizes[in_world->num_components] = in_bytesize;
         char * temp_str = malloc(strlen(in_name));
-        strcpy(temp_str, in_name);
+        strncpy(temp_str, in_name, strlen(in_name));
         in_world->component_names[in_world->num_components] = temp_str;
         in_world->num_components++;
     } else {
