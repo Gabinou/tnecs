@@ -235,6 +235,8 @@ struct tnecs_World {
     void (** systems)(struct tnecs_System_Input *);        // [system_id]
     void (* ** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
     uint8_t * system_phase;                                // [system_id]
+    size_t ** systemid_byphase;                             // [phase_id][system_order]
+    size_t * system_order;                                 // [system_id]
     uint8_t * phases;                                      // [phase_id]
     uint64_t component_hashes[TNECS_COMPONENT_CAP];        // [component_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];       // [component_id]
