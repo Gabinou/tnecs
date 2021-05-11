@@ -17,7 +17,7 @@ A system is a user-defined ```function```.
 All live inside the ```world```. 
 
 The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
-The user can also modify the system execution order in each phase.
+Phases are user-defined ```size_t``` and the system execution order in each phase can also be changed.
 
 Videogame Example:
 - Enemy Entity: AIControlled component, Sprite Component, Physics Component
@@ -40,9 +40,9 @@ C99, compile with ```tcc```.
 - FOSS: Free and Open Source
 
 ## To do
-- System input/iterator.
-- World progress function
-- Post V1.0 pruning
+- More tests.
+- Standardize API
+
 
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
