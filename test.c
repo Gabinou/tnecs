@@ -521,7 +521,7 @@ int main() {
     tnecs_world_destroy(test_world);
     lresults();
 
-    // tnecs_benchmarks();
+    tnecs_benchmarks();
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
     return (0);

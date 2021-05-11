@@ -3,17 +3,16 @@
 Arrays are much faster than hash tables.
 
 TO DO:
-
 	System phase
 	
- 	Destroy entity
-
 	World Progress. DONE BUT HOW TO NAME IT?
 		-> Input time since last frame
 		-> measure frame time anyway -> unless input non->zero.
 
 
 DONE:
+ 	Destroy entity
+
 	RENAME MACROS/FUNCTIONS/EVERYTHING (EN COURS)
 	INDEPENDENCE FROM stb_ds!
 	
