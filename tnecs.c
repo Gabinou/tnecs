@@ -288,7 +288,7 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     }
     tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
 
-    size_t entity_order_new = tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
+    tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
 }
 
 void tnecs_growArray_phase(struct tnecs_World * in_world) {
