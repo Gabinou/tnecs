@@ -265,6 +265,7 @@ struct tnecs_World {
     size_t num_phases;
     size_t num_components;
 
+    size_t * entity_orders;                                // [entity_id]
     size_t * num_components_bytype;                        // [typeflag_id]
     size_t * len_entities_bytype;                          // [typeflag_id]
     size_t * num_entities_bytype;                          // [typeflag_id]
