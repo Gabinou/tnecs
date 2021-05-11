@@ -73,8 +73,8 @@ struct tnecs_World * tnecs_world_genesis() {
     tnecs_world->systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->systems_byphase));
     for (size_t i = 0; i < TNECS_INITIAL_PHASE_LEN; i++) {
         tnecs_world->systems_byphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->systems_byphase[i]));
-        tnecs_world->num_system_byphase = 0;
-        tnecs_world->len_system_byphase = TNECS_INITIAL_PHASE_LEN;
+        tnecs_world->num_system_byphase[i] = 0;
+        tnecs_world->len_system_byphase[i] = TNECS_INITIAL_PHASE_LEN;
     }
 
     tnecs_world->component_hashes[TNECS_NULL] = TNECS_NULL;
@@ -851,7 +851,7 @@ size_t tnecs_phaseid(struct tnecs_World * in_world, uint8_t in_phase) {
 
     size_t out = in_world->len_phases;
     for (size_t i = 0; i < in_world->num_phases; i++) {
-        if (in_world->phases == in_phase) {
+        if (in_world->phases[i] == in_phase) {
             out = i;
             break;
         }
