@@ -402,12 +402,6 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world);
 #define TNECS_DEL(arr, elem, len, bytesize) tnecs_arrdel(arr, elem, len, bytesize)
 #define TNECS_DELMACRO(arr, elem, len, bytesize) memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1))
 
-#define TNECS_ARRAY_GROWS(world, arrname) if ((world->num_##arrname + 1) >= world->len_##arrname) { \
-            size_t old_len = in_world->len_##arrname; \
-            in_world->len_##arrname *= TNECS_ARRAY_GROWTH_FACTOR; \
-            in_world->arrname = tnecs_realloc(in_world->arrname, old_len, in_world->len_##arrname, sizeof(*in_world->arrname)); \
-        }
-
 // ****************** STRING HASHING ************************
 // tnecs_hash_djb2 slightly faster than tnecs_hash_sdbm
 uint64_t tnecs_hash_djb2(const unsigned char * str);
