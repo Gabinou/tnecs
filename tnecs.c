@@ -259,9 +259,11 @@ void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_e
     TNECS_DEBUG_ASSERT(in_entity);
     size_t typeflag_id_old = tnecs_typeflagid(in_world, typeflag_old);
     size_t entity_order_old = tnecs_entity_order_bytypeid(in_world, in_entity, typeflag_id_old);
-    TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_id_old][entity_order_old] == in_entity);
-    tnecs_entity_t top_entity = in_world->entities_bytype[typeflag_id_old][--in_world->num_entities_bytype[typeflag_id_old]];
-    in_world->entities_bytype[typeflag_id_old][entity_order_old] = top_entity;
+    if (entity_order_old < in_world->len_entities) {
+        TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_id_old][entity_order_old] == in_entity);
+        tnecs_entity_t top_entity = in_world->entities_bytype[typeflag_id_old][--in_world->num_entities_bytype[typeflag_id_old]];
+        in_world->entities_bytype[typeflag_id_old][entity_order_old] = top_entity;
+    }
     // in_world->entity_orders[top_entity] = entity_order_old;
 
 }
