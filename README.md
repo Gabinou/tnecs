@@ -40,9 +40,7 @@ C99, compile with ```tcc```.
 - FOSS: Free and Open Source
 
 ## To do
-- System input/iterator.
-- World progress function
-- Post V1.0 pruning
+- System phases.
 
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
