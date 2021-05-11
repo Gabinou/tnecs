@@ -48,14 +48,18 @@ extern double get_us();
 void tnecs_world_destroy(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_world_death\n");
     for (size_t i = 0; i < in_world->len_typeflags; i++) {
-        free(in_world->entities_bytype[i]);
+        free(in_world->entities_bytype[i]); // SEGFAULTS HERE
         free(in_world->components_idbytype[i]);
         free(in_world->components_flagbytype[i]);
         free(in_world->components_orderbytype[i]);
+        for (size_t j = 0; j < in_world->num_components_bytype[i]; j++) {
+            free(in_world->components_bytype[i][j].components);
+        }
+        free(in_world->components_bytype[i]);
     }
-    // for (size_t i = 0; i < in_world->num_typeflags; i++) {
-    //     free(in_world->components_bytype[i]);
-    // }
+    for (size_t i = 0; i < in_world->num_components; i++) {
+        free(in_world->component_names[i]);
+    }
     free(in_world->entities_bytype);
     free(in_world->components_bytype);
     free(in_world->components_idbytype);
@@ -95,7 +99,6 @@ struct tnecs_World * tnecs_world_genesis() {
 
 
     tnecs_world->typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*tnecs_world->typeflags));
-    tnecs_world->len_typeflags = TNECS_INITIAL_ENTITY_LEN;
     tnecs_world->num_typeflags = 1;
 
     tnecs_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*tnecs_world->entity_typeflags));
@@ -131,6 +134,7 @@ struct tnecs_World * tnecs_world_genesis() {
         tnecs_world->num_components_bytype[i] = 0;
         tnecs_world->len_components_bytype[i] = TNECS_INITIAL_COMPONENT_LEN;
     }
+    tnecs_world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
 
     tnecs_world->num_components = TNECS_NULLSHIFT;
     tnecs_world->num_systems = TNECS_NULLSHIFT;

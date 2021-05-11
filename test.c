@@ -542,7 +542,7 @@ int main() {
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("utilities", tnecs_test_utilities);
     test_world = tnecs_world_genesis();
-    // lrun("c_regis", tnecs_test_component_registration);
+    lrun("c_regis", tnecs_test_component_registration);
     // lrun("s_regis", tnecs_test_system_registration);
     // lrun("e_create", tnecs_test_entity_creation);
     // lrun("c_add", tnecs_test_component_add);
