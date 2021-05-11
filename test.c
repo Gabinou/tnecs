@@ -10,7 +10,7 @@
 #include "tnecs.h"
 
 /* MINCTEST - Minimal C Test Library - 0.2.0
-*******************************MODIFIED FOR TNECS*************************
+*  ---------> MODIFIED FOR TNECS <----------
 * Copyright (c) 2014-2017 Lewis Van Winkle
 *
 * http://CodePlea.com
@@ -35,13 +35,11 @@
 #ifndef __MINCTEST_H__
 #define __MINCTEST_H__
 
-/* How far apart can floats be before we consider them unequal. */
 #ifndef LTEST_FLOAT_TOLERANCE
-#define LTEST_FLOAT_TOLERANCE 0.001
+#define LTEST_FLOAT_TOLERANCE 0.001 /* tolerance to equality */ 
 #endif
 
-/* Track the number of passes, fails. */
-/* NB this is made for all tests to be in one file. */
+/* NB all should be in one file. */
 static int ltests = 0;
 static int lfails = 0;
 
@@ -74,27 +72,6 @@ static int lfails = 0;
         ++lfails;\
         dupprintf(globalf,"%s:%d error \n", __FILE__, __LINE__);\
     }} while (0)
-
-/* Prototype to assert equal. */
-#define lequal_base(equality, a, b, format) do {\
-    ++ltests;\
-    if (!(equality)) {\
-        ++lfails;\
-        dupprintf(globalf,"%s:%d ("format " != " format")\n", __FILE__, __LINE__, (a), (b));\
-    }} while (0)
-
-/* Assert two integers are equal. */
-#define lequal(a, b)\
-    lequal_base((a) == (b), a, b, "%d")
-
-/* Assert two floats are equal (Within LTEST_FLOAT_TOLERANCE). */
-#define lfequal(a, b)\
-    lequal_base(fabs((double)(a)-(double)(b)) <= LTEST_FLOAT_TOLERANCE\
-     && fabs((double)(a)-(double)(b)) == fabs((double)(a)-(double)(b)), (double)(a), (double)(b), "%f")
-
-/* Assert two strings are equal. */
-#define lsequal(a, b)\
-    lequal_base(strcmp(a, b) == 0, a, b, "%s")
 
 #endif /*__MINCTEST_H__*/
 
@@ -423,7 +400,6 @@ void tnecs_test_component_add() {
     temp_unit = TNECS_GET_COMPONENT(test_world, Pirou, Unit);
     lok(temp_unit->hp == 7);
     lok(temp_unit->str == 8);
-    dupprintf(globalf, "\n");
 }
 
 void tnecs_test_hashing() {
@@ -542,11 +518,11 @@ int main() {
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("utilities", tnecs_test_utilities);
     test_world = tnecs_world_genesis();
-    // lrun("c_regis", tnecs_test_component_registration);
-    // lrun("s_regis", tnecs_test_system_registration);
-    // lrun("e_create", tnecs_test_entity_creation);
-    // lrun("c_add", tnecs_test_component_add);
-    // lrun("hashing", tnecs_test_hashing);
+    lrun("c_regis", tnecs_test_component_registration);
+    lrun("s_regis", tnecs_test_system_registration);
+    lrun("e_create", tnecs_test_entity_creation);
+    lrun("c_add", tnecs_test_component_add);
+    lrun("hashing", tnecs_test_hashing);
     tnecs_world_destroy(test_world);
     lresults();
 
