@@ -10,7 +10,6 @@ TO DO:
  		Destroy entity:
  			Free components
 
-		De-init world
 
 	World Progress. DONE BUT HOW TO NAME IT?
 		-> Input time since last frame
@@ -18,8 +17,10 @@ TO DO:
 
 
 DONE:
-	RENAME MACROS/FUNCTIONS/EVERYTHING en  cours
+	RENAME MACROS/FUNCTIONS/EVERYTHING (EN COURS)
 	INDEPENDENCE FROM stb_ds!
+	
+	World Destroy
 	
 	deal with component_arrays
 		-> Initialization of empty components

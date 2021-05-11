@@ -283,8 +283,6 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
     if (isNew) {
         tnecs_new_typeflag(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
-        // } else {
-        // in_world->num_components_bytype[tnecs_typeflagid(in_world, typeflag_new)][in_entity] = num_components_toadd + num_components_previous - num_incommon;
     }
     tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
 
