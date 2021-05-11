@@ -541,16 +541,17 @@ int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("utilities", tnecs_test_utilities);
-    test_world = tnecs_world_genesis();
-    lrun("c_regis", tnecs_test_component_registration);
+    // test_world = tnecs_world_genesis();
+    // lrun("c_regis", tnecs_test_component_registration);
     // lrun("s_regis", tnecs_test_system_registration);
     // lrun("e_create", tnecs_test_entity_creation);
     // lrun("c_add", tnecs_test_component_add);
     // lrun("hashing", tnecs_test_hashing);
-    tnecs_world_destroy(test_world);
+    // tnecs_world_destroy(test_world);
     lresults();
 
     // tnecs_benchmarks();
     dupprintf(globalf, "tnecs Test End \n \n");
+    fclose(globalf);
     return (0);
 }
