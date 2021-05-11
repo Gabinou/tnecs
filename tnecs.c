@@ -614,14 +614,13 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     size_t entity_typeflag_id = TNECS_COMPONENT_TYPE2ID(entity_typeflag);
     size_t entity_order = tnecs_entity_order_bytypeid(in_world, in_entity, entity_typeflag_id);
     size_t component_id, component_bytesize;
-    void * component_ptr, * temp_component_bytesptr;
+    void * temp_component_bytesptr;
 
     // Deletes associated components
     for (size_t corder = 0; corder < in_world->num_components_bytype[entity_typeflag_id]; corder++) {
         component_id = in_world->components_idbytype[entity_typeflag_id][corder];
         component_bytesize = in_world->component_bytesizes[component_id];
         temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[entity_typeflag_id][corder].components);
-        // component_ptr = (tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * entity_order));
         in_world->components_bytype[entity_typeflag_id][corder].components = tnecs_arrdel(temp_component_bytesptr, entity_order, in_world->num_entities_bytype[entity_typeflag_id], component_bytesize);
     }
     // Entity removed from entities_bytype, entity_typeflags, entities...
@@ -629,8 +628,6 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     in_world->num_entities_bytype[entity_typeflag_id]--;
     in_world->entities[in_entity] = TNECS_NULL;
     in_world->entity_typeflags[in_entity] = TNECS_NULL;
-
-
 }
 
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize) {
