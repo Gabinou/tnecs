@@ -245,7 +245,6 @@ struct tnecs_World {
     void (** systems)(struct tnecs_System_Input *);        // [system_id]
     void (** systems_byphase)(struct tnecs_System_Input *);// [system_id]
     bool * system_exclusive;                             // [system_id]
-    bool * SystemExclusive;                              // [system_id]
     uint8_t * system_phase;                              // [system_id]
     uint64_t component_hashes[TNECS_COMPONENT_CAP];      // [component_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];     // [component_id]
@@ -300,7 +299,7 @@ struct tnecs_Components_Array {
 
 // ********************* FUNCTIONALITY MACROS AND FUNCTIONS ************************
 struct tnecs_World * tnecs_world_genesis();
-void tnecs_world_death(struct tnecs_World * in_world);
+void tnecs_world_destroy(struct tnecs_World * in_world);
 
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(tnecs_hash_djb2, __VA_ARGS__))

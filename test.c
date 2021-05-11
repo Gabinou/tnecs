@@ -223,9 +223,6 @@ void tnecs_test_utilities() {
 }
 
 
-void tnecs_test_world_init() {
-    test_world = tnecs_world_genesis();
-}
 
 void tnecs_test_component_registration() {
     TNECS_REGISTER_COMPONENT(test_world, Position);
@@ -369,11 +366,11 @@ void tnecs_test_component_add() {
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
 
 
-    tnecs_entity_t Chassé = tnecs_new_entity(test_world);
-    TNECS_ADD_COMPONENTS(test_world, Chassé, 1, Sprite, Position);
-    lok((test_world->entity_typeflags[Chassé] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
-    lok((test_world->entity_typeflags[Chassé] & TNECS_COMPONENT_TYPE(test_world, Sprite)) > 0);
-    lok((test_world->entity_typeflags[Chassé] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
+    tnecs_entity_t Chasse = tnecs_new_entity(test_world);
+    TNECS_ADD_COMPONENTS(test_world, Chasse, 1, Sprite, Position);
+    lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
+    lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Sprite)) > 0);
+    lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
 
     temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
     lok(temp_position != NULL);
@@ -544,12 +541,13 @@ int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("utilities", tnecs_test_utilities);
-    lrun("world_init", tnecs_test_world_init);
-    lrun("c_regis", tnecs_test_component_registration);
-    lrun("s_regis", tnecs_test_system_registration);
-    lrun("e_create", tnecs_test_entity_creation);
-    lrun("c_add", tnecs_test_component_add);
+    test_world = tnecs_world_genesis();
+    // lrun("c_regis", tnecs_test_component_registration);
+    // lrun("s_regis", tnecs_test_system_registration);
+    // lrun("e_create", tnecs_test_entity_creation);
+    // lrun("c_add", tnecs_test_component_add);
     // lrun("hashing", tnecs_test_hashing);
+    tnecs_world_destroy(test_world);
     lresults();
 
     // tnecs_benchmarks();
