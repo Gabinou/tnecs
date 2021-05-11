@@ -862,27 +862,6 @@ size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_c
     return (tnecs_componentid_order_bytypeid(in_world, in_component_id, in_typeflag_id));
 }
 
-size_t tnecs_entity_order_bytype(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_entity_order_bytype\n");
-
-    tnecs_component_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
-    return (tnecs_entity_order_bytypeid(in_world, in_entity, in_typeflag_id));
-}
-
-size_t tnecs_entity_order_bytypeid(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_typeflag_id) {
-    TNECS_DEBUG_PRINTF("tnecs_entity_order_bytypeid\n");
-
-    size_t order = in_world->len_entities;
-    for (size_t i = 0; i < in_world->num_entities_bytype[in_typeflag_id]; i++) {
-        // TNECS_DEBUG_PRINTF("in_world->entities_bytype[in_typeflag_id][i], i %d, %d\n", in_world->entities_bytype[in_typeflag_id][i], i);
-        if (in_world->entities_bytype[in_typeflag_id][i] == in_entity) {
-            order = i;
-            break;
-        }
-    }
-    return (order);
-}
-
 size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t in_system_id, uint8_t in_phase) {
     TNECS_DEBUG_PRINTF("tnecs_system_order_byphase\n");
 
