@@ -257,7 +257,7 @@ void tnecs_test_component_registration() {
 }
 
 void tnecs_test_system_registration() {
-    TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
+    TNECS_REGISTER_SYSTEM(test_world, SystemMove, Position, Unit);
     size_t temp_comp_flag = 1;
     size_t temp_comp_id = 1;
     size_t temp_comp_order = 0;

@@ -213,7 +213,7 @@ void flecs_benchmarks() {
     }
     t_1 = get_us();
     dupprintf(globalf, "flecs: Adding components: %d iterations \n", ITERATIONS);
-    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);    
+    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
 
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
@@ -325,7 +325,7 @@ void tnecs_benchmarks() {
     tnecs_world_destroy(bench_world);
     t_1 = get_us();
     dupprintf(globalf, "tnecs: world deinit\n");
-    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);    
+    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
 
 }
 
