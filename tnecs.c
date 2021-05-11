@@ -48,7 +48,7 @@ extern double get_us();
 void tnecs_world_destroy(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_world_destroy\n");
     for (size_t i = 0; i < in_world->len_typeflags; i++) {
-        free(in_world->entities_bytype[i]); // SEGFAULTS HERE
+        free(in_world->entities_bytype[i]);
         free(in_world->components_idbytype[i]);
         free(in_world->components_flagbytype[i]);
         free(in_world->components_orderbytype[i]);
@@ -845,7 +845,6 @@ size_t tnecs_componentid_order_bytypeid(struct tnecs_World * in_world, size_t in
     return (order);
 }
 
-
 size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_componentid_order_bytype\n");
 
@@ -889,7 +888,7 @@ size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t in_syste
 }
 
 
-// STRING HASHING
+// ******************* STRING HASHING *************************
 uint64_t tnecs_hash_djb2(const unsigned char * str) {
     /* djb2 hashing algorithm by Dan Bernstein.
     * Description: This algorithm (k=33) was first reported by dan bernstein many
@@ -933,8 +932,9 @@ uint64_t tnecs_hash_sdbm(const unsigned char * str) {
     return (hash);
 }
 
+// *************************** SET BIT COUNTING *******************************
 size_t setBits_KnR_uint64_t(uint64_t in_flags) {
-// Credits to Kernighan and Ritchie in the C Programming Language
+    // Credits to Kernighan and Ritchie in the C Programming Language
     size_t count = 0;
     while (in_flags) {
         in_flags &= (in_flags - 1);

@@ -255,7 +255,6 @@ struct tnecs_World {
     // len is allocated size
     // num is active elements in array
     size_t len_entities;
-    size_t num_entities;
     size_t len_typeflags;
     size_t num_typeflags;
     size_t len_systems;
