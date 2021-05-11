@@ -91,6 +91,11 @@ typedef struct Unit {
     uint32_t str;
 } Unit;
 
+typedef struct Velocity {
+    uint64_t vx;
+    uint64_t vy;
+} Velocity;
+
 
 typedef struct Sprite {
     uint32_t texture;
@@ -130,11 +135,12 @@ struct Sprite * temp_sprite;
 struct tnecs_World * test_world;
 
 void SystemMove(struct tnecs_System_Input * in_input) {
-    struct Position * p = TNECS_ITERATE(in_input, Position);
-    struct Unit * u = TNECS_ITERATE(in_input, Unit);
+    // printf("SystemMove\n");
+    struct Position * p = TNECS_COMPONENTS_LIST(in_input, Position);
+    struct Velocity * v = TNECS_COMPONENTS_LIST(in_input, Velocity);
     for (int i = 0; i < in_input->num_entities; i++) {
-        p[i].x += u[i].hp;
-        p[i].y += u[i].str;
+        p[i].x = p[i].x + v[i].vx;
+        p[i].y = p[i].y + v[i].vy;
     }
 }
 
@@ -192,8 +198,6 @@ void tnecs_test_utilities() {
     lok(arrtest1[9] == 9);
 }
 
-
-
 void tnecs_test_component_registration() {
     TNECS_REGISTER_COMPONENT(test_world, Position);
     size_t temp_comp_flag = 1;
@@ -205,7 +209,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == tnecs_hash_djb2("Position"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == TNECS_HASH("Position"));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->typeflags[1] == temp_comp_flag);
@@ -223,7 +227,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH("Unit"));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->typeflags[2] == (TNECS_NULLSHIFT << 1));
@@ -231,7 +235,7 @@ void tnecs_test_component_registration() {
     lok(test_world->num_components == 3);
     lok(TNECS_COMPONENT_TYPE(test_world, Unit) == (TNECS_NULLSHIFT << 1));
     lok(TNECS_COMPONENT_TYPE(test_world, Unit) == test_world->typeflags[temp_typeflag_id]);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH("Unit"));
 
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     temp_comp_flag = 4;
@@ -243,7 +247,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == TNECS_HASH("Sprite"));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->typeflags[2] == (TNECS_NULLSHIFT << 1));
@@ -252,27 +256,50 @@ void tnecs_test_component_registration() {
     lok(test_world->num_components == 4);
     lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == (TNECS_NULLSHIFT << 2));
     lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == test_world->typeflags[temp_typeflag_id]);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == TNECS_HASH("Sprite"));
+
+    TNECS_REGISTER_COMPONENT(test_world, Velocity);
+    temp_comp_flag = 8;
+    temp_comp_id = 4;
+    temp_comp_order = 0;
+    temp_typeflag_id = 4;
+    temp_typeflag = 8;
+    lok(TNECS_COMPONENT_NAME2ID(test_world, Velocity) == temp_comp_id);
+    lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
+    lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
+    lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Velocity)] == TNECS_HASH("Velocity"));
+    lok(test_world->typeflags[0] == 0);
+    lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
+    lok(test_world->typeflags[2] == (TNECS_NULLSHIFT << 1));
+    lok(test_world->typeflags[3] == (TNECS_NULLSHIFT << 2));
+    lok(test_world->typeflags[4] == (TNECS_NULLSHIFT << 3));
+    lok(test_world->typeflags[4] == temp_comp_flag);
+    lok(test_world->num_components == 5);
+    lok(TNECS_COMPONENT_TYPE(test_world, Velocity) == (TNECS_NULLSHIFT << 3));
+    lok(TNECS_COMPONENT_TYPE(test_world, Velocity) == test_world->typeflags[temp_typeflag_id]);
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Velocity)] == TNECS_HASH("Velocity"));
+
 
 }
 
 void tnecs_test_system_registration() {
-    TNECS_REGISTER_SYSTEM(test_world, SystemMove, TNECS_PHASE_PREUPDATE, true, Position, Unit);
+    TNECS_REGISTER_SYSTEM(test_world, SystemMove, Position, Velocity);
     size_t temp_comp_flag = 1;
     size_t temp_comp_id = 1;
     size_t temp_comp_order = 0;
-    size_t temp_typeflag_id = 4;
-    size_t temp_typeflag = 1 + 2;
+    size_t temp_typeflag_id = 5;
+    size_t temp_typeflag = 1 + 8;
 
     lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
-    lok(TNECS_SYSTEM_HASH(SystemMove) == tnecs_hash_djb2("SystemMove"));
-    lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == tnecs_hash_djb2("SystemMove"));
 
+    lok(TNECS_HASH("SystemMove") == tnecs_hash_djb2("SystemMove"));
+    lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == TNECS_HASH("SystemMove"));
 
     lok(test_world->components_idbytype[temp_typeflag_id][0] == TNECS_COMPONENT_NAME2ID(test_world, Position));
-    lok(test_world->components_idbytype[temp_typeflag_id][1] == TNECS_COMPONENT_NAME2ID(test_world, Unit));
+    lok(test_world->components_idbytype[temp_typeflag_id][1] == TNECS_COMPONENT_NAME2ID(test_world, Velocity));
     lok(test_world->components_flagbytype[temp_typeflag_id][0] == TNECS_COMPONENT_TYPE(test_world, Position));
-    lok(test_world->components_flagbytype[temp_typeflag_id][1] == TNECS_COMPONENT_TYPE(test_world, Unit));
+    lok(test_world->components_flagbytype[temp_typeflag_id][1] == TNECS_COMPONENT_TYPE(test_world, Velocity));
 }
 
 void tnecs_test_entity_creation() {
@@ -304,7 +331,6 @@ void tnecs_test_entity_creation() {
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_sprite == NULL);
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
-    // lok(temp_unit != NULL);
     if (temp_unit != NULL) {
         lok(temp_unit->hp  == 0);
         lok(temp_unit->str == 0);
@@ -314,6 +340,9 @@ void tnecs_test_entity_creation() {
 
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
+
+    tnecs_entity_destroy(test_world, Silou);
+
 }
 
 void tnecs_test_component_add() {
@@ -399,49 +428,43 @@ void tnecs_test_hashing() {
 
 }
 
+void tnecs_test_world_progress() {
+    struct Velocity * temp_velocity;
+    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Velocity);
+    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    temp_position->x = 100;
+    temp_position->y = 200;
+
+    temp_velocity->vx = 1;
+    temp_velocity->vy = 2;
+    tnecs_world_progress(test_world, 1);
+    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    lok(temp_position->x == 101);
+    lok(temp_position->y == 202);
+    lok(temp_velocity->vx == 1);
+    lok(temp_velocity->vy == 2);
+    tnecs_world_progress(test_world, 1);
+    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    lok(temp_position->x == 102);
+    lok(temp_position->y == 204);
+    lok(temp_velocity->vx == 1);
+    lok(temp_velocity->vy == 2);
+}
+
 void tnecs_benchmarks() {
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
+
     double t_0;
     double t_1;
-
-    // struct Unit_Hash * unit_hash = NULL;
-
-    // t_0 = get_us();
-    // for (size_t i = 0; i < ARRAY_LEN; i++) {
-    //     unit_array[i].hp = Unit_default.hp;
-    //     unit_array[i].str = Unit_default.str;
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_array init: %d iterations \n", ARRAY_LEN);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
-
-    // struct Unit temp_unitnp;
-    // t_0 = get_us();
-    // for (size_t i = 0; i < ARRAY_LEN; i++) {
-    //     temp_unitnp.hp = i;
-    //     temp_unitnp.str = i * 2;
-    //     hmput(unit_hash, i, temp_unitnp);
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_hash init: %d iterations \n", ARRAY_LEN);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
-
-    // t_0 = get_us();
-    // for (size_t i = 0; i < ITERATIONS; i++) {
-    //     unit_array[(i % ARRAY_LEN)].hp++;
-    //     unit_array[(i % ARRAY_LEN)].str++;
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_array operations: %d iterations \n", ITERATIONS);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
-
-
 
     uint64_t res_hash;
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        res_hash = tnecs_hash_djb2("Position");
-        res_hash = tnecs_hash_djb2("Unit");
+        res_hash = TNECS_HASH("Position");
+        res_hash = TNECS_HASH("Unit");
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs_hash_djb2: %d iterations \n", ITERATIONS);
@@ -455,20 +478,6 @@ void tnecs_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs_hash_sdbm: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-
-
-    // t_0 = get_us();
-    // size_t index;
-    // for (size_t i = 0; i < ITERATIONS; i++) {
-    //     index = (i % ARRAY_LEN);
-    //     temp_unitnp = hmget(unit_hash, index);
-    //     temp_unitnp.hp++;
-    //     temp_unitnp.str++;
-    //     hmput(unit_hash, index, temp_unitnp);
-    // }
-    // t_1 = get_us();
-    // dupprintf(globalf,"unit_hash operations: %d iterations \n", ITERATIONS);
-    // dupprintf(globalf,"%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
     struct tnecs_World * bench_world = tnecs_world_genesis();
@@ -486,12 +495,12 @@ void tnecs_benchmarks() {
     t_0 = get_us();
     tnecs_entity_t tnecs_temp_ent;
     for (size_t i = 0; i < ITERATIONS; i++) {
-        tnecs_temp_ent = tnecs_new_entity(bench_world);
-        tnecs_entities[i] = tnecs_temp_ent;
+        tnecs_entities[i] = tnecs_new_entity(bench_world);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
 
     t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
@@ -503,6 +512,7 @@ void tnecs_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    tnecs_world_destroy(bench_world);
 
 }
 
@@ -515,11 +525,12 @@ int main() {
     lrun("s_regis", tnecs_test_system_registration);
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
+    lrun("progress", tnecs_test_world_progress);
     lrun("hashing", tnecs_test_hashing);
-    tnecs_world_destroy(test_world);
     lresults();
 
-    // tnecs_benchmarks();
+    tnecs_benchmarks();
+    tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
     return (0);
