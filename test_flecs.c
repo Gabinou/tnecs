@@ -213,6 +213,16 @@ void flecs_benchmarks() {
     }
     t_1 = get_us();
     dupprintf(globalf, "flecs: Adding components: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);    
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        // MODIFY THE COMPONENTS
+        ecs_add(world, flecs_entities[i], Position);
+        ecs_add(world, flecs_entities[i], Unit);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Adding components and modifying them: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
 
     t_0 = get_us();

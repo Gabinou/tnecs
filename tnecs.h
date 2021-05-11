@@ -248,7 +248,6 @@ struct tnecs_World {
 
     // the bytype array are exclusive -> entities are unique in components_bytype
     struct tnecs_Components_Array ** components_bytype;    // [typeflag_id][component_order_bytype]
-    // size_t * entity_orders;                                // [entity_id]
     tnecs_entity_t ** entities_bytype;                     // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;              // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;            // [typeflag_id][component_order_bytype]
@@ -313,7 +312,6 @@ void tnecs_world_destroy(struct tnecs_World * in_world);
 #define TNECS_SYSTEM_TYPEFLAG(world, name) tnecs_system_name2typeflag(world, #name)
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
 #define TNECS_SYSTEMS_COMPONENTLIST(input, name) (* name)input->components
-#define TNECS_ENTITY_ORDER(world, ent) world->entity_orders[ent];
 
 // TNECS_ADD_COMPONENT is overloaded 3/4 inputs
 //      skip checks if 4th input is true
