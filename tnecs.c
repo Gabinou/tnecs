@@ -429,16 +429,6 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
     // free(in_world->components_flagbytype );
     // in_world->components_flagbytype = temp;
 
-    // temp = calloc(in_world->len_typeflags, sizeof(*in_world->num_components_flagbytype));
-    // memcpy(temp, in_world->num_components_bytype, old_len * sizeof(*in_world->num_components_flagbytype));
-    // free(in_world->num_components_flagbytype);
-    // in_world->num_components_bytype = temp;
-
-    // temp = calloc(in_world->len_typeflags, sizeof(*in_world->num_components_flagbytype));
-    // memcpy(temp, in_world->num_components_flagbytype, old_len * sizeof(*in_world->num_components_flagbytype));
-    // free(in_world->num_components_flagbytype);
-    // in_world->num_components_bytype = temp;
-
     in_world->typeflags = tnecs_realloc(in_world->typeflags, old_len, in_world->len_typeflags, sizeof(*in_world->typeflags));
     in_world->components_bytype = tnecs_realloc(in_world->components_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_bytype));
     in_world->num_components_bytype = tnecs_realloc(in_world->num_components_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->num_components_bytype));
@@ -446,11 +436,7 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world) {
     in_world->num_entities_bytype = tnecs_realloc(in_world->num_entities_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->num_entities_bytype));
     in_world->len_entities_bytype = tnecs_realloc(in_world->len_entities_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->len_entities_bytype));
     in_world->components_idbytype = tnecs_realloc(in_world->components_idbytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_idbytype));
-    in_world->num_components_idbytype = tnecs_realloc(in_world->num_components_idbytype, old_len, in_world->len_typeflags, sizeof(*in_world->num_components_idbytype));
-    in_world->len_components_idbytype = tnecs_realloc(in_world->len_components_idbytype, old_len, in_world->len_typeflags, sizeof(*in_world->len_components_idbytype));
     in_world->components_flagbytype = tnecs_realloc(in_world->components_flagbytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_flagbytype));
-    in_world->len_components_flagbytype = tnecs_realloc(in_world->len_components_flagbytype, old_len, in_world->len_typeflags, sizeof(*in_world->len_components_flagbytype));
-    in_world->num_components_flagbytype = tnecs_realloc(in_world->num_components_flagbytype, old_len, in_world->len_typeflags, sizeof(*in_world->num_components_flagbytype));
     in_world->components_orderbytype = tnecs_realloc(in_world->components_orderbytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_orderbytype));
     for (size_t i = (old_len-1); i < in_world->len_typeflags; i++) {
         in_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(**in_world->entities_bytype));
