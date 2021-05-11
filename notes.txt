@@ -6,10 +6,7 @@ TO DO:
 
 	System phase
 	
-	Destruction	
- 		Destroy entity:
- 			Free components
-
+ 	Destroy entity
 
 	World Progress. DONE BUT HOW TO NAME IT?
 		-> Input time since last frame

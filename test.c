@@ -265,7 +265,7 @@ void tnecs_test_system_registration() {
     size_t temp_typeflag = 1 + 2;
 
     lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
-    lok(TNECS_SYSTEM_HASH(SystemMove) == tnecs_hash_djb2("SystemMove"));
+    lok(TNECS_HASH(SystemMove) == tnecs_hash_djb2("SystemMove"));
     lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == tnecs_hash_djb2("SystemMove"));
 
 
@@ -304,7 +304,6 @@ void tnecs_test_entity_creation() {
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_sprite == NULL);
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
-    // lok(temp_unit != NULL);
     if (temp_unit != NULL) {
         lok(temp_unit->hp  == 0);
         lok(temp_unit->str == 0);
@@ -314,6 +313,9 @@ void tnecs_test_entity_creation() {
 
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
+
+    tnecs_entity_destroy(test_world, Silou);
+
 }
 
 void tnecs_test_component_add() {
