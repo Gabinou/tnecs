@@ -17,7 +17,7 @@ A system is a user-defined ```function```.
 All live inside the ```world```. 
 
 The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
-The user can also modify the system execution order in each phase.
+Phases are user-defined ```size_t``` and the system execution order in each phase can also be changed.
 
 Videogame Example:
 - Enemy Entity: AIControlled component, Sprite Component, Physics Component

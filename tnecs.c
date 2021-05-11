@@ -45,47 +45,6 @@ extern double get_us();
 #  define get_ns() (((double)clock())/CLOCKS_PER_SEC*1e9) // [ns]
 #endif
 
-void tnecs_world_destroy(struct tnecs_World * in_world) {
-    TNECS_DEBUG_PRINTF("tnecs_world_destroy\n");
-    for (size_t i = 0; i < in_world->len_typeflags; i++) {
-        free(in_world->entities_bytype[i]);
-        free(in_world->components_idbytype[i]);
-        free(in_world->components_flagbytype[i]);
-        free(in_world->components_orderbytype[i]);
-        for (size_t j = 0; j < in_world->num_components_bytype[i]; j++) {
-            free(in_world->components_bytype[i][j].components);
-        }
-        free(in_world->components_bytype[i]);
-    }
-    for (size_t i = 0; i < in_world->num_components; i++) {
-        free(in_world->component_names[i]);
-    }
-    free(in_world->entities_bytype);
-    free(in_world->components_bytype);
-    free(in_world->components_idbytype);
-    free(in_world->components_flagbytype);
-    free(in_world->components_orderbytype);
-    free(in_world->component_names);
-    free(in_world->entities);
-    free(in_world->entity_typeflags);
-
-    free(in_world->typeflags);
-
-    free(in_world->systems);
-    free(in_world->systems_byphase);
-    free(in_world->system_typeflags);
-    free(in_world->system_exclusive);
-    free(in_world->system_phase);
-    free(in_world->system_hashes);
-    
-    free(in_world->num_components_bytype);
-    free(in_world->len_entities_bytype);
-    free(in_world->num_entities_bytype);
-
-    free(in_world);
-}
-
-
 struct tnecs_World * tnecs_world_genesis() {
     TNECS_DEBUG_PRINTF("tnecs_world_genesis\n");
 
@@ -102,7 +61,6 @@ struct tnecs_World * tnecs_world_genesis() {
 
 
     tnecs_world->system_typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*tnecs_world->system_typeflags));
-    tnecs_world->system_exclusive = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->system_exclusive));
     tnecs_world->system_hashes = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->system_hashes));
     tnecs_world->system_phase = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->system_phase));
 
@@ -140,8 +98,47 @@ struct tnecs_World * tnecs_world_genesis() {
     return (tnecs_world);
 }
 
-void tnecs_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
-    TNECS_DEBUG_PRINTF("tnecs_progress\n");
+void tnecs_world_destroy(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_destroy\n");
+    for (size_t i = 0; i < in_world->len_typeflags; i++) {
+        free(in_world->entities_bytype[i]);
+        free(in_world->components_idbytype[i]);
+        free(in_world->components_flagbytype[i]);
+        free(in_world->components_orderbytype[i]);
+        for (size_t j = 0; j < in_world->num_components_bytype[i]; j++) {
+            free(in_world->components_bytype[i][j].components);
+        }
+        free(in_world->components_bytype[i]);
+    }
+    for (size_t i = 0; i < in_world->num_components; i++) {
+        free(in_world->component_names[i]);
+    }
+    free(in_world->entities_bytype);
+    free(in_world->components_bytype);
+    free(in_world->components_idbytype);
+    free(in_world->components_flagbytype);
+    free(in_world->components_orderbytype);
+    free(in_world->component_names);
+    free(in_world->entities);
+    free(in_world->entity_typeflags);
+
+    free(in_world->typeflags);
+
+    free(in_world->systems);
+    free(in_world->systems_byphase);
+    free(in_world->system_typeflags);
+    free(in_world->system_phase);
+    free(in_world->system_hashes);
+    
+    free(in_world->num_components_bytype);
+    free(in_world->len_entities_bytype);
+    free(in_world->num_entities_bytype);
+
+    free(in_world);
+}
+
+void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
+    TNECS_DEBUG_PRINTF("tnecs_world_progress\n");
     // NEED have variable that tracks if systems were changed
 
     // 0- Compute current time.
@@ -332,16 +329,10 @@ void tnecs_growArray_system(struct tnecs_World * in_world) {
     // free(in_world->system_hashes);
     // in_world->system_hashes = temp;
 
-    // temp = calloc(in_world->len_systems, sizeof(*in_world->system_exclusive));
-    // memcpy(temp, in_world->system_exclusive, old_len * sizeof(*in_world->system_exclusive));
-    // free(in_world->system_exclusive);
-    // in_world->system_exclusive = temp;
-
     in_world->systems = tnecs_realloc(in_world->systems, old_len, in_world->len_systems, sizeof(*in_world->systems));
     in_world->system_phase = tnecs_realloc(in_world->system_phase, old_len, in_world->len_systems, sizeof(*in_world->system_phase));
     in_world->system_typeflags = tnecs_realloc(in_world->system_typeflags, old_len, in_world->len_systems, sizeof(*in_world->system_typeflags));
     in_world->system_hashes = tnecs_realloc(in_world->system_hashes, old_len, in_world->len_systems, sizeof(*in_world->system_hashes));
-    in_world->system_exclusive = tnecs_realloc(in_world->system_exclusive, old_len, in_world->len_systems, sizeof(*in_world->system_exclusive));
 }
 
 void tnecs_growArray_entity(struct tnecs_World * in_world) {
@@ -648,13 +639,12 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
     }
 }
 
-void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, bool isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
+void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
     if ((in_world->num_systems + 1) >= in_world->len_systems) {
         tnecs_growArray_system(in_world);
     }
-    in_world->system_exclusive[in_world->num_systems] = isExclusive;
     in_world->system_phase[in_world->num_systems] = in_run_phase;
     in_world->system_hashes[in_world->num_systems] = in_hash;
     in_world->system_typeflags[in_world->num_systems] = components_typeflag;
