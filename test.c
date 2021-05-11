@@ -35,14 +35,9 @@
 #ifndef __MINCTEST_H__
 #define __MINCTEST_H__
 
-#ifndef LTEST_FLOAT_TOLERANCE
-#define LTEST_FLOAT_TOLERANCE 0.001 /* tolerance to equality */ 
-#endif
-
-/* NB all should be in one file. */
+/* NB all tests should be in one file. */
 static int ltests = 0;
 static int lfails = 0;
-
 
 /* Display the test results. */
 #define lresults() do {\
@@ -195,8 +190,6 @@ void tnecs_test_utilities() {
     lok(arrtest1[7] == 8);
     lok(arrtest1[8] == 9);
     lok(arrtest1[9] == 9);
-
-
 }
 
 
