@@ -311,7 +311,7 @@ void tnecs_benchmarks() {
     // t_1 = get_us();
     // dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     // dupprintf(globalf, "%.1f [us] \n\n", t_1 - t_0);
-    tnecs_world_death(bench_world);
+    tnecs_world_destroy(bench_world);
 
 }
 
@@ -322,5 +322,6 @@ int main() {
     flecs_benchmarks();
     tnecs_benchmarks();
     dupprintf(globalf, "tnecs Test End \n \n");
+    fclose(globalf);
     return (0);
 }
