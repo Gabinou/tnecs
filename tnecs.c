@@ -698,7 +698,6 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
     size_t system_id = in_world->num_systems++;
-    // printf("system_id %d \n", system_id);
 
     if (in_world->num_systems >= in_world->len_systems) {
         tnecs_growArray_system(in_world);
@@ -710,10 +709,7 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
     }
 
     in_world->system_phases[system_id] = in_phase;
-    // printf("in_hash %llu \n", in_hash);
-
     in_world->system_hashes[system_id] = in_hash;
-    // printf("in_world->system_hashes[system_id] %llu \n", in_world->system_hashes[system_id]);
     in_world->system_typeflags[system_id] = components_typeflag;
 
     size_t system_order = in_world->num_systems_byphase[phase_id]++;
@@ -725,7 +721,6 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
     }
 
     in_world->system_orders[system_id] = system_order;
-    // printf("phase_id, system_order %d %d \n", phase_id, system_order );
     in_world->systems_byphase[phase_id][system_order] = in_system;
     in_world->systems_idbyphase[phase_id][system_order] = system_id;
 

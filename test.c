@@ -117,6 +117,16 @@ typedef struct Unit2 {
     uint32_t str;
 } Unit2;
 
+void SystemMove2(struct tnecs_System_Input * in_input) {
+    // printf("SystemMove\n");
+    struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    for (int i = 0; i < in_input->num_entities; i++) {
+        p[i].x = p[i].x + v[i].hp;
+        p[i].y = p[i].y + v[i].str;
+    }
+}
+
 
 /*****************************TEST GLOBALS*****************************/
 FILE * globalf;
@@ -493,6 +503,12 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
+    TNECS_REGISTER_SYSTEM(test_world, SystemMove2, Position2, Unit2);
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: System Registration \n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
     tnecs_entity_t tnecs_temp_ent;
     for (size_t i = 0; i < ITERATIONS; i++) {
         tnecs_entities[i] = tnecs_new_entity(bench_world);
@@ -511,6 +527,15 @@ void tnecs_benchmarks() {
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    tnecs_world_destroy(bench_world);
+
+    t_0 = get_us();
+    for (size_t i = 2; i < ITERATIONS; i++) {
+        tnecs_world_progress(bench_world, 1);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: wolrd progress: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
     tnecs_world_destroy(bench_world);
 

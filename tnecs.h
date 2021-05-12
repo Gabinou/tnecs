@@ -115,7 +115,6 @@ typedef unsigned char tnecs_byte_t;
 #define TNECS_NULL 0
 #define TNECS_NULLSHIFT 1
 #define TNECS_COMPONENT_CAP 64
-#define TNECS_STR_BUFFER 128
 #define TNECS_OPEN_IDS_BUFFER 128
 #define TNECS_INITIAL_ENTITY_LEN 128
 #define TNECS_INITIAL_PHASE_LEN 8
@@ -149,6 +148,8 @@ typedef unsigned char tnecs_byte_t;
 
 #define TNECS_FOREACH_1(macro, x) macro(x)
 
+#define TNECS_FOREACH_S1(macro, x) macro(#x)
+
 #define TNECS_FOREACH_COMMA_2(macro, x, ...) macro(x), TNECS_FOREACH_1(macro, __VA_ARGS__)
 
 #define TNECS_FOREACH_COMMA_3(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_2(macro, __VA_ARGS__)
@@ -163,7 +164,9 @@ typedef unsigned char tnecs_byte_t;
 
 #define TNECS_FOREACH_COMMA_8(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_7(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_SCOMMA_2(macro, x, ...) macro(#x), TNECS_FOREACH_1(macro, __VA_ARGS__)
+#define TNECS_FOREACH_SCOMMA_1(macro, x) macro(#x)
+
+#define TNECS_FOREACH_SCOMMA_2(macro, x, ...) macro(#x), TNECS_FOREACH_S1(macro, __VA_ARGS__)
 
 #define TNECS_FOREACH_SCOMMA_3(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_2(macro, __VA_ARGS__)
 
