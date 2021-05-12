@@ -235,7 +235,7 @@ struct tnecs_World {
     void (** systems)(struct tnecs_System_Input *);        // [system_id]
     void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
     uint8_t * system_phase;                                // [system_id]
-    size_t ** systemid_byphase;                             // [phase_id][system_order]
+    size_t ** systems_idbyphase;                           // [phase_id][system_order]
     size_t * system_order;                                 // [system_id]
     uint8_t * phases;                                      // [phase_id]
     uint64_t component_hashes[TNECS_COMPONENT_CAP];        // [component_id]
@@ -265,8 +265,8 @@ struct tnecs_World {
     size_t * num_components_bytype;                        // [typeflag_id]
     size_t * len_entities_bytype;                          // [typeflag_id]
     size_t * num_entities_bytype;                          // [typeflag_id]
-    size_t * len_system_byphase;                           // [phase_id]
-    size_t * num_system_byphase;                           // [phase_id]
+    size_t * len_systems_byphase;                           // [phase_id]
+    size_t * num_systems_byphase;                           // [phase_id]
 
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
@@ -333,7 +333,7 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
-void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input), uint8_t in_run_phase, size_t component_num, tnecs_component_t component_typeflag);
+void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input *), uint8_t in_run_phase, size_t component_num, tnecs_component_t component_typeflag);
 
 size_t tnecs_phaseid(struct tnecs_World * in_world, uint8_t in_phase);
 
