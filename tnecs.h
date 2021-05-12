@@ -307,7 +307,7 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_TYPE2ID(type) ((tnecs_component_t)(log2(type) + 1.1f)) // casting to int floors
 
-#define TNECS_SYSTEM_ID(world, name) tnecs_system_name2id(world, #name)
+#define TNECS_SYSTEM_ID(world, name) tnecs_system_hash2id(world, TNECS_HASH(#name))
 #define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]
 #define TNECS_SYSTEM_TYPEFLAG(world, name) tnecs_system_name2typeflag(world, #name)
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
