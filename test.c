@@ -135,16 +135,12 @@ struct Sprite * temp_sprite;
 struct tnecs_World * test_world;
 
 void SystemMove(struct tnecs_System_Input * in_input) {
-    printf("SystemMove\n");
+    // printf("SystemMove\n");
     struct Position * p = TNECS_ITERATE(in_input, Position);
     struct Velocity * v = TNECS_ITERATE(in_input, Velocity);
     for (int i = 0; i < in_input->num_entities; i++) {
-
-        printf("current_entity: %d\n", TNECS_SYSTEM_GET_ENTITY(in_input, i));
         p[i].x = p[i].x + v[i].vx;
         p[i].y = p[i].y + v[i].vy;
-        printf("p[i].x, p[i].y %d %d \n", p[i].x, p[i].y );
-        printf("v[i].vx, v[i].vy %d %d \n", v[i].vx, v[i].vy);
     }
 }
 
@@ -445,16 +441,18 @@ void tnecs_test_world_progress() {
     tnecs_world_progress(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
-    printf("temp_position->x %d\n", temp_position->x);
-    printf("temp_position->y %d\n", temp_position->y);
-    printf("temp_velocity->vx %d\n", temp_velocity->vx);
-    printf("temp_velocity->vy %d\n", temp_velocity->vy);
     lok(temp_position->x == 101);
     lok(temp_position->y == 202);
     lok(temp_velocity->vx == 1);
+    lok(temp_velocity->vy == 2);    
+    tnecs_world_progress(test_world, 1);
+    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    lok(temp_position->x == 102);
+    lok(temp_position->y == 204);
+    lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
 }
-
 
 void tnecs_benchmarks() {
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
