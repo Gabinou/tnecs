@@ -141,73 +141,35 @@ typedef unsigned char tnecs_byte_t;
 // TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__) counts the number of args
 //      -> up to 63, if elements in TNECS_VARMACRO_ARGN and TNECS_VARMACRO_VARG_SEQ exist
 
-#define TNECS_FOREACH_1(macro, x)\
-    macro(x)
+#define TNECS_FOREACH_1(macro, x) macro(x)
 
-#define TNECS_FOREACH_COMMA_1(macro, x, ...)\
-    macro(x)
+#define TNECS_FOREACH_COMMA_2(macro, x, ...) macro(x), TNECS_FOREACH_1(macro, __VA_ARGS__)
 
-#define TNECS_FOREACH_COMMA_2(macro, x, ...)\
-    macro(x),\
-    TNECS_FOREACH_1(macro, __VA_ARGS__)
+#define TNECS_FOREACH_COMMA_3(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_2(macro, __VA_ARGS__)
 
-#define TNECS_FOREACH_COMMA_3(macro, x, ...)\
-    macro(x),\
-    TNECS_FOREACH_COMMA_2(macro, __VA_ARGS__)
+#define TNECS_FOREACH_COMMA_4(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_3(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_COMMA_4(macro, x, ...)\
-    macro(x),\
-    TNECS_FOREACH_COMMA_3(macro,  __VA_ARGS__)
+#define TNECS_FOREACH_COMMA_5(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_4(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_COMMA_5(macro, x, ...)\
-    macro(x),\
-    TNECS_FOREACH_COMMA_4(macro,  __VA_ARGS__)
+#define TNECS_FOREACH_COMMA_6(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_5(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_COMMA_6(macro, x, ...)\
-    macro(x),\
-    TNECS_FOREACH_COMMA_5(macro,  __VA_ARGS__)
+#define TNECS_FOREACH_COMMA_7(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_6(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_COMMA_7(macro, x, ...)\
-    macro(x),\
-    TNECS_FOREACH_COMMA_6(macro,  __VA_ARGS__)
+#define TNECS_FOREACH_COMMA_8(macro, x, ...) macro(x), TNECS_FOREACH_COMMA_7(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_COMMA_8(macro, x, ...)\
-    macro(x),\
-    TNECS_FOREACH_COMMA_7(macro,  __VA_ARGS__)
+#define TNECS_FOREACH_SCOMMA_2(macro, x, ...) macro(#x), TNECS_FOREACH_1(macro, __VA_ARGS__)
 
-#define TNECS_FOREACH_S1(macro, x)\
-    macro(#x)
+#define TNECS_FOREACH_SCOMMA_3(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_2(macro, __VA_ARGS__)
 
-#define TNECS_FOREACH_SCOMMA_1(macro, x)\
-    macro(#x)
+#define TNECS_FOREACH_SCOMMA_4(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_3(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_SCOMMA_2(macro, x, ...)\
-    macro(#x),\
-    TNECS_FOREACH_S1(macro, __VA_ARGS__)
+#define TNECS_FOREACH_SCOMMA_5(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_4(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_SCOMMA_3(macro, x, ...)\
-    macro(#x),\
-    TNECS_FOREACH_SCOMMA_2(macro, __VA_ARGS__)
+#define TNECS_FOREACH_SCOMMA_6(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_5(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_SCOMMA_4(macro, x, ...)\
-    macro(#x),\
-    TNECS_FOREACH_SCOMMA_3(macro,  __VA_ARGS__)
+#define TNECS_FOREACH_SCOMMA_7(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_6(macro,  __VA_ARGS__)
 
-#define TNECS_FOREACH_SCOMMA_5(macro, x, ...)\
-    macro(#x),\
-    TNECS_FOREACH_SCOMMA_4(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SCOMMA_6(macro, x, ...)\
-    macro(#x),\
-    TNECS_FOREACH_SCOMMA_5(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SCOMMA_7(macro, x, ...)\
-    macro(#x),\
-    TNECS_FOREACH_SCOMMA_6(macro,  __VA_ARGS__)
-
-#define TNECS_FOREACH_SCOMMA_8(macro, x, ...)\
-    macro(#x),\
-    TNECS_FOREACH_SCOMMA_7(macro,  __VA_ARGS__)
+#define TNECS_FOREACH_SCOMMA_8(macro, x, ...) macro(#x),TNECS_FOREACH_SCOMMA_7(macro,  __VA_ARGS__)
 
 #define TNECS_VARMACRO_EACH_ARGN(...) TNECS_VARMACRO_EACH_ARGN_(__VA_ARGS__, TNECS_VARMACRO_VARG_SEQ())
 #define TNECS_VARMACRO_EACH_ARGN_(...) TNECS_VARMACRO_ARGN(__VA_ARGS__)
@@ -281,7 +243,7 @@ struct tnecs_Components_Array {
     void * components;  // [entity_order_bytype]
 };
 
-/**************************** WORLD FUNCTIONS  *******************************/
+/**************************** WORLD FUNCTIONS ********************************/
 struct tnecs_World * tnecs_world_genesis();
 void tnecs_world_destroy(struct tnecs_World * in_world);
 void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
@@ -290,11 +252,9 @@ void tnecs_world_init_entities(struct tnecs_World * in_world);
 void tnecs_world_init_typeflags(struct tnecs_World * in_world);
 void tnecs_world_init_systems(struct tnecs_World * in_world);
 
-/****************  REGISTRATION FOR COMPONENTS AND SYSTEMS *******************/
+/***************************** REGISTRATION **********************************/
 #define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-
 #define TNECS_REGISTER_SYSTEM_WPHASE(world, pfunc, phase, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
@@ -317,7 +277,7 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 #define TNECS_ADD_COMPONENT3(world, entity_id, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), true)
-#define TNECS_ADD_COMPONENT4(world, entity_id, isnewtype, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), isnewtype)
+#define TNECS_ADD_COMPONENT4(world, entity_id, component, isnewtype) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), isnewtype)
 
 #define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
 
@@ -380,7 +340,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
 #define TNECS_SYSTEM_GET_ENTITY(input, index) input->world->entities_bytype[input->typeflag_id][index]
 
-/************************* "DYNAMIC" ARRAYS  *********************************/
+/***************************** "DYNAMIC" ARRAYS ******************************/
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize);
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize);
 void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesize);
@@ -394,13 +354,13 @@ void tnecs_growArray_typeflag(struct tnecs_World * in_world);
 #define TNECS_DEL(arr, elem, len, bytesize) tnecs_arrdel(arr, elem, len, bytesize)
 #define TNECS_DELMACRO(arr, elem, len, bytesize) memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1))
 
-/**************************** STRING HASHING *********************************/
+/****************************** STRING HASHING *******************************/
 // tnecs_hash_djb2 slightly faster than tnecs_hash_sdbm
 uint64_t tnecs_hash_djb2(const unsigned char * str);
 uint64_t tnecs_hash_sdbm(const unsigned char * str);
 #define TNECS_HASH(name) tnecs_hash_djb2(name)
 
-/************************** SET BIT COUNTING *********************************/
+/****************************** SET BIT COUNTING *****************************/
 size_t setBits_KnR_uint64_t(uint64_t in_flags);
 
 #ifdef __cplusplus
