@@ -45,69 +45,84 @@ extern double get_us();
 #  define get_ns() (((double)clock())/CLOCKS_PER_SEC*1e9) // [ns]
 #endif
 
+void tnecs_world_init_entities(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_init_entities\n");
+
+    in_world->entities = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entities));
+    in_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entity_typeflags));
+    in_world->entity_orders = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entity_orders));
+
+    in_world->len_entities = TNECS_INITIAL_ENTITY_LEN;
+
+    in_world->entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->entities_bytype));
+    in_world->len_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->len_entities_bytype));
+    in_world->num_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->num_entities_bytype));
+    in_world->next_entity_id = TNECS_NULLSHIFT;
+    for (size_t i = 0; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
+        in_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(**in_world->entities_bytype));
+        in_world->num_entities_bytype[i] = 0;
+        in_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
+    }
+}
+
+void tnecs_world_init_typeflags(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_init_typeflags\n");
+
+    in_world->typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->typeflags));
+    in_world->num_typeflags = TNECS_NULLSHIFT;
+    in_world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
+}
+
+void tnecs_world_init_systems(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_init_systems\n");
+
+    in_world->system_typeflags = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_typeflags));
+    in_world->system_hashes = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_hashes));
+    in_world->system_phases = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_phases));
+    in_world->system_orders = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_orders));
+
+    in_world->len_phases = TNECS_INITIAL_PHASE_LEN;
+    in_world->num_phases = TNECS_NULLSHIFT;
+    in_world->phases = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*in_world->phases));
+    in_world->systems_idbyphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*in_world->phases));
+    in_world->len_systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*in_world->len_systems_byphase));
+    in_world->num_systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*in_world->num_systems_byphase));
+    in_world->systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*in_world->systems_byphase));
+    for (size_t i = 0; i < TNECS_INITIAL_PHASE_LEN; i++) {
+        in_world->systems_byphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(**in_world->systems_byphase));
+        in_world->systems_idbyphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(**in_world->systems_idbyphase));
+        in_world->num_systems_byphase[i] = 0;
+        in_world->len_systems_byphase[i] = TNECS_INITIAL_PHASE_LEN;
+    }
+    in_world->len_systems = TNECS_INITIAL_SYSTEM_LEN;
+    in_world->num_systems = TNECS_NULLSHIFT;
+}
+
+void tnecs_world_init_components(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_init_components\n");
+
+    in_world->component_hashes[TNECS_NULL] = TNECS_NULL;
+    in_world->components_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_bytype));
+    in_world->component_names = calloc(TNECS_COMPONENT_CAP, sizeof(*in_world->component_names));
+    in_world->num_components_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->num_components_bytype));
+    in_world->components_idbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_idbytype));
+    in_world->components_flagbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_flagbytype));
+    in_world->components_orderbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_orderbytype));
+
+    for (size_t i = 0; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
+        in_world->num_components_bytype[i] = 0;
+    }
+    in_world->num_components = TNECS_NULLSHIFT;
+}
+
 struct tnecs_World * tnecs_world_genesis() {
     TNECS_DEBUG_PRINTF("tnecs_world_genesis\n");
 
     struct tnecs_World * tnecs_world = (struct tnecs_World *)calloc(sizeof(struct tnecs_World), 1);
-
-    tnecs_world->entities = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*tnecs_world->entities));
-    tnecs_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*tnecs_world->entity_typeflags));
-    tnecs_world->entity_orders = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*tnecs_world->entity_orders));
-
-    tnecs_world->len_entities = TNECS_INITIAL_ENTITY_LEN;
-
-    tnecs_world->typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*tnecs_world->typeflags));
-    tnecs_world->num_typeflags = TNECS_NULLSHIFT;
-
-    tnecs_world->system_typeflags = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->system_typeflags));
-    tnecs_world->system_hashes = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->system_hashes));
-    tnecs_world->system_phases = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->system_phases));
-    tnecs_world->system_orders = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->system_orders));
-
-    tnecs_world->len_phases = TNECS_INITIAL_PHASE_LEN;
-    tnecs_world->num_phases = TNECS_NULLSHIFT;
-    tnecs_world->phases = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->phases));
-    tnecs_world->systems_idbyphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->phases));
-    tnecs_world->len_systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->len_systems_byphase));
-    tnecs_world->num_systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->num_systems_byphase));
-    tnecs_world->systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->systems_byphase));
-    for (size_t i = 0; i < TNECS_INITIAL_PHASE_LEN; i++) {
-        tnecs_world->systems_byphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(**tnecs_world->systems_byphase));
-        tnecs_world->systems_idbyphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(**tnecs_world->systems_idbyphase));
-        tnecs_world->num_systems_byphase[i] = 0;
-        tnecs_world->len_systems_byphase[i] = TNECS_INITIAL_PHASE_LEN;
-    }
-
-    tnecs_world->component_hashes[TNECS_NULL] = TNECS_NULL;
-
-    tnecs_world->entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->entities_bytype));
-    tnecs_world->len_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->len_entities_bytype));
-    tnecs_world->num_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->num_entities_bytype));
-
-    tnecs_world->components_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->components_bytype));
-    tnecs_world->component_names = calloc(TNECS_COMPONENT_CAP, sizeof(*tnecs_world->component_names));
-    tnecs_world->num_components_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->num_components_bytype));
-    tnecs_world->components_idbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->components_idbytype));
-    tnecs_world->components_flagbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->components_flagbytype));
-    tnecs_world->components_orderbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->components_orderbytype));
-    for (size_t i = 0; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
-        tnecs_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(**tnecs_world->entities_bytype));
-        tnecs_world->num_entities_bytype[i] = 0;
-        tnecs_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
-
-        tnecs_world->num_components_bytype[i] = 0;
-    }
-    tnecs_world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
-
-    tnecs_world->num_components = TNECS_NULLSHIFT;
-    tnecs_world->num_systems = TNECS_NULLSHIFT;
-    tnecs_world->num_typeflags = TNECS_NULLSHIFT;
-
-    tnecs_world->len_systems = TNECS_INITIAL_SYSTEM_LEN;
-    tnecs_world->num_systems = TNECS_NULLSHIFT;
-
-    tnecs_world->next_entity_id = TNECS_NULLSHIFT;
-
+    tnecs_world_init_entities(tnecs_world);
+    tnecs_world_init_typeflags(tnecs_world);
+    tnecs_world_init_systems(tnecs_world);
+    tnecs_world_init_components(tnecs_world);
     return (tnecs_world);
 }
 

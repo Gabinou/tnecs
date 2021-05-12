@@ -285,6 +285,10 @@ struct tnecs_Components_Array {
 struct tnecs_World * tnecs_world_genesis();
 void tnecs_world_destroy(struct tnecs_World * in_world);
 void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
+void tnecs_world_init_components(struct tnecs_World * in_world);
+void tnecs_world_init_entities(struct tnecs_World * in_world);
+void tnecs_world_init_typeflags(struct tnecs_World * in_world);
+void tnecs_world_init_systems(struct tnecs_World * in_world);
 
 #define TNECS_ITERATE(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][input->world->components_orderbytype[input->typeflag_id][tnecs_component_name2id(input->world, #component_name)]].components)
 
