@@ -528,7 +528,7 @@ int main() {
     lrun("hashing", tnecs_test_hashing);
     lresults();
 
-    // tnecs_benchmarks();
+    tnecs_benchmarks();
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
