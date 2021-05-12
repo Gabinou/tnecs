@@ -188,11 +188,12 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
     tnecs_time_ns_t progress_time = get_ns();
+
     size_t system_id;
     for (size_t phase_id = 0; phase_id < in_world->num_phases; phase_id++) {
         for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
             system_id = in_world->systems_idbyphase[phase_id][sorder];
-            current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]) ;
+            current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
             current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
             in_world->systems_byphase[phase_id][sorder](&current_input);
         }

@@ -528,16 +528,24 @@ void tnecs_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-    tnecs_world_destroy(bench_world);
 
+    size_t fps_iterations = 10;
     t_0 = get_us();
-    for (size_t i = 2; i < ITERATIONS; i++) {
+    for (size_t i = 0; i < fps_iterations; i++) {
         tnecs_world_progress(bench_world, 1);
     }
     t_1 = get_us();
-    dupprintf(globalf, "tnecs: world progress: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "tnecs: world progress: %d iterations \n", fps_iterations);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
+    dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
+
+
+    t_0 = get_us();
     tnecs_world_destroy(bench_world);
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: world destruction: \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
 }
 
