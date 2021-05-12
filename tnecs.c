@@ -732,13 +732,6 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
     size_t typeflag_id = tnecs_new_typeflag(in_world, num_components, components_typeflag);
 }
 
-void tnecs_component_remove(struct tnecs_World * in_world, tnecs_component_t in_typeflag) {
-    size_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
-    size_t new_component_num = in_world->num_components_bytype[in_typeflag_id];
-    struct tnecs_Components_Array * current_array;
-    size_t current_component_id;
-}
-
 void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_add \n");
 
