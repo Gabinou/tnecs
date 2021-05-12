@@ -328,7 +328,7 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
 // ************* COMPONENT AND SYSTEM REGISTRATION ******************************
 #define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 
-#define TNECS_REGISTER_SYSTEM_WPHASE(world, pfunc, phase, ...) tnecs_register_system(world, tnecs_hash_djb2(#pfunc), &pfunc, phase, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_WPHASE(world, pfunc, phase, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 

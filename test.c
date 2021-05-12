@@ -205,7 +205,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == tnecs_hash_djb2("Position"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Position)] == TNECS_HASH(Position));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->typeflags[1] == temp_comp_flag);
@@ -223,7 +223,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH(Unit));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->typeflags[2] == (TNECS_NULLSHIFT << 1));
@@ -231,7 +231,7 @@ void tnecs_test_component_registration() {
     lok(test_world->num_components == 3);
     lok(TNECS_COMPONENT_TYPE(test_world, Unit) == (TNECS_NULLSHIFT << 1));
     lok(TNECS_COMPONENT_TYPE(test_world, Unit) == test_world->typeflags[temp_typeflag_id]);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == tnecs_hash_djb2("Unit"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH(Unit));
 
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     temp_comp_flag = 4;
@@ -243,7 +243,7 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->components_flagbytype[temp_comp_id][temp_comp_order] == temp_comp_flag);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == TNECS_HASH(Sprite));
     lok(test_world->typeflags[0] == 0);
     lok(test_world->typeflags[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->typeflags[2] == (TNECS_NULLSHIFT << 1));
@@ -252,7 +252,7 @@ void tnecs_test_component_registration() {
     lok(test_world->num_components == 4);
     lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == (TNECS_NULLSHIFT << 2));
     lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == test_world->typeflags[temp_typeflag_id]);
-    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == tnecs_hash_djb2("Sprite"));
+    lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == TNECS_HASH(Sprite));
 
 }
 
@@ -266,7 +266,7 @@ void tnecs_test_system_registration() {
 
     lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
     lok(TNECS_HASH(SystemMove) == tnecs_hash_djb2("SystemMove"));
-    lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == tnecs_hash_djb2("SystemMove"));
+    lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == TNECS_HASH(SystemMove));
 
 
     lok(test_world->components_idbytype[temp_typeflag_id][0] == TNECS_COMPONENT_NAME2ID(test_world, Position));
@@ -415,8 +415,8 @@ void tnecs_benchmarks() {
     uint64_t res_hash;
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        res_hash = tnecs_hash_djb2("Position");
-        res_hash = tnecs_hash_djb2("Unit");
+        res_hash = TNECS_HASH(Position);
+        res_hash = TNECS_HASH(Unit);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs_hash_djb2: %d iterations \n", ITERATIONS);

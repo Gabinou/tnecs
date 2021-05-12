@@ -686,6 +686,8 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
     size_t system_id = in_world->num_systems++;
+    printf("system_id %d \n", system_id);
+
     if (in_world->num_systems >= in_world->len_systems) {
         tnecs_growArray_system(in_world);
     }
