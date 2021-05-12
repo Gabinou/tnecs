@@ -444,7 +444,7 @@ void tnecs_test_world_progress() {
     lok(temp_position->x == 101);
     lok(temp_position->y == 202);
     lok(temp_velocity->vx == 1);
-    lok(temp_velocity->vy == 2);    
+    lok(temp_velocity->vy == 2);
     tnecs_world_progress(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);

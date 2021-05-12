@@ -769,15 +769,12 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
     size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
     size_t old_entity_order = in_world->entity_orders[in_entity];
-    if ((in_world->num_entities_bytype[new_typeflag_id] + 1) >= in_world->len_entities_bytype[new_typeflag_id]) {
-        size_t old_len = in_world->len_entities_bytype[new_typeflag_id];
-        in_world->len_entities_bytype[new_typeflag_id] += TNECS_ARRAY_GROWTH_FACTOR;
-        tnecs_realloc(in_world->entities_bytype[new_typeflag_id], old_len, in_world->len_entities_bytype[new_typeflag_id], sizeof(**in_world->entities_bytype));
-    }
-    size_t new_entity_order = in_world->num_entities_bytype[new_typeflag_id]++;
+
+    size_t new_entity_order = in_world->num_entities_bytype[new_typeflag_id] + 1;
 
     size_t old_component_id, new_component_id;
     size_t component_bytesize;
+    struct tnecs_Components_Array * old_array, * new_array;
     tnecs_byte_t * old_component_ptr, * new_component_ptr;
     tnecs_byte_t * temp_component_bytesptr;
     for (size_t old_corder = 0; old_corder < in_world->num_components_bytype[old_typeflag_id]; old_corder++) {
@@ -785,14 +782,16 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
         for (size_t new_corder = 0; new_corder < in_world->num_components_bytype[new_typeflag_id]; new_corder++) {
             new_component_id = in_world->components_idbytype[new_typeflag_id][new_corder];
             if (old_component_id == new_component_id) {
+                new_array = &in_world->components_bytype[new_typeflag_id][new_corder];
+                old_array = &in_world->components_bytype[old_typeflag_id][old_corder];
                 component_bytesize = in_world->component_bytesizes[old_component_id];
-                temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[old_typeflag_id][old_corder].components);
+                temp_component_bytesptr = (tnecs_byte_t *)(old_array->components);
                 TNECS_DEBUG_ASSERT(temp_component_bytesptr != NULL);
 
                 old_component_ptr = (tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * old_entity_order));
 
                 TNECS_DEBUG_ASSERT(old_component_ptr != NULL);
-                temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[new_typeflag_id][new_corder].components);
+                temp_component_bytesptr = (tnecs_byte_t *)(new_array->components);
                 new_component_ptr = (tnecs_byte_t *)(temp_component_bytesptr + (component_bytesize * new_entity_order));
                 TNECS_DEBUG_ASSERT(new_component_ptr != NULL);
                 memcpy(new_component_ptr, old_component_ptr, component_bytesize);
@@ -838,6 +837,7 @@ bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_en
 
     tnecs_component_t old_typeflag = in_world->entity_typeflags[in_entity];
     if (old_typeflag > TNECS_NULL) {
+        tnecs_component_add(in_world, new_typeflag);
         tnecs_component_copy(in_world, in_entity, old_typeflag, new_typeflag);
         tnecs_component_del(in_world, in_entity, old_typeflag);
     } else {

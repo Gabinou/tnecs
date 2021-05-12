@@ -233,7 +233,7 @@ struct tnecs_World {
     tnecs_component_t * entity_typeflags;                  // [entity_id]
     tnecs_component_t * system_typeflags;                  // [system_id]
     void (** systems)(struct tnecs_System_Input *);        // [system_id]
-    void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
+    void (* ** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
     uint8_t * system_phases;                                // [system_id]
     size_t ** systems_idbyphase;                           // [phase_id][system_order]
     size_t * system_orders;                                // [system_id]
