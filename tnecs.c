@@ -847,8 +847,6 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash) {
 
     size_t found = 0;
     for (size_t i = 0; i < in_world->num_systems; i++) {
-        // printf("in_world->system_hashes[i] %llu\n", in_world->system_hashes[i]);
-        // printf("in_hash %llu\n", in_hash);
         if (in_world->system_hashes[i] == in_hash) {
             found = i;
             break;
