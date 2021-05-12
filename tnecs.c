@@ -253,7 +253,12 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
     in_array->type = in_type;
     in_array->num_components = 0;
     in_array->len_components = TNECS_INITIAL_ENTITY_LEN;
+
+    TNECS_DEBUG_ASSERT(in_array->components == NULL);
     in_array->components = calloc(TNECS_INITIAL_ENTITY_LEN, bytesize);
+    TNECS_DEBUG_ASSERT(in_array->components != NULL);
+    // in_array->components = malloc(TNECS_INITIAL_ENTITY_LEN * bytesize);
+    // in_array->components = realloc(in_array->components, TNECS_INITIAL_ENTITY_LEN* bytesize);
 }
 
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
