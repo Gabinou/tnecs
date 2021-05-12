@@ -239,7 +239,6 @@ void tnecs_test_component_registration() {
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH("Unit"));
 
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
-    TNECS_REGISTER_COMPONENT(test_world, Velocity);
     temp_comp_flag = 4;
     temp_comp_id = 3;
     temp_comp_order = 0;
@@ -260,6 +259,8 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_TYPE(test_world, Sprite) == test_world->typeflags[temp_typeflag_id]);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Sprite)] == TNECS_HASH("Sprite"));
 
+    TNECS_REGISTER_COMPONENT(test_world, Velocity);
+
 }
 
 void tnecs_test_system_registration() {
@@ -268,7 +269,7 @@ void tnecs_test_system_registration() {
     size_t temp_comp_id = 1;
     size_t temp_comp_order = 0;
     size_t temp_typeflag_id = 4;
-    size_t temp_typeflag = 1 + 2;
+    size_t temp_typeflag = 1 + 8;
 
     lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
 
@@ -277,9 +278,9 @@ void tnecs_test_system_registration() {
 
 
     lok(test_world->components_idbytype[temp_typeflag_id][0] == TNECS_COMPONENT_NAME2ID(test_world, Position));
-    lok(test_world->components_idbytype[temp_typeflag_id][1] == TNECS_COMPONENT_NAME2ID(test_world, Unit));
+    lok(test_world->components_idbytype[temp_typeflag_id][1] == TNECS_COMPONENT_NAME2ID(test_world, Velocity));
     lok(test_world->components_flagbytype[temp_typeflag_id][0] == TNECS_COMPONENT_TYPE(test_world, Position));
-    lok(test_world->components_flagbytype[temp_typeflag_id][1] == TNECS_COMPONENT_TYPE(test_world, Unit));
+    lok(test_world->components_flagbytype[temp_typeflag_id][1] == TNECS_COMPONENT_TYPE(test_world, Velocity));
 }
 
 void tnecs_test_entity_creation() {
