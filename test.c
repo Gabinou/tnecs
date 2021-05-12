@@ -495,12 +495,12 @@ void tnecs_benchmarks() {
     t_0 = get_us();
     tnecs_entity_t tnecs_temp_ent;
     for (size_t i = 0; i < ITERATIONS; i++) {
-        tnecs_temp_ent = tnecs_new_entity(bench_world);
-        tnecs_entities[i] = tnecs_temp_ent;
+        tnecs_entities[i] = tnecs_new_entity(bench_world);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
 
     t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
@@ -512,6 +512,7 @@ void tnecs_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    tnecs_world_destroy(bench_world);
 
 }
 
