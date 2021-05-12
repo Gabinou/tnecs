@@ -816,10 +816,10 @@ bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_en
 
     tnecs_component_t old_typeflag = in_world->entity_typeflags[in_entity];
     if (old_typeflag > TNECS_NULL) {
-        // tnecs_component_copy(in_world, in_entity, old_typeflag, new_typeflag);
-        // tnecs_component_del(in_world, in_entity, old_typeflag);
+        tnecs_component_copy(in_world, in_entity, old_typeflag, new_typeflag);
+        tnecs_component_del(in_world, in_entity, old_typeflag);
     } else {
-        // tnecs_component_add(in_world, new_typeflag);
+        tnecs_component_add(in_world, new_typeflag);
     }
 }
 
