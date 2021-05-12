@@ -526,10 +526,10 @@ int main() {
     lrun("c_add", tnecs_test_component_add);
     lrun("progress", tnecs_test_world_progress);
     lrun("hashing", tnecs_test_hashing);
-    tnecs_world_destroy(test_world);
     lresults();
 
-    tnecs_benchmarks();
+    // tnecs_benchmarks();
+    tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
     return (0);
