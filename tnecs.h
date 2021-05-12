@@ -299,12 +299,29 @@ void tnecs_world_init_systems(struct tnecs_World * in_world);
 
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
 void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input *), uint8_t in_run_phase, size_t component_num, tnecs_component_t component_typeflag);
+size_t tnecs_register_typeflag(struct tnecs_World * in_wormakld, size_t num_components, tnecs_component_t typeflag);
+size_t tnecs_register_phase(struct tnecs_World * in_world, uint8_t in_phase);
 
-/**************************** ENTITY MANIPULATION ****************************/
+/***************************** ENTITY MANIPULATION ***************************/
+tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
+tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
+void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
+
 #define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // redundancy for API consistency
 #define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entity_typeflags[entity] &tnecs_component_names2typeflag(world, 1, #name)) > 0)
+
+// TNECS_ADD_COMPONENT is overloaded 3/4 inputs
+//      skip checks if 4th input is true
+#define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
+#define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
+#define TNECS_ADD_COMPONENT3(world, entity_id, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), true)
+#define TNECS_ADD_COMPONENT4(world, entity_id, isnewtype, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), isnewtype)
+
+#define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
+
+#define TNECS_GET_COMPONENT(world, entity_id, name) (name *)tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
 
 /******************************* TYPEFLAG  ***********************************/
 #define TNECS_TYPEFLAGID(world, typeflag) tnecs_typeflagid(in_world, typeflag)
@@ -329,31 +346,10 @@ size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t typefla
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
 #define TNECS_SYSTEM_GET_ENTITY(input, index) input->world->entities_bytype[input->typeflag_id][index]
 
-// TNECS_ADD_COMPONENT is overloaded 3/4 inputs
-//      skip checks if 4th input is true
-#define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
-#define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
-#define TNECS_ADD_COMPONENT3(world, entity_id, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), true)
-#define TNECS_ADD_COMPONENT4(world, entity_id, isnewtype, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2typeflag(world, 1, #component), isnewtype)
-
-#define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
-
-#define TNECS_GET_COMPONENT(world, entity_id, name) TNECS_ENTITY_GET_COMPONENT(world, entity_id, name)
-#define TNECS_ENTITY_GET_COMPONENT(world, entity_id, name) (name *)tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
-
-
-size_t tnecs_phaseid(struct tnecs_World * in_world, uint8_t in_phase);
-size_t tnecs_new_phase(struct tnecs_World * in_world, uint8_t in_phase);
-
-/***************************** ENTITY MANIPULATION ***************************/
-tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
-tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
-void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 
 
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_component_id);
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag, bool isNew);
-size_t tnecs_new_typeflag(struct tnecs_World * in_wormakld, size_t num_components, tnecs_component_t typeflag);
 void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag);
 
 bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t entity_order_new, tnecs_component_t new_flag);
@@ -375,6 +371,7 @@ size_t tnecs_componentflag_order_bytype(struct tnecs_World * in_world, tnecs_com
 size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag);
 size_t tnecs_componentid_order_bytypeid(struct tnecs_World * in_world, size_t in_component_id, size_t in_typeflag_id);
 size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t system_id, uint8_t in_phase);
+size_t tnecs_phaseid(struct tnecs_World * in_world, uint8_t in_phase);
 
 
 size_t tnecs_component_name2id(struct tnecs_World * in_world, const unsigned char * in_name);
