@@ -503,7 +503,7 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
-    TNECS_REGISTER_SYSTEM(test_world, SystemMove2, Position2, Unit2);
+    TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
     t_1 = get_us();
     dupprintf(globalf, "tnecs: System Registration \n");
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
@@ -535,7 +535,7 @@ void tnecs_benchmarks() {
         tnecs_world_progress(bench_world, 1);
     }
     t_1 = get_us();
-    dupprintf(globalf, "tnecs: wolrd progress: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "tnecs: world progress: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
     tnecs_world_destroy(bench_world);
 
