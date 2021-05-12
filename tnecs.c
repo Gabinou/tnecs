@@ -174,12 +174,15 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
         for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
             printf("sorder %d \n", sorder);
             system_id = in_world->systems_idbyphase[phase_id][sorder];
+            printf("system_id %d \n", system_id);
+
             current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]) ;
             printf("HERE1 \n");
             current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
             printf("HERE2 \n");
             printf("%d \n", in_world->systems_byphase[phase_id][system_id] == NULL);
-            in_world->systems_byphase[phase_id][system_id](&current_input);
+            in_world->systems_byphase[phase_id][sorder](&current_input);
+            // in_world->systems_byphase[phase_id][system_id](&current_input);
             printf("HERE3 \n");
         }
     }
