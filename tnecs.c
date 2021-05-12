@@ -72,8 +72,8 @@ struct tnecs_World * tnecs_world_genesis() {
     tnecs_world->num_systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->num_systems_byphase));
     tnecs_world->systems_byphase = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->systems_byphase));
     for (size_t i = 0; i < TNECS_INITIAL_PHASE_LEN; i++) {
-        tnecs_world->systems_byphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->systems_byphase[i]));
-        tnecs_world->systems_idbyphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*tnecs_world->systems_byphase[i]));
+        tnecs_world->systems_byphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(**tnecs_world->systems_byphase));
+        tnecs_world->systems_idbyphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(**tnecs_world->systems_idbyphase));
         tnecs_world->num_systems_byphase[i] = 0;
         tnecs_world->len_systems_byphase[i] = TNECS_INITIAL_PHASE_LEN;
     }
@@ -170,11 +170,17 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
     tnecs_time_ns_t progress_time = get_ns();
     size_t system_id;
     for (size_t phase_id = 0; phase_id < in_world->num_phases; phase_id++) {
+            printf("\nphase_id %d \n", phase_id);
         for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
+            printf("sorder %d \n", sorder);
             system_id = in_world->systems_idbyphase[phase_id][sorder];
             current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]) ;
+            printf("HERE1 \n");
             current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
+            printf("HERE2 \n");
+            printf("%d \n", in_world->systems_byphase[phase_id][system_id] == NULL);
             in_world->systems_byphase[phase_id][system_id](&current_input);
+            printf("HERE3 \n");
         }
     }
     progress_time = get_ns() - progress_time;
@@ -701,7 +707,9 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
         tnecs_realloc(in_world->systems_byphase[phase_id], old_len, in_world->len_systems_byphase[phase_id], sizeof(**in_world->systems_byphase));
         tnecs_realloc(in_world->systems_idbyphase[phase_id], old_len, in_world->len_systems_byphase[phase_id], sizeof(**in_world->systems_idbyphase));
     }
+
     in_world->system_orders[system_id] = system_order;
+    printf("phase_id, system_order %d %d \n", phase_id, system_order );
     in_world->systems_byphase[phase_id][system_order] = in_system;
     in_world->systems_idbyphase[phase_id][system_order] = system_id;
 
