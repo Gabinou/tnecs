@@ -769,6 +769,11 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
     size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
     size_t old_entity_order = in_world->entity_orders[in_entity];
+    if ((in_world->num_entities_bytype[new_typeflag_id] + 1) >= in_world->len_entities_bytype[new_typeflag_id]) {
+        size_t old_len = in_world->len_entities_bytype[new_typeflag_id];
+        in_world->len_entities_bytype[new_typeflag_id] += TNECS_ARRAY_GROWTH_FACTOR;
+        tnecs_realloc(in_world->entities_bytype[new_typeflag_id], old_len, in_world->len_entities_bytype[new_typeflag_id], sizeof(**in_world->entities_bytype));
+    }
     size_t new_entity_order = in_world->num_entities_bytype[new_typeflag_id]++;
 
     size_t old_component_id, new_component_id;
