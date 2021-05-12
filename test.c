@@ -91,6 +91,11 @@ typedef struct Unit {
     uint32_t str;
 } Unit;
 
+typedef struct Velocity {
+    uint32_t vx;
+    uint32_t vy;
+} Velocity;
+
 
 typedef struct Sprite {
     uint32_t texture;
@@ -131,10 +136,10 @@ struct tnecs_World * test_world;
 
 void SystemMove(struct tnecs_System_Input * in_input) {
     struct Position * p = TNECS_ITERATE(in_input, Position);
-    struct Unit * u = TNECS_ITERATE(in_input, Unit);
+    struct Velocity * v = TNECS_ITERATE(in_input, Velocity);
     for (int i = 0; i < in_input->num_entities; i++) {
-        p[i].x += u[i].hp;
-        p[i].y += u[i].str;
+        p[i].x += v[i].vx;
+        p[i].y += v[i].vy;
     }
 }
 
@@ -234,6 +239,7 @@ void tnecs_test_component_registration() {
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH("Unit"));
 
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
+    TNECS_REGISTER_COMPONENT(test_world, Velocity);
     temp_comp_flag = 4;
     temp_comp_id = 3;
     temp_comp_order = 0;
@@ -257,7 +263,7 @@ void tnecs_test_component_registration() {
 }
 
 void tnecs_test_system_registration() {
-    TNECS_REGISTER_SYSTEM(test_world, SystemMove, Position, Unit);
+    TNECS_REGISTER_SYSTEM(test_world, SystemMove, Position, Velocity);
     size_t temp_comp_flag = 1;
     size_t temp_comp_id = 1;
     size_t temp_comp_order = 0;
@@ -403,6 +409,14 @@ void tnecs_test_hashing() {
 }
 
 void tnecs_test_world_progress() {
+    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    struct Velocity * temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    temp_position->x = 100;
+    temp_position->y = 200;
+
+    temp_velocity->vx = 1;
+    temp_velocity->vy = 2;
     tnecs_world_progress(test_world, 1);
 }
 
