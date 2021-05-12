@@ -118,12 +118,33 @@ typedef struct Unit2 {
 } Unit2;
 
 void SystemMove2(struct tnecs_System_Input * in_input) {
-    // printf("SystemMove\n");
+    // printf("SystemMove2\n");
     struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int i = 0; i < in_input->num_entities; i++) {
-        p[i].x = p[i].x + v[i].hp;
-        p[i].y = p[i].y + v[i].str;
+        // printf("i %d \n", i);
+        p[i].x += v[i].hp;
+        p[i].y += v[i].str;
+    }
+}
+
+void SystemPosition2(struct tnecs_System_Input * in_input) {
+    // printf("SystemPosition2\n");
+    struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    for (int i = 0; i < in_input->num_entities; i++) {
+        // printf("i %d \n", i);
+        p[i].x += 1; 
+        p[i].y += 1; 
+    }
+}
+
+void SystemUnit2(struct tnecs_System_Input * in_input) {
+    // printf("SystemUnit2\n");
+    struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    for (int i = 0; i < in_input->num_entities; i++) {
+        // printf("i %d \n", i);
+        v[i].hp += 1; 
+        v[i].str += 1; 
     }
 }
 
@@ -356,7 +377,6 @@ void tnecs_test_entity_creation() {
 }
 
 void tnecs_test_component_add() {
-
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
@@ -373,7 +393,6 @@ void tnecs_test_component_add() {
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
-
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENTS(test_world, Chasse, 1, Sprite, Position);
@@ -434,10 +453,6 @@ void tnecs_test_component_add() {
     lok(temp_unit->str == 8);
 }
 
-void tnecs_test_hashing() {
-
-}
-
 void tnecs_test_world_progress() {
     struct Velocity * temp_velocity;
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Velocity);
@@ -469,6 +484,8 @@ void tnecs_benchmarks() {
 
     double t_0;
     double t_1;
+
+    printf("world size: %d bytes\n", sizeof(struct tnecs_World));
 
     uint64_t res_hash;
     t_0 = get_us();
@@ -504,7 +521,10 @@ void tnecs_benchmarks() {
 
     t_0 = get_us();
     TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
+    TNECS_REGISTER_SYSTEM(bench_world, SystemPosition2, Position2);    
+    TNECS_REGISTER_SYSTEM(bench_world, SystemUnit2, Unit2);
     t_1 = get_us();
+
     dupprintf(globalf, "tnecs: System Registration \n");
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
@@ -528,17 +548,36 @@ void tnecs_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-    tnecs_world_destroy(bench_world);
 
+    size_t fps_iterations = 10;
     t_0 = get_us();
-    for (size_t i = 2; i < ITERATIONS; i++) {
+    for (size_t i = 0; i < fps_iterations; i++) {
         tnecs_world_progress(bench_world, 1);
     }
     t_1 = get_us();
-    dupprintf(globalf, "tnecs: world progress: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "tnecs: world progress: %d iterations %d entities \n", fps_iterations, ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-    tnecs_world_destroy(bench_world);
+    dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
+    dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
 
+
+    t_0 = get_us();
+    tnecs_world_destroy(bench_world);
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: world destruction: \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+}
+
+void test_log2() {
+    lok(log2(0.0) == NULL);
+    lok(log2(0.0) == NULL);
+    lok(log2(0) == NULL);
+    lok(log2(0) == NULL);
+    lok(log2(1.0) == 0.0);
+    lok(log2(1.0) == 0);
+    lok(log2(2.0) == 1.0);
+    lok(log2(2.0) == 1);
 }
 
 int main() {
@@ -546,12 +585,12 @@ int main() {
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("utilities", tnecs_test_utilities);
     test_world = tnecs_world_genesis();
+    lrun("log2", test_log2);
     lrun("c_regis", tnecs_test_component_registration);
     lrun("s_regis", tnecs_test_system_registration);
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
     lrun("progress", tnecs_test_world_progress);
-    lrun("hashing", tnecs_test_hashing);
     lresults();
 
     tnecs_benchmarks();
