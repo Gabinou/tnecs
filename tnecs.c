@@ -103,7 +103,7 @@ struct tnecs_World * tnecs_world_genesis() {
     tnecs_world->num_systems = TNECS_NULLSHIFT;
     tnecs_world->num_typeflags = TNECS_NULLSHIFT;
 
-    tnecs_world->systems = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->systems));
+    // tnecs_world->systems = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*tnecs_world->systems));
     tnecs_world->len_systems = TNECS_INITIAL_SYSTEM_LEN;
     tnecs_world->num_systems = TNECS_NULLSHIFT;
 
@@ -114,9 +114,20 @@ struct tnecs_World * tnecs_world_genesis() {
 
 void tnecs_world_destroy(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_world_destroy\n");
-    for (size_t i = 0; i < in_world->len_typeflags; i++) {
-
+    printf("HERE\n");
+    for (size_t i = 0; i < in_world->len_phases; i++) {
+        free(in_world->systems_byphase[i]);
+        free(in_world->systems_idbyphase[i]);
     }
+    printf("HERE2\n");
+    free(in_world->num_systems_byphase);
+    printf("HERE3\n");
+    free(in_world->systems_byphase);
+    printf("HERE3\n");
+    free(in_world->systems_idbyphase);
+    printf("HERE3\n");
+    // free(in_world->len_systems_byphase);
+    printf("HERE3\n");
 
 
     for (size_t i = 0; i < in_world->len_typeflags; i++) {
@@ -125,26 +136,28 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
         free(in_world->components_flagbytype[i]);
         free(in_world->components_orderbytype[i]);
         for (size_t j = 0; j < in_world->num_components_bytype[i]; j++) {
-            free(in_world->components_bytype[i][j].components);
+            free(&in_world->components_bytype[i][j]);
         }
         free(in_world->components_bytype[i]);
     }
+    printf("HERE4\n");
     for (size_t i = 0; i < in_world->num_components; i++) {
         free(in_world->component_names[i]);
     }
+    printf("HERE6\n");
     free(in_world->entities_bytype);
     free(in_world->components_bytype);
     free(in_world->components_idbytype);
     free(in_world->components_flagbytype);
     free(in_world->components_orderbytype);
+    printf("HERE5\n");
     free(in_world->component_names);
     free(in_world->entities);
     free(in_world->entity_typeflags);
 
     free(in_world->typeflags);
 
-    free(in_world->systems);
-    free(in_world->systems_byphase);
+    // free(in_world->systems);
     free(in_world->system_typeflags);
     free(in_world->system_phases);
     free(in_world->system_hashes);
@@ -355,7 +368,7 @@ void tnecs_growArray_system(struct tnecs_World * in_world) {
     // free(in_world->system_hashes);
     // in_world->system_hashes = temp;
 
-    in_world->systems = tnecs_realloc(in_world->systems, old_len, in_world->len_systems, sizeof(*in_world->systems));
+    // in_world->systems = tnecs_realloc(in_world->systems, old_len, in_world->len_systems, sizeof(*in_world->systems));
     in_world->system_phases = tnecs_realloc(in_world->system_phases, old_len, in_world->len_systems, sizeof(*in_world->system_phases));
     in_world->system_orders = tnecs_realloc(in_world->system_orders, old_len, in_world->len_systems, sizeof(*in_world->system_orders));
     in_world->systems_idbyphase = tnecs_realloc(in_world->systems_idbyphase, old_len, in_world->len_systems, sizeof(*in_world->systems_idbyphase));
@@ -517,7 +530,7 @@ size_t tnecs_new_typeflag(struct tnecs_World * in_world, size_t num_components, 
         tnecs_component_t typeflag_added = 0;
         in_world->components_idbytype[typeflag_id] =  calloc(num_components, sizeof(**in_world->components_idbytype));
         in_world->components_flagbytype[typeflag_id] =  calloc(num_components, sizeof(**in_world->components_flagbytype));
-        in_world->components_orderbytype[typeflag_id] =  calloc(TNECS_COMPONENT_CAP, sizeof(**in_world->components_flagbytype));
+        in_world->components_orderbytype[typeflag_id] =  calloc(TNECS_COMPONENT_CAP, sizeof(**in_world->components_orderbytype));
 
         size_t i = 0;
         while (typeflag_reduced) {
@@ -696,7 +709,7 @@ void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void
     in_world->system_hashes[system_id] = in_hash;
     // printf("in_world->system_hashes[system_id] %llu \n", in_world->system_hashes[system_id]);
     in_world->system_typeflags[system_id] = components_typeflag;
-    in_world->systems[system_id] = in_system;
+    // in_world->systems[system_id] = in_system;
 
     size_t system_order = in_world->num_systems_byphase[phase_id]++;
     if (in_world->num_systems_byphase[phase_id] >= in_world->len_systems_byphase[phase_id]) {

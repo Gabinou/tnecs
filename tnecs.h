@@ -265,8 +265,8 @@ struct tnecs_World {
     size_t * num_components_bytype;                        // [typeflag_id]
     size_t * len_entities_bytype;                          // [typeflag_id]
     size_t * num_entities_bytype;                          // [typeflag_id]
-    size_t * len_systems_byphase;                           // [phase_id]
-    size_t * num_systems_byphase;                           // [phase_id]
+    size_t * len_systems_byphase;                          // [phase_id]
+    size_t * num_systems_byphase;                          // [phase_id]
 
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
