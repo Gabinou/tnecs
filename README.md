@@ -40,7 +40,9 @@ C99, compile with ```tcc```.
 - FOSS: Free and Open Source
 
 ## To do
-- System phases.
+- More tests.
+- Standardize API
+
 
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)

@@ -136,8 +136,8 @@ struct tnecs_World * test_world;
 
 void SystemMove(struct tnecs_System_Input * in_input) {
     // printf("SystemMove\n");
-    struct Position * p = TNECS_ITERATE(in_input, Position);
-    struct Velocity * v = TNECS_ITERATE(in_input, Velocity);
+    struct Position * p = TNECS_COMPONENTS_LIST(in_input, Position);
+    struct Velocity * v = TNECS_COMPONENTS_LIST(in_input, Velocity);
     for (int i = 0; i < in_input->num_entities; i++) {
         p[i].x = p[i].x + v[i].vx;
         p[i].y = p[i].y + v[i].vy;
