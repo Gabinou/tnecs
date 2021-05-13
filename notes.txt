@@ -2,5 +2,6 @@
 
 TO DO:
 	More tests WHAT TESTS?
-		entity_destroy
+		entity_destroy DONE
+		register_system wphase
 		

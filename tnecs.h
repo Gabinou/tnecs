@@ -225,11 +225,11 @@ struct tnecs_Components_Array {
 /**************************** WORLD FUNCTIONS ********************************/
 struct tnecs_World * tnecs_world_genesis();
 void tnecs_world_destroy(struct tnecs_World * in_world);
-void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
-void tnecs_world_init_components(struct tnecs_World * in_world);
-void tnecs_world_init_entities(struct tnecs_World * in_world);
-void tnecs_world_init_typeflags(struct tnecs_World * in_world);
-void tnecs_world_init_systems(struct tnecs_World * in_world);
+void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
+void tnecs_world_breath_components(struct tnecs_World * in_world);
+void tnecs_world_breath_entities(struct tnecs_World * in_world);
+void tnecs_world_breath_typeflags(struct tnecs_World * in_world);
+void tnecs_world_breath_systems(struct tnecs_World * in_world);
 
 /***************************** REGISTRATION **********************************/
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);

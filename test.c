@@ -462,14 +462,14 @@ void tnecs_test_world_progress() {
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
-    tnecs_world_progress(test_world, 1);
+    tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
     lok(temp_position->x == 101);
     lok(temp_position->y == 202);
     lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
-    tnecs_world_progress(test_world, 1);
+    tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
     lok(temp_position->x == 102);
@@ -562,7 +562,7 @@ void tnecs_benchmarks() {
     size_t fps_iterations = 10;
     t_0 = get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
-        tnecs_world_progress(bench_world, 1);
+        tnecs_world_step(bench_world, 1);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: world progress: %d iterations %d entities \n", fps_iterations, ITERATIONS);

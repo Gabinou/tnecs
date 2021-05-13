@@ -330,7 +330,7 @@ void tnecs_benchmarks() {
     t_0 = get_us();
     tnecs_entity_t tnecs_temp_ent;
     for (size_t i = 0; i < ITERATIONS; i++) {
-        tnecs_entities[i] = tnecs_new_entity(bench_world);
+        tnecs_entities[i] = tnecs_entity_create(bench_world);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
@@ -351,7 +351,7 @@ void tnecs_benchmarks() {
     size_t fps_iterations = 10;
     t_0 = get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
-        tnecs_world_progress(bench_world, 1);
+        tnecs_world_step(bench_world, 1);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: world progress: %d iterations \n", fps_iterations);

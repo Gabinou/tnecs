@@ -47,8 +47,8 @@ extern double get_us();
 #endif
 
 /**************************** WORLD FUNCTIONS ********************************/
-void tnecs_world_init_entities(struct tnecs_World * in_world) {
-    TNECS_DEBUG_PRINTF("tnecs_world_init_entities\n");
+void tnecs_world_breath_entities(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_breath_entities\n");
 
     in_world->entities = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entities));
     in_world->entities_open = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entities_open));
@@ -70,16 +70,16 @@ void tnecs_world_init_entities(struct tnecs_World * in_world) {
     }
 }
 
-void tnecs_world_init_typeflags(struct tnecs_World * in_world) {
-    TNECS_DEBUG_PRINTF("tnecs_world_init_typeflags\n");
+void tnecs_world_breath_typeflags(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_breath_typeflags\n");
 
     in_world->typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->typeflags));
     in_world->num_typeflags = TNECS_NULLSHIFT;
     in_world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
 }
 
-void tnecs_world_init_systems(struct tnecs_World * in_world) {
-    TNECS_DEBUG_PRINTF("tnecs_world_init_systems\n");
+void tnecs_world_breath_systems(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_breath_systems\n");
 
     in_world->system_typeflags = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_typeflags));
     in_world->system_hashes = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_hashes));
@@ -102,8 +102,8 @@ void tnecs_world_init_systems(struct tnecs_World * in_world) {
     in_world->num_systems = TNECS_NULLSHIFT;
 }
 
-void tnecs_world_init_components(struct tnecs_World * in_world) {
-    TNECS_DEBUG_PRINTF("tnecs_world_init_components\n");
+void tnecs_world_breath_components(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_world_breath_components\n");
 
     in_world->component_hashes[TNECS_NULL] = TNECS_NULL;
     in_world->components_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_bytype));
@@ -122,10 +122,10 @@ struct tnecs_World * tnecs_world_genesis() {
     TNECS_DEBUG_PRINTF("tnecs_world_genesis\n");
 
     struct tnecs_World * tnecs_world = (struct tnecs_World *)calloc(sizeof(struct tnecs_World), 1);
-    tnecs_world_init_entities(tnecs_world);
-    tnecs_world_init_typeflags(tnecs_world);
-    tnecs_world_init_systems(tnecs_world);
-    tnecs_world_init_components(tnecs_world);
+    tnecs_world_breath_entities(tnecs_world);
+    tnecs_world_breath_typeflags(tnecs_world);
+    tnecs_world_breath_systems(tnecs_world);
+    tnecs_world_breath_components(tnecs_world);
     return (tnecs_world);
 }
 
@@ -177,8 +177,8 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
     free(in_world);
 }
 
-void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
-    TNECS_DEBUG_PRINTF("tnecs_world_progress\n");
+void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
+    TNECS_DEBUG_PRINTF("tnecs_world_step\n");
 
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
