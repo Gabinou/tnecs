@@ -86,11 +86,11 @@ A system is a user-defined function, with ```struct tnecs_System_Input``` as inp
 ```c
     void SystemMove(struct tnecs_System_Input in_input) {
         Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
-        Unit *v = TNECS_COMPONENTS_LIST(entity_list, Unit);
+        Velocity *v = TNECS_COMPONENTS_LIST(entity_list, Velocity);
 
         for (int i = 0; i < in_input->entity_num; i++) {
-            p[i].x += 2;
-            p[i].y += 4;
+            p[i].x += v[i].vx;
+            p[i].y += v[i].vy;
         }
     }
 
@@ -107,17 +107,9 @@ enum SYSTEM_PHASES {
     SYSTEM_PHASE_POST = 3,
 };
 
-
 TNECS_REGISTER_SYSTEM_WPHASE(game_world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit); 
 ```
 
-
-
-```c
-```
-## Iterating over Entities in a System
-```c
-```
 ## Updating the world
 ```c
 tnecs_time_ns_t frame_deltat;

@@ -145,7 +145,6 @@ typedef unsigned char tnecs_byte_t;
 //      -> _COMMA puts commas around each (except last)
 //      -> _NEWLINE makes newline for each (except last)
 //      up to 8 input args. Theoretically up to 63, if all TNECS_FOREACH_XXXX_N exist
-
 #define TNECS_FOREACH_1(macro, x) macro(x)
 
 #define TNECS_FOREACH_S1(macro, x) macro(#x)
@@ -234,10 +233,11 @@ struct tnecs_World {
     size_t * num_entities_bytype;                          // [typeflag_id]
     size_t * len_systems_byphase;                          // [phase_id]
     size_t * num_systems_byphase;                          // [phase_id]
-
     tnecs_entity_t next_entity_id;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
     uint8_t num_opened_entity_ids;
+    
+    tnecs_time_ns_t previous_time;
 };
 typedef struct tnecs_World tnecs_world_t;
 

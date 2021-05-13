@@ -179,15 +179,13 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
 void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     TNECS_DEBUG_PRINTF("tnecs_world_progress\n");
     // NEED have variable that tracks if systems were changed
-
-    // 0- Compute current time.
-    // 1- Make list of all systems (get from previous iteration)
-    // 2- Make System_inputs for all systems (get from previous iteration)
-    // 3- Run all systems on their respective inputs
-    // 4- compute
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
-    tnecs_time_ns_t progress_time = get_ns();
+    tnecs_time_ns_t toprogress_time;
+    if (!in_deltat) {
+        toprogress_time = get_ns() - in_world->previous_time;
+    }
+    // tnecs_time_ns_t progress_time = get_ns();
 
     size_t system_id;
     for (size_t phase_id = 0; phase_id < in_world->num_phases; phase_id++) {
@@ -198,7 +196,8 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
             in_world->systems_byphase[phase_id][sorder](&current_input);
         }
     }
-    progress_time = get_ns() - progress_time;
+    in_world->previous_time = get_ns();
+    // progress_time = get_ns() - progress_time;
 }
 
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
