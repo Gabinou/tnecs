@@ -538,7 +538,6 @@ void tnecs_benchmarks() {
 
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        printf("%d \n", i);
         tnecs_entity_destroy(bench_world, tnecs_entities[i]);
     }
     t_1 = get_us();

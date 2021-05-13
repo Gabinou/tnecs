@@ -272,7 +272,14 @@ void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesiz
 
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_arrdel\n");
-    return (memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1)));
+    void * out;
+    printf("elem %d len %d\n", elem, len);
+    if (elem < (len - 1)) {
+        out = memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1));
+    } else {
+        out = memset(arr + (elem * bytesize), 0, bytesize);
+    }
+    return (out);
 }
 
 size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_new) {
@@ -528,28 +535,22 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     void * temp_component_bytesptr;
 
     // Deletes associated components
-    printf("HERE1\n");
     for (size_t corder = 0; corder < in_world->num_components_bytype[entity_typeflag_id]; corder++) {
         component_id = in_world->components_idbytype[entity_typeflag_id][corder];
         component_bytesize = in_world->component_bytesizes[component_id];
         temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[entity_typeflag_id][corder].components);
-        in_world->components_bytype[entity_typeflag_id][corder].components = tnecs_arrdel(temp_component_bytesptr, entity_order, in_world->num_entities_bytype[entity_typeflag_id], component_bytesize);
+        in_world->components_bytype[entity_typeflag_id][corder].components = tnecs_arrdel(temp_component_bytesptr, entity_order, in_world->len_entities_bytype[entity_typeflag_id], component_bytesize);
     }
-    printf("HERE2\n");
-
     // Entity removed from entities_bytype, entity_typeflags, entities...
-    in_world->entities_bytype[entity_typeflag_id] = tnecs_arrdel(in_world->entities_bytype[entity_typeflag_id], entity_order, in_world->num_entities_bytype[entity_typeflag_id], sizeof(**in_world->entities_bytype));
-    printf("HERE3\n");
-    in_world->num_entities_bytype[entity_typeflag_id]--;
-    printf("HERE4\n");
+    TNECS_DEBUG_ASSERT(in_world->len_entities_bytype[entity_typeflag_id] >= in_entity);
+    TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
+
+    tnecs_entitiesbytype_del(in_world, in_entity, entity_typeflag);
     in_world->entities[in_entity] = TNECS_NULL;
-    printf("HERE5\n");
     in_world->entity_typeflags[in_entity] = TNECS_NULL;
-    printf("HERE6\n");
     if ((in_world->num_entities_open + 1) >= in_world->len_entities_open) {
         size_t old_len = in_world->len_entities_open;
         in_world->len_entities_open *= TNECS_ARRAY_GROWTH_FACTOR;
-        printf("EXTEND. %d \n", in_world->len_entities_open);
         in_world->entities_open = tnecs_realloc(in_world->entities_open, old_len, in_world->len_entities_open, sizeof(*in_world->entities_open));
     }
     in_world->entities_open[in_world->num_entities_open++] = in_entity;
