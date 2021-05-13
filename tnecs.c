@@ -1,6 +1,7 @@
 
 #include "tnecs.h"
 
+/********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
 uint64_t get_ns() {
     static uint64_t is_init = 0;
 #if defined(__APPLE__)
@@ -45,6 +46,7 @@ extern double get_us();
 #  define get_ns() (((double)clock())/CLOCKS_PER_SEC*1e9) // [ns]
 #endif
 
+/**************************** WORLD FUNCTIONS ********************************/
 void tnecs_world_init_entities(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_world_init_entities\n");
 
@@ -198,6 +200,7 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
     in_world->previous_time = get_ns();
 }
 
+/***************************** ENTITY MANIPULATION ***************************/
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_new_entity\n");
 
@@ -255,8 +258,6 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
     TNECS_DEBUG_ASSERT(in_array->components == NULL);
     in_array->components = calloc(TNECS_INITIAL_ENTITY_LEN, bytesize);
     TNECS_DEBUG_ASSERT(in_array->components != NULL);
-    // in_array->components = malloc(TNECS_INITIAL_ENTITY_LEN * bytesize);
-    // in_array->components = realloc(in_array->components, TNECS_INITIAL_ENTITY_LEN* bytesize);
 }
 
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
@@ -806,7 +807,7 @@ size_t tnecs_component_order_bytype(struct tnecs_World * in_world, size_t in_com
     return (tnecs_component_order_bytypeid(in_world, in_component_id, in_typeflag_id));
 }
 
-// ******************* STRING HASHING *************************
+/****************************** STRING HASHING *******************************/
 uint64_t tnecs_hash_djb2(const unsigned char * str) {
     /* djb2 hashing algorithm by Dan Bernstein.
     * Description: This algorithm (k=33) was first reported by dan bernstein many
@@ -850,7 +851,7 @@ uint64_t tnecs_hash_sdbm(const unsigned char * str) {
     return (hash);
 }
 
-// *************************** SET BIT COUNTING *******************************
+/****************************** SET BIT COUNTING *****************************/
 size_t setBits_KnR_uint64_t(uint64_t in_flags) {
     // Credits to Kernighan and Ritchie in the C Programming Language
     size_t count = 0;
