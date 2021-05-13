@@ -179,25 +179,25 @@ struct tnecs_System_Input {
 
 struct tnecs_World {
     tnecs_entity_t * entities; // (entities[entity_id] == entity_id) unless deleted
-    tnecs_component_t * typeflags;                         // [typeflag_id]
-    tnecs_component_t * entity_typeflags;                  // [entity_id]
-    tnecs_component_t * system_typeflags;                  // [system_id]
-    void (** systems)(struct tnecs_System_Input *);        // [system_id]
-    void (* ** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
-    uint8_t * system_phases;                                // [system_id]
-    size_t ** systems_idbyphase;                           // [phase_id][system_order]
-    size_t * system_orders;                                // [system_id]
-    uint8_t * phases;                                      // [phase_id]
-    tnecs_hash_t component_hashes[TNECS_COMPONENT_CAP];        // [component_id]
-    size_t component_bytesizes[TNECS_COMPONENT_CAP];       // [component_id]
-    tnecs_hash_t * system_hashes;                              // [system_id]
+    tnecs_component_t * typeflags;                           // [typeflag_id]
+    tnecs_component_t * entity_typeflags;                    // [entity_id]
+    tnecs_component_t * system_typeflags;                    // [system_id]
+    void (** systems)(struct tnecs_System_Input *);          // [system_id]
+    void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
+    uint8_t * system_phases;                                 // [system_id]
+    size_t ** systems_idbyphase;                             // [phase_id][system_order]
+    size_t * system_orders;                                  // [system_id]
+    uint8_t * phases;                                        // [phase_id]
+    tnecs_hash_t component_hashes[TNECS_COMPONENT_CAP];      // [component_id]
+    size_t component_bytesizes[TNECS_COMPONENT_CAP];         // [component_id]
+    tnecs_hash_t * system_hashes;                            // [system_id]
 
     // the bytype array are exclusive -> entities are unique in components_bytype
-    struct tnecs_Components_Array ** components_bytype;    // [typeflag_id][component_order_bytype]
-    tnecs_entity_t ** entities_bytype;                     // [typeflag_id][entity_order_bytype]
-    tnecs_component_t ** components_idbytype;              // [typeflag_id][component_order_bytype]
-    tnecs_component_t ** components_flagbytype;            // [typeflag_id][component_order_bytype]
-    size_t ** components_orderbytype;                      // [typeflag_id][component_id]
+    struct tnecs_Components_Array ** components_bytype;      // [typeflag_id][component_order_bytype]
+    tnecs_entity_t ** entities_bytype;                       // [typeflag_id][entity_order_bytype]
+    tnecs_component_t ** components_idbytype;                // [typeflag_id][component_order_bytype]
+    tnecs_component_t ** components_flagbytype;              // [typeflag_id][component_order_bytype]
+    size_t ** components_orderbytype;                        // [typeflag_id][component_id]
     char ** component_names;
 
     // len is allocated size
@@ -211,12 +211,12 @@ struct tnecs_World {
     size_t num_phases;
     size_t num_components;
 
-    size_t * entity_orders;                                // [entity_id]
-    size_t * num_components_bytype;                        // [typeflag_id]
-    size_t * len_entities_bytype;                          // [typeflag_id]
-    size_t * num_entities_bytype;                          // [typeflag_id]
-    size_t * len_systems_byphase;                          // [phase_id]
-    size_t * num_systems_byphase;                          // [phase_id]
+    size_t * entity_orders;                                  // [entity_id]
+    size_t * num_components_bytype;                          // [typeflag_id]
+    size_t * len_entities_bytype;                            // [typeflag_id]
+    size_t * num_entities_bytype;                            // [typeflag_id]
+    size_t * len_systems_byphase;                            // [phase_id]
+    size_t * num_systems_byphase;                            // [phase_id]
     tnecs_entity_t next_entity_id;
     uint8_t num_opened_entity_ids;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];

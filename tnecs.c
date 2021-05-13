@@ -750,7 +750,7 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
 
 void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_typeflag, tnecs_component_t new_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_copy \n");
-    TNECS_DEBUG_ASSERT(old_typeflag != 0);
+    TNECS_DEBUG_ASSERT(old_typeflag != TNECS_NULL);
 
     size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
     size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
