@@ -118,12 +118,29 @@ typedef struct Unit2 {
 } Unit2;
 
 void SystemMove2(struct tnecs_System_Input * in_input) {
-    // printf("SystemMove\n");
+    // printf("SystemMove2\n");
     struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int i = 0; i < in_input->num_entities; i++) {
-        p[i].x = p[i].x + v[i].hp;
-        p[i].y = p[i].y + v[i].str;
+        // printf("i %d \n", i);
+        p[i].x += v[i].hp;
+        p[i].y += v[i].str;
+    }
+}
+
+void SystemPosition2(struct tnecs_System_Input * in_input) {
+    struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    for (int i = 0; i < in_input->num_entities; i++) {
+        p[i].x += 1; 
+        p[i].y += 1; 
+    }
+}
+
+void SystemUnit2(struct tnecs_System_Input * in_input) {
+    struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    for (int i = 0; i < in_input->num_entities; i++) {
+        v[i].hp += 1; 
+        v[i].str += 1; 
     }
 }
 
@@ -434,10 +451,6 @@ void tnecs_test_component_add() {
     lok(temp_unit->str == 8);
 }
 
-void tnecs_test_hashing() {
-
-}
-
 void tnecs_test_world_progress() {
     struct Velocity * temp_velocity;
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Velocity);
@@ -504,7 +517,10 @@ void tnecs_benchmarks() {
 
     t_0 = get_us();
     TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
+    TNECS_REGISTER_SYSTEM(bench_world, SystemPosition2, Position2);    
+    TNECS_REGISTER_SYSTEM(bench_world, SystemUnit2, Unit2);
     t_1 = get_us();
+
     dupprintf(globalf, "tnecs: System Registration \n");
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
@@ -535,7 +551,7 @@ void tnecs_benchmarks() {
         tnecs_world_progress(bench_world, 1);
     }
     t_1 = get_us();
-    dupprintf(globalf, "tnecs: world progress: %d iterations \n", fps_iterations);
+    dupprintf(globalf, "tnecs: world progress: %d iterations %d entities \n", fps_iterations, ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
     dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
     dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
@@ -559,7 +575,6 @@ int main() {
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
     lrun("progress", tnecs_test_world_progress);
-    lrun("hashing", tnecs_test_hashing);
     lresults();
 
     tnecs_benchmarks();

@@ -178,14 +178,13 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
 
 void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     TNECS_DEBUG_PRINTF("tnecs_world_progress\n");
-    // NEED have variable that tracks if systems were changed
+
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
     tnecs_time_ns_t toprogress_time;
     if (!in_deltat) {
         toprogress_time = get_ns() - in_world->previous_time;
     }
-    // tnecs_time_ns_t progress_time = get_ns();
 
     size_t system_id;
     for (size_t phase_id = 0; phase_id < in_world->num_phases; phase_id++) {
@@ -197,7 +196,6 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
         }
     }
     in_world->previous_time = get_ns();
-    // progress_time = get_ns() - progress_time;
 }
 
 tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
@@ -554,7 +552,7 @@ size_t tnecs_register_typeflag(struct tnecs_World * in_world, size_t num_compone
     return (typeflag_id);
 }
 
-size_t tnecs_component_hash2id(struct tnecs_World * in_world, uint64_t in_hash) {
+size_t tnecs_component_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_component_hash2id\n");
 
     size_t out;
@@ -579,7 +577,7 @@ tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t arg
     tnecs_component_t out = 0;
     va_list ap;
     va_start(ap, argnum);
-    uint64_t temp_hash;
+    tnecs_hash_t temp_hash;
     for (size_t i = 0; i < argnum; i++) {
         temp_hash = tnecs_hash_djb2(va_arg(ap, const unsigned char *));
         for (size_t j = 0; j < in_world->num_components; j++) {
@@ -606,7 +604,7 @@ tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...) {
     return (out);
 }
 
-tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, uint64_t in_hash) {
+tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_component_hash2typeflag \n");
 
     tnecs_component_t out = TNECS_NULL;
@@ -624,9 +622,9 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
     va_list ap;
     va_start(ap, argnum);
     tnecs_component_t typeflag = 0;
-    uint64_t current_hash;
+    tnecs_hash_t current_hash;
     for (size_t i = 0; i < argnum; i++) {
-        current_hash = va_arg(ap, uint64_t);
+        current_hash = va_arg(ap, tnecs_hash_t);
         typeflag += tnecs_component_hash2typeflag(in_world, current_hash);
     }
     va_end(ap);
@@ -694,7 +692,7 @@ size_t tnecs_new_phase(struct tnecs_World * in_world, uint8_t in_phase) {
     return (in_world->num_phases++);
 }
 
-void tnecs_register_system(struct tnecs_World * in_world, uint64_t in_hash, void (* in_system)(struct tnecs_System_Input *), uint8_t in_phase, size_t num_components, tnecs_component_t components_typeflag) {
+void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), uint8_t in_phase, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
     size_t system_id = in_world->num_systems++;
@@ -752,7 +750,7 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
 
 void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_typeflag, tnecs_component_t new_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_copy \n");
-    TNECS_DEBUG_ASSERT(old_typeflag != NULL);
+    TNECS_DEBUG_ASSERT(old_typeflag != 0);
 
     size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
     size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
@@ -846,7 +844,7 @@ size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_type
     return (id);
 }
 
-size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash) {
+size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_system_hash2id\n");
 
     size_t found = 0;
@@ -859,7 +857,7 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, uint64_t in_hash) {
     return (found);
 }
 
-tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, uint64_t in_hash) {
+tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_component_hash2type \n");
     return (TNECS_COMPONENT_ID2TYPEFLAG(tnecs_system_hash2id(in_world, in_hash)));
 }
@@ -888,7 +886,6 @@ size_t tnecs_phaseid(struct tnecs_World * in_world, uint8_t in_phase) {
     return (out);
 }
 
-
 tnecs_component_t tnecs_component_names2typeflag(struct tnecs_World * in_world, size_t argnum, ...) {
     TNECS_DEBUG_PRINTF("tnecs_component_names2typeflag\n");
 
@@ -900,20 +897,6 @@ tnecs_component_t tnecs_component_names2typeflag(struct tnecs_World * in_world, 
     }
     va_end(ap);
     return (typeflag);
-}
-
-size_t tnecs_componentflag_order_bytype(struct tnecs_World * in_world, tnecs_component_t in_component_flag, tnecs_component_t in_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_componentflag_order_bytype\n");
-
-    size_t order = TNECS_COMPONENT_CAP;
-    // tnecs_component_t in_typeflag_id = tnecs_component_flag2id(in_world, in_com);
-    // for (size_t i = 0; i < in_world->num_components_bytype[in_typeflag_id]; i++) {
-    //     if (in_world->components_flagbytype[in_typeflag_id][i] == in_component_flag) {
-    //         order = i;
-    //         break;
-    //     }
-    // }
-    return (order);
 }
 
 size_t tnecs_componentid_order_bytypeid(struct tnecs_World * in_world, size_t in_component_id, size_t in_typeflag_id) {
@@ -935,21 +918,6 @@ size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_c
     tnecs_component_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     return (tnecs_componentid_order_bytypeid(in_world, in_component_id, in_typeflag_id));
 }
-
-size_t tnecs_system_order_byphase(struct tnecs_World * in_world, size_t in_system_id, uint8_t in_phase) {
-    TNECS_DEBUG_PRINTF("tnecs_system_order_byphase\n");
-
-    // SYStems need to be stored BY PHASE also.
-    // size_t order = in_world->num_systems;
-    // for (size_t i = 0; i < in_world->num_systems_byphase[in_phase]; i++) {
-    //     if (in_world->systems_idbyphase[in_phase][i] == in_system_id) {
-    //         order = i;
-    //         break;
-    //     }
-    // }
-    // return (order);
-}
-
 
 // ******************* STRING HASHING *************************
 uint64_t tnecs_hash_djb2(const unsigned char * str) {
