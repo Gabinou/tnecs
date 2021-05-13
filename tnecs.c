@@ -203,9 +203,9 @@ tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world) {
 
     tnecs_entity_t out = TNECS_NULL;
     tnecs_component_t component_flag;
-    while ((out == TNECS_NULL) && (in_world->num_opened_entity_ids > 0)) {
-        out = in_world->opened_entity_ids[--in_world->num_opened_entity_ids];
-        in_world->opened_entity_ids[in_world->num_opened_entity_ids] = TNECS_NULL;
+    while ((out == TNECS_NULL) && (in_world->num_entities_open > 0)) {
+        out = in_world->entities_open[--in_world->num_entities_open];
+        in_world->entities_open[in_world->num_entities_open] = TNECS_NULL;
     }
     if (out == TNECS_NULL) { out = in_world->next_entity_id++; }
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
@@ -534,6 +534,8 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     in_world->num_entities_bytype[entity_typeflag_id]--;
     in_world->entities[in_entity] = TNECS_NULL;
     in_world->entity_typeflags[in_entity] = TNECS_NULL;
+    in_world->entities_open[in_world->num_entities_open++] = in_entity;
+
 }
 
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize) {
