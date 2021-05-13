@@ -468,7 +468,7 @@ size_t tnecs_component_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_ha
     return (out);
 }
 
-size_t tnecs_component_name2id(struct tnecs_World * in_world, const unsigned char * in_name) {
+size_t tnecs_component_name2id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_component_name2id\n");
 
     return (tnecs_component_hash2id(in_world, tnecs_hash_djb2(in_name)));
@@ -725,12 +725,12 @@ tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, tnecs
     return (TNECS_COMPONENT_ID2TYPEFLAG(tnecs_system_hash2id(in_world, in_hash)));
 }
 
-size_t tnecs_system_name2id(struct tnecs_World * in_world, const unsigned char * in_name) {
+size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_system_name2id\n");
     return (tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name)));
 }
 
-tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const unsigned char * in_name) {
+tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_system_name2typeflag\n");
     size_t id = tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name));
     return (in_world->system_typeflags[id]);
@@ -756,7 +756,7 @@ tnecs_component_t tnecs_component_names2typeflag(struct tnecs_World * in_world, 
     tnecs_component_t typeflag = 0;
     va_start(ap, argnum);
     for (size_t i = 0; i < argnum; i++) {
-        typeflag += in_world->typeflags[tnecs_component_name2id(in_world, va_arg(ap, const unsigned char *))];
+        typeflag += in_world->typeflags[tnecs_component_name2id(in_world, va_arg(ap, const tnecs_str_t *))];
     }
     va_end(ap);
     return (typeflag);
