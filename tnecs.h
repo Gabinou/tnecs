@@ -61,14 +61,14 @@
 extern "C" {
 #endif
 /****************************** DEBUGGING ************************************/
-#define TNECS_DEBUG_A // asserts are ignored if undefined
+#define TNECS_DEBUG_A // TNECS_DEBUG_ASSERT are ignored if undefined
 #ifdef TNECS_DEBUG_A
 #define TNECS_DEBUG_ASSERT(in) do {assert(in);}while(0)
 #else
 #define TNECS_DEBUG_ASSERT(...) (void)0
 #endif
 
-// #define TNECS_DEBUG_P // printf are ignored if undefined
+// #define TNECS_DEBUG_P // TNECS_DEBUG_PRINTF are ignored if undefined
 #ifdef TNECS_DEBUG_P
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
