@@ -228,7 +228,7 @@ void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t 
 
     if ((component_flag & entity_typeflag) > 0) {
         size_t typeflag_id = tnecs_typeflagid(in_world, entity_typeflag);
-        size_t component_order = tnecs_componentid_order_bytype(in_world, in_component_id, entity_typeflag);
+        size_t component_order = tnecs_component_order_bytype(in_world, in_component_id, entity_typeflag);
         TNECS_DEBUG_ASSERT(component_order <= in_world->num_entities_bytype[typeflag_id]);
         size_t entity_order = in_world->entity_orders[in_entity_id];
         size_t bytesize = in_world->component_bytesizes[in_component_id];
@@ -879,8 +879,8 @@ tnecs_component_t tnecs_component_names2typeflag(struct tnecs_World * in_world, 
     return (typeflag);
 }
 
-size_t tnecs_componentid_order_bytypeid(struct tnecs_World * in_world, size_t in_component_id, size_t in_typeflag_id) {
-    TNECS_DEBUG_PRINTF("tnecs_componentid_order_bytypeid\n");
+size_t tnecs_component_order_bytypeid(struct tnecs_World * in_world, size_t in_component_id, size_t in_typeflag_id) {
+    TNECS_DEBUG_PRINTF("tnecs_component_order_bytypeid\n");
 
     size_t order = TNECS_COMPONENT_CAP;
     for (size_t i = 0; i < in_world->num_components_bytype[in_typeflag_id]; i++) {
@@ -892,11 +892,11 @@ size_t tnecs_componentid_order_bytypeid(struct tnecs_World * in_world, size_t in
     return (order);
 }
 
-size_t tnecs_componentid_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_componentid_order_bytype\n");
+size_t tnecs_component_order_bytype(struct tnecs_World * in_world, size_t in_component_id, tnecs_component_t in_typeflag) {
+    TNECS_DEBUG_PRINTF("tnecs_component_order_bytype\n");
 
     tnecs_component_t in_typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
-    return (tnecs_componentid_order_bytypeid(in_world, in_component_id, in_typeflag_id));
+    return (tnecs_component_order_bytypeid(in_world, in_component_id, in_typeflag_id));
 }
 
 // ******************* STRING HASHING *************************
