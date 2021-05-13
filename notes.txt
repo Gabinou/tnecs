@@ -1,6 +1,0 @@
-
-
-TO DO:
-	More tests WHAT TESTS?
-		entity_destroy
-		
