@@ -570,10 +570,10 @@ void tnecs_benchmarks() {
 }
 
 void test_log2() {
-    lok(log2(0.0) == NULL);
-    lok(log2(0.0) == NULL);
-    lok(log2(0) == NULL);
-    lok(log2(0) == NULL);
+    lok(log2(0.0) == -INFINITY);
+    lok(log2(0.0) == -INFINITY);
+    lok(log2(0) == -INFINITY);
+    lok(log2(0) == -INFINITY);
     lok(log2(1.0) == 0.0);
     lok(log2(1.0) == 0);
     lok(log2(2.0) == 1.0);
