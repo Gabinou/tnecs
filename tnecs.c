@@ -81,7 +81,6 @@ void tnecs_world_init_systems(struct tnecs_World * in_world) {
     in_world->system_hashes = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_hashes));
     in_world->system_phases = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_phases));
     in_world->system_orders = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_orders));
-
     in_world->len_phases = TNECS_INITIAL_PHASE_LEN;
     in_world->num_phases = TNECS_NULLSHIFT;
     in_world->phases = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*in_world->phases));
@@ -109,7 +108,6 @@ void tnecs_world_init_components(struct tnecs_World * in_world) {
     in_world->components_idbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_idbytype));
     in_world->components_flagbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_flagbytype));
     in_world->components_orderbytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->components_orderbytype));
-
     for (size_t i = 0; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
         in_world->num_components_bytype[i] = 0;
     }
@@ -138,7 +136,6 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
     free(in_world->systems_byphase);
     free(in_world->system_orders);
     free(in_world->systems_idbyphase);
-
     for (size_t i = 0; i < in_world->len_typeflags; i++) {
         free(in_world->entities_bytype[i]);
         free(in_world->components_idbytype[i]);
@@ -265,14 +262,12 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
 
 void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_arrdel_scramble\n");
-
     return (memcpy(arr + (elem * bytesize), arr + ((len - 1) * bytesize), bytesize));
 }
 
 
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_arrdel\n");
-
     return (memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1)));
 }
 
@@ -387,10 +382,7 @@ void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_compone
     // assumes new typeflag was added on top of world->typeflags
 
     struct tnecs_Components_Array * temp_comparray = (struct tnecs_Components_Array *)calloc(num_components, sizeof(struct tnecs_Components_Array));
-    tnecs_component_t typeflag_reduced = in_typeflag;
-    tnecs_component_t typeflag_added = 0;
-    tnecs_component_t type_toadd;
-    tnecs_component_t typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
+    tnecs_component_t typeflag_reduced = in_typeflag, typeflag_added = 0, type_toadd, typeflag_id = tnecs_typeflagid(in_world, in_typeflag);
     size_t id_toadd, num_flags = 0;
     while (typeflag_reduced) {
         typeflag_reduced &= (typeflag_reduced - 1);
@@ -433,8 +425,7 @@ size_t tnecs_register_typeflag(struct tnecs_World * in_world, size_t num_compone
 
         // 3- Add all components to components_idbytype and components_flagbytype
         tnecs_component_t component_id_toadd, component_type_toadd;
-        tnecs_component_t typeflag_reduced = typeflag_new;
-        tnecs_component_t typeflag_added = 0;
+        tnecs_component_t typeflag_reduced = typeflag_new, typeflag_added = 0;
         in_world->components_idbytype[typeflag_id] =  calloc(num_components, sizeof(**in_world->components_idbytype));
         in_world->components_flagbytype[typeflag_id] =  calloc(num_components, sizeof(**in_world->components_flagbytype));
         in_world->components_orderbytype[typeflag_id] =  calloc(TNECS_COMPONENT_CAP, sizeof(**in_world->components_orderbytype));

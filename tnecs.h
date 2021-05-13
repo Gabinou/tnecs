@@ -102,7 +102,6 @@ extern double get_us();
 /**************************** TYPE DEFINITIONS *******************************/
 typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
 typedef uint64_t tnecs_component_t;  // 64 bit flags -> MAX 63 components
-// typeflag > 0 -> sum of component types -> determines tnecs_System_Input
 typedef uint16_t tnecs_system_t;
 typedef uint64_t tnecs_hash_t;
 typedef uint8_t tnecs_phase_t;
