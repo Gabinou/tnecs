@@ -75,6 +75,13 @@ extern "C" {
 #define TNECS_DEBUG_PRINTF(...) (void)0
 #endif
 
+#define TNECS_DEBUG_AS // TNECS_DEBUG_ASIS are ignored if undefined
+#ifdef TNECS_DEBUG_AS
+#define TNECS_DEBUG_ASIS(...) do {__VA_ARGS__;}while(0)
+#else
+#define TNECS_DEBUG_ASIS(...) (void)0
+#endif
+
 /********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
 //  Modified from: https://gist.github.com/ForeverZer0/0a4f80fc02b96e19380ebb7a3debbee5
 #if defined(__linux)
@@ -125,6 +132,7 @@ typedef struct tnecs_Components_Array tnecs_component_array_t;
 
 /************************** UTILITY MACROS ***********************************/
 #define TNECS_STRINGIFY(x) #x
+#define TNECS_NULLMACRO(x) x
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
 #define TNECS_CONCATENATE2(arg1, arg2) arg1##arg2
@@ -192,7 +200,9 @@ struct tnecs_World {
     tnecs_component_t ** components_flagbytype;              // [typeflag_id][component_order_bytype]
     size_t ** components_orderbytype;                        // [typeflag_id][component_id]
     size_t ** systems_idbyphase;                             // [phase_id][system_order]
-    void (* ** systems_byphase)(struct tnecs_System_Input *);// [phase_id][system_id]
+    void (* ** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
+    void (** systems_torun)(struct tnecs_System_Input *);    // [torun_order] debug
+    size_t num_systems_torun;
 
     // len is allocated size
     // num is active elements in array
@@ -225,11 +235,11 @@ struct tnecs_Components_Array {
 /**************************** WORLD FUNCTIONS ********************************/
 struct tnecs_World * tnecs_world_genesis();
 void tnecs_world_destroy(struct tnecs_World * in_world);
-void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
-void tnecs_world_init_components(struct tnecs_World * in_world);
-void tnecs_world_init_entities(struct tnecs_World * in_world);
-void tnecs_world_init_typeflags(struct tnecs_World * in_world);
-void tnecs_world_init_systems(struct tnecs_World * in_world);
+void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
+void tnecs_world_breath_components(struct tnecs_World * in_world);
+void tnecs_world_breath_entities(struct tnecs_World * in_world);
+void tnecs_world_breath_typeflags(struct tnecs_World * in_world);
+void tnecs_world_breath_systems(struct tnecs_World * in_world);
 
 /***************************** REGISTRATION **********************************/
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
@@ -243,10 +253,23 @@ size_t tnecs_register_phase(struct tnecs_World * in_world, tnecs_phase_t in_phas
 
 /***************************** ENTITY MANIPULATION ***************************/
 tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world);
+tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World * in_world, tnecs_entity_t in_entity);
+void tnecs_entities_create(struct tnecs_World * in_world, size_t num);
+void tnecs_entities_create_windices(struct tnecs_World * in_world, size_t num, tnecs_entity_t * in_entities);
+
 tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 
-#define TNECS_ENTITY_CREATE(world) tnecs_entity_create(world) // for API consistency
+#define TNECS_CHOOSE_ENTITY_CREATE(_1,_2,NAME,...) NAME
+#define TNECS_ENTITY_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE2, TNECS_ENTITY_CREATE1)(__VA_ARGS__)
+#define TNECS_ENTITY_CREATE1(world) tnecs_entity_create(world)
+#define TNECS_ENTITY_CREATE2(world, index) tnecs_entity_create_windex(world, index)
+
+#define TNECS_CHOOSE_ENTITIES_CREATE(_1,_2,_3,NAME,...) NAME
+#define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITIES_CREATE(__VA_ARGS__, TNECS_ENTITIES_CREATE3, TNECS_ENTITIES_CREATE2)(__VA_ARGS__)
+#define TNECS_ENTITIES_CREATE2(world, num) tnecs_entities_create(world, num)
+#define TNECS_ENTITIES_CREATE3(world, num, indices) tnecs_entities_create_windices(world, num, indices)
+
 #define TNECS_ENTITY_CREATE_WCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entity_typeflags[entity] &tnecs_component_names2typeflag(world, 1, #name)) > 0)
@@ -302,7 +325,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
 #define TNECS_COMPONENT_TYPE(world, name) tnecs_component_names2typeflag(world, 1, #name)
 #define TNECS_COMPONENT_NAME2TYPEFLAG(world, name) TNECS_COMPONENT_TYPE(world, name)
 #define TNECS_COMPONENT_NAMES2TYPEFLAG(world, ...) tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
-#define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
+#define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_NULLMACRO, __VA_ARGS__))
 #define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_NULLSHIFT))
@@ -313,6 +336,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
 #define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]
 #define TNECS_SYSTEM_TYPEFLAG(world, name) tnecs_system_name2typeflag(world, #name)
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
+#define TNECS_SYSTEM_NAME2ID(world, name) tnecs_system_name2id(world, #name)
 #define TNECS_SYSTEM_GET_ENTITY(input, index) input->world->entities_bytype[input->typeflag_id][index]
 
 /***************************** "DYNAMIC" ARRAYS ******************************/

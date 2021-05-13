@@ -8,6 +8,9 @@
 
 #include "us_clock.h"
 #include "tnecs.h"
+#ifndef __TINYC__
+#include "flecs.h"
+#endif
 
 /* MINCTEST - Minimal C Test Library - 0.2.0
 *  ---------> MODIFIED FOR TNECS <----------
@@ -127,6 +130,31 @@ void SystemMove2(struct tnecs_System_Input * in_input) {
         p[i].y += v[i].str;
     }
 }
+void SystemMovePhase1(struct tnecs_System_Input * in_input) {
+    // printf("SystemMovePhase1\n");
+    // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    // for (int i = 0; i < in_input->num_entities; i++) {
+    //     // printf("i %d \n", i);
+    //     p[i].x += v[i].hp;
+    //     p[i].y += v[i].str;
+    // }
+}
+
+void SystemMovePhase4(struct tnecs_System_Input * in_input) {
+    // printf("SystemMovePhase4\n");
+}
+
+void SystemMovePhase2(struct tnecs_System_Input * in_input) {
+    // printf("SystemMovePhase2\n");
+    // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    // for (int i = 0; i < in_input->num_entities; i++) {
+    //     // printf("i %d \n", i);
+    //     p[i].x += v[i].hp;
+    //     p[i].y += v[i].str;
+    // }
+}
 
 void SystemPosition2(struct tnecs_System_Input * in_input) {
     // printf("SystemPosition2\n");
@@ -154,6 +182,7 @@ FILE * globalf;
 #define ITERATIONS 100000
 #define ITERATIONS_SMALL 1000
 #define ARRAY_LEN 100
+size_t fps_iterations = 10;
 
 /*******************************TEST SYSTEMS***************************/
 tnecs_entity_t tnecs_entities[ITERATIONS];
@@ -173,6 +202,18 @@ void SystemMove(struct tnecs_System_Input * in_input) {
         p[i].y = p[i].y + v[i].vy;
     }
 }
+
+#ifndef __TINYC__
+void flecs_Move(ecs_iter_t * it) {
+    Position * p =  ecs_column(it, Position, 1);
+    Unit * v =  ecs_column(it, Unit, 1);
+
+    for (int i = 0; i < it->count; i++) {
+        p[i].x += v[i].hp;
+        p[i].y += v[i].str;
+    }
+}
+#endif
 
 /*******************************ACTUAL TESTS***************************/
 void tnecs_test_utilities() {
@@ -226,6 +267,25 @@ void tnecs_test_utilities() {
     lok(arrtest1[7] == 8);
     lok(arrtest1[8] == 9);
     lok(arrtest1[9] == 9);
+
+    size_t * temp_sizes = calloc(2, sizeof(size_t));
+    temp_sizes[0] = 1;
+    temp_sizes[1] = 2;
+    tnecs_arrdel(temp_sizes, 1, 2, sizeof(size_t));
+    lok(temp_sizes[1] == 0);
+    lok(temp_sizes[0] == 1);
+    free(temp_sizes);
+    temp_sizes = calloc(4, sizeof(size_t));
+    temp_sizes[0] = 1;
+    temp_sizes[1] = 2;
+    temp_sizes[2] = 3;
+    temp_sizes[3] = 4;
+    tnecs_arrdel_scramble(temp_sizes, 2, 4, sizeof(size_t));
+    lok(temp_sizes[0] == 1);
+    lok(temp_sizes[1] == 2);
+    lok(temp_sizes[2] == 4);
+    lok(temp_sizes[3] == 0);
+    free(temp_sizes);
 }
 
 void tnecs_test_component_registration() {
@@ -235,6 +295,7 @@ void tnecs_test_component_registration() {
     size_t temp_comp_order = 0;
     size_t temp_typeflag_id = 1;
     size_t temp_typeflag = 1;
+    lok(tnecs_component_hash2type(test_world, TNECS_HASH("Position")) == temp_typeflag);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
@@ -253,6 +314,7 @@ void tnecs_test_component_registration() {
     temp_comp_order = 0;
     temp_typeflag_id = 2;
     temp_typeflag = 2;
+    lok(tnecs_component_hash2type(test_world, TNECS_HASH("Unit")) == temp_typeflag);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
@@ -273,6 +335,7 @@ void tnecs_test_component_registration() {
     temp_comp_order = 0;
     temp_typeflag_id = 3;
     temp_typeflag = 4;
+    lok(tnecs_component_hash2type(test_world, TNECS_HASH("Sprite")) == temp_typeflag);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Sprite) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPEFLAG(temp_comp_id) == temp_typeflag);
     lok(test_world->components_idbytype[temp_comp_id][temp_comp_order] == temp_comp_id);
@@ -309,6 +372,10 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_TYPE(test_world, Velocity) == (TNECS_NULLSHIFT << 3));
     lok(TNECS_COMPONENT_TYPE(test_world, Velocity) == test_world->typeflags[temp_typeflag_id]);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Velocity)] == TNECS_HASH("Velocity"));
+
+    lok(TNECS_COMPONENT_IDS2TYPEFLAG(1, 2, 3) == (1 + 2 + 4));
+
+
 }
 
 void tnecs_test_system_registration() {
@@ -319,8 +386,9 @@ void tnecs_test_system_registration() {
     size_t temp_typeflag_id = 5;
     size_t temp_typeflag = 1 + 8;
 
+    lok(TNECS_SYSTEM_NAME2ID(test_world, SystemMove) == temp_comp_id);
+    lok(TNECS_SYSTEM_NAME2TYPEFLAG(test_world, SystemMove) == temp_typeflag);
     lok(TNECS_SYSTEM_ID(test_world, SystemMove) == 1);
-
     lok(TNECS_HASH("SystemMove") == tnecs_hash_djb2("SystemMove"));
     lok(test_world->system_hashes[TNECS_SYSTEM_ID(test_world, SystemMove)] == TNECS_HASH("SystemMove"));
 
@@ -369,10 +437,69 @@ void tnecs_test_entity_creation() {
     tnecs_entity_t Chasse = tnecs_entity_create(test_world);
 
     tnecs_entity_destroy(test_world, Silou);
+    lok(test_world->entities_open[0] == Silou);
+    lok(test_world->num_entities_open == 1);
     lok(!test_world->entities[Silou]);
     tnecs_entity_create(test_world);
     lok(test_world->entities[Silou]);
 
+    tnecs_entity_t Servil = 900;
+    lok(test_world->len_entities < Servil);
+    TNECS_ENTITY_CREATE(test_world, Servil);
+    lok(Servil == test_world->entities[Servil]);
+    lok(test_world->len_entities > Servil);
+
+    tnecs_entity_t Rayan = tnecs_entity_create_windex(test_world, 666);
+    lok(test_world->len_entities > Rayan);
+    lok(Rayan == test_world->entities[Rayan]);
+    lok(!test_world->entities[Rayan + 1]);
+    lok(!test_world->entities[Rayan - 1]);
+
+    tnecs_entity_t Pierre = TNECS_ENTITY_CREATE(test_world, 667);
+    lok(Pierre == test_world->entities[Pierre]);
+
+    TNECS_ENTITIES_CREATE(test_world, 100);
+    lok(test_world->entity_next == 105);
+    lok(TNECS_ENTITY_CREATE(test_world, 105));
+    lok(!TNECS_ENTITY_CREATE(test_world, 105));
+    lok(tnecs_entity_create(test_world));
+    lok(test_world->entity_next == 107);
+
+    tnecs_entity_t in_ents[2] = {3001, 3002};
+    TNECS_ENTITIES_CREATE(test_world, 2, in_ents);
+    lok(test_world->entities[in_ents[0]] == in_ents[0]);
+    lok(test_world->entities[in_ents[1]] == in_ents[1]);
+
+
+    // MORE TESTS FOR COVERAGE
+    struct tnecs_World * test_world2 = tnecs_world_genesis();
+
+    test_world2->num_typeflags = TNECS_INITIAL_SYSTEM_LEN;
+    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+
+    // Coverage for if in tnecs_register_component
+    test_world2->num_components = 66;
+    TNECS_REGISTER_COMPONENT(test_world2, Unit2);
+    test_world2->num_components = 2;
+    test_world2->num_systems_byphase[0] = TNECS_INITIAL_PHASE_LEN;
+    tnecs_world_destroy(test_world2);
+
+
+    // Coverage for if in tnecs_register_system
+    test_world2 = tnecs_world_genesis();
+    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+    test_world2->num_systems_byphase[0] = TNECS_INITIAL_PHASE_LEN;
+    TNECS_REGISTER_SYSTEM(test_world2, SystemMovePhase1, Position2);
+    tnecs_world_destroy(test_world2);
+
+    // Coverage for "for" in tnecs_component_del
+    test_world2 = tnecs_world_genesis();
+    TNECS_REGISTER_COMPONENT(test_world2, Unit2);
+    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+    tnecs_entity_t Erwin = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world2, Position2, Unit2);
+
+    tnecs_component_del(test_world2, Erwin, (1 + 2));
+    tnecs_world_destroy(test_world2);
 }
 
 void tnecs_test_component_add() {
@@ -455,28 +582,179 @@ void tnecs_test_component_add() {
 void tnecs_test_world_progress() {
     struct Velocity * temp_velocity;
     tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world, Position, Velocity);
+
+    lok(test_world->entity_typeflags[Perignon] == (1 + 8));
+    lok(test_world->num_entities_bytype[tnecs_typeflagid(test_world, 1 + 8)] == 1);
+
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
     temp_position->x = 100;
     temp_position->y = 200;
 
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase4, 4, Velocity);
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 2, Velocity);
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Position);
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Velocity);
+    tnecs_system_order_switch(test_world, 1, 0, 1);
+    tnecs_system_order_switch(test_world, 1, 0, 1);
+
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
-    tnecs_world_progress(test_world, 1);
+    tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    lok(test_world->num_systems_torun == 5);
+    lok(test_world->systems_torun[0] == &SystemMove);
+    lok(test_world->systems_torun[1] == &SystemMovePhase1);
+    lok(test_world->systems_torun[2] == &SystemMovePhase1);
+    lok(test_world->systems_torun[3] == &SystemMovePhase2);
+    lok(test_world->systems_torun[4] == &SystemMovePhase4);
+    lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
+    lok(test_world->systems_torun[0] != NULL);
+    lok(test_world->systems_torun[1] != NULL);
+    lok(test_world->systems_torun[2] != NULL);
+    lok(test_world->systems_torun[3] != NULL);
+    lok(test_world->systems_torun[4] != NULL);
     lok(temp_position->x == 101);
     lok(temp_position->y == 202);
     lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
-    tnecs_world_progress(test_world, 1);
+    tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    lok(test_world->num_systems_torun == 5);
+    lok(test_world->systems_torun[0] == &SystemMove);
+    lok(test_world->systems_torun[1] == &SystemMovePhase1);
+    lok(test_world->systems_torun[2] == &SystemMovePhase1);
+    lok(test_world->systems_torun[3] == &SystemMovePhase2);
+    lok(test_world->systems_torun[4] == &SystemMovePhase4);
+    lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
+    lok(test_world->systems_torun[0] != NULL);
+    lok(test_world->systems_torun[1] != NULL);
+    lok(test_world->systems_torun[2] != NULL);
+    lok(test_world->systems_torun[3] != NULL);
+    lok(test_world->systems_torun[4] != NULL);
     lok(temp_position->x == 102);
     lok(temp_position->y == 204);
     lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
+    tnecs_world_step(test_world, 0);
+
+    lok(test_world->entity_typeflags[Perignon] == (1 + 8));
+    lok(test_world->num_entities_bytype[tnecs_typeflagid(test_world, 1 + 8)] == 1);
+    tnecs_entity_destroy(test_world, Perignon);
+
+    tnecs_growArray_phase(test_world);
+    tnecs_growArray_system(test_world);
+    tnecs_growArray_typeflag(test_world);
+
 }
+
+#ifndef __TINYC__
+void flecs_benchmarks() {
+    dupprintf(globalf, "\nHomemade flecs benchmarks\n");
+    double t_0;
+    double t_1;
+    t_0 = get_us();
+    ecs_world_t * world = ecs_init();
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: world init\n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    ecs_entity_t flecs_entities[ITERATIONS];
+    ecs_entity_t flecs_temp_ent;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        flecs_temp_ent = ecs_new(world, 0);
+        flecs_entities[i] = flecs_temp_ent;
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Entity Creation time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+
+    t_0 = get_us();
+    ECS_COMPONENT(world, Position);
+    ECS_COMPONENT(world, Unit);
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Component registration \n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        ecs_add(world, flecs_entities[i], Position);
+        ecs_add(world, flecs_entities[i], Unit);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Adding components: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        // MODIFY THE COMPONENTS
+        ecs_add(world, flecs_entities[i], Position);
+        ecs_add(world, flecs_entities[i], Unit);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Adding components and modifying them: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        flecs_temp_ent = ecs_new(world, Position);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Creating entities with a single component: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    ECS_SYSTEM(world, flecs_Move, EcsOnUpdate, Position, Unit);
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: System registration\n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    const Position * position_ptr;
+    const Unit * unit_ptr;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        position_ptr = ecs_get(world, flecs_entities[i], Position);
+        unit_ptr = ecs_get(world, flecs_entities[i], Unit);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: get component const: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    Position * position_mptr;
+    Unit * unit_mptr;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        position_mptr = ecs_get_mut(world, flecs_entities[i], Position, NULL);
+        unit_mptr = ecs_get_mut(world, flecs_entities[i], Unit, NULL);
+        ecs_modified(world, flecs_entities[i], Unit);
+        ecs_modified(world, flecs_entities[i], Position);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: get component mut: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < fps_iterations; i++) {
+        ecs_progress(world, 0);
+
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: world progress: %d iterations \n", fps_iterations);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
+    dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
+
+    t_0 = get_us();
+    ecs_fini(world);
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: world deinit\n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+}
+#endif
 
 void tnecs_benchmarks() {
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
@@ -537,6 +815,18 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        tnecs_entity_destroy(bench_world, tnecs_entities[i]);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: Entity Destruction time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        tnecs_entities[i] = tnecs_entity_create(bench_world);
+    }
+
+    t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Unit2);
     for (size_t i = 2; i < ITERATIONS; i++) {
@@ -547,10 +837,9 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
-    size_t fps_iterations = 10;
     t_0 = get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
-        tnecs_world_progress(bench_world, 1);
+        tnecs_world_step(bench_world, 1);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: world progress: %d iterations %d entities \n", fps_iterations, ITERATIONS);
@@ -591,6 +880,9 @@ int main() {
     lresults();
 
     tnecs_benchmarks();
+// #ifndef __TINYC__
+//     flecs_benchmarks();
+// #endif
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);

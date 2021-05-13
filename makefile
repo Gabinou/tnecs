@@ -44,7 +44,7 @@ LINUX_PRE := ./
 WIN_PRE := 
 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
-FLAGS_BUILD_TYPE = -O0 -g  #Debug
+FLAGS_BUILD_TYPE = -O0 -g -fprofile-arcs -ftest-coverage #Debug
 
 # FLAGS_ERROR := -Wall -pedantic-errors
 FLAGS_ERROR := -w
@@ -73,59 +73,60 @@ else
 endif
 
 EXEC := $(PREFIX)test$(EXTENSION)
-EXEC_TEST_FLECS := $(PREFIX)test_flecs$(EXTENSION)
 EXEC_TCC := $(PREFIX)test_tcc$(EXTENSION)
 EXEC_GCC := $(PREFIX)test_gcc$(EXTENSION)
 EXEC_CLANG := $(PREFIX)test_clang$(EXTENSION)
-EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} ${EXEC_TEST_FLECS} 
-
+EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG}
 
 .PHONY: all 
-all: ${ASTYLE} $(EXEC) run 
+all: ${ASTYLE} $(TARGETS_FLECS) flecs $(EXEC) run 
 SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
 SOURCES_FLECS := flecs.c
-SOURCES_TEST_FLECS := test_flecs.c
 HEADERS := $(wildcard *.h)
 SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_TNECS) 
 TARGETS_TNECS := $(SOURCES_TNECS:.c=.o)
 TARGETS_FLECS := $(SOURCES_FLECS:.c=.o)
-TARGETS_TEST_FLECS := $(SOURCES_TEST_FLECS:.c=.o)
 TARGETS_TNECS_GCC := $(SOURCES_TNECS:.c=_gcc.o)
 TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
 TARGETS_TNECS_CLANG := $(SOURCES_TNECS:.c=_clang.o)
-TARGETS_ALL := ${TARGETS_TNECS} ${TARGETS_FLECS} ${TARGETS_TEST_FLECS} ${TARGETS_TNECS_GCC} ${TARGETS_TNECS_TCC} ${TARGETS_TNECS_CLANG}
+TARGETS_ALL := ${TARGETS_TNECS} ${TARGETS_FLECS} ${TARGETS_TNECS_GCC} ${TARGETS_TNECS_TCC} ${TARGETS_TNECS_CLANG}
 .PHONY: compile_test
 compile_test: ${ASTYLE} ${EXEC_TCC}  ${EXEC_GCC} ${EXEC_CLANG} run_tcc run_gcc run_clang
+
+.PHONY : cov
+cov: ; lcov -c --directory . --output-file main_coverage.info ; genhtml main_coverage.info --output-directory out
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
 .PHONY : flecs # Only compiles for gcc or clang
-flecs: $(EXEC_TEST_FLECS) ; $(EXEC_TEST_FLECS)
+flecs: $(TARGETS_FLECS)
 .PHONY : run_tcc
 run_tcc: $(EXEC_TCC) ; $(EXEC_TCC)
 .PHONY : run_gcc
 run_gcc: $(EXEC_GCC) ; $(EXEC_GCC)
 .PHONY : run_clang
 run_clang: $(EXEC_CLANG) ; $(EXEC_CLANG)
-.PHONY: bench_flecs
-bench_flecs: ${ASTYLE} $(EXEC_TEST_FLECS) flecs
 .PHONY : astyle
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
 $(TARGETS_FLECS) : $(SOURCES_FLECS) ; $(COMPILER) $< -c -o $@
-$(TARGETS_TEST_FLECS) : $(TARGETS_TNECS) $(TARGETS_FLECS) $(SOURCES_TEST_FLECS) $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
-$(EXEC_TEST_FLECS): $(SOURCES_TEST_FLECS) ${SOURCES_FLECS} ${SOURCES_TNECS} $(TARGETS_FLECS) $(TARGETS_TNECS) $(TARGETS_TEST_FLECS); gcc $< $(TARGETS_FLECS) $(TARGETS_TNECS) -o $@ $(CFLAGS)
 
-$(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
+$(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@ $(CFLAGS)
 $(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@ 
 $(TARGETS_TNECS_GCC) : $(SOURCES_TNECS) ; gcc $< -c -o $@
 $(TARGETS_TNECS_TCC) : $(SOURCES_TNECS) ; tcc $< -c -o $@ 
 
-$(EXEC): $(SOURCES_TEST) $(TARGETS_TNECS); $(COMPILER) $< $(TARGETS_TNECS) -o $@ $(CFLAGS)
+$(EXEC): $(SOURCES_TEST) $(TARGETS_TNECS) $(TARGETS_FLECS) ; $(COMPILER) $< $(TARGETS_TNECS) $(TARGETS_FLECS) -o $@ $(CFLAGS)
 $(EXEC_TCC): $(SOURCES_TEST) $(TARGETS_TNECS_TCC); tcc $< $(TARGETS_TNECS_TCC) -o $@ $(CFLAGS)
 $(EXEC_GCC): $(SOURCES_TEST) $(TARGETS_TNECS_GCC); gcc $< $(TARGETS_TNECS_GCC) -o $@ $(CFLAGS)
 $(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_TNECS_CLANG); clang $< $(TARGETS_TNECS_CLANG) -o $@ $(CFLAGS)
 
+
+
 .PHONY: clean
-clean: ; @echo "Cleaning Simplecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL)
+clean: ; @echo "Cleaning tnecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL) 
+.PHONY: cleancov
+cleancov: ; @echo "Cleaning tnecs coverage tests" & rm -frv out *.gcda *.gcno *.gcov *.info
+.PHONY: cleanall
+cleanall: clean cleancov

@@ -1,6 +1,7 @@
-# tnecs (Tiny nECS)
+# tnecs (Tiny nECS) 
 
-Tiny C99 Entity-Component-System (ECS) library.
+Tiny C99 Entity-Component-System (ECS) library. [Read the Tutorial](https://gitlab.com/Gabinou/tnecs/-/blob/master/TUTORIAL.md).
+
 Originally created for use in a game I am developping using C99: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
 
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
@@ -28,20 +29,15 @@ Videogame Example:
 Add tnecs.c and tnecs.h to your source code.
 
 ## Motivation
-Make the _simplest possible_ ECS library, only with the _minimum necessary features_.
-C99, compile with ```tcc```.
+Make the _simplest possible_ C99 ECS library, only with the _minimum necessary features_. Compile with ```tcc```.
 
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc```, ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
-- Small: <2000 lines for now.
+- Small: <1300 lines, 2 files.
 - Fast: see simple benchmarks in test.c
 - Simple: C99 API
 - FOSS: Free and Open Source
-
-## To do
-- More tests.
-
 
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
