@@ -172,12 +172,6 @@ typedef struct tnecs_Components_Array tnecs_component_array_t;
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 /***************************** STRUCTS DEFINITIONS ***************************/
-struct tnecs_System_Input {
-    struct tnecs_World * world;
-    size_t num_entities;
-    tnecs_component_t typeflag_id;
-};
-
 struct tnecs_World {
     tnecs_entity_t * entities; // (entities[entity_id] == entity_id) unless deleted
     tnecs_component_t * typeflags;                           // [typeflag_id]
@@ -214,6 +208,13 @@ struct tnecs_World {
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
     
     tnecs_time_ns_t previous_time;
+};
+
+struct tnecs_System_Input {
+    struct tnecs_World * world;
+    size_t num_entities;
+    tnecs_time_ns_t deltat;
+    tnecs_component_t typeflag_id;
 };
 
 struct tnecs_Components_Array {

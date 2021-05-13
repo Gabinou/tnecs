@@ -53,7 +53,6 @@ void tnecs_world_init_entities(struct tnecs_World * in_world) {
     in_world->entities = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entities));
     in_world->entity_typeflags = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entity_typeflags));
     in_world->entity_orders = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*in_world->entity_orders));
-
     in_world->len_entities = TNECS_INITIAL_ENTITY_LEN;
 
     in_world->entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->entities_bytype));
@@ -140,7 +139,6 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
     free(in_world->system_orders);
     free(in_world->systems_idbyphase);
 
-
     for (size_t i = 0; i < in_world->len_typeflags; i++) {
         free(in_world->entities_bytype[i]);
         free(in_world->components_idbytype[i]);
@@ -183,12 +181,14 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
 
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
-    tnecs_time_ns_t toprogress_time;
+    size_t system_id;
+
     if (!in_deltat) {
-        toprogress_time = get_ns() - in_world->previous_time;
+        current_input.deltat = get_ns() - in_world->previous_time;
+    } else {
+        current_input.deltat = in_deltat;
     }
 
-    size_t system_id;
     for (size_t phase_id = 0; phase_id < in_world->num_phases; phase_id++) {
         for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
             system_id = in_world->systems_idbyphase[phase_id][sorder];
