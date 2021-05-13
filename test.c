@@ -332,13 +332,13 @@ void tnecs_test_system_registration() {
 
 void tnecs_test_entity_creation() {
     // dupprintf(globalf, "tnecs_test_entity_creation \n");
-    lok(test_world->next_entity_id == TNECS_NULLSHIFT);
+    lok(test_world->entity_next == TNECS_NULLSHIFT);
     tnecs_entity_t Silou = tnecs_entity_create(test_world);
     lok(Silou == TNECS_NULLSHIFT);
-    lok(test_world->next_entity_id == (TNECS_NULLSHIFT + 1));
+    lok(test_world->entity_next == (TNECS_NULLSHIFT + 1));
     tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(test_world);
     lok(Pirou == (TNECS_NULLSHIFT + 1));
-    lok(test_world->next_entity_id == (TNECS_NULLSHIFT + 2));
+    lok(test_world->entity_next == (TNECS_NULLSHIFT + 2));
     lok(Silou != Pirou);
     tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world, Position, Unit);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
