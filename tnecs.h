@@ -192,7 +192,7 @@ struct tnecs_World {
     size_t component_bytesizes[TNECS_COMPONENT_CAP];         // [component_id]
     tnecs_hash_t * system_hashes;                            // [system_id]
 
-    // the bytype array are exclusive -> entities are unique in components_bytype
+    // bytype arrays are exclusive -> entities unique in components_bytype
     struct tnecs_Components_Array ** components_bytype;      // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;                       // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;                // [typeflag_id][component_order_bytype]
@@ -210,13 +210,13 @@ struct tnecs_World {
     size_t len_phases;
     size_t num_phases;
     size_t num_components;
+    size_t * entity_orders;                                // [entity_id]
+    size_t * num_components_bytype;                        // [typeflag_id]
+    size_t * len_entities_bytype;                          // [typeflag_id]
+    size_t * num_entities_bytype;                          // [typeflag_id]
+    size_t * len_systems_byphase;                          // [phase_id]
+    size_t * num_systems_byphase;                          // [phase_id]
 
-    size_t * entity_orders;                                  // [entity_id]
-    size_t * num_components_bytype;                          // [typeflag_id]
-    size_t * len_entities_bytype;                            // [typeflag_id]
-    size_t * num_entities_bytype;                            // [typeflag_id]
-    size_t * len_systems_byphase;                            // [phase_id]
-    size_t * num_systems_byphase;                            // [phase_id]
     tnecs_entity_t next_entity_id;
     uint8_t num_opened_entity_ids;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];

@@ -483,6 +483,8 @@ void tnecs_benchmarks() {
     double t_0;
     double t_1;
 
+    printf("world size: %d bytes\n", sizeof(struct tnecs_World));
+
     uint64_t res_hash;
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
