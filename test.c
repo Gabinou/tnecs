@@ -377,7 +377,6 @@ void tnecs_test_entity_creation() {
 }
 
 void tnecs_test_component_add() {
-
     tnecs_entity_t Silou = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
@@ -394,7 +393,6 @@ void tnecs_test_component_add() {
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
-
 
     tnecs_entity_t Chasse = tnecs_new_entity(test_world);
     TNECS_ADD_COMPONENTS(test_world, Chasse, 1, Sprite, Position);
@@ -571,11 +569,23 @@ void tnecs_benchmarks() {
 
 }
 
+void test_log2() {
+    lok(log2(0.0) == NULL);
+    lok(log2(0.0) == NULL);
+    lok(log2(0) == NULL);
+    lok(log2(0) == NULL);
+    lok(log2(1.0) == 0.0);
+    lok(log2(1.0) == 0);
+    lok(log2(2.0) == 1.0);
+    lok(log2(2.0) == 1);
+}
+
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
     lrun("utilities", tnecs_test_utilities);
     test_world = tnecs_world_genesis();
+    lrun("log2", test_log2);
     lrun("c_regis", tnecs_test_component_registration);
     lrun("s_regis", tnecs_test_system_registration);
     lrun("e_create", tnecs_test_entity_creation);

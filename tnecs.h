@@ -54,7 +54,7 @@
 #include <math.h>
 #include <time.h>
 #ifndef log2 // tcc SUCKS and DOES NOT define log2
-#define log2(x) (log(x)/log(2.0f))
+#define log2(x)  (x > 0 ?(log(x)/log(2.0f)) : NULL) // for
 #endif
 
 #ifdef __cplusplus
@@ -308,7 +308,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
-#define TNECS_COMPONENT_TYPE2ID(type) ((tnecs_component_t)(log2(type) + 1.1f)) // casting to int floors
+#define TNECS_COMPONENT_TYPE2ID(type) (type >=1 ? (tnecs_component_t)(log2(type) + 1.1f): 0) // casting to int floors
 #define TNECS_COMPONENTS_LIST(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][input->world->components_orderbytype[input->typeflag_id][tnecs_component_name2id(input->world, #component_name)]].components)
 #define TNECS_SYSTEM_ID(world, name) tnecs_system_hash2id(world, TNECS_HASH(#name))
 #define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]

@@ -322,6 +322,7 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     if (isNew) tnecs_register_typeflag(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
     tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
     tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
+    TNECS_DEBUG_ASSERT(in_world->entity_typeflags[in_entity] == typeflag_new);
 }
 
 void tnecs_growArray_phase(struct tnecs_World * in_world) {
@@ -520,8 +521,9 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity) {
     TNECS_DEBUG_PRINTF("tnecs_entity_destroy \n");
 
-    TNECS_DEBUG_ASSERT(in_entity);
+    TNECS_DEBUG_ASSERT(in_entity > 0);
     tnecs_component_t entity_typeflag = in_world->entity_typeflags[in_entity];
+    TNECS_DEBUG_ASSERT(entity_typeflag >= 0);
     size_t entity_typeflag_id = TNECS_COMPONENT_TYPE2ID(entity_typeflag);
     size_t entity_order = in_world->entity_orders[in_entity];
 
