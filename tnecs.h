@@ -54,7 +54,7 @@
 #include <math.h>
 #include <time.h>
 #ifndef log2 // tcc SUCKS and DOES NOT define log2
-#define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY) 
+#define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
 #endif
 
 #ifdef __cplusplus
@@ -192,7 +192,7 @@ struct tnecs_World {
     tnecs_component_t ** components_flagbytype;              // [typeflag_id][component_order_bytype]
     size_t ** components_orderbytype;                        // [typeflag_id][component_id]
     size_t ** systems_idbyphase;                             // [phase_id][system_order]
-    void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
+    void (* ** systems_byphase)(struct tnecs_System_Input *);// [phase_id][system_id]
 
     // len is allocated size
     // num is active elements in array
@@ -200,13 +200,13 @@ struct tnecs_World {
     size_t num_components, num_typeflags, num_systems, num_phases;
     size_t * entity_orders;                                  // [entity_id]
     size_t * num_components_bytype;                          // [typeflag_id]
-    size_t * len_entities_bytype,* num_entities_bytype;      // [typeflag_id]
-    size_t * len_systems_byphase,* num_systems_byphase;      // [phase_id]
+    size_t * len_entities_bytype, * num_entities_bytype;     // [typeflag_id]
+    size_t * len_systems_byphase, * num_systems_byphase;     // [phase_id]
 
     tnecs_entity_t next_entity_id;
     uint8_t num_opened_entity_ids;
     tnecs_entity_t opened_entity_ids[TNECS_OPEN_IDS_BUFFER];
-    
+
     tnecs_time_ns_t previous_time;
 };
 
@@ -243,12 +243,12 @@ size_t tnecs_register_phase(struct tnecs_World * in_world, tnecs_phase_t in_phas
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 
 /***************************** ENTITY MANIPULATION ***************************/
-tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world);
-tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
+tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world);
+tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 
-#define TNECS_NEW_ENTITY(world) tnecs_new_entity(world) // for API consistency
-#define TNECS_NEW_ENTITY_WCOMPONENTS(world, ...) tnecs_new_entity_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
+#define TNECS_ENTITY_CREATE(world) tnecs_entity_create(world) // for API consistency
+#define TNECS_ENTITY_CREATE_WCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entity_typeflags[entity] &tnecs_component_names2typeflag(world, 1, #name)) > 0)
 

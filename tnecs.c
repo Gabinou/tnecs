@@ -198,8 +198,8 @@ void tnecs_world_progress(struct tnecs_World * in_world, tnecs_time_ns_t in_delt
 }
 
 /***************************** ENTITY MANIPULATION ***************************/
-tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
-    TNECS_DEBUG_PRINTF("tnecs_new_entity\n");
+tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world) {
+    TNECS_DEBUG_PRINTF("tnecs_entity_create\n");
 
     tnecs_entity_t out = TNECS_NULL;
     tnecs_component_t component_flag;
@@ -207,9 +207,9 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
         out = in_world->opened_entity_ids[--in_world->num_opened_entity_ids];
         in_world->opened_entity_ids[in_world->num_opened_entity_ids] = TNECS_NULL;
     }
-    if (out == TNECS_NULL) out = in_world->next_entity_id++;
+    if (out == TNECS_NULL) { out = in_world->next_entity_id++; }
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
-    if (in_world->next_entity_id >= in_world->len_entities) tnecs_growArray_entity(in_world);
+    if (in_world->next_entity_id >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
     in_world->entities[out] = out;
     in_world->entity_orders[out] = tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
     return (out);
@@ -314,7 +314,7 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
 
     // 1- Checks if the new entity_typeflag exists, if not create empty component array
-    if (isNew) tnecs_register_typeflag(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
+    if (isNew) { tnecs_register_typeflag(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new); }
     tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
     tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
     TNECS_DEBUG_ASSERT(in_world->entity_typeflags[in_entity] == typeflag_new);
@@ -483,13 +483,13 @@ tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, t
 
     tnecs_component_t out = TNECS_NULL;
     for (size_t i = 0; i < in_world->num_components; i++) {
-        if (in_world->component_hashes[i] == in_hash) out = TNECS_COMPONENT_ID2TYPE(i);
+        if (in_world->component_hashes[i] == in_hash) { out = TNECS_COMPONENT_ID2TYPE(i); }
     }
     return (out);
 }
 
-tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_t argnum, ...) {
-    TNECS_DEBUG_PRINTF("tnecs_new_entity_wcomponents \n");
+tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, size_t argnum, ...) {
+    TNECS_DEBUG_PRINTF("tnecs_entity_create_wcomponents \n");
 
     va_list ap;
     va_start(ap, argnum);
@@ -500,7 +500,7 @@ tnecs_entity_t tnecs_new_entity_wcomponents(struct tnecs_World * in_world, size_
         typeflag += tnecs_component_hash2typeflag(in_world, current_hash);
     }
     va_end(ap);
-    tnecs_entity_t new_entity = tnecs_new_entity(in_world);
+    tnecs_entity_t new_entity = tnecs_entity_create(in_world);
     size_t typeflag_id = tnecs_register_typeflag(in_world, argnum, typeflag);
     tnecs_component_add(in_world, new_entity);
     TNECS_DEBUG_ASSERT(in_world->components_bytype[typeflag_id][0].components != NULL);
@@ -557,8 +557,8 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
 size_t tnecs_new_phase(struct tnecs_World * in_world, tnecs_phase_t in_phase) {
     TNECS_DEBUG_PRINTF("tnecs_new_phase\n");
 
-    if ((in_world->num_phases + 1) >= in_world->len_phases) tnecs_growArray_phase(in_world);
-    
+    if ((in_world->num_phases + 1) >= in_world->len_phases) { tnecs_growArray_phase(in_world); }
+
     in_world->phases[in_world->num_phases] = in_phase;
     return (in_world->num_phases++);
 }
@@ -567,8 +567,8 @@ void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, 
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
     size_t system_id = in_world->num_systems++, phase_id;
-    if (in_world->num_systems >= in_world->len_systems) tnecs_growArray_system(in_world);
-    if (phase_id = tnecs_phaseid(in_world, in_phase) >= in_world->len_phases) phase_id = tnecs_new_phase(in_world, in_phase);
+    if (in_world->num_systems >= in_world->len_systems) { tnecs_growArray_system(in_world); }
+    if (phase_id = tnecs_phaseid(in_world, in_phase) >= in_world->len_phases) { phase_id = tnecs_new_phase(in_world, in_phase); }
 
     in_world->system_phases[system_id] = in_phase;
     in_world->system_hashes[system_id] = in_hash;
