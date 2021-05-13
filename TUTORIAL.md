@@ -115,4 +115,4 @@ TNECS_REGISTER_SYSTEM_WPHASE(game_world, SystemMove, SYSTEM_PHASE_PRE, Position,
 tnecs_time_ns_t frame_deltat;
 game_world_progress(game_world, frame_deltat);
 ```
-```game_world_progress``` computes previous frame deltat if not inputted. The frame time is accessible from the ```tnecs_system_input_t``` ```struct``` in registered systems at ```.deltat```.
+```game_world_progress``` computes previous frame ```deltat``` if 0 is inputted. The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.

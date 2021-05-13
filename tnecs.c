@@ -211,12 +211,9 @@ tnecs_entity_t tnecs_new_entity(struct tnecs_World * in_world) {
         in_world->opened_entity_ids[in_world->num_opened_entity_ids] = TNECS_NULL;
     }
     if (out == TNECS_NULL) out = in_world->next_entity_id++;
-
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
-    if (in_world->next_entity_id >= in_world->len_entities) {
-        tnecs_growArray_entity(in_world);
-    }
-    in_world->entities[out] =  out;
+    if (in_world->next_entity_id >= in_world->len_entities) tnecs_growArray_entity(in_world);
+    in_world->entities[out] = out;
     in_world->entity_orders[out] = tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
     return (out);
 }
@@ -252,7 +249,6 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
     in_array->type = in_type;
     in_array->num_components = 0;
     in_array->len_components = TNECS_INITIAL_ENTITY_LEN;
-
     TNECS_DEBUG_ASSERT(in_array->components == NULL);
     in_array->components = calloc(TNECS_INITIAL_ENTITY_LEN, bytesize);
     TNECS_DEBUG_ASSERT(in_array->components != NULL);
@@ -495,9 +491,7 @@ tnecs_component_t tnecs_component_hash2typeflag(struct tnecs_World * in_world, t
 
     tnecs_component_t out = TNECS_NULL;
     for (size_t i = 0; i < in_world->num_components; i++) {
-        if (in_world->component_hashes[i] == in_hash) {
-            out = TNECS_COMPONENT_ID2TYPE(i);
-        }
+        if (in_world->component_hashes[i] == in_hash) out = TNECS_COMPONENT_ID2TYPE(i);
     }
     return (out);
 }
