@@ -152,8 +152,8 @@ void SystemMove2(struct tnecs_System_Input * in_input) {
 
 
 void flecs_Move(ecs_iter_t * it) {
-    Position *p =  ecs_column(it, Position, 1);
-    Unit *v =  ecs_column(it, Unit, 1);
+    Position * p =  ecs_column(it, Position, 1);
+    Unit * v =  ecs_column(it, Unit, 1);
 
     for (int i = 0; i < it->count; i++) {
         p[i].x += v[i].hp;

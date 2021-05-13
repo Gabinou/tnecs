@@ -133,8 +133,8 @@ void SystemPosition2(struct tnecs_System_Input * in_input) {
     struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     for (int i = 0; i < in_input->num_entities; i++) {
         // printf("i %d \n", i);
-        p[i].x += 1; 
-        p[i].y += 1; 
+        p[i].x += 1;
+        p[i].y += 1;
     }
 }
 
@@ -143,11 +143,10 @@ void SystemUnit2(struct tnecs_System_Input * in_input) {
     struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int i = 0; i < in_input->num_entities; i++) {
         // printf("i %d \n", i);
-        v[i].hp += 1; 
-        v[i].str += 1; 
+        v[i].hp += 1;
+        v[i].str += 1;
     }
 }
-
 
 /*****************************TEST GLOBALS*****************************/
 FILE * globalf;
@@ -310,8 +309,6 @@ void tnecs_test_component_registration() {
     lok(TNECS_COMPONENT_TYPE(test_world, Velocity) == (TNECS_NULLSHIFT << 3));
     lok(TNECS_COMPONENT_TYPE(test_world, Velocity) == test_world->typeflags[temp_typeflag_id]);
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Velocity)] == TNECS_HASH("Velocity"));
-
-
 }
 
 void tnecs_test_system_registration() {
@@ -336,14 +333,14 @@ void tnecs_test_system_registration() {
 void tnecs_test_entity_creation() {
     // dupprintf(globalf, "tnecs_test_entity_creation \n");
     lok(test_world->next_entity_id == TNECS_NULLSHIFT);
-    tnecs_entity_t Silou = tnecs_new_entity(test_world);
+    tnecs_entity_t Silou = tnecs_entity_create(test_world);
     lok(Silou == TNECS_NULLSHIFT);
     lok(test_world->next_entity_id == (TNECS_NULLSHIFT + 1));
-    tnecs_entity_t Pirou = TNECS_NEW_ENTITY(test_world);
+    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(test_world);
     lok(Pirou == (TNECS_NULLSHIFT + 1));
     lok(test_world->next_entity_id == (TNECS_NULLSHIFT + 2));
     lok(Silou != Pirou);
-    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Unit);
+    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world, Position, Unit);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     if (temp_position != NULL) {
         lok(temp_position->x == 0);
@@ -369,15 +366,17 @@ void tnecs_test_entity_creation() {
         lok(false);
     }
 
-
-    tnecs_entity_t Chasse = tnecs_new_entity(test_world);
+    tnecs_entity_t Chasse = tnecs_entity_create(test_world);
 
     tnecs_entity_destroy(test_world, Silou);
+    lok(!test_world->entities[Silou]);
+    tnecs_entity_create(test_world);
+    lok(test_world->entities[Silou]);
 
 }
 
 void tnecs_test_component_add() {
-    tnecs_entity_t Silou = tnecs_new_entity(test_world);
+    tnecs_entity_t Silou = tnecs_entity_create(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
     TNECS_ADD_COMPONENT(test_world, Silou, Unit);
@@ -385,7 +384,7 @@ void tnecs_test_component_add() {
     lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Unit)) > 0);
     lok((test_world->entity_typeflags[Silou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
 
-    tnecs_entity_t Pirou = tnecs_new_entity(test_world);
+    tnecs_entity_t Pirou = tnecs_entity_create(test_world);
     TNECS_ADD_COMPONENT(test_world, Pirou, Position);
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
@@ -394,7 +393,7 @@ void tnecs_test_component_add() {
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Position)) > 0);
     lok((test_world->entity_typeflags[Pirou] & TNECS_COMPONENT_TYPE(test_world, Sprite)) == 0);
 
-    tnecs_entity_t Chasse = tnecs_new_entity(test_world);
+    tnecs_entity_t Chasse = tnecs_entity_create(test_world);
     TNECS_ADD_COMPONENTS(test_world, Chasse, 1, Sprite, Position);
     lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Unit)) == 0);
     lok((test_world->entity_typeflags[Chasse] & TNECS_COMPONENT_TYPE(test_world, Sprite)) > 0);
@@ -455,7 +454,7 @@ void tnecs_test_component_add() {
 
 void tnecs_test_world_progress() {
     struct Velocity * temp_velocity;
-    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(test_world, Position, Velocity);
+    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world, Position, Velocity);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
     temp_position->x = 100;
@@ -521,7 +520,7 @@ void tnecs_benchmarks() {
 
     t_0 = get_us();
     TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
-    TNECS_REGISTER_SYSTEM(bench_world, SystemPosition2, Position2);    
+    TNECS_REGISTER_SYSTEM(bench_world, SystemPosition2, Position2);
     TNECS_REGISTER_SYSTEM(bench_world, SystemUnit2, Unit2);
     t_1 = get_us();
 
@@ -531,12 +530,11 @@ void tnecs_benchmarks() {
     t_0 = get_us();
     tnecs_entity_t tnecs_temp_ent;
     for (size_t i = 0; i < ITERATIONS; i++) {
-        tnecs_entities[i] = tnecs_new_entity(bench_world);
+        tnecs_entities[i] = tnecs_entity_create(bench_world);
     }
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-
 
     t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
@@ -560,7 +558,6 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
     dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
 
-
     t_0 = get_us();
     tnecs_world_destroy(bench_world);
     t_1 = get_us();
@@ -570,10 +567,10 @@ void tnecs_benchmarks() {
 }
 
 void test_log2() {
-    lok(log2(0.0) == NULL);
-    lok(log2(0.0) == NULL);
-    lok(log2(0) == NULL);
-    lok(log2(0) == NULL);
+    lok(log2(0.0) == -INFINITY);
+    lok(log2(0.0) == -INFINITY);
+    lok(log2(0) == -INFINITY);
+    lok(log2(0) == -INFINITY);
     lok(log2(1.0) == 0.0);
     lok(log2(1.0) == 0);
     lok(log2(2.0) == 1.0);

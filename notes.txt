@@ -1,24 +1,6 @@
 
 
-Arrays are much faster than hash tables.
-
 TO DO:
-	More tests
-
-DONE:
-	World Progress DONE
-
-	System phase
-
- 	Destroy entity
-
-	RENAME MACROS/FUNCTIONS/EVERYTHING (EN COURS)
-	INDEPENDENCE FROM stb_ds!
-	
-	World Destroy
-	
-	deal with component_arrays
-		-> Initialization of empty components
-		-> Put component in components_bytype
-
-	add_component
+	More tests WHAT TESTS?
+		entity_destroy
+		

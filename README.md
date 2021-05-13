@@ -41,7 +41,6 @@ C99, compile with ```tcc```.
 
 ## To do
 - More tests.
-- Standardize API
 
 
 ## Alternative ECS/Gamedev libraries for C/C++
