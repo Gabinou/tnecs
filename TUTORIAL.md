@@ -84,7 +84,7 @@ Entities can be created with any number of components directly with this variadi
 ## Register System to the world
 A system is a user-defined function, with ```struct tnecs_System_Input``` as input:
 ```c
-    void SystemMove(struct tnecs_System_Input in_input) {
+    void SystemMove(tnecs_system_input_t in_input) {
         Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
         Velocity *v = TNECS_COMPONENTS_LIST(entity_list, Velocity);
 
@@ -96,7 +96,7 @@ A system is a user-defined function, with ```struct tnecs_System_Input``` as inp
 
     TNECS_REGISTER_SYSTEM(game_world, SystemMove, Position, Unit); 
 ```
-System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which is also reserved for the NULL phase.
+System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which is also reserved for the NULL phase. ```tnecs_system_input_t``` is alias for struct tnecs_System_Input.
 
 Phases are ```size_t``` integers can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
