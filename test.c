@@ -129,16 +129,20 @@ void SystemMove2(struct tnecs_System_Input * in_input) {
 }
 
 void SystemPosition2(struct tnecs_System_Input * in_input) {
+    // printf("SystemPosition2\n");
     struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     for (int i = 0; i < in_input->num_entities; i++) {
+        // printf("i %d \n", i);
         p[i].x += 1; 
         p[i].y += 1; 
     }
 }
 
 void SystemUnit2(struct tnecs_System_Input * in_input) {
+    // printf("SystemUnit2\n");
     struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int i = 0; i < in_input->num_entities; i++) {
+        // printf("i %d \n", i);
         v[i].hp += 1; 
         v[i].str += 1; 
     }

@@ -3,11 +3,11 @@
 Arrays are much faster than hash tables.
 
 TO DO:
-	
-	World Progress DONE
-		-> MEASURE TIME
+	More tests
 
 DONE:
+	World Progress DONE
+
 	System phase
 
  	Destroy entity

@@ -571,26 +571,6 @@ size_t tnecs_component_name2id(struct tnecs_World * in_world, const unsigned cha
     return (tnecs_component_hash2id(in_world, tnecs_hash_djb2(in_name)));
 }
 
-tnecs_component_t tnecs_names2typeflag(struct tnecs_World * in_world, size_t argnum, ...) {
-    TNECS_DEBUG_PRINTF("tnecs_names2typeflag\n");
-
-    tnecs_component_t out = 0;
-    va_list ap;
-    va_start(ap, argnum);
-    tnecs_hash_t temp_hash;
-    for (size_t i = 0; i < argnum; i++) {
-        temp_hash = tnecs_hash_djb2(va_arg(ap, const unsigned char *));
-        for (size_t j = 0; j < in_world->num_components; j++) {
-            if (in_world->component_hashes[j] == temp_hash) {
-                out += TNECS_COMPONENT_ID2TYPEFLAG(j);
-                break;
-            }
-        }
-    }
-    va_end(ap);
-    return (out);
-}
-
 tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...) {
     TNECS_DEBUG_PRINTF("tnecs_component_ids2typeflag\n");
 
@@ -682,7 +662,7 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
         printf("TNECS ERROR: Cannot register more than 63 components");
     }
 }
-size_t tnecs_new_phase(struct tnecs_World * in_world, uint8_t in_phase) {
+size_t tnecs_new_phase(struct tnecs_World * in_world, tnecs_phase_t in_phase) {
     TNECS_DEBUG_PRINTF("tnecs_new_phase\n");
 
     if ((in_world->num_phases + 1) >= in_world->len_phases) {
@@ -692,7 +672,7 @@ size_t tnecs_new_phase(struct tnecs_World * in_world, uint8_t in_phase) {
     return (in_world->num_phases++);
 }
 
-void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), uint8_t in_phase, size_t num_components, tnecs_component_t components_typeflag) {
+void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
     size_t system_id = in_world->num_systems++;
@@ -873,7 +853,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
     return (in_world->system_typeflags[id]);
 }
 
-size_t tnecs_phaseid(struct tnecs_World * in_world, uint8_t in_phase) {
+size_t tnecs_phaseid(struct tnecs_World * in_world, tnecs_phase_t in_phase) {
     TNECS_DEBUG_PRINTF("tnecs_phaseid\n");
 
     size_t out = in_world->len_phases;
