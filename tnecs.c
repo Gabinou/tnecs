@@ -840,4 +840,3 @@ size_t setBits_KnR_uint64_t(uint64_t in_flags) {
     }
     return (count);
 }
-
