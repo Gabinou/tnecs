@@ -537,6 +537,19 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        printf("%d \n", i);
+        tnecs_entity_destroy(bench_world, tnecs_entities[i]);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: Entity Destruction time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        tnecs_entities[i] = tnecs_entity_create(bench_world);
+    }
+
+    t_0 = get_us();
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Position2);
     TNECS_ADD_COMPONENT(bench_world, tnecs_entities[1], Unit2);
     for (size_t i = 2; i < ITERATIONS; i++) {
