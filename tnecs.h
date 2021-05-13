@@ -183,15 +183,13 @@ struct tnecs_World {
     tnecs_component_t * typeflags;                           // [typeflag_id]
     tnecs_component_t * entity_typeflags;                    // [entity_id]
     tnecs_component_t * system_typeflags;                    // [system_id]
-    void (** systems)(struct tnecs_System_Input *);          // [system_id]
-    void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
     tnecs_phase_t * system_phases;                           // [system_id]
-    size_t ** systems_idbyphase;                             // [phase_id][system_order]
-    size_t * system_orders;                                  // [system_id]
     tnecs_phase_t * phases;                                  // [phase_id]
-    tnecs_hash_t component_hashes[TNECS_COMPONENT_CAP];      // [component_id]
+    size_t * system_orders;                                  // [system_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];         // [component_id]
+    tnecs_hash_t component_hashes[TNECS_COMPONENT_CAP];      // [component_id]
     tnecs_hash_t * system_hashes;                            // [system_id]
+    char ** component_names;
 
     // bytype arrays are exclusive -> entities unique in components_bytype
     struct tnecs_Components_Array ** components_bytype;      // [typeflag_id][component_order_bytype]
@@ -199,7 +197,8 @@ struct tnecs_World {
     tnecs_component_t ** components_idbytype;                // [typeflag_id][component_order_bytype]
     tnecs_component_t ** components_flagbytype;              // [typeflag_id][component_order_bytype]
     size_t ** components_orderbytype;                        // [typeflag_id][component_id]
-    char ** component_names;
+    size_t ** systems_idbyphase;                             // [phase_id][system_order]
+    void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
 
     // len is allocated size
     // num is active elements in array
@@ -207,8 +206,8 @@ struct tnecs_World {
     size_t num_components, num_typeflags, num_systems, num_phases;
     size_t * entity_orders;                                  // [entity_id]
     size_t * num_components_bytype;                          // [typeflag_id]
-    size_t * len_entities_bytype, * num_entities_bytype;     // [typeflag_id]
-    size_t * len_systems_byphase, * num_systems_byphase;     // [phase_id]
+    size_t * len_entities_bytype,* num_entities_bytype;      // [typeflag_id]
+    size_t * len_systems_byphase,* num_systems_byphase;      // [phase_id]
 
     tnecs_entity_t next_entity_id;
     uint8_t num_opened_entity_ids;
@@ -219,8 +218,7 @@ struct tnecs_World {
 
 struct tnecs_Components_Array {
     tnecs_component_t type;
-    size_t num_components;
-    size_t len_components;
+    size_t num_components, len_components;
     void * components;  // [entity_order_bytype]
 };
 
