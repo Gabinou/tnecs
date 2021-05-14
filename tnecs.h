@@ -75,6 +75,13 @@ extern "C" {
 #define TNECS_DEBUG_PRINTF(...) (void)0
 #endif
 
+#define TNECS_DEBUG_AS // TNECS_DEBUG_ASIS are ignored if undefined
+#ifdef TNECS_DEBUG_AS
+#define TNECS_DEBUG_ASIS(...) do {__VA_ARGS__;}while(0)
+#else
+#define TNECS_DEBUG_ASIS(...) (void)0
+#endif
+
 /********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
 //  Modified from: https://gist.github.com/ForeverZer0/0a4f80fc02b96e19380ebb7a3debbee5
 #if defined(__linux)
@@ -192,7 +199,9 @@ struct tnecs_World {
     tnecs_component_t ** components_flagbytype;              // [typeflag_id][component_order_bytype]
     size_t ** components_orderbytype;                        // [typeflag_id][component_id]
     size_t ** systems_idbyphase;                             // [phase_id][system_order]
-    void (* ** systems_byphase)(struct tnecs_System_Input *);// [phase_id][system_id]
+    void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
+    void (** systems_torun)(struct tnecs_System_Input *);    // [torun_order] debug
+    size_t num_systems_torun;
 
     // len is allocated size
     // num is active elements in array

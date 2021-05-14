@@ -128,7 +128,7 @@ void SystemMove2(struct tnecs_System_Input * in_input) {
     }
 }
 void SystemMovePhase1(struct tnecs_System_Input * in_input) {
-    printf("SystemMovePhase1\n");
+    // printf("SystemMovePhase1\n");
     // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     // for (int i = 0; i < in_input->num_entities; i++) {
@@ -139,11 +139,11 @@ void SystemMovePhase1(struct tnecs_System_Input * in_input) {
 }
 
 void SystemMovePhase4(struct tnecs_System_Input * in_input) {
-    printf("SystemMovePhase4\n");
+    // printf("SystemMovePhase4\n");
 }
 
 void SystemMovePhase2(struct tnecs_System_Input * in_input) {
-    printf("SystemMovePhase2\n");
+    // printf("SystemMovePhase2\n");
     // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     // for (int i = 0; i < in_input->num_entities; i++) {
@@ -488,12 +488,25 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase4, 4, Velocity);
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 2, Velocity);
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Position);
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Velocity);
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
     tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    lok(test_world->num_systems_torun == 5);
+    lok(test_world->systems_torun[0] == &SystemMove);
+    lok(test_world->systems_torun[1] == &SystemMovePhase1);
+    lok(test_world->systems_torun[2] == &SystemMovePhase1);
+    lok(test_world->systems_torun[3] == &SystemMovePhase2);
+    lok(test_world->systems_torun[4] == &SystemMovePhase4);    
+    lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
+    lok(test_world->systems_torun[0] != NULL);
+    lok(test_world->systems_torun[1] != NULL);
+    lok(test_world->systems_torun[2] != NULL);
+    lok(test_world->systems_torun[3] != NULL);
+    lok(test_world->systems_torun[4] != NULL);
     lok(temp_position->x == 101);
     lok(temp_position->y == 202);
     lok(temp_velocity->vx == 1);
@@ -501,6 +514,18 @@ void tnecs_test_world_progress() {
     tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
+    lok(test_world->num_systems_torun == 5);
+    lok(test_world->systems_torun[0] == &SystemMove);
+    lok(test_world->systems_torun[1] == &SystemMovePhase1);
+    lok(test_world->systems_torun[2] == &SystemMovePhase1);
+    lok(test_world->systems_torun[3] == &SystemMovePhase2);
+    lok(test_world->systems_torun[4] == &SystemMovePhase4);    
+    lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
+    lok(test_world->systems_torun[0] != NULL);
+    lok(test_world->systems_torun[1] != NULL);
+    lok(test_world->systems_torun[2] != NULL);
+    lok(test_world->systems_torun[3] != NULL);
+    lok(test_world->systems_torun[4] != NULL);
     lok(temp_position->x == 102);
     lok(temp_position->y == 204);
     lok(temp_velocity->vx == 1);
@@ -631,7 +656,7 @@ int main() {
     lrun("progress", tnecs_test_world_progress);
     lresults();
 
-    // tnecs_benchmarks();
+    tnecs_benchmarks();
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
