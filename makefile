@@ -73,28 +73,24 @@ else
 endif
 
 EXEC := $(PREFIX)test$(EXTENSION)
-EXEC_TEST_FLECS := $(PREFIX)test_flecs$(EXTENSION)
 EXEC_TCC := $(PREFIX)test_tcc$(EXTENSION)
 EXEC_GCC := $(PREFIX)test_gcc$(EXTENSION)
 EXEC_CLANG := $(PREFIX)test_clang$(EXTENSION)
-EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} ${EXEC_TEST_FLECS} 
-
+EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG}
 
 .PHONY: all 
 all: ${ASTYLE} $(TARGETS_FLECS) flecs $(EXEC) run 
 SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
 SOURCES_FLECS := flecs.c
-SOURCES_TEST_FLECS := test_flecs.c
 HEADERS := $(wildcard *.h)
 SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_TNECS) 
 TARGETS_TNECS := $(SOURCES_TNECS:.c=.o)
 TARGETS_FLECS := $(SOURCES_FLECS:.c=.o)
-TARGETS_TEST_FLECS := $(SOURCES_TEST_FLECS:.c=.o)
 TARGETS_TNECS_GCC := $(SOURCES_TNECS:.c=_gcc.o)
 TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
 TARGETS_TNECS_CLANG := $(SOURCES_TNECS:.c=_clang.o)
-TARGETS_ALL := ${TARGETS_TNECS} ${TARGETS_FLECS} ${TARGETS_TEST_FLECS} ${TARGETS_TNECS_GCC} ${TARGETS_TNECS_TCC} ${TARGETS_TNECS_CLANG}
+TARGETS_ALL := ${TARGETS_TNECS} ${TARGETS_FLECS} ${TARGETS_TNECS_GCC} ${TARGETS_TNECS_TCC} ${TARGETS_TNECS_CLANG}
 .PHONY: compile_test
 compile_test: ${ASTYLE} ${EXEC_TCC}  ${EXEC_GCC} ${EXEC_CLANG} run_tcc run_gcc run_clang
 
@@ -108,14 +104,10 @@ run_tcc: $(EXEC_TCC) ; $(EXEC_TCC)
 run_gcc: $(EXEC_GCC) ; $(EXEC_GCC)
 .PHONY : run_clang
 run_clang: $(EXEC_CLANG) ; $(EXEC_CLANG)
-.PHONY: bench_flecs
-bench_flecs: ${ASTYLE} $(EXEC_TEST_FLECS) flecs
 .PHONY : astyle
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
 $(TARGETS_FLECS) : $(SOURCES_FLECS) ; $(COMPILER) $< -c -o $@
-$(TARGETS_TEST_FLECS) : $(TARGETS_TNECS) $(TARGETS_FLECS) $(SOURCES_TEST_FLECS) $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
-# $(EXEC_TEST_FLECS): $(SOURCES_TEST_FLECS) ${SOURCES_FLECS} ${SOURCES_TNECS} $(TARGETS_FLECS) $(TARGETS_TNECS) $(TARGETS_TEST_FLECS); gcc $< $(TARGETS_FLECS) $(TARGETS_TNECS) -o $@ $(CFLAGS)
 
 $(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
 $(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@ 
