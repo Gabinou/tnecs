@@ -34,14 +34,10 @@ C99, compile with ```tcc```.
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc```, ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
-- Small: <2000 lines for now.
+- Small: <1300 lines, 2 files.
 - Fast: see simple benchmarks in test.c
 - Simple: C99 API
 - FOSS: Free and Open Source
-
-## To do
-- More tests.
-
 
 ## Alternative ECS/Gamedev libraries for C/C++
 - [flecs (C99/C++)](https://github.com/SanderMertens/flecs)
