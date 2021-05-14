@@ -184,7 +184,7 @@ void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) 
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
     size_t system_id, current_phase;
-    in_world->num_systems_torun = 0;
+    TNECS_DEBUG_ASIS(in_world->num_systems_torun = 0);
 
     if (!in_deltat) {
         current_input.deltat = get_ns() - in_world->previous_time;
