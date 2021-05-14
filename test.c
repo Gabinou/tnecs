@@ -127,6 +127,31 @@ void SystemMove2(struct tnecs_System_Input * in_input) {
         p[i].y += v[i].str;
     }
 }
+void SystemMovePhase1(struct tnecs_System_Input * in_input) {
+    printf("SystemMovePhase1\n");
+    // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    // for (int i = 0; i < in_input->num_entities; i++) {
+    //     // printf("i %d \n", i);
+    //     p[i].x += v[i].hp;
+    //     p[i].y += v[i].str;
+    // }
+}
+
+void SystemMovePhase4(struct tnecs_System_Input * in_input) {
+    printf("SystemMovePhase4\n");
+}
+
+void SystemMovePhase2(struct tnecs_System_Input * in_input) {
+    printf("SystemMovePhase2\n");
+    // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    // for (int i = 0; i < in_input->num_entities; i++) {
+    //     // printf("i %d \n", i);
+    //     p[i].x += v[i].hp;
+    //     p[i].y += v[i].str;
+    // }
+}
 
 void SystemPosition2(struct tnecs_System_Input * in_input) {
     // printf("SystemPosition2\n");
@@ -460,6 +485,10 @@ void tnecs_test_world_progress() {
     temp_position->x = 100;
     temp_position->y = 200;
 
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase4, 4, Velocity);
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 2, Velocity);
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Position);
+
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
     tnecs_world_step(test_world, 1);
@@ -602,7 +631,7 @@ int main() {
     lrun("progress", tnecs_test_world_progress);
     lresults();
 
-    tnecs_benchmarks();
+    // tnecs_benchmarks();
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);

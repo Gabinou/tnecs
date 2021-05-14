@@ -182,20 +182,22 @@ void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) 
 
     struct tnecs_System_Input current_input;
     current_input.world = in_world;
-    size_t system_id;
+    size_t system_id, current_phase;
 
     if (!in_deltat) {
         current_input.deltat = get_ns() - in_world->previous_time;
     } else {
         current_input.deltat = in_deltat;
     }
-
     for (size_t phase_id = 0; phase_id < in_world->num_phases; phase_id++) {
-        for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
-            system_id = in_world->systems_idbyphase[phase_id][sorder];
-            current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
-            current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
-            in_world->systems_byphase[phase_id][sorder](&current_input);
+        current_phase = in_world->phases[phase_id];
+        if (phase_id == current_phase) {
+            for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
+                system_id = in_world->systems_idbyphase[phase_id][sorder];
+                current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
+                current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
+                in_world->systems_byphase[phase_id][sorder](&current_input);
+            }
         }
     }
     in_world->previous_time = get_ns();
@@ -269,11 +271,9 @@ void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesiz
     return (memcpy(arr + (elem * bytesize), arr + ((len - 1) * bytesize), bytesize));
 }
 
-
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_arrdel\n");
     void * out;
-    printf("elem %d len %d\n", elem, len);
     if (elem < (len - 1)) {
         out = memcpy(arr + (elem * bytesize), arr + ((elem + 1) * bytesize), bytesize * (len - elem - 1));
     } else {
@@ -575,13 +575,13 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
         printf("TNECS ERROR: Cannot register more than 63 components");
     }
 }
+
 size_t tnecs_new_phase(struct tnecs_World * in_world, tnecs_phase_t in_phase) {
     TNECS_DEBUG_PRINTF("tnecs_new_phase\n");
-
-    if ((in_world->num_phases + 1) >= in_world->len_phases) { tnecs_growArray_phase(in_world); }
-
-    in_world->phases[in_world->num_phases] = in_phase;
-    return (in_world->num_phases++);
+    if (in_phase >= in_world->len_phases) { tnecs_growArray_phase(in_world); }
+    in_world->phases[in_phase] = in_phase;
+    in_world->num_phases = in_phase >= in_world->num_phases ? (in_phase + 1) : in_world->num_phases;
+    return (in_phase);
 }
 
 void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase, size_t num_components, tnecs_component_t components_typeflag) {
