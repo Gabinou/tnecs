@@ -235,7 +235,7 @@ void tnecs_entities_create(struct tnecs_World * in_world, size_t num) {
     }
 }
 
-void tnecs_entities_create_windices(struct tnecs_World * in_world, tnecs_entity_t * in_entities, size_t num) {
+void tnecs_entities_create_windices(struct tnecs_World * in_world, size_t num, tnecs_entity_t * in_entities) {
     TNECS_DEBUG_PRINTF("tnecs_entities_create_windices\n");
 
     for (size_t i = 0; i < num; i++) {

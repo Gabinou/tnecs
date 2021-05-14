@@ -254,7 +254,7 @@ size_t tnecs_register_phase(struct tnecs_World * in_world, tnecs_phase_t in_phas
 tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 void tnecs_entities_create(struct tnecs_World * in_world, size_t num);
-void tnecs_entities_create_windices(struct tnecs_World * in_world, tnecs_entity_t * in_entities, size_t num);
+void tnecs_entities_create_windices(struct tnecs_World * in_world, size_t num, tnecs_entity_t * in_entities);
 
 tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
@@ -263,6 +263,11 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 #define TNECS_ENTITY_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE2, TNECS_ENTITY_CREATE1)(__VA_ARGS__)
 #define TNECS_ENTITY_CREATE1(world) tnecs_entity_create(world)
 #define TNECS_ENTITY_CREATE2(world, index) tnecs_entity_create_windex(world, index)
+
+#define TNECS_CHOOSE_ENTITIES_CREATE(_1,_2,_3,NAME,...) NAME
+#define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE3, TNECS_ENTITY_CREATE2)(__VA_ARGS__)
+#define TNECS_ENTITIES_CREATE3(world, num) tnecs_entities_create(world, num)
+#define TNECS_ENTITIES_CREATE2(world, num, indices) tnecs_entities_create_windex(world, num, indices)
 
 #define TNECS_ENTITY_CREATE_WCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
