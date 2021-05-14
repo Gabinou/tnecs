@@ -22,7 +22,6 @@ Entities can be created with an index:
 ```TNECS_NEW_ENTITY``` is an overloaded macro.
 
 Entities can be created in batches, with indices:
-
 ```c
     TNECS_NEW_ENTITIES(world, 100);
     tnecs_new_entities(world, 100);
@@ -30,7 +29,7 @@ Entities can be created in batches, with indices:
     TNECS_NEW_ENTITIES(world, 100, to_create);
     tnecs_new_entities_windex(world, 100, to_create);
 ```
-```TNECS_NEW_ENTITIES``` is an overloaded macro.
+```TNECS_NEW_ENTITIES``` is also an overloaded macro.
 
 ## Register Component to the world
 A component is a user-defined struct:
@@ -107,8 +106,8 @@ A system is a user-defined function, with ```struct tnecs_System_Input``` as inp
         Velocity *v = TNECS_COMPONENTS_LIST(entity_list, Velocity);
 
         for (int i = 0; i < in_input->entity_num; i++) {
-            p[i].x += v[i].vx;
-            p[i].y += v[i].vy;
+            p[i].x += v[i].vx * in_input->deltat;
+            p[i].y += v[i].vy * in_input->deltat;
         }
     }
 
