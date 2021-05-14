@@ -8,6 +8,9 @@
 
 #include "us_clock.h"
 #include "tnecs.h"
+#ifndef __TINYC__
+#include "flecs.h"
+#endif
 
 /* MINCTEST - Minimal C Test Library - 0.2.0
 *  ---------> MODIFIED FOR TNECS <----------
@@ -179,6 +182,7 @@ FILE * globalf;
 #define ITERATIONS 100000
 #define ITERATIONS_SMALL 1000
 #define ARRAY_LEN 100
+size_t fps_iterations = 10;
 
 /*******************************TEST SYSTEMS***************************/
 tnecs_entity_t tnecs_entities[ITERATIONS];
@@ -196,6 +200,16 @@ void SystemMove(struct tnecs_System_Input * in_input) {
     for (int i = 0; i < in_input->num_entities; i++) {
         p[i].x = p[i].x + v[i].vx;
         p[i].y = p[i].y + v[i].vy;
+    }
+}
+
+void flecs_Move(ecs_iter_t * it) {
+    Position * p =  ecs_column(it, Position, 1);
+    Unit * v =  ecs_column(it, Unit, 1);
+
+    for (int i = 0; i < it->count; i++) {
+        p[i].x += v[i].hp;
+        p[i].y += v[i].str;
     }
 }
 
@@ -532,6 +546,112 @@ void tnecs_test_world_progress() {
     lok(temp_velocity->vy == 2);
 }
 
+#ifndef __TINYC__
+void flecs_benchmarks() {
+    dupprintf(globalf, "\nHomemade flecs benchmarks\n");
+    double t_0;
+    double t_1;
+    t_0 = get_us();
+    ecs_world_t * world = ecs_init();
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: world init\n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    ecs_entity_t flecs_entities[ITERATIONS];
+    ecs_entity_t flecs_temp_ent;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        flecs_temp_ent = ecs_new(world, 0);
+        flecs_entities[i] = flecs_temp_ent;
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Entity Creation time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+
+    t_0 = get_us();
+    ECS_COMPONENT(world, Position);
+    ECS_COMPONENT(world, Unit);
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Component registration \n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        ecs_add(world, flecs_entities[i], Position);
+        ecs_add(world, flecs_entities[i], Unit);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Adding components: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        // MODIFY THE COMPONENTS
+        ecs_add(world, flecs_entities[i], Position);
+        ecs_add(world, flecs_entities[i], Unit);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Adding components and modifying them: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        flecs_temp_ent = ecs_new(world, Position);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Creating entities with a single component: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    ECS_SYSTEM(world, flecs_Move, EcsOnUpdate, Position, Unit);
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: System registration\n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    const Position * position_ptr;
+    const Unit * unit_ptr;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        position_ptr = ecs_get(world, flecs_entities[i], Position);
+        unit_ptr = ecs_get(world, flecs_entities[i], Unit);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: get component const: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    Position * position_mptr;
+    Unit * unit_mptr;
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        position_mptr = ecs_get_mut(world, flecs_entities[i], Position, NULL);
+        unit_mptr = ecs_get_mut(world, flecs_entities[i], Unit, NULL);
+        ecs_modified(world, flecs_entities[i], Unit);
+        ecs_modified(world, flecs_entities[i], Position);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: get component mut: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 0; i < fps_iterations; i++) {
+        ecs_progress(world, 0);
+
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: world progress: %d iterations \n", fps_iterations);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
+    dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
+
+    t_0 = get_us();
+    ecs_fini(world);
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: world deinit\n");
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+}
+#endif
+
 void tnecs_benchmarks() {
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
 
@@ -613,7 +733,6 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "tnecs: Component adding time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
-    size_t fps_iterations = 10;
     t_0 = get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
         tnecs_world_step(bench_world, 1);
@@ -657,6 +776,9 @@ int main() {
     lresults();
 
     tnecs_benchmarks();
+#ifndef __TINYC__
+    flecs_benchmarks();
+    #endif
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
