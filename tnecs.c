@@ -588,6 +588,15 @@ size_t tnecs_new_phase(struct tnecs_World * in_world, tnecs_phase_t in_phase) {
     return (in_phase);
 }
 
+void tnecs_system_order_switch(struct tnecs_World * in_world, tnecs_phase_t in_phase_id, size_t order1, size_t order2) {
+    TNECS_DEBUG_PRINTF("tnecs_system_order_switch\n");
+
+    void (* systems_temp)(struct tnecs_System_Input *); 
+    systems_temp = in_world->systems_byphase[in_phase_id][order1];
+    in_world->systems_byphase[in_phase_id][order1] = in_world->systems_byphase[in_phase_id][order2];
+    in_world->systems_byphase[in_phase_id][order2] = systems_temp; 
+}
+
 void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
