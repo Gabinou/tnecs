@@ -44,9 +44,9 @@ A component is a user-defined struct:
 When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
 ```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
 
-```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component_flag only has one bit set, at component_id location. For now, this implies that a maximal number of 63 components can be registered.
+```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. For now, this implies that a maximal number of 63 components can be registered.
 
-NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. for a component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. for system typeflags. 
+NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. system typeflags. 
 
 The component's type can be obtained with:
 ```c
@@ -92,18 +92,18 @@ Entities can be created with any number of components directly with this variadi
 ```c
     tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(world, Position, Unit);
 ```
-```TNECS_NEW_ENTITY_WCOMPONENTS``` wraps around the variadic function ```tnecs_new_entity_wcomponents``` by counting the number of input compotents and hashing their names. So you can also write, if you wish:
+```TNECS_NEW_ENTITY_WCOMPONENTS``` wraps around the variadic function ```tnecs_new_entity_wcomponents``` by counting the number of input components and hashing their names. So you can also write, if you wish:
 
 ```c
     tnecs_entity_t Perignon = tnecs_new_entity_wcomponents(world, 2, TNECS_HASH("Position"), TNECS_HASH("Unit"));
 ```
 
 ## Register System to the world
-A system is a user-defined function, with ```struct tnecs_System_Input``` as input:
+A system is a user-defined function, with a ```struct * tnecs_System_Input``` as input:
 ```c
-    void SystemMove(tnecs_system_input_t in_input) {
-        Position *p = TNECS_COMPONENTS_LIST(entity_list, Position);
-        Velocity *v = TNECS_COMPONENTS_LIST(entity_list, Velocity);
+    void SystemMove(tnecs_system_input_t * in_input) {
+        Position *p = TNECS_COMPONENTS_LIST(in_input, Position);
+        Velocity *v = TNECS_COMPONENTS_LIST(in_input, Velocity);
 
         for (int i = 0; i < in_input->entity_num; i++) {
             p[i].x += v[i].vx * in_input->deltat;
@@ -113,7 +113,7 @@ A system is a user-defined function, with ```struct tnecs_System_Input``` as inp
 
     TNECS_REGISTER_SYSTEM(world, SystemMove, Position, Unit); 
 ```
-System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which is also reserved for the NULL phase. ```tnecs_system_input_t``` is alias for struct tnecs_System_Input.
+System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which is also reserved for the NULL phase, which always runs first. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
 Phases are ```size_t``` integers can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
