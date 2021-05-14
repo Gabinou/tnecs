@@ -224,6 +224,39 @@ tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world) {
     return (out);
 }
 
+void tnecs_entities_create(struct tnecs_World * in_world, size_t num) {
+    TNECS_DEBUG_PRINTF("tnecs_entities_create\n");
+
+    size_t created = 0;
+    tnecs_entity_t current_entity;
+    while (created < num) {
+        current_entity = tnecs_entity_create(in_world);
+        if (current_entity) {created++;}
+    }
+}
+
+void tnecs_entities_create_windices(struct tnecs_World * in_world, tnecs_entity_t * in_entities, size_t num) {
+    TNECS_DEBUG_PRINTF("tnecs_entities_create_windices\n");
+
+    for (size_t i = 0; i < num; i++) {
+        tnecs_entity_create_windex(in_world, in_entities[i]);
+    }
+}
+
+tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World * in_world, tnecs_entity_t in_entity) {
+    TNECS_DEBUG_PRINTF("tnecs_entity_create_windex\n");
+
+    tnecs_entity_t out = 0;
+    while (in_entity >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
+    if (!in_world->entities[in_entity]) {
+        in_world->entities[in_entity] = in_entity;
+        out = in_entity;
+        in_world->entity_orders[out] = tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
+    }
+    return(out);
+}
+
+
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, tnecs_component_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_get_component\n");
 

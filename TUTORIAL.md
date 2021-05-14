@@ -1,7 +1,7 @@
 
 ## Initializing the world
 ```c
-    struct tnECS_World * game_world = tnecs_init();
+    struct tnecs_World * game_world = tnecs_init();
 ```
 The world contains everything tnecs needs.
 

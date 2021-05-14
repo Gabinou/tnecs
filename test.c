@@ -414,6 +414,8 @@ void tnecs_test_entity_creation() {
     tnecs_entity_create(test_world);
     lok(test_world->entities[Silou]);
 
+    tnecs_entity_t Servil = 900;
+    TNECS_ENTITY_CREATE(test_world, Servil);
 }
 
 void tnecs_test_component_add() {
