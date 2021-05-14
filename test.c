@@ -203,6 +203,7 @@ void SystemMove(struct tnecs_System_Input * in_input) {
     }
 }
 
+#ifndef __TINYC__
 void flecs_Move(ecs_iter_t * it) {
     Position * p =  ecs_column(it, Position, 1);
     Unit * v =  ecs_column(it, Unit, 1);
@@ -212,6 +213,7 @@ void flecs_Move(ecs_iter_t * it) {
         p[i].y += v[i].str;
     }
 }
+#endif
 
 /*******************************ACTUAL TESTS***************************/
 void tnecs_test_utilities() {
