@@ -1,6 +1,6 @@
 # tnecs (Tiny nECS)
 
-Tiny C99 Entity-Component-System (ECS) library.
+Tiny C99 Entity-Component-System (ECS) library. [Read the Tutorial](https://gitlab.com/Gabinou/tnecs/-/blob/master/TUTORIAL.md).
 Originally created for use in a game I am developping using C99: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
 
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
