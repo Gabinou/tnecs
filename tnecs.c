@@ -617,7 +617,7 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
         size_t typeflag_id = tnecs_register_typeflag(in_world, 1, new_component_flag);
         in_world->num_components++;
     } else {
-        printf("TNECS ERROR: Cannot register more than 63 components");
+        printf("TNECS ERROR: Cannot register more than 63 components\n");
     }
 }
 

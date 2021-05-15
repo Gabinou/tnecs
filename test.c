@@ -374,6 +374,8 @@ void tnecs_test_component_registration() {
     lok(test_world->component_hashes[TNECS_COMPONENT_NAME2ID(test_world, Velocity)] == TNECS_HASH("Velocity"));
 
     lok(TNECS_COMPONENT_IDS2TYPEFLAG(1, 2, 3) == (1 + 2 + 4));
+
+
 }
 
 void tnecs_test_system_registration() {
@@ -469,6 +471,20 @@ void tnecs_test_entity_creation() {
     TNECS_ENTITIES_CREATE(test_world, 2, in_ents);
     lok(test_world->entities[in_ents[0]] == in_ents[0]);
     lok(test_world->entities[in_ents[1]] == in_ents[1]);
+
+    struct tnecs_World * test_world2 = tnecs_world_genesis();
+
+    test_world2->num_typeflags = TNECS_INITIAL_SYSTEM_LEN;
+    // test_world2->len_typeflags = 1;
+    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+
+    test_world2->num_components = 66;
+    TNECS_REGISTER_COMPONENT(test_world2, Unit2);
+    test_world2->num_components = 1;
+    // tnecs_register_typeflags(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
+    tnecs_world_destroy(test_world2);
+
+
 }
 
 void tnecs_test_component_add() {
@@ -560,6 +576,8 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 2, Velocity);
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Position);
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Velocity);
+    tnecs_system_order_switch(test_world, 1, 0, 1);
+    tnecs_system_order_switch(test_world, 1, 0, 1);
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
@@ -601,6 +619,7 @@ void tnecs_test_world_progress() {
     lok(temp_position->y == 204);
     lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
+    tnecs_world_step(test_world, 0);
 
 
     tnecs_growArray_phase(test_world);
