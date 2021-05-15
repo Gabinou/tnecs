@@ -232,9 +232,7 @@ void tnecs_entities_create(struct tnecs_World * in_world, size_t num) {
     TNECS_DEBUG_PRINTF("tnecs_entities_create\n");
 
     size_t created = 0;
-    while (created < num) {
-        if (tnecs_entity_create(in_world)) {created++;}
-    }
+    while (created < num) {created += (tnecs_entity_create(in_world) > 0);}
 }
 
 void tnecs_entities_create_windices(struct tnecs_World * in_world, size_t num, tnecs_entity_t * in_entities) {
@@ -251,8 +249,7 @@ tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World * in_world, tnecs_e
     tnecs_entity_t out = 0;
     while (in_entity >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
     if (!in_world->entities[in_entity]) {
-        in_world->entities[in_entity] = in_entity;
-        out = in_entity;
+        out = in_world->entities[in_entity] = in_entity;
         in_world->entity_orders[out] = tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
     }
     return (out);
@@ -682,8 +679,8 @@ void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_typ
 
 void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_typeflag, tnecs_component_t new_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_copy \n");
-    TNECS_DEBUG_ASSERT(old_typeflag != TNECS_NULL);
 
+    TNECS_DEBUG_ASSERT(old_typeflag != TNECS_NULL);
     size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
     size_t new_typeflag_id = tnecs_typeflagid(in_world, new_typeflag);
     size_t old_entity_order = in_world->entity_orders[in_entity];
@@ -889,6 +886,7 @@ uint64_t tnecs_hash_sdbm(const unsigned char * str) {
 /****************************** SET BIT COUNTING *****************************/
 size_t setBits_KnR_uint64_t(uint64_t in_flags) {
     // Credits to Kernighan and Ritchie in the C Programming Language
+    TNECS_DEBUG_PRINTF("setBits_KnR_uint64_t\n");
     size_t count = 0;
     while (in_flags) {
         in_flags &= (in_flags - 1);
