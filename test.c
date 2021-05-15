@@ -274,7 +274,7 @@ void tnecs_test_utilities() {
     tnecs_arrdel(temp_sizes, 1, 2, sizeof(size_t));
     lok(temp_sizes[1] == 0);
     lok(temp_sizes[0] == 1);
-
+    free(temp_sizes);
     temp_sizes = calloc(4, sizeof(size_t));
     temp_sizes[0] = 1;
     temp_sizes[1] = 2;
@@ -285,7 +285,7 @@ void tnecs_test_utilities() {
     lok(temp_sizes[1] == 2);
     lok(temp_sizes[2] == 4);
     lok(temp_sizes[3] == 0);
-
+    free(temp_sizes);
 }
 
 void tnecs_test_component_registration() {
@@ -604,6 +604,9 @@ void tnecs_test_world_progress() {
 
 
     tnecs_growArray_phase(test_world);
+    tnecs_growArray_system(test_world);
+    tnecs_growArray_typeflag(test_world);
+
 }
 
 #ifndef __TINYC__
