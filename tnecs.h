@@ -132,6 +132,7 @@ typedef struct tnecs_Components_Array tnecs_component_array_t;
 
 /************************** UTILITY MACROS ***********************************/
 #define TNECS_STRINGIFY(x) #x
+#define TNECS_NULLMACRO(x) x
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
 #define TNECS_CONCATENATE2(arg1, arg2) arg1##arg2
@@ -265,9 +266,9 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 #define TNECS_ENTITY_CREATE2(world, index) tnecs_entity_create_windex(world, index)
 
 #define TNECS_CHOOSE_ENTITIES_CREATE(_1,_2,_3,NAME,...) NAME
-#define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITIES_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE3, TNECS_ENTITY_CREATE2)(__VA_ARGS__)
-#define TNECS_ENTITIES_CREATE3(world, num) tnecs_entities_create(world, num)
-#define TNECS_ENTITIES_CREATE2(world, num, indices) tnecs_entities_create_windex(world, num, indices)
+#define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITIES_CREATE(__VA_ARGS__, TNECS_ENTITIES_CREATE3, TNECS_ENTITIES_CREATE2)(__VA_ARGS__)
+#define TNECS_ENTITIES_CREATE2(world, num) tnecs_entities_create(world, num)
+#define TNECS_ENTITIES_CREATE3(world, num, indices) tnecs_entities_create_windices(world, num, indices)
 
 #define TNECS_ENTITY_CREATE_WCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
@@ -324,7 +325,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
 #define TNECS_COMPONENT_TYPE(world, name) tnecs_component_names2typeflag(world, 1, #name)
 #define TNECS_COMPONENT_NAME2TYPEFLAG(world, name) TNECS_COMPONENT_TYPE(world, name)
 #define TNECS_COMPONENT_NAMES2TYPEFLAG(world, ...) tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
-#define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
+#define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_NULLMACRO, __VA_ARGS__))
 #define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_NULLSHIFT))
@@ -335,6 +336,7 @@ tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, cons
 #define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]
 #define TNECS_SYSTEM_TYPEFLAG(world, name) tnecs_system_name2typeflag(world, #name)
 #define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
+#define TNECS_SYSTEM_NAME2ID(world, name) tnecs_system_name2id(world, #name)
 #define TNECS_SYSTEM_GET_ENTITY(input, index) input->world->entities_bytype[input->typeflag_id][index]
 
 /***************************** "DYNAMIC" ARRAYS ******************************/

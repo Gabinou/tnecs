@@ -305,7 +305,9 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
 
 void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_arrdel_scramble\n");
-    return (memcpy(arr + (elem * bytesize), arr + ((len - 1) * bytesize), bytesize));
+    void * out = memcpy(arr + (elem * bytesize), arr + ((len - 1) * bytesize), bytesize);
+    memset(arr + ((len - 1) * bytesize), 0, bytesize);
+    return (out);
 }
 
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize) {
@@ -561,7 +563,6 @@ tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, si
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity) {
     TNECS_DEBUG_PRINTF("tnecs_entity_destroy \n");
 
-
     TNECS_DEBUG_ASSERT(in_world->entities[in_entity]);
     TNECS_DEBUG_ASSERT(in_entity > 0);
     tnecs_component_t entity_typeflag = in_world->entity_typeflags[in_entity];
@@ -781,7 +782,7 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash)
 
 tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_component_hash2type \n");
-    return (TNECS_COMPONENT_ID2TYPEFLAG(tnecs_system_hash2id(in_world, in_hash)));
+    return (TNECS_COMPONENT_ID2TYPEFLAG(tnecs_component_hash2id(in_world, in_hash)));
 }
 
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {

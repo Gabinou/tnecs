@@ -1,6 +1,6 @@
 
 
-COMPILER := tcc # tcc, gcc, clang
+COMPILER := gcc # tcc, gcc, clang
 
 # OS AND Processor detection 
 ifeq ($(OS),Windows_NT)
@@ -44,7 +44,7 @@ LINUX_PRE := ./
 WIN_PRE := 
 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
-FLAGS_BUILD_TYPE = -O0 -g  #Debug
+FLAGS_BUILD_TYPE = -O0 -g -fprofile-arcs -ftest-coverage #Debug
 
 # FLAGS_ERROR := -Wall -pedantic-errors
 FLAGS_ERROR := -w
@@ -94,6 +94,9 @@ TARGETS_ALL := ${TARGETS_TNECS} ${TARGETS_FLECS} ${TARGETS_TNECS_GCC} ${TARGETS_
 .PHONY: compile_test
 compile_test: ${ASTYLE} ${EXEC_TCC}  ${EXEC_GCC} ${EXEC_CLANG} run_tcc run_gcc run_clang
 
+.PHONY : cov
+cov: ; lcov -c --directory . --output-file main_coverage.info ; genhtml main_coverage.info --output-directory out
+
 .PHONY : run
 run: $(EXEC); $(EXEC)
 .PHONY : flecs # Only compiles for gcc or clang
@@ -109,7 +112,7 @@ astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --inden
 
 $(TARGETS_FLECS) : $(SOURCES_FLECS) ; $(COMPILER) $< -c -o $@
 
-$(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@
+$(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@ $(CFLAGS)
 $(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@ 
 $(TARGETS_TNECS_GCC) : $(SOURCES_TNECS) ; gcc $< -c -o $@
 $(TARGETS_TNECS_TCC) : $(SOURCES_TNECS) ; tcc $< -c -o $@ 
@@ -119,5 +122,11 @@ $(EXEC_TCC): $(SOURCES_TEST) $(TARGETS_TNECS_TCC); tcc $< $(TARGETS_TNECS_TCC) -
 $(EXEC_GCC): $(SOURCES_TEST) $(TARGETS_TNECS_GCC); gcc $< $(TARGETS_TNECS_GCC) -o $@ $(CFLAGS)
 $(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_TNECS_CLANG); clang $< $(TARGETS_TNECS_CLANG) -o $@ $(CFLAGS)
 
+
+
 .PHONY: clean
-clean: ; @echo "Cleaning tnecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL)
+clean: ; @echo "Cleaning tnecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL) 
+.PHONY: cleancov
+cleancov: ; @echo "Cleaning tnecs coverage tests" & rm -frv out *.gcda *.gcno *.gcov *.info
+.PHONY: cleanall
+cleanall: clean cleancov
