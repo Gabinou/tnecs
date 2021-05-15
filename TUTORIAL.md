@@ -99,7 +99,7 @@ Entities can be created with any number of components directly with this variadi
 ```
 
 ## Register System to the world
-A system is a user-defined function, with a ```struct * tnecs_System_Input``` as input:
+A system is a user-defined function, with a ```struct * tnecs_System_Input``` pointer as input:
 ```c
     void SystemMove(tnecs_system_input_t * in_input) {
         Position *p = TNECS_COMPONENTS_LIST(in_input, Position);
@@ -113,9 +113,9 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` as
 
     TNECS_REGISTER_SYSTEM(world, SystemMove, Position, Unit); 
 ```
-System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which is also reserved for the NULL phase, which always runs first. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
+System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
-Phases are ```size_t``` integers can be defined any way one wishes, though I suggest using an ```enum```:
+Phases are greater than zero ```size_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
 enum SYSTEM_PHASES {
     SYSTEM_PHASE_NULL = 0,
@@ -132,4 +132,6 @@ TNECS_REGISTER_SYSTEM_WPHASE(world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit
 tnecs_time_ns_t frame_deltat;
 world_progress(world, frame_deltat);
 ```
-```world_progress``` computes previous frame ```deltat``` if 0 is inputted. The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
+```world_progress``` computes previous frame time
+
+ ```deltat``` if 0 is inputted. The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.

@@ -415,7 +415,19 @@ void tnecs_test_entity_creation() {
     lok(test_world->entities[Silou]);
 
     tnecs_entity_t Servil = 900;
+    lok(test_world->len_entities < Servil);
     TNECS_ENTITY_CREATE(test_world, Servil);
+    lok(Servil == test_world->entities[Servil]);
+    lok(test_world->len_entities > Servil);
+
+    tnecs_entity_t Rayan = tnecs_entity_create_windex(test_world, 666);
+    lok(test_world->len_entities > Rayan);
+    lok(Rayan == test_world->entities[Rayan]);
+    lok(!test_world->entities[Rayan + 1]);
+    lok(!test_world->entities[Rayan - 1]);
+
+    tnecs_entity_t Pierre = TNECS_ENTITY_CREATE(test_world, 667);
+    lok(Pierre == test_world->entities[Pierre]);
 }
 
 void tnecs_test_component_add() {
@@ -518,7 +530,7 @@ void tnecs_test_world_progress() {
     lok(test_world->systems_torun[1] == &SystemMovePhase1);
     lok(test_world->systems_torun[2] == &SystemMovePhase1);
     lok(test_world->systems_torun[3] == &SystemMovePhase2);
-    lok(test_world->systems_torun[4] == &SystemMovePhase4);    
+    lok(test_world->systems_torun[4] == &SystemMovePhase4);
     lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
     lok(test_world->systems_torun[0] != NULL);
     lok(test_world->systems_torun[1] != NULL);
@@ -537,7 +549,7 @@ void tnecs_test_world_progress() {
     lok(test_world->systems_torun[1] == &SystemMovePhase1);
     lok(test_world->systems_torun[2] == &SystemMovePhase1);
     lok(test_world->systems_torun[3] == &SystemMovePhase2);
-    lok(test_world->systems_torun[4] == &SystemMovePhase4);    
+    lok(test_world->systems_torun[4] == &SystemMovePhase4);
     lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
     lok(test_world->systems_torun[0] != NULL);
     lok(test_world->systems_torun[1] != NULL);
@@ -782,7 +794,7 @@ int main() {
     tnecs_benchmarks();
 #ifndef __TINYC__
     flecs_benchmarks();
-    #endif
+#endif
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);

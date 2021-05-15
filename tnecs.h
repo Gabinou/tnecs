@@ -199,7 +199,7 @@ struct tnecs_World {
     tnecs_component_t ** components_flagbytype;              // [typeflag_id][component_order_bytype]
     size_t ** components_orderbytype;                        // [typeflag_id][component_id]
     size_t ** systems_idbyphase;                             // [phase_id][system_order]
-    void (*** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
+    void (* ** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
     void (** systems_torun)(struct tnecs_System_Input *);    // [torun_order] debug
     size_t num_systems_torun;
 
