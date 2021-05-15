@@ -1,6 +1,6 @@
 
 
-COMPILER := gcc # tcc, gcc, clang
+COMPILER := tcc # tcc, gcc, clang
 
 # OS AND Processor detection 
 ifeq ($(OS),Windows_NT)
@@ -120,4 +120,4 @@ $(EXEC_GCC): $(SOURCES_TEST) $(TARGETS_TNECS_GCC); gcc $< $(TARGETS_TNECS_GCC) -
 $(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_TNECS_CLANG); clang $< $(TARGETS_TNECS_CLANG) -o $@ $(CFLAGS)
 
 .PHONY: clean
-clean: ; @echo "Cleaning Simplecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL)
+clean: ; @echo "Cleaning tnecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL)

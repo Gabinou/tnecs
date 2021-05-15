@@ -140,6 +140,7 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
     free(in_world->num_systems_byphase);
     free(in_world->systems_byphase);
     free(in_world->system_orders);
+    free(in_world->systems_torun);
     free(in_world->systems_idbyphase);
     for (size_t i = 0; i < in_world->len_typeflags; i++) {
         free(in_world->entities_bytype[i]);
@@ -156,6 +157,7 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
     }
     free(in_world->entities_bytype);
     free(in_world->entity_orders);
+    free(in_world->entities_open);
     free(in_world->components_bytype);
     free(in_world->components_idbytype);
     free(in_world->components_flagbytype);
