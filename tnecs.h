@@ -265,7 +265,7 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 #define TNECS_ENTITY_CREATE2(world, index) tnecs_entity_create_windex(world, index)
 
 #define TNECS_CHOOSE_ENTITIES_CREATE(_1,_2,_3,NAME,...) NAME
-#define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE3, TNECS_ENTITY_CREATE2)(__VA_ARGS__)
+#define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITIES_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE3, TNECS_ENTITY_CREATE2)(__VA_ARGS__)
 #define TNECS_ENTITIES_CREATE3(world, num) tnecs_entities_create(world, num)
 #define TNECS_ENTITIES_CREATE2(world, num, indices) tnecs_entities_create_windex(world, num, indices)
 

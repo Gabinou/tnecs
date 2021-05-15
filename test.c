@@ -428,6 +428,16 @@ void tnecs_test_entity_creation() {
 
     tnecs_entity_t Pierre = TNECS_ENTITY_CREATE(test_world, 667);
     lok(Pierre == test_world->entities[Pierre]);
+
+    TNECS_ENTITIES_CREATE(test_world, 100);
+
+    // Does tnecs_entity_create work after creating entities in a batch?
+    printf("test_world->entity_next %d \n", test_world->entity_next);
+    TNECS_ENTITIES_CREATE(test_world, 6);
+    tnecs_entity_create(test_world);
+    printf("test_world->entity_next %d \n", test_world->entity_next);
+    // lok()
+
 }
 
 void tnecs_test_component_add() {

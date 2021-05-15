@@ -216,9 +216,11 @@ tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world) {
         out = in_world->entities_open[--in_world->num_entities_open];
         in_world->entities_open[in_world->num_entities_open] = TNECS_NULL;
     }
-    if (out == TNECS_NULL) { out = in_world->entity_next++; }
+    do {
+        if (in_world->entity_next >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
+        out = in_world->entity_next;
+    } while ((out == TNECS_NULL) || (in_world->entities[in_world->entity_next++] != TNECS_NULL));
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
-    if (in_world->entity_next >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
     in_world->entities[out] = out;
     in_world->entity_orders[out] = tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
     return (out);
