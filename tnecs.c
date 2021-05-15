@@ -562,7 +562,9 @@ tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, si
     tnecs_component_add(in_world, new_entity);
     TNECS_DEBUG_ASSERT(in_world->components_bytype[typeflag_id][0].components != NULL);
     tnecs_entitiesbytype_migrate(in_world, new_entity, TNECS_NULL, typeflag);
+    typeflag_id = tnecs_typeflagid(in_world, typeflag);
     TNECS_DEBUG_ASSERT(in_world->entity_typeflags[new_entity] == typeflag);
+    TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[typeflag_id] > 0);
     return (new_entity);
 }
 
@@ -573,12 +575,13 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     TNECS_DEBUG_ASSERT(in_entity > 0);
     tnecs_component_t entity_typeflag = in_world->entity_typeflags[in_entity];
     TNECS_DEBUG_ASSERT(entity_typeflag >= 0);
-    size_t entity_typeflag_id = TNECS_COMPONENT_TYPE2ID(entity_typeflag);
+    size_t entity_typeflag_id = TNECS_TYPEFLAGID(in_world, entity_typeflag);
     size_t entity_order = in_world->entity_orders[in_entity];
 
     size_t component_id, component_bytesize;
     void * temp_component_bytesptr;
 
+    TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
     // Deletes associated components
     for (size_t corder = 0; corder < in_world->num_components_bytype[entity_typeflag_id]; corder++) {
         component_id = in_world->components_idbytype[entity_typeflag_id][corder];

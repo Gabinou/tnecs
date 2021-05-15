@@ -567,6 +567,10 @@ void tnecs_test_component_add() {
 void tnecs_test_world_progress() {
     struct Velocity * temp_velocity;
     tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world, Position, Velocity);
+
+    lok(test_world->entity_typeflags[Perignon] == (1 + 8));
+    lok(test_world->num_entities_bytype[tnecs_typeflagid(test_world, 1 + 8)] == 1);
+
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
     temp_position->x = 100;
@@ -621,6 +625,9 @@ void tnecs_test_world_progress() {
     lok(temp_velocity->vy == 2);
     tnecs_world_step(test_world, 0);
 
+    lok(test_world->entity_typeflags[Perignon] == (1 + 8));
+    lok(test_world->num_entities_bytype[tnecs_typeflagid(test_world, 1 + 8)] == 1);
+    tnecs_entity_destroy(test_world, Perignon);
 
     tnecs_growArray_phase(test_world);
     tnecs_growArray_system(test_world);
