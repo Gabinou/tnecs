@@ -410,6 +410,8 @@ void tnecs_test_entity_creation() {
     tnecs_entity_t Chasse = tnecs_entity_create(test_world);
 
     tnecs_entity_destroy(test_world, Silou);
+    lok(test_world->entities_open[0] == Silou);
+    lok(test_world->num_entities_open == 1);
     lok(!test_world->entities[Silou]);
     tnecs_entity_create(test_world);
     lok(test_world->entities[Silou]);
@@ -430,14 +432,11 @@ void tnecs_test_entity_creation() {
     lok(Pierre == test_world->entities[Pierre]);
 
     TNECS_ENTITIES_CREATE(test_world, 100);
-
-    // Does tnecs_entity_create work after creating entities in a batch?
-    printf("test_world->entity_next %d \n", test_world->entity_next);
-    TNECS_ENTITIES_CREATE(test_world, 6);
-    tnecs_entity_create(test_world);
-    printf("test_world->entity_next %d \n", test_world->entity_next);
-    // lok()
-
+    lok(test_world->entity_next == 5);
+    lok(TNECS_ENTITIES_CREATE(test_world, 5));
+    lok(!TNECS_ENTITIES_CREATE(test_world, 5));
+    lok(tnecs_entity_create(test_world));
+    lok(test_world->entity_next == 7);
 }
 
 void tnecs_test_component_add() {
