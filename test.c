@@ -603,10 +603,7 @@ void tnecs_test_world_progress() {
     lok(temp_velocity->vy == 2);
 
 
-    // for (size_t i = 2; i < ITERATIONS; i++) {
-    //     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, i, Velocity);
-    // }
-
+    tnecs_growArray_phase(test_world);
 }
 
 #ifndef __TINYC__
@@ -839,9 +836,9 @@ int main() {
     lresults();
 
     tnecs_benchmarks();
-#ifndef __TINYC__
-    flecs_benchmarks();
-#endif
+// #ifndef __TINYC__
+//     flecs_benchmarks();
+// #endif
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
