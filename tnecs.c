@@ -232,10 +232,8 @@ void tnecs_entities_create(struct tnecs_World * in_world, size_t num) {
     TNECS_DEBUG_PRINTF("tnecs_entities_create\n");
 
     size_t created = 0;
-    tnecs_entity_t current_entity;
     while (created < num) {
-        current_entity = tnecs_entity_create(in_world);
-        if (current_entity) {created++;}
+        if (tnecs_entity_create(in_world)) {created++;}
     }
 }
 
