@@ -314,8 +314,8 @@ tnecs_component_t tnecs_component_names2typeflag(struct tnecs_World * in_world, 
 tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...);
 tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, tnecs_hash_t in_hash);
 
-size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash);
 size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * in_name);
+size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash);
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const tnecs_str_t * in_name);
 
 size_t tnecs_phaseid(struct tnecs_World * in_world, tnecs_phase_t in_phase);

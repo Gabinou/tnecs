@@ -699,17 +699,9 @@ tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, tnecs
     return (TNECS_COMPONENT_ID2TYPEFLAG(tnecs_component_hash2id(in_world, in_hash)));
 }
 
-size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_typeflagid \n");
-
-    size_t id = 0;
-    for (size_t i = 0; i < in_world->num_typeflags; i++) {
-        if (in_typeflag == in_world->typeflags[i]) {
-            id = i;
-            break;
-        }
-    }
-    return (id);
+size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
+    TNECS_DEBUG_PRINTF("tnecs_system_name2id\n");
+    return (tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name)));
 }
 
 size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
@@ -723,11 +715,6 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash)
         }
     }
     return (found);
-}
-
-size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
-    TNECS_DEBUG_PRINTF("tnecs_system_name2id\n");
-    return (tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name)));
 }
 
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
@@ -749,9 +736,18 @@ size_t tnecs_phaseid(struct tnecs_World * in_world, tnecs_phase_t in_phase) {
     return (out);
 }
 
+size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_typeflag) {
+    TNECS_DEBUG_PRINTF("tnecs_typeflagid \n");
 
-
-
+    size_t id = 0;
+    for (size_t i = 0; i < in_world->num_typeflags; i++) {
+        if (in_typeflag == in_world->typeflags[i]) {
+            id = i;
+            break;
+        }
+    }
+    return (id);
+}
 
 /***************************** "DYNAMIC" ARRAYS ******************************/
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
