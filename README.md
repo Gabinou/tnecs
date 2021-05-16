@@ -12,21 +12,21 @@ Children classes inherit methods and data structure from parents.
 Any number of components can be attached to an entity.
 Entities are acted upon by systems. 
 
-In tnecs, an entity is an ```uint64_t``` index. 
-A component is user-defined ```struct```. 
-A system is a user-defined ```function```.
-All live inside the ```world```. 
-
-The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
-Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
-
 Videogame Example:
 - Enemy Entity: AIControlled component, Sprite Component, Physics Component
 - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
 - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
 
+In tnecs, an entity is an ```uint64_t``` index. 
+A component is user-defined ```struct```. 
+A system is a user-defined ```function```.
+All live inside the ```world```, the ```struct tnecs_World```. 
+
+The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
+Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
+
 ## Installation
-Add tnecs.c and tnecs.h to your source code.
+Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 
 ## Motivation
 Make the _simplest possible_ C99 ECS library, only with the _minimum necessary features_. Compile with ```tcc```.
