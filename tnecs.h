@@ -22,6 +22,7 @@
 // Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
 
 /* Un-viral MIT License
+*
 * Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
