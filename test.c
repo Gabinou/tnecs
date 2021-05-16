@@ -234,6 +234,8 @@ void tnecs_test_utilities() {
     lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
     lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
 
+    lok(TNECS_IS_SUBTYPE(4, (4 + 8 + 16)));
+    lok(!TNECS_IS_SUBTYPE(2, (4 + 8 + 16)));
 
     lok(setBits_KnR_uint64_t(1) == 1);
     lok(setBits_KnR_uint64_t(2) == 1);
@@ -580,6 +582,11 @@ void tnecs_test_component_add() {
 void tnecs_test_world_progress() {
     struct Velocity * temp_velocity;
     tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world, Position, Velocity);
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Position));
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity));
+    lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit));
+
+
 
     lok(test_world->entity_typeflags[Perignon] == (1 + 8));
     lok(test_world->num_entities_bytype[tnecs_typeflagid(test_world, 1 + 8)] == 1);
