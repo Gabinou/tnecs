@@ -92,10 +92,10 @@ TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
 TARGETS_TNECS_CLANG := $(SOURCES_TNECS:.c=_clang.o)
 TARGETS_ALL := ${TARGETS_TNECS} ${TARGETS_FLECS} ${TARGETS_TNECS_GCC} ${TARGETS_TNECS_TCC} ${TARGETS_TNECS_CLANG}
 .PHONY: compile_test
-compile_test: ${ASTYLE} ${EXEC_TCC}  ${EXEC_GCC} ${EXEC_CLANG} run_tcc run_gcc run_clang
+compile_test: ${ASTYLE} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG} run_tcc run_gcc run_clang
 
 .PHONY : cov
-cov: ; lcov -c --directory . --output-file main_coverage.info ; genhtml main_coverage.info --output-directory out
+cov:  $(TARGETS_FLECS) $(TARGETS_TNECS) $(EXEC) run ; lcov -c --no-external -d . -o main_coverage.info ; genhtml main_coverage.info -o out
 
 .PHONY : run
 run: $(EXEC); $(EXEC)
