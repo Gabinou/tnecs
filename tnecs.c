@@ -242,7 +242,7 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
     tnecs_hash_t in_hash = tnecs_hash_djb2(in_name);
     if (in_world->num_components < TNECS_COMPONENT_CAP) {
         in_world->component_hashes[in_world->num_components] = in_hash;
-        tnecs_component_t new_component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
+        tnecs_component_t new_component_flag = TNECS_COMPONENT_ID2TYPE(in_world->num_components);
         in_world->component_bytesizes[in_world->num_components] = in_bytesize;
         TNECS_DEBUG_ASSERT(in_bytesize > 0);
         in_world->component_names[in_world->num_components] = malloc(strlen(in_name) + 1);
@@ -437,7 +437,7 @@ void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t i
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity_id, tnecs_component_t in_component_id) {
     TNECS_DEBUG_PRINTF("tnecs_entity_get_component\n");
 
-    tnecs_component_t component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
+    tnecs_component_t component_flag = TNECS_COMPONENT_ID2TYPE(in_component_id);
     tnecs_component_t entity_typeflag = TNECS_ENTITY_TYPEFLAG(in_world, in_entity_id);
 
     if ((component_flag & entity_typeflag) > 0) {
@@ -607,7 +607,7 @@ void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Comp
     TNECS_DEBUG_PRINTF("tnecs_component_array_init\n");
 
     TNECS_DEBUG_ASSERT(in_component_id > 0);
-    tnecs_component_t in_type = TNECS_COMPONENT_ID2TYPEFLAG(in_component_id);
+    tnecs_component_t in_type = TNECS_COMPONENT_ID2TYPE(in_component_id);
     TNECS_DEBUG_ASSERT(in_type < (1 << in_world->num_components));
     size_t bytesize = in_world->component_bytesizes[in_component_id];
     TNECS_DEBUG_ASSERT(bytesize > 0);
@@ -688,7 +688,7 @@ tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...) {
     va_list ap;
     va_start(ap, argnum);
     for (size_t i = 0; i < argnum; i++) {
-        out += TNECS_COMPONENT_ID2TYPEFLAG(va_arg(ap, size_t));
+        out += TNECS_COMPONENT_ID2TYPE(va_arg(ap, size_t));
     }
     va_end(ap);
     return (out);
@@ -696,11 +696,11 @@ tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...) {
 
 tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
     TNECS_DEBUG_PRINTF("tnecs_component_hash2type \n");
-    return (TNECS_COMPONENT_ID2TYPEFLAG(tnecs_component_hash2id(in_world, in_hash)));
+    return (TNECS_COMPONENT_ID2TYPE(tnecs_component_hash2id(in_world, in_hash)));
 }
 
-size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
-    TNECS_DEBUG_PRINTF("tnecs_system_name2id\n");
+size_t tnecs_system_id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
+    TNECS_DEBUG_PRINTF("TNECS_SYSTEM_ID\n");
     return (tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name)));
 }
 

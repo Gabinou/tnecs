@@ -320,23 +320,19 @@ size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_type
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
 #define TNECS_COMPONENT_HASH2TYPE(world, hash) tnecs_component_hash2type(world, hash)
 #define TNECS_COMPONENT_TYPE(world, name) tnecs_component_names2typeflag(world, 1, #name)
-#define TNECS_COMPONENT_NAME2TYPEFLAG(world, name) TNECS_COMPONENT_TYPE(world, name)
 #define TNECS_COMPONENT_NAMES2TYPEFLAG(world, ...) tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
 #define TNECS_COMPONENT_IDS2TYPEFLAG(...) tnecs_component_ids2typeflag(TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_NULLMACRO, __VA_ARGS__))
-#define TNECS_COMPONENT_ID(world, name) TNECS_COMPONENT_NAME2ID(world, name)
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
-#define TNECS_COMPONENT_ID2TYPEFLAG(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_TYPE2ID(type) (type >=1 ? (tnecs_component_t)(log2(type) + 1.1f): 0) // casting to int floors
 #define TNECS_COMPONENTS_LIST(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][input->world->components_orderbytype[input->typeflag_id][tnecs_component_name2id(input->world, #component_name)]].components)
+
 #define TNECS_SYSTEM_ID(world, name) tnecs_system_hash2id(world, TNECS_HASH(#name))
 #define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]
 #define TNECS_SYSTEM_TYPEFLAG(world, name) tnecs_system_name2typeflag(world, #name)
-#define TNECS_SYSTEM_NAME2TYPEFLAG(world, name) TNECS_SYSTEM_TYPEFLAG(world, name)
-#define TNECS_SYSTEM_NAME2ID(world, name) tnecs_system_name2id(world, #name)
 #define TNECS_SYSTEM_GET_ENTITY(input, index) input->world->entities_bytype[input->typeflag_id][index]
-#define TNECS_PHASEID(world, phase) tnecs_phaseid(in_world, phase)
-#define TNECS_TYPEFLAGID(world, typeflag) tnecs_typeflagid(in_world, typeflag)
+
+#define TNECS_TYPEFLAGID(world, typeflag) tnecs_typeflagid(world, typeflag)
 
 /***************************** "DYNAMIC" ARRAYS ******************************/
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize);
