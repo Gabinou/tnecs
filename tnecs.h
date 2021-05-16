@@ -291,17 +291,17 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 void tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t num_components, tnecs_component_t typeflag, bool isNew);
 void * tnecs_entity_get_component(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t in_component_id);
 
+size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
 void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_type);
 size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_type, tnecs_component_t new_type);
-size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t new_type);
 
-bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t entity_order_new, tnecs_component_t new_flag);
-void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag);
-void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag);
 void tnecs_component_add(struct tnecs_World * in_world, tnecs_component_t in_flag);
+void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag, tnecs_component_t new_flag);
+void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_flag);
+bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, size_t entity_order_new, tnecs_component_t new_flag);
+
 void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_components, tnecs_component_t typeflag);
 void tnecs_component_array_init(struct tnecs_World * in_world, struct tnecs_Components_Array * in_array, size_t in_component_id);
-void tnecs_component_array_realloc(struct tnecs_World * in_world, tnecs_component_t entity_typeflag, tnecs_component_t id_toinit);
 
 void tnecs_system_order_switch(struct tnecs_World * in_world, tnecs_phase_t in_phase_id, size_t order1, size_t order2);
 
@@ -346,10 +346,10 @@ void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_byt
 void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize);
 void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesize);
 
-void tnecs_growArray_phase(struct tnecs_World * in_world);
 void tnecs_growArray_entity(struct tnecs_World * in_world);
 void tnecs_growArray_system(struct tnecs_World * in_world);
 void tnecs_growArray_typeflag(struct tnecs_World * in_world);
+void tnecs_growArray_phase(struct tnecs_World * in_world);
 
 #define TNECS_REALLOC(ptr, old_len, new_len, bytesize) tnecs_realloc(ptr, old_len, new_len, bytesize)
 #define TNECS_DEL(arr, elem, len, bytesize) tnecs_arrdel(arr, elem, len, bytesize)
