@@ -18,7 +18,7 @@ A system is a user-defined ```function```.
 All live inside the ```world```. 
 
 The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
-Phases are user-defined ```size_t``` and the system execution order in each phase can also be changed.
+Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
 
 Videogame Example:
 - Enemy Entity: AIControlled component, Sprite Component, Physics Component
@@ -32,7 +32,7 @@ Add tnecs.c and tnecs.h to your source code.
 Make the _simplest possible_ C99 ECS library, only with the _minimum necessary features_. Compile with ```tcc```.
 
 ## Features
-- Compatible: compiles with ```tcc```, ```gcc```, ```clang```
+- Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
 - Small: <1300 lines, 2 files.
 - Fast: see simple benchmarks in test.c
