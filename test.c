@@ -480,7 +480,7 @@ void tnecs_test_entity_creation() {
 
     test_world2->num_components = 66;
     TNECS_REGISTER_COMPONENT(test_world2, Unit2);
-    test_world2->num_components = 1;
+    test_world2->num_components = 2;
     // tnecs_register_typeflags(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
     tnecs_world_destroy(test_world2);
 

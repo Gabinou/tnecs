@@ -614,10 +614,8 @@ void tnecs_register_component(struct tnecs_World * in_world, const char * in_nam
         tnecs_component_t new_component_flag = TNECS_COMPONENT_ID2TYPEFLAG(in_world->num_components);
         in_world->component_bytesizes[in_world->num_components] = in_bytesize;
         TNECS_DEBUG_ASSERT(in_bytesize > 0);
-        // char * temp_str = ;
         in_world->component_names[in_world->num_components] = malloc(strlen(in_name) + 1);
         strncpy(in_world->component_names[in_world->num_components], in_name, strlen(in_name) + 1);
-        // free(temp_str);
         size_t typeflag_id = tnecs_register_typeflag(in_world, 1, new_component_flag);
         in_world->num_components++;
     } else {
