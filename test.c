@@ -161,8 +161,8 @@ void SystemPosition2(struct tnecs_System_Input * in_input) {
     struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     for (int i = 0; i < in_input->num_entities; i++) {
         // printf("i %d \n", i);
-        p[i].x += 1;
-        p[i].y += 1;
+        // p[i].x += 1;
+        // p[i].y += 1;
     }
 }
 
@@ -171,8 +171,8 @@ void SystemUnit2(struct tnecs_System_Input * in_input) {
     struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int i = 0; i < in_input->num_entities; i++) {
         // printf("i %d \n", i);
-        v[i].hp += 1;
-        v[i].str += 1;
+        // v[i].hp += 1;
+        // v[i].str += 1;
     }
 }
 
@@ -410,13 +410,12 @@ void tnecs_test_entity_creation() {
     lok(Silou != Pirou);
     tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world, Position, Unit);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
+    lok(temp_position != NULL);
     if (temp_position != NULL) {
         lok(temp_position->x == 0);
         lok(temp_position->y == 0);
         temp_position->x = 3;
         temp_position->y = 6;
-    } else {
-        lok(false);
     }
 
     lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
@@ -427,11 +426,10 @@ void tnecs_test_entity_creation() {
     temp_sprite = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_sprite == NULL);
     temp_unit = TNECS_GET_COMPONENT(test_world, Perignon, Unit);
+    lok(temp_unit != NULL);
     if (temp_unit != NULL) {
         lok(temp_unit->hp  == 0);
         lok(temp_unit->str == 0);
-    } else {
-        lok(false);
     }
 
     tnecs_entity_t Chasse = tnecs_entity_create(test_world);
@@ -880,9 +878,9 @@ int main() {
     lresults();
 
     tnecs_benchmarks();
-// #ifndef __TINYC__
-//     flecs_benchmarks();
-// #endif
+#ifndef __TINYC__
+    flecs_benchmarks();
+#endif
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
