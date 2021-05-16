@@ -700,13 +700,9 @@ tnecs_component_t tnecs_component_hash2type(struct tnecs_World * in_world, tnecs
 }
 
 size_t tnecs_system_id(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
-    TNECS_DEBUG_PRINTF("TNECS_SYSTEM_ID\n");
-    return (tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name)));
-}
+    TNECS_DEBUG_PRINTF("tnecs_system_id\n");
 
-size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash) {
-    TNECS_DEBUG_PRINTF("tnecs_system_hash2id\n");
-
+    tnecs_hash_t in_hash = tnecs_hash_djb2(in_name);
     size_t found = 0;
     for (size_t i = 0; i < in_world->num_systems; i++) {
         if (in_world->system_hashes[i] == in_hash) {
@@ -719,7 +715,7 @@ size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash)
 
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const tnecs_str_t * in_name) {
     TNECS_DEBUG_PRINTF("tnecs_system_name2typeflag\n");
-    size_t id = tnecs_system_hash2id(in_world, tnecs_hash_djb2(in_name));
+    size_t id = tnecs_system_id(in_world, in_name);
     return (in_world->system_typeflags[id]);
 }
 
