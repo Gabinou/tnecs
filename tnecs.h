@@ -256,8 +256,8 @@ tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world);
 tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 void tnecs_entities_create(struct tnecs_World * in_world, size_t num);
 void tnecs_entities_create_windices(struct tnecs_World * in_world, size_t num, tnecs_entity_t * in_entities);
-
 tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, size_t argnum, ...);
+
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 
 #define TNECS_CHOOSE_ENTITY_CREATE(_1,_2,NAME,...) NAME
