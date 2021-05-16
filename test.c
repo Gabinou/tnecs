@@ -459,32 +459,47 @@ void tnecs_test_entity_creation() {
     lok(Pierre == test_world->entities[Pierre]);
 
     TNECS_ENTITIES_CREATE(test_world, 100);
-    // printf("test_world->entity_next %d \n", test_world->entity_next);
     lok(test_world->entity_next == 105);
     lok(TNECS_ENTITY_CREATE(test_world, 105));
     lok(!TNECS_ENTITY_CREATE(test_world, 105));
     lok(tnecs_entity_create(test_world));
     lok(test_world->entity_next == 107);
-    // tnecs_entities_create(test_world, 100);
 
     tnecs_entity_t in_ents[2] = {3001, 3002};
     TNECS_ENTITIES_CREATE(test_world, 2, in_ents);
     lok(test_world->entities[in_ents[0]] == in_ents[0]);
     lok(test_world->entities[in_ents[1]] == in_ents[1]);
 
+
+    // MORE TESTS FOR COVERAGE
     struct tnecs_World * test_world2 = tnecs_world_genesis();
 
     test_world2->num_typeflags = TNECS_INITIAL_SYSTEM_LEN;
-    // test_world2->len_typeflags = 1;
     TNECS_REGISTER_COMPONENT(test_world2, Position2);
 
+    // Coverage for if in tnecs_register_component
     test_world2->num_components = 66;
     TNECS_REGISTER_COMPONENT(test_world2, Unit2);
     test_world2->num_components = 2;
-    // tnecs_register_typeflags(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
+    test_world2->num_systems_byphase[0] = TNECS_INITIAL_PHASE_LEN;
     tnecs_world_destroy(test_world2);
 
 
+    // Coverage for if in tnecs_register_system
+    test_world2 = tnecs_world_genesis();
+    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+    test_world2->num_systems_byphase[0] = TNECS_INITIAL_PHASE_LEN;
+    TNECS_REGISTER_SYSTEM(test_world2, SystemMovePhase1, Position2);
+    tnecs_world_destroy(test_world2);
+
+    // Coverage for "for" in tnecs_component_del
+    test_world2 = tnecs_world_genesis();
+    TNECS_REGISTER_COMPONENT(test_world2, Unit2);
+    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+    tnecs_entity_t Erwin = TNECS_ENTITY_CREATE_WCOMPONENTS(test_world2, Position2, Unit2);
+
+    tnecs_component_del(test_world2, Erwin, (1 + 2));
+    tnecs_world_destroy(test_world2);
 }
 
 void tnecs_test_component_add() {
