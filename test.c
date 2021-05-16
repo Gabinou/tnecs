@@ -891,7 +891,7 @@ int main() {
 
     tnecs_benchmarks();
 #ifndef __TINYC__
-    flecs_benchmarks();
+    flecs_benchmarks(); // crashes when optimization above -O0
 #endif
     tnecs_world_destroy(test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
