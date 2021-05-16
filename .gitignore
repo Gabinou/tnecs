@@ -5,7 +5,7 @@
 !.gitignore
 !.gitattributes
 !makefile
-!license.txt
-!flecs_licence.txt
+!LICENSE.txt
+!flecs_LICENSE.txt
 !notes.txt
 !readme.md

@@ -22,6 +22,7 @@
 // Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
 
 /* Un-viral MIT License
+*
 * Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -69,13 +70,6 @@ extern "C" {
 #define TNECS_DEBUG_PRINTF(...) do {printf(__VA_ARGS__);}while(0)
 #else
 #define TNECS_DEBUG_PRINTF(...) (void)0
-#endif
-
-#define TNECS_DEBUG_AS // TNECS_DEBUG_ASIS are ignored if undefined
-#ifdef TNECS_DEBUG_AS
-#define TNECS_DEBUG_ASIS(...) do {__VA_ARGS__;}while(0)
-#else
-#define TNECS_DEBUG_ASIS(...) (void)0
 #endif
 
 /********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
@@ -314,7 +308,6 @@ size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * i
 size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash);
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const tnecs_str_t * in_name);
 
-size_t tnecs_phaseid(struct tnecs_World * in_world, tnecs_phase_t in_phase);
 size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_typeflag);
 
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
