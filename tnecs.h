@@ -72,13 +72,6 @@ extern "C" {
 #define TNECS_DEBUG_PRINTF(...) (void)0
 #endif
 
-#define TNECS_DEBUG_AS // TNECS_DEBUG_ASIS are ignored if undefined
-#ifdef TNECS_DEBUG_AS
-#define TNECS_DEBUG_ASIS(...) do {__VA_ARGS__;}while(0)
-#else
-#define TNECS_DEBUG_ASIS(...) (void)0
-#endif
-
 /********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
 //  Modified from: https://gist.github.com/ForeverZer0/0a4f80fc02b96e19380ebb7a3debbee5
 #if defined(__linux)
@@ -315,7 +308,6 @@ size_t tnecs_system_name2id(struct tnecs_World * in_world, const tnecs_str_t * i
 size_t tnecs_system_hash2id(struct tnecs_World * in_world, tnecs_hash_t in_hash);
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World * in_world, const tnecs_str_t * in_name);
 
-size_t tnecs_phaseid(struct tnecs_World * in_world, tnecs_phase_t in_phase);
 size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_typeflag);
 
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
