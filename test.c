@@ -604,14 +604,18 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase4, 4, Velocity);
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 2, Velocity);
     TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Position);
-    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Unit);
+    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 1, Unit);
     lok(test_world->num_phases == 5);
     lok(test_world->systems_byphase[1][0] == &SystemMovePhase1);
-    lok(test_world->systems_byphase[1][1] == &SystemMovePhase1);
+    lok(test_world->systems_byphase[1][1] == &SystemMovePhase2);
     lok(test_world->systems_byphase[2][0] == &SystemMovePhase2);
     lok(test_world->systems_byphase[4][0] == &SystemMovePhase4);
-    // tnecs_system_order_switch(test_world, 1, 0, 1);
-    // tnecs_system_order_switch(test_world, 1, 0, 1);
+    tnecs_system_order_switch(test_world, 1, 0, 1);
+    lok(test_world->systems_byphase[1][0] == &SystemMovePhase2);
+    lok(test_world->systems_byphase[1][1] == &SystemMovePhase1);
+    tnecs_system_order_switch(test_world, 1, 0, 1);
+    lok(test_world->systems_byphase[1][0] == &SystemMovePhase1);
+    lok(test_world->systems_byphase[1][1] == &SystemMovePhase2);
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
@@ -622,10 +626,9 @@ void tnecs_test_world_progress() {
     lok(test_world->num_systems_torun == 5);
     lok(test_world->systems_torun[0] == &SystemMove);
     lok(test_world->systems_torun[1] == &SystemMovePhase1);
-    lok(test_world->systems_torun[2] == &SystemMovePhase1);
+    lok(test_world->systems_torun[2] == &SystemMovePhase2);
     lok(test_world->systems_torun[3] == &SystemMovePhase2);
     lok(test_world->systems_torun[4] == &SystemMovePhase4);
-    lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
     lok(test_world->systems_torun[0] != NULL);
     lok(test_world->systems_torun[1] != NULL);
     lok(test_world->systems_torun[2] != NULL);
@@ -641,10 +644,9 @@ void tnecs_test_world_progress() {
     lok(test_world->num_systems_torun == 5);
     lok(test_world->systems_torun[0] == &SystemMove);
     lok(test_world->systems_torun[1] == &SystemMovePhase1);
-    lok(test_world->systems_torun[2] == &SystemMovePhase1);
+    lok(test_world->systems_torun[2] == &SystemMovePhase2);
     lok(test_world->systems_torun[3] == &SystemMovePhase2);
     lok(test_world->systems_torun[4] == &SystemMovePhase4);
-    lok(test_world->systems_torun[1] == test_world->systems_torun[2]);
     lok(test_world->systems_torun[0] != NULL);
     lok(test_world->systems_torun[1] != NULL);
     lok(test_world->systems_torun[2] != NULL);
