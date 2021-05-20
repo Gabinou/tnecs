@@ -623,15 +623,12 @@ void tnecs_system_order_switch(struct tnecs_World * in_world, tnecs_phase_t in_p
     TNECS_DEBUG_PRINTF("tnecs_system_order_switch\n");
 
     void (* systems_temp)(struct tnecs_System_Input *);
+    TNECS_DEBUG_ASSERT(in_world->phases[in_phase_id]);
     TNECS_DEBUG_ASSERT(in_world->systems_byphase[in_phase_id][order1]);
     TNECS_DEBUG_ASSERT(in_world->systems_byphase[in_phase_id][order2]);
-    TNECS_DEBUG_PRINTF("in_world->systems_byphase[in_phase_id][order1] %p \n", in_world->systems_byphase[in_phase_id][order1]);
-    TNECS_DEBUG_PRINTF("in_world->systems_byphase[in_phase_id][order2] %p \n", in_world->systems_byphase[in_phase_id][order2]);
     systems_temp = in_world->systems_byphase[in_phase_id][order1];
     in_world->systems_byphase[in_phase_id][order1] = in_world->systems_byphase[in_phase_id][order2];
     in_world->systems_byphase[in_phase_id][order2] = systems_temp;
-    TNECS_DEBUG_PRINTF("in_world->systems_byphase[in_phase_id][order1] %p \n", in_world->systems_byphase[in_phase_id][order1]);
-    TNECS_DEBUG_PRINTF("in_world->systems_byphase[in_phase_id][order2] %p \n", in_world->systems_byphase[in_phase_id][order2]);
 
 }
 
