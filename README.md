@@ -28,9 +28,6 @@ Phases are user-defined ```size_t``` and system execution order is first-come fi
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 
-## To do
-- More tests for system order switching 
-
 ## Motivation
 Make the _simplest possible_ C99 ECS library, only with the _minimum necessary features_. Compile with ```tcc```.
 
