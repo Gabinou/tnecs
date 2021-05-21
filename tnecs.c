@@ -326,6 +326,8 @@ tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world) {
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
     in_world->entities[out] = out;
     tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
+    TNECS_DEBUG_ASSERT(in_world->entities[out] == out);
+
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[TNECS_NULL][in_world->entity_orders[out]] == out);
     return (out);
 }
@@ -374,7 +376,7 @@ tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, si
     tnecs_entity_add_components(in_world, new_entity, argnum, typeflag, true);
     size_t typeflag_id = TNECS_TYPEFLAGID(in_world, typeflag);
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_id][in_world->entity_orders[new_entity]] == new_entity);
-
+    TNECS_DEBUG_ASSERT(in_world->entities[new_entity] = new_entity);
     return (new_entity);
 }
 
@@ -393,27 +395,30 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 
     TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
     // Deletes associated components
-    for (size_t corder = 0; corder < in_world->num_components_bytype[entity_typeflag_id]; corder++) {
-        component_id = in_world->components_idbytype[entity_typeflag_id][corder];
-        component_bytesize = in_world->component_bytesizes[component_id];
-        temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[entity_typeflag_id][corder].components);
-        in_world->components_bytype[entity_typeflag_id][corder].components = tnecs_arrdel(temp_component_bytesptr, entity_order, in_world->len_entities_bytype[entity_typeflag_id], component_bytesize);
-    }
+    // for (size_t corder = 0; corder < in_world->num_components_bytype[entity_typeflag_id]; corder++) {
+    //     component_id = in_world->components_idbytype[entity_typeflag_id][corder];
+    //     component_bytesize = in_world->component_bytesizes[component_id];
+    //     temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[entity_typeflag_id][corder].components);
+    //     in_world->components_bytype[entity_typeflag_id][corder].components = tnecs_arrdel(temp_component_bytesptr, entity_order, in_world->len_entities_bytype[entity_typeflag_id], component_bytesize);
+    // }
     // Entity removed from entities_bytype, entity_typeflags, entities...
-    TNECS_DEBUG_ASSERT(in_world->len_entities_bytype[entity_typeflag_id] >= in_entity);
+    TNECS_DEBUG_ASSERT(in_world->len_entities_bytype[entity_typeflag_id] >= entity_order);
     TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
-
     tnecs_entitiesbytype_del(in_world, in_entity, entity_typeflag);
     in_world->entities[in_entity] = TNECS_NULL;
     in_world->entity_typeflags[in_entity] = TNECS_NULL;
     in_world->entity_orders[in_entity] = TNECS_NULL;
-    if ((in_world->num_entities_open + 1) >= in_world->len_entities_open) {
-        size_t old_len = in_world->len_entities_open;
-        in_world->len_entities_open *= TNECS_ARRAY_GROWTH_FACTOR;
-        in_world->entities_open = tnecs_realloc(in_world->entities_open, old_len, in_world->len_entities_open, sizeof(*in_world->entities_open));
-    }
-    in_world->entities_open[in_world->num_entities_open++] = in_entity;
+    // if ((in_world->num_entities_open + 1) >= in_world->len_entities_open) {
+    //     size_t old_len = in_world->len_entities_open;
+    //     in_world->len_entities_open *= TNECS_ARRAY_GROWTH_FACTOR;
+    //     in_world->entities_open = tnecs_realloc(in_world->entities_open, old_len, in_world->len_entities_open, sizeof(*in_world->entities_open));
+    // }
+    // in_world->entities_open[in_world->num_entities_open++] = in_entity;
 
+    TNECS_DEBUG_ASSERT(in_world->entities[in_entity] == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(in_world->entity_typeflags[in_entity] == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(in_world->entity_orders[in_entity] == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(in_world->entity_orders[entity_order] != in_entity);
 }
 
 /*****************************************************************************/
@@ -478,6 +483,8 @@ void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_e
     printf("tnecs_entitiesbytype_del\n");
 
     TNECS_DEBUG_ASSERT(in_entity);
+    printf("in_world->entities[in_entity] %d \n", in_world->entities[in_entity]);
+    TNECS_DEBUG_ASSERT(in_world->entities[in_entity] == in_entity);
     TNECS_DEBUG_ASSERT(in_entity < in_world->len_entities);
     size_t typeflag_old_id = tnecs_typeflagid(in_world, typeflag_old);
     TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[typeflag_old_id] > 0);
