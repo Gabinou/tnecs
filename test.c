@@ -819,9 +819,7 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
-    // TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
-    TNECS_REGISTER_SYSTEM(bench_world, SystemPosition2, Position2);
-    // TNECS_REGISTER_SYSTEM(bench_world, SystemUnit2, Unit2);
+    TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
     t_1 = get_us();
 
     dupprintf(globalf, "tnecs: System Registration \n");
@@ -874,11 +872,7 @@ void tnecs_benchmarks() {
     for (size_t i = 0; i < ITERATIONS; i++) {
         tnecs_entities2[i] = TNECS_ENTITY_CREATE_WCOMPONENTS(bench_world, Position2, Unit2);
         TNECS_DEBUG_ASSERT(bench_world->entities[tnecs_entities2[i]] == tnecs_entities2[i]);
-        printf("i %d %d\n", i, tnecs_entities2[i]);
-        // assert(bench_world->);
     }
-    printf("bench_world->len_entities_bytype[3] %d \n", bench_world->len_entities_bytype[3]);
-    printf("bench_world->num_entities_bytype[3] %d \n", bench_world->num_entities_bytype[3]);
     TNECS_DEBUG_ASSERT(bench_world->len_entities_bytype[3] == 32768);
     TNECS_DEBUG_ASSERT(bench_world->num_entities_bytype[3] == 19999);
 
@@ -888,7 +882,6 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     for (size_t i = 0; i < ITERATIONS; i++) {
-        printf("i %d %d\n", i, tnecs_entities2[i]);
         TNECS_DEBUG_ASSERT(bench_world->entities[tnecs_entities2[i]] == tnecs_entities2[i]);
         tnecs_entity_destroy(bench_world, tnecs_entities2[i]);
         TNECS_DEBUG_ASSERT(bench_world->num_entities_bytype[3] == (19999 - i - 1));
