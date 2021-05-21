@@ -394,13 +394,8 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     void * temp_component_bytesptr;
 
     TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
-    // Deletes associated components
-    // for (size_t corder = 0; corder < in_world->num_components_bytype[entity_typeflag_id]; corder++) {
-    //     component_id = in_world->components_idbytype[entity_typeflag_id][corder];
-    //     component_bytesize = in_world->component_bytesizes[component_id];
-    //     temp_component_bytesptr = (tnecs_byte_t *)(in_world->components_bytype[entity_typeflag_id][corder].components);
-    //     in_world->components_bytype[entity_typeflag_id][corder].components = tnecs_arrdel(temp_component_bytesptr, entity_order, in_world->len_entities_bytype[entity_typeflag_id], component_bytesize);
-    // }
+    // Deletes associated components THIS IS SUPER BUGGY
+    tnecs_component_del(in_world, in_entity, entity_typeflag);
     // Entity removed from entities_bytype, entity_typeflags, entities...
     TNECS_DEBUG_ASSERT(in_world->len_entities_bytype[entity_typeflag_id] >= entity_order);
     TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
@@ -408,12 +403,12 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     in_world->entities[in_entity] = TNECS_NULL;
     in_world->entity_typeflags[in_entity] = TNECS_NULL;
     in_world->entity_orders[in_entity] = TNECS_NULL;
-    // if ((in_world->num_entities_open + 1) >= in_world->len_entities_open) {
-    //     size_t old_len = in_world->len_entities_open;
-    //     in_world->len_entities_open *= TNECS_ARRAY_GROWTH_FACTOR;
-    //     in_world->entities_open = tnecs_realloc(in_world->entities_open, old_len, in_world->len_entities_open, sizeof(*in_world->entities_open));
-    // }
-    // in_world->entities_open[in_world->num_entities_open++] = in_entity;
+    if ((in_world->num_entities_open + 1) >= in_world->len_entities_open) {
+        size_t old_len = in_world->len_entities_open;
+        in_world->len_entities_open *= TNECS_ARRAY_GROWTH_FACTOR;
+        in_world->entities_open = tnecs_realloc(in_world->entities_open, old_len, in_world->len_entities_open, sizeof(*in_world->entities_open));
+    }
+    in_world->entities_open[in_world->num_entities_open++] = in_entity;
 
     TNECS_DEBUG_ASSERT(in_world->entities[in_entity] == TNECS_NULL);
     TNECS_DEBUG_ASSERT(in_world->entity_typeflags[in_entity] == TNECS_NULL);
