@@ -389,13 +389,9 @@ void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entit
     TNECS_DEBUG_ASSERT(entity_typeflag >= 0);
     size_t entity_typeflag_id = TNECS_TYPEFLAGID(in_world, entity_typeflag);
     size_t entity_order = in_world->entity_orders[in_entity];
-
-    size_t component_id, component_bytesize;
-    void * temp_component_bytesptr;
-
     TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
-    // Deletes associated components THIS IS SUPER BUGGY
     tnecs_component_del(in_world, in_entity, entity_typeflag);
+
     // Entity removed from entities_bytype, entity_typeflags, entities...
     TNECS_DEBUG_ASSERT(in_world->len_entities_bytype[entity_typeflag_id] >= entity_order);
     TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[entity_typeflag_id] > 0);
@@ -475,10 +471,8 @@ size_t tnecs_entitiesbytype_add(struct tnecs_World * in_world, tnecs_entity_t in
 
 void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_old) {
     TNECS_DEBUG_PRINTF("tnecs_entitiesbytype_del\n");
-    printf("tnecs_entitiesbytype_del\n");
 
     TNECS_DEBUG_ASSERT(in_entity);
-    printf("in_world->entities[in_entity] %d \n", in_world->entities[in_entity]);
     TNECS_DEBUG_ASSERT(in_world->entities[in_entity] == in_entity);
     TNECS_DEBUG_ASSERT(in_entity < in_world->len_entities);
     size_t typeflag_old_id = tnecs_typeflagid(in_world, typeflag_old);
@@ -487,20 +481,14 @@ void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_e
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_old_id][entity_order_old] == in_entity);
     TNECS_DEBUG_ASSERT(entity_order_old < in_world->len_entities_bytype[typeflag_old_id]);
 
-    printf("typeflag_old_id, typeflag_old %d, %d \n", typeflag_old_id, typeflag_old);
-    printf("in_world->entities_bytype[typeflag_old_id][entity_order_old] %d \n", in_world->entities_bytype[typeflag_old_id][entity_order_old]);
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_old_id][entity_order_old] == in_entity);
-
 
     tnecs_entity_t top_entity = in_world->entities_bytype[typeflag_old_id][--in_world->num_entities_bytype[typeflag_old_id]];
     size_t top_entity_order = in_world->entity_orders[top_entity];
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_old_id][top_entity_order] == top_entity);
 
-    // tnecs_arrdel_scramble(in_world->entities_bytype[typeflag_old_id], entity_order_old, in_world->len_entities_bytype[typeflag_old_id], sizeof(*in_world->entities_bytype[typeflag_old_id]));
     if (top_entity != in_entity) {
-
         in_world->entities_bytype[typeflag_old_id][top_entity_order] = TNECS_NULL;
-
         in_world->entity_orders[top_entity] = entity_order_old;
         in_world->entities_bytype[typeflag_old_id][entity_order_old] = top_entity;
         TNECS_DEBUG_ASSERT(in_world->entities_bytype[typeflag_old_id][in_world->entity_orders[top_entity]] == top_entity);
@@ -508,17 +496,6 @@ void tnecs_entitiesbytype_del(struct tnecs_World * in_world, tnecs_entity_t in_e
 
     in_world->entity_orders[in_entity] = TNECS_NULL;
     in_world->entity_typeflags[in_entity] = TNECS_NULL;
-    printf("tnecs_entitiesbytype_del OUT\n");
-    // in_world->entities_bytype[typeflag_old_id][entity_order_old] = top_entity;
-
-    // tnecs_entity_t top_entity = in_world->entities_bytype[typeflag_old_id][--in_world->num_entities_bytype[typeflag_old_id]];
-    // in_world->entities_bytype[typeflag_old_id][entity_order_old] = top_entity;
-    // in_world->entity_orders[top_entity] = entity_order_old;
-    // in_world->entity_orders[in_entity] = TNECS_NULL;
-    // in_world->entity_typeflags[in_entity] = TNECS_NULL;
-
-
-
 }
 
 size_t tnecs_entitiesbytype_migrate(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t typeflag_old, tnecs_component_t typeflag_new) {
@@ -808,11 +785,8 @@ void * tnecs_arrdel(void * arr, size_t elem, size_t len, size_t bytesize) {
 
 void * tnecs_arrdel_scramble(void * arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_arrdel_scramble\n");
-    printf("tnecs_arrdel_scramble\n");
-
     memcpy(arr + (elem * bytesize), arr + ((len - 1) * bytesize), bytesize);
     memset(arr + ((len - 1) * bytesize), 0, bytesize);
-
     return (arr);
 }
 
