@@ -171,8 +171,8 @@ void SystemUnit2(struct tnecs_System_Input * in_input) {
     struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int i = 0; i < in_input->num_entities; i++) {
         // printf("i %d \n", i);
-        // v[i].hp += 1;
-        // v[i].str += 1;
+        v[i].hp += 1;
+        v[i].str += 1;
     }
 }
 
@@ -819,9 +819,9 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
-    TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
+    // TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
     TNECS_REGISTER_SYSTEM(bench_world, SystemPosition2, Position2);
-    TNECS_REGISTER_SYSTEM(bench_world, SystemUnit2, Unit2);
+    // TNECS_REGISTER_SYSTEM(bench_world, SystemUnit2, Unit2);
     t_1 = get_us();
 
     dupprintf(globalf, "tnecs: System Registration \n");
@@ -900,7 +900,7 @@ void tnecs_benchmarks() {
         tnecs_world_step(bench_world, 1);
     }
     t_1 = get_us();
-    dupprintf(globalf, "tnecs: World Steptime: %d iterations %d entities \n", fps_iterations, ITERATIONS);
+    dupprintf(globalf, "tnecs: World Step time: %d iterations %d entities \n", fps_iterations, ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
     dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
     dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
