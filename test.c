@@ -179,8 +179,7 @@ void SystemUnit2(struct tnecs_System_Input * in_input) {
 /*****************************TEST GLOBALS*****************************/
 FILE * globalf;
 /*****************************TEST CONSTANTS***************************/
-#define ITERATIONS 100000
-#define ITERATIONS_SMALL 1000
+#define ITERATIONS 10000
 #define ARRAY_LEN 100
 size_t fps_iterations = 10;
 
@@ -888,7 +887,6 @@ void tnecs_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Component Get time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-
 
     t_0 = get_us();
     for (size_t i = 0; i < fps_iterations; i++) {

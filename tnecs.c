@@ -60,7 +60,6 @@ struct tnecs_World * tnecs_world_genesis() {
 
 void tnecs_world_destroy(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_world_destroy\n");
-
     for (size_t i = 0; i < in_world->len_phases; i++) {
         free(in_world->systems_byphase[i]);
         free(in_world->systems_idbyphase[i]);
@@ -369,14 +368,9 @@ tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, si
         typeflag += tnecs_component_hash2type(in_world, current_hash);
     }
     va_end(ap);
+
     tnecs_entity_t new_entity = tnecs_entity_create(in_world);
-    size_t typeflag_id = tnecs_register_typeflag(in_world, argnum, typeflag);
-    tnecs_component_add(in_world, new_entity);
-    TNECS_DEBUG_ASSERT(in_world->components_bytype[typeflag_id][0].components != NULL);
-    tnecs_entitiesbytype_migrate(in_world, new_entity, TNECS_NULL, typeflag);
-    typeflag_id = tnecs_typeflagid(in_world, typeflag);
-    TNECS_DEBUG_ASSERT(in_world->entity_typeflags[new_entity] == typeflag);
-    TNECS_DEBUG_ASSERT(in_world->num_entities_bytype[typeflag_id] > 0);
+    tnecs_entity_add_components(in_world, new_entity, argnum, typeflag, true); 
     return (new_entity);
 }
 
