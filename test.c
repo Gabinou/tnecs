@@ -591,8 +591,6 @@ void tnecs_test_world_progress() {
     lok(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity));
     lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit));
 
-
-
     lok(test_world->entity_typeflags[Perignon] == (1 + 8));
     lok(test_world->num_entities_bytype[tnecs_typeflagid(test_world, 1 + 8)] == 1);
 
@@ -701,7 +699,20 @@ void flecs_benchmarks() {
     }
     t_1 = get_us();
     dupprintf(globalf, "flecs: Entity Creation time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);    
+
+    t_0 = get_us();
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        ecs_delete(world, flecs_entities[i]);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "flecs: Entity Destruction time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    for (size_t i = 0; i < ITERATIONS; i++) {
+        flecs_temp_ent = ecs_new(world, 0);
+        flecs_entities[i] = flecs_temp_ent;
+    }
 
     t_0 = get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
@@ -750,7 +761,7 @@ void flecs_benchmarks() {
 
     }
     t_1 = get_us();
-    dupprintf(globalf, "flecs: world progress: %d iterations \n", fps_iterations);
+    dupprintf(globalf, "flecs: World Step time: %d iterations \n", fps_iterations);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
     dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
     dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
@@ -758,13 +769,13 @@ void flecs_benchmarks() {
     t_0 = get_us();
     ecs_fini(world);
     t_1 = get_us();
-    dupprintf(globalf, "flecs: world deinit\n");
+    dupprintf(globalf, "flecs: World Destroy time: \n");
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 }
 #endif
 
 void tnecs_other_benchmarks() {
-    dupprintf(globalf, "\n Other tnecs benchmarks\n");
+    dupprintf(globalf, "\nOther tnecs benchmarks\n");
     double t_0, t_1;
     
     uint64_t res_hash;
@@ -849,6 +860,23 @@ void tnecs_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs: Entity Add Component time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+    
+
+    t_0 = get_us();
+    for (size_t i = 2; i < ITERATIONS; i++) {
+        TNECS_ENTITY_CREATE_WCOMPONENTS(bench_world, Position2);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: Entity Creation wcomponent time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+
+    t_0 = get_us();
+    for (size_t i = 2; i < ITERATIONS; i++) {
+        TNECS_ENTITY_CREATE_WCOMPONENTS(bench_world, Position2, Unit2);
+    }
+    t_1 = get_us();
+    dupprintf(globalf, "tnecs: Entity Creation wcomponents (2) time: %d iterations \n", ITERATIONS);
+    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     struct Unit2 * unit2temp;
     struct Position2 * position2temp;
@@ -867,7 +895,7 @@ void tnecs_benchmarks() {
         tnecs_world_step(bench_world, 1);
     }
     t_1 = get_us();
-    dupprintf(globalf, "tnecs: world progress: %d iterations %d entities \n", fps_iterations, ITERATIONS);
+    dupprintf(globalf, "tnecs: World Steptime: %d iterations %d entities \n", fps_iterations, ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
     dupprintf(globalf, "%d frame %d fps \n", fps_iterations, 60);
     dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
@@ -875,7 +903,7 @@ void tnecs_benchmarks() {
     t_0 = get_us();
     tnecs_world_destroy(bench_world);
     t_1 = get_us();
-    dupprintf(globalf, "tnecs: world destruction: \n", ITERATIONS);
+    dupprintf(globalf, "tnecs: World Destroy time: \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
 }
