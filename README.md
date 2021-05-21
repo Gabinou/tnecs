@@ -20,7 +20,7 @@ Videogame Example:
 In tnecs, an entity is an ```uint64_t``` index. 
 A component is user-defined ```struct```. 
 A system is a user-defined ```function```.
-All live inside the ```world```. 
+All live inside the ```world```, the ```struct tnecs_World```. 
 
 The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
 Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
