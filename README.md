@@ -1,3 +1,8 @@
+<div align="center">
+    ![tnecs](logo.png "tnecs logo")
+</div>
+
+
 # tnecs (Tiny nECS) 
 
 Tiny C99 Entity-Component-System (ECS) library. [Read the Tutorial](https://gitlab.com/Gabinou/tnecs/-/blob/master/TUTORIAL.md).
@@ -24,9 +29,6 @@ All live inside the ```world```, the ```struct tnecs_World```.
 
 The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
 Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
-
-## To Do
-- Logo
 
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.
