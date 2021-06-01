@@ -1,6 +1,8 @@
 *.*
 !*.h
 !*.c
+!*.aseprite
+!*.png
 !*.md
 !.gitignore
 !.gitattributes
