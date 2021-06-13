@@ -598,10 +598,10 @@ void tnecs_test_world_progress() {
     temp_position->x = 100;
     temp_position->y = 200;
 
-    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase4, 4, Velocity);
-    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 2, Velocity);
-    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase1, 1, Position);
-    TNECS_REGISTER_SYSTEM_WPHASE(test_world, SystemMovePhase2, 1, Unit);
+    TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(test_world, SystemMovePhase4, 4, 1, Velocity);
+    TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(test_world, SystemMovePhase2, 2, 1, Velocity);
+    TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(test_world, SystemMovePhase1, 1, 1, Position);
+    TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(test_world, SystemMovePhase2, 1, 1, Unit);
     lok(test_world->num_phases == 5);
     lok(test_world->systems_byphase[1][0] == &SystemMovePhase1);
     lok(test_world->systems_byphase[1][1] == &SystemMovePhase2);

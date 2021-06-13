@@ -7,8 +7,8 @@ The world contains everything tnecs needs.
 
 ## Entity creation/destruction
 ```c
-    tnecs_entity_t Silou = tnecs_new_entity(world);
-    tnecs_entity_t Pirou = TNECS_NEW_ENTITY(world);
+    tnecs_entity_t Silou = tnecs_entity_create(world);
+    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(world);
 ```
 ```tnecs_entity_t``` is a ```uint64_t``` index. 
 
@@ -16,18 +16,18 @@ Entity 0 is always reserved for NULL.
 
 Entities can be created with an index:
 ```c
-    tnecs_entity_t Silou = tnecs_new_entity_windex(world, 100);
-    tnecs_entity_t Pirou = TNECS_NEW_ENTITY(world, 100);
+    tnecs_entity_t Silou = tnecs_entity_create_windex(world, 100);
+    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(world, 100);
 ```
 ```TNECS_NEW_ENTITY``` is an overloaded macro.
 
 Entities can be created in batches, with indices:
 ```c
-    TNECS_NEW_ENTITIES(world, 100);
-    tnecs_new_entities(world, 100);
+    TNECS_ENTITIES_CREATE(world, 100);
+    tnecs_entities_create(world, 100);
     tnecs_entity_t to_create[100];
-    TNECS_NEW_ENTITIES(world, 100, to_create);
-    tnecs_new_entities_windex(world, 100, to_create);
+    TNECS_ENTITIES_CREATE(world, 100, to_create);
+    tnecs_entities_create_windices(world, 100, to_create);
 ```
 ```TNECS_NEW_ENTITIES``` is also an overloaded macro.
 
@@ -90,7 +90,7 @@ By default, all component bits are set to zero with ```calloc```.
 
 Entities can be created with any number of components directly with this variadic macro: 
 ```c
-    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(world, Position, Unit);
+    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(world, Position, Unit);
 ```
 ```TNECS_NEW_ENTITY_WCOMPONENTS``` wraps around the variadic function ```tnecs_new_entity_wcomponents``` by counting the number of input components and hashing their names. So you can also write, if you wish:
 
@@ -114,6 +114,8 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
     TNECS_REGISTER_SYSTEM(world, SystemMove, Position, Unit); 
 ```
 System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
+
+By default, systems are inclusive, meaning thet entities with additional components to the system's are also run by it. If the system is set to exclusive, only the entities that have only exactly the systems components are ran.
 
 Phases are greater than zero ```size_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
