@@ -27,17 +27,10 @@ A component is user-defined ```struct```.
 A system is a user-defined ```function```.
 All live inside the ```world```, the ```struct tnecs_World```. 
 
-The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
-Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
-
-## To Do:
-- Exclusive/Inclusive systems?
-Pros:
-- Simplify user interface, no need to register same system multiple time for different component combinations
-Cons: 
-- Complexify the under-the-hood (TNECS_COMPONENT_LIST)-> Does not really matter? My problem?
-- Copy components around->Slows performance 
-- Systems should loop over number of compatible types instead? Simple. Not really a performance problem.
+The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
+Phases are user-defined ```uint8_t```.
+System execution order is first-come first-served by default.
+Systems are inclusive by default, meaning that entities with a superset of the system's components are also ran by it.
 
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.
@@ -48,7 +41,7 @@ Make the _simplest possible_ C99 ECS library, only with the _minimum necessary f
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
-- Small: <1300 lines, 2 files.
+- Small: <1400 lines, 2 files.
 - Fast: see simple benchmarks in test.c
 - Simple: C99 API
 - FOSS: Free and Open Source

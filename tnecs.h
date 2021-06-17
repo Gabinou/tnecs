@@ -18,7 +18,7 @@
 // A system is a user-defined ```function```.
 // All live inside the ```world```.
 
-// The systems iterate over the entities that exactly  have the user-defined set of components, in phases.
+// The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
 // Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
 
 /* Un-viral MIT License
@@ -183,7 +183,9 @@ struct tnecs_World {
     tnecs_hash_t component_hashes[TNECS_COMPONENT_CAP];       // [component_id]
     tnecs_hash_t * system_hashes;                             // [system_id]
     char ** component_names;
-
+    
+    size_t ** subtype_id_bytype;                              // [typeflag_id] 
+    size_t * num_subtype_ids;                                 // [typeflag_id] 
     // bytype arrays are exclusive -> entities unique in components_bytype
     struct tnecs_Components_Array ** components_bytype;       // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;                        // [typeflag_id][entity_order_bytype]
@@ -214,9 +216,8 @@ struct tnecs_System_Input {
     struct tnecs_World * world;
     size_t num_entities;
     tnecs_time_ns_t deltat;
-    size_t typeflag_id;
+    size_t entity_typeflag_id;
     tnecs_component_t system_typeflag;
-    size_t * typeflag_ids;
 };
 
 struct tnecs_Components_Array {
@@ -242,7 +243,7 @@ size_t tnecs_register_phase(struct tnecs_World * in_world, tnecs_phase_t in_phas
 
 #define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0, 0, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 #define TNECS_REGISTER_SYSTEM_WPHASE(world, pfunc, phase, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, 0,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_WEXCL(world, pfunc, excl, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0, excl,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_WEXCL(world, pfunc, excl, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0, excl, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 #define TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(world, pfunc, phase, excl, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, excl,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 #define TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(world, pfunc, excl, phase, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, excl,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 
@@ -325,7 +326,7 @@ size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_type
 #define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_TYPE2ID(type) (type >=1 ? (tnecs_component_t)(log2(type) + 1.1f): 0) // casting to int floors
-#define TNECS_COMPONENTS_LIST(input, component_name) (struct component_name *) (input->world->components_bytype[input->typeflag_id][input->world->components_orderbytype[input->typeflag_id][tnecs_component_name2id(input->world, #component_name)]].components)
+#define TNECS_COMPONENTS_LIST(input, component_name) (struct component_name *) (input->world->components_bytype[input->entity_typeflag_id][input->world->components_orderbytype[input->entity_typeflag_id][tnecs_component_name2id(input->world, #component_name)]].components)
 
 #define TNECS_SYSTEM_ID(world, name) tnecs_system_id(world, #name)
 #define TNECS_SYSTEM_ID2TYPEFLAG(world, id) world->system_typeflags[id]
