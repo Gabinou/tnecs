@@ -381,7 +381,7 @@ void tnecs_test_component_registration() {
 }
 
 void tnecs_test_system_registration() {
-    TNECS_REGISTER_SYSTEM(test_world, SystemMove, Position, Velocity);
+    TNECS_REGISTER_SYSTEM_WEXCL(test_world, SystemMove,1, Position, Velocity);
     size_t temp_comp_flag = 1;
     size_t temp_comp_id = 1;
     size_t temp_comp_order = 0;
@@ -615,7 +615,7 @@ void tnecs_test_world_progress() {
     lok(test_world->systems_byphase[1][1] == &SystemMovePhase2);
 
     temp_velocity->vx = 1;
-    temp_velocity->vy = 2;
+    temp_velocity->vy = 2;p
     tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);

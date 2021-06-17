@@ -27,17 +27,8 @@ A component is user-defined ```struct```.
 A system is a user-defined ```function```.
 All live inside the ```world```, the ```struct tnecs_World```. 
 
-The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
+The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
 Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
-
-## To Do:
-- Exclusive/Inclusive systems?
-Pros:
-- Simplify user interface, no need to register same system multiple time for different component combinations
-Cons: 
-- Complexify the under-the-hood (TNECS_COMPONENT_LIST)-> Does not really matter? My problem?
-- Copy components around->Slows performance 
-- Systems should loop over number of compatible types instead? Simple. Not really a performance problem.
 
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.

@@ -18,7 +18,7 @@
 // A system is a user-defined ```function```.
 // All live inside the ```world```.
 
-// The systems iterate over the entities that exactly  have the user-defined set of components, in phases.
+// The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
 // Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
 
 /* Un-viral MIT License
