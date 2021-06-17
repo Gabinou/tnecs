@@ -115,6 +115,8 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
 ```
 System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
+By default, systems are inclusive, meaning thet entities with additional components to the system's are also run by it. If the system is set to exclusive, only the entities that have only exactly the systems components are ran.
+
 Phases are greater than zero ```size_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
 enum SYSTEM_PHASES {

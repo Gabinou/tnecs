@@ -67,6 +67,7 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
     free(in_world->phases);
     free(in_world->systems_byphase);
     free(in_world->system_orders);
+    free(in_world->system_exclusive);
     free(in_world->systems_torun);
     free(in_world->systems_idbyphase);
     for (size_t i = 0; i < in_world->len_typeflags; i++) {
@@ -126,10 +127,21 @@ void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) 
         if (phase_id == current_phase) {
             for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
                 system_id = in_world->systems_idbyphase[phase_id][sorder];
-                current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
-                current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
-                in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
-                in_world->systems_byphase[phase_id][sorder](&current_input);
+                if (in_world->system_exclusive[system_id]) {
+                    current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
+                    current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
+                    in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+                    in_world->systems_byphase[phase_id][sorder](&current_input);
+                } else {
+                    for (size_t tnum = 0; tnum < in_world->num_typeflags; tnum++) {
+                        if ((in_world->typeflags[tnum] & system_id) == in_world->typeflags[tnum]) {
+                            current_input.typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
+                            current_input.num_entities = in_world->num_entities_bytype[current_input.typeflag_id];
+                            in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+                            in_world->systems_byphase[phase_id][sorder](&current_input);
+                        }
+                    }
+                }
             }
         }
     }
@@ -173,6 +185,9 @@ void tnecs_world_breath_components(struct tnecs_World * in_world) {
         in_world->num_components_bytype[i] = 0;
     }
     in_world->num_components = TNECS_NULLSHIFT;
+    in_world->component_names[0] = malloc(5);
+    strncpy(in_world->component_names[0], "NULL", 5);
+
 }
 
 void tnecs_world_breath_systems(struct tnecs_World * in_world) {
@@ -183,6 +198,8 @@ void tnecs_world_breath_systems(struct tnecs_World * in_world) {
     in_world->system_hashes = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_hashes));
     in_world->system_phases = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_phases));
     in_world->system_orders = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_orders));
+    in_world->system_exclusive = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->system_exclusive));
+
     in_world->len_phases = TNECS_INITIAL_PHASE_LEN;
     in_world->num_phases = TNECS_NULLSHIFT;
     in_world->phases = calloc(TNECS_INITIAL_PHASE_LEN, sizeof(*in_world->phases));
@@ -209,13 +226,14 @@ void tnecs_world_breath_typeflags(struct tnecs_World * in_world) {
 }
 
 /***************************** REGISTRATION **********************************/
-void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase, size_t num_components, tnecs_component_t components_typeflag) {
+void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase, bool in_isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_register_system\n");
 
     size_t system_id = in_world->num_systems++;
     if (in_world->num_systems >= in_world->len_systems) { tnecs_growArray_system(in_world); }
     if (!in_world->phases[in_phase]) { tnecs_register_phase(in_world, in_phase); }
 
+    in_world->system_exclusive[system_id] = in_isExclusive;
     in_world->system_phases[system_id] = in_phase;
     in_world->system_hashes[system_id] = in_hash;
     in_world->system_typeflags[system_id] = components_typeflag;
@@ -810,6 +828,7 @@ void tnecs_growArray_system(struct tnecs_World * in_world) {
     in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems, sizeof(*in_world->systems_torun));
     in_world->system_phases = tnecs_realloc(in_world->system_phases, old_len, in_world->len_systems, sizeof(*in_world->system_phases));
     in_world->system_orders = tnecs_realloc(in_world->system_orders, old_len, in_world->len_systems, sizeof(*in_world->system_orders));
+    in_world->system_exclusive = tnecs_realloc(in_world->system_exclusive, old_len, in_world->len_systems, sizeof(*in_world->system_exclusive));
     in_world->systems_idbyphase = tnecs_realloc(in_world->systems_idbyphase, old_len, in_world->len_systems, sizeof(*in_world->systems_idbyphase));
     in_world->system_typeflags = tnecs_realloc(in_world->system_typeflags, old_len, in_world->len_systems, sizeof(*in_world->system_typeflags));
     in_world->system_hashes = tnecs_realloc(in_world->system_hashes, old_len, in_world->len_systems, sizeof(*in_world->system_hashes));

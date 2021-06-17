@@ -18,7 +18,7 @@
 // A system is a user-defined ```function```.
 // All live inside the ```world```.
 
-// The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
+// The systems iterate over the entities that exactly  have the user-defined set of components, in phases.
 // Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
 
 /* Un-viral MIT License
@@ -176,6 +176,7 @@ struct tnecs_World {
     tnecs_component_t * entity_typeflags;                     // [entity_id]
     tnecs_component_t * system_typeflags;                     // [system_id]
     tnecs_phase_t * system_phases;                            // [system_id]
+    bool * system_exclusive;                                  // [system_id]
     tnecs_phase_t * phases;                                   // [phase_id]
     size_t * system_orders;                                   // [system_id]
     size_t component_bytesizes[TNECS_COMPONENT_CAP];          // [component_id]
@@ -213,7 +214,9 @@ struct tnecs_System_Input {
     struct tnecs_World * world;
     size_t num_entities;
     tnecs_time_ns_t deltat;
-    tnecs_component_t typeflag_id;
+    size_t typeflag_id;
+    tnecs_component_t system_typeflag;
+    size_t * typeflag_ids;
 };
 
 struct tnecs_Components_Array {
@@ -233,12 +236,16 @@ void tnecs_world_breath_typeflags(struct tnecs_World * in_world);
 
 /***************************** REGISTRATION **********************************/
 void tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
-void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_run_phase, size_t component_num, tnecs_component_t component_typeflag);
+void tnecs_register_system(struct tnecs_World * in_world, tnecs_hash_t in_hash, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_run_phase, bool in_isExclusive, size_t component_num, tnecs_component_t component_typeflag);
 size_t tnecs_register_typeflag(struct tnecs_World * in_wormakld, size_t num_components, tnecs_component_t typeflag);
 size_t tnecs_register_phase(struct tnecs_World * in_world, tnecs_phase_t in_phase);
 
-#define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0,  TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_WPHASE(world, pfunc, phase, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0, 0, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_WPHASE(world, pfunc, phase, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, 0,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_WEXCL(world, pfunc, excl, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, 0, excl,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(world, pfunc, phase, excl, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, excl,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(world, pfunc, excl, phase, ...) tnecs_register_system(world, TNECS_HASH(#pfunc), &pfunc, phase, excl,TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VARMACRO_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 
 /***************************** ENTITY MANIPULATION ***************************/
