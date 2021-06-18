@@ -19,7 +19,9 @@
 // All live inside the ```world```.
 
 // The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
-// Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
+// Phases are user-defined ```uint8_t```.
+// System execution order is first-come first-served by default.
+// Systems are inclusive by default, meaning that they run over entities with additional components to the system's.
 
 /* Un-viral MIT License
 *
