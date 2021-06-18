@@ -218,8 +218,8 @@ void tnecs_test_utilities() {
     lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
     lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
 
-    lok(TNECS_IS_SUBTYPE(4, (4 + 8 + 16)));
-    lok(!TNECS_IS_SUBTYPE(2, (4 + 8 + 16)));
+    lok(TNECS_IS_supertype(4, (4 + 8 + 16)));
+    lok(!TNECS_IS_supertype(2, (4 + 8 + 16)));
 
     lok(setBits_KnR_uint64_t(1) == 1);
     lok(setBits_KnR_uint64_t(2) == 1);
@@ -658,6 +658,16 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_SYSTEM_WEXCL(inclusive_world, SystemMovePhase1, 0, Unit, Velocity);  // 2X
     TNECS_REGISTER_SYSTEM_WEXCL(inclusive_world, SystemMovePhase2, 0, Unit, Position); // 2X
     TNECS_REGISTER_SYSTEM_WEXCL(inclusive_world, SystemMovePhase4, 0, Unit, Position, Velocity); // 1X
+    lok(TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMove) == 8);
+    lok(TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMovePhase1) == 8 + 1);
+    lok(TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMovePhase2) == 8 + 2);
+    lok(TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMovePhase4) == 8 + 2 + 1);
+
+    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMove))] == 3);
+    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMovePhase1))] == 1);
+    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMovePhase2))] == 1);
+    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_TYPEFLAG(inclusive_world, SystemMovePhase4))] == 0);
+
     lok(inclusive_world->num_typeflags == 8);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Velocity);
@@ -733,7 +743,7 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
-    TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
+    TNECS_REGISTER_SYSTEM_WEXCL(bench_world, SystemMove2, 0, Position2, Unit2);
     t_1 = get_us();
 
     dupprintf(globalf, "tnecs: System Registration \n");

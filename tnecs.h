@@ -126,7 +126,7 @@ typedef struct tnecs_Components_Array tnecs_component_array_t;
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
 #define TNECS_CONCATENATE2(arg1, arg2) arg1##arg2
-#define TNECS_IS_SUBTYPE(typeflag, type) ((type & typeflag) > 0)
+#define TNECS_IS_supertype(typeflag, type) ((type & typeflag) > 0)
 
 /******************* HACKY DISTRIBUTION FOR VARIADIC MACROS ******************/
 // Distribution as in algebra: a(x+b) = ax + ab
@@ -184,8 +184,8 @@ struct tnecs_World {
     tnecs_hash_t * system_hashes;                             // [system_id]
     char ** component_names;
     
-    size_t ** subtype_id_bytype;                              // [typeflag_id] 
-    size_t * num_subtype_ids;                                 // [typeflag_id] 
+    size_t ** supertype_id_bytype;                              // [typeflag_id] 
+    size_t * num_supertype_ids;                                 // [typeflag_id] 
     // bytype arrays are exclusive -> entities unique in components_bytype
     struct tnecs_Components_Array ** components_bytype;       // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;                        // [typeflag_id][entity_order_bytype]
