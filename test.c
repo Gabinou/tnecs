@@ -615,7 +615,7 @@ void tnecs_test_world_progress() {
     lok(test_world->systems_byphase[1][1] == &SystemMovePhase2);
 
     temp_velocity->vx = 1;
-    temp_velocity->vy = 2;p
+    temp_velocity->vy = 2;
     tnecs_world_step(test_world, 1);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
@@ -663,6 +663,43 @@ void tnecs_test_world_progress() {
     tnecs_growArray_system(test_world);
     tnecs_growArray_typeflag(test_world);
 
+    struct tnecs_World * inclusive_world = tnecs_world_genesis();
+
+    TNECS_REGISTER_COMPONENT(inclusive_world, Velocity);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Position);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Sprite);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Unit);
+    TNECS_REGISTER_SYSTEM_WEXCL(inclusive_world, SystemMove, 0, Unit); // 4X
+    TNECS_REGISTER_SYSTEM_WEXCL(inclusive_world, SystemMovePhase1, 0, Unit, Velocity);  // 2X
+    TNECS_REGISTER_SYSTEM_WEXCL(inclusive_world, SystemMovePhase2, 0, Unit, Position); // 2X
+    TNECS_REGISTER_SYSTEM_WEXCL(inclusive_world, SystemMovePhase4, 0, Unit, Position, Velocity); // 1X
+    lok(inclusive_world->num_typeflags == 8);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    lok(inclusive_world->num_typeflags == 8);
+    tnecs_world_step(inclusive_world, 1);
+
+    printf("inclusive_world->num_systems_torun %d \n", inclusive_world->num_systems_torun);
+    lok(inclusive_world->num_systems_torun == 9);
+    lok(inclusive_world->systems_torun[0] == &SystemMove); 
+    lok(inclusive_world->systems_torun[1] == &SystemMove);
+    lok(inclusive_world->systems_torun[2] == &SystemMove); 
+    lok(inclusive_world->systems_torun[3] == &SystemMove);
+    lok(inclusive_world->systems_torun[4] == &SystemMovePhase1);
+    lok(inclusive_world->systems_torun[5] == &SystemMovePhase1);
+    lok(inclusive_world->systems_torun[6] == &SystemMovePhase2);
+    lok(inclusive_world->systems_torun[7] == &SystemMovePhase2);
+    lok(inclusive_world->systems_torun[8] == &SystemMovePhase4);
+    lok(inclusive_world->systems_torun[9] == NULL);
+    lok(inclusive_world->systems_torun[10] == NULL);
+    lok(inclusive_world->systems_torun[11] == NULL);
+    lok(inclusive_world->systems_torun[12] == NULL);
+    lok(inclusive_world->systems_torun[13] == NULL);
+    lok(inclusive_world->systems_torun[14] == NULL);
+    lok(inclusive_world->systems_torun[15] == NULL);
+    lok(inclusive_world->systems_torun[16] == NULL);
 }
 
 #ifndef __TINYC__
@@ -757,7 +794,6 @@ void flecs_benchmarks() {
     t_0 = get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
         ecs_progress(world, 0);
-
     }
     t_1 = get_us();
     dupprintf(globalf, "flecs: World Step time: %d iterations \n", fps_iterations);
@@ -819,7 +855,7 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = get_us();
-    TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, Position2, Unit2);
+    TNECS_REGISTER_SYSTEM_WEXCL(bench_world, SystemMove2, 0, Position2, Unit2);
     t_1 = get_us();
 
     dupprintf(globalf, "tnecs: System Registration \n");

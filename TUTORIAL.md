@@ -112,12 +112,14 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
     }
 
     TNECS_REGISTER_SYSTEM(world, SystemMove, Position, Unit); 
+
 ```
 System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
-By default, systems are inclusive, meaning thet entities with additional components to the system's are also run by it. If the system is set to exclusive, only the entities that have only exactly the systems components are ran.
+By default, systems are inclusive, meaning that entities that have a superset of the system's components are also run by it. If the system is set to exclusive, only the entities that have only exactly the system's components are ran. Exclusivity is a boolean.
 
-Phases are greater than zero ```size_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
+Systems can be registered directly with a phase and exclusivity:
+Phases are greater than zero ```uint8_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
 enum SYSTEM_PHASES {
     SYSTEM_PHASE_NULL = 0,
@@ -125,15 +127,18 @@ enum SYSTEM_PHASES {
     SYSTEM_PHASE_MID = 2,
     SYSTEM_PHASE_POST = 3,
 };
+    TNECS_REGISTER_SYSTEM_WPHASE(world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit); 
+    bool isExclusive = true;
+    TNECS_REGISTER_SYSTEM_WEXCL(world, SystemMove, isExclusive, Position, Unit); 
+    TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(world, SystemMove, MYPHASE, isExclusive, Position, Unit); 
 
-TNECS_REGISTER_SYSTEM_WPHASE(world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit); 
+```
+
 ```
 
 ## Updating the world
 ```c
 tnecs_time_ns_t frame_deltat;
-world_progress(world, frame_deltat);
+tnecs_world_step(world, frame_deltat);
 ```
-```world_progress``` computes previous frame time
-
- ```deltat``` if 0 is inputted. The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
+```tnecs_world_step``` computes previous frame time  ```deltat``` if 0 is inputted. The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
