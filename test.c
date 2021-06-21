@@ -34,7 +34,8 @@
 
 #ifndef __MINCTEST_H__
 #define __MINCTEST_H__
-
+/*****************************TEST GLOBALS*****************************/
+FILE * globalf;
 /* NB all tests should be in one file. */
 static int ltests = 0;
 static int lfails = 0;
@@ -131,26 +132,45 @@ void SystemMovePhase1(struct tnecs_System_Input * in_input) {
     // printf("SystemMovePhase1\n");
     // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
-    // for (int i = 0; i < in_input->num_entities; i++) {
+    for (int ent = 0; ent < in_input->num_entities; ent++) {
+        // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+        tnecs_entity_t current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
+        lok(current_ent);
+        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world, in_input->world->entity_typeflags[current_ent]));
+    }
+
     //     // printf("i %d \n", i);
     //     p[i].x += v[i].hp;
     //     p[i].y += v[i].str;
-    // }
 }
 
 void SystemMovePhase4(struct tnecs_System_Input * in_input) {
     // printf("SystemMovePhase4\n");
+    for (int ent = 0; ent < in_input->num_entities; ent++) {
+        tnecs_entity_t current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
+        lok(current_ent);
+        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world, in_input->world->entity_typeflags[current_ent]));
+        // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+    }
+
 }
 
 void SystemMovePhase2(struct tnecs_System_Input * in_input) {
     // printf("SystemMovePhase2\n");
     // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
-    // for (int i = 0; i < in_input->num_entities; i++) {
-    //     // printf("i %d \n", i);
-    //     p[i].x += v[i].hp;
-    //     p[i].y += v[i].str;
-    // }
+    for (int ent = 0; ent < in_input->num_entities; ent++) {
+        tnecs_entity_t current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
+        lok(current_ent);
+        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world, in_input->world->entity_typeflags[current_ent]));        // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+        // in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]
+    }
 }
 
 void SystemPosition2(struct tnecs_System_Input * in_input) {
@@ -173,8 +193,7 @@ void SystemUnit2(struct tnecs_System_Input * in_input) {
     }
 }
 
-/*****************************TEST GLOBALS*****************************/
-FILE * globalf;
+
 /*****************************TEST CONSTANTS***************************/
 #define ITERATIONS 10000
 #define ARRAY_LEN 100
@@ -193,10 +212,21 @@ void SystemMove(struct tnecs_System_Input * in_input) {
     // printf("SystemMove\n");
     struct Position * p = TNECS_COMPONENTS_LIST(in_input, Position);
     struct Velocity * v = TNECS_COMPONENTS_LIST(in_input, Velocity);
-    for (int i = 0; i < in_input->num_entities; i++) {
-        p[i].x = p[i].x + v[i].vx;
-        p[i].y = p[i].y + v[i].vy;
+    for (int ent = 0; ent < in_input->num_entities; ent++) {
+        tnecs_entity_t current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
+        lok(current_ent);
+        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world, in_input->world->entity_typeflags[current_ent]));        // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
+        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+
+        // in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]
+        p[ent].x = p[ent].x + v[ent].vx;
+        p[ent].y = p[ent].y + v[ent].vy;
     }
+
+    // for (int i = 0; i < in_input->num_entities; i++) {
+
+    // }
 }
 
 /*******************************ACTUAL TESTS***************************/
@@ -366,7 +396,7 @@ void tnecs_test_component_registration() {
 }
 
 void tnecs_test_system_registration() {
-    TNECS_REGISTER_SYSTEM_WEXCL(test_world, SystemMove,1, Position, Velocity);
+    TNECS_REGISTER_SYSTEM_WEXCL(test_world, SystemMove, 1, Position, Velocity);
     size_t temp_comp_flag = 1;
     size_t temp_comp_id = 1;
     size_t temp_comp_order = 0;
@@ -390,7 +420,7 @@ void tnecs_test_system_registration() {
 }
 
 void tnecs_test_entity_creation() {
-    // dupprintf(globalf, "tnecs_test_entity_creation \n");
+    dupprintf(globalf, "tnecs_test_entity_creation \n");
     lok(test_world->entity_next == TNECS_NULLSHIFT);
     tnecs_entity_t Silou = tnecs_entity_create(test_world);
     lok(Silou == TNECS_NULLSHIFT);
@@ -459,12 +489,14 @@ void tnecs_test_entity_creation() {
     lok(test_world->entities[in_ents[0]] == in_ents[0]);
     lok(test_world->entities[in_ents[1]] == in_ents[1]);
 
+    struct tnecs_World * test_world3 = tnecs_world_genesis();
+    tnecs_world_destroy(test_world3);
 
     // MORE TESTS FOR COVERAGE
     struct tnecs_World * test_world2 = tnecs_world_genesis();
-
     test_world2->num_typeflags = TNECS_INITIAL_SYSTEM_LEN;
     TNECS_REGISTER_COMPONENT(test_world2, Position2);
+    lok(test_world2->num_components == 2);
 
     // Coverage for if in tnecs_register_component
     test_world2->num_components = 66;
@@ -579,7 +611,7 @@ void tnecs_test_component_array() {
     TNECS_REGISTER_SYSTEM_WEXCL(arr_world, SystemMovePhase1, 0, Unit, Velocity);  // 2X
     TNECS_REGISTER_SYSTEM_WEXCL(arr_world, SystemMovePhase2, 0, Unit, Position); // 2X
     TNECS_REGISTER_SYSTEM_WEXCL(arr_world, SystemMovePhase4, 0, Unit, Position, Velocity); // 1X
-    
+
     tnecs_entity_t temp_ent = TNECS_ENTITY_CREATE_WCOMPONENTS(arr_world, Unit);
     TNECS_ENTITY_CREATE_WCOMPONENTS(arr_world, Unit, Velocity);
     TNECS_ENTITY_CREATE_WCOMPONENTS(arr_world, Unit, Velocity);
@@ -590,13 +622,13 @@ void tnecs_test_component_array() {
     TNECS_ENTITY_CREATE_WCOMPONENTS(arr_world, Unit, Position);
     TNECS_ENTITY_CREATE_WCOMPONENTS(arr_world, Unit, Position, Velocity);
     TNECS_ENTITY_CREATE_WCOMPONENTS(arr_world, Unit, Position, Velocity);
-    
+
     size_t temp_typeflagid = TNECS_COMPONENT_NAMES2TYPEFLAGID(arr_world, Unit, Position);
     size_t temp_component_order = tnecs_component_order_bytypeid(arr_world, TNECS_COMPONENT_NAME2ID(arr_world, Position), temp_typeflagid);
     lok(arr_world->components_bytype[temp_typeflagid][temp_component_order].num_components == 4);
     temp_component_order = tnecs_component_order_bytypeid(arr_world, TNECS_COMPONENT_NAME2ID(arr_world, Unit), temp_typeflagid);
     lok(arr_world->components_bytype[temp_typeflagid][temp_component_order].num_components == 4);
-    
+
     temp_typeflagid = TNECS_COMPONENT_NAMES2TYPEFLAGID(arr_world, Unit, Velocity);
     temp_component_order = tnecs_component_order_bytypeid(arr_world, TNECS_COMPONENT_NAME2ID(arr_world, Unit), temp_typeflagid);
     lok(arr_world->components_bytype[temp_typeflagid][temp_component_order].num_components == 3);
@@ -650,8 +682,6 @@ void tnecs_test_component_array() {
     lok(new_entity_order != old_entity_order);
 
     temp_pos = TNECS_GET_COMPONENT(arr_world, temp_ent, Position);
-    printf("temp_unit->hp %d \n", temp_unit->hp);
-    printf("temp_unit->str %d \n", temp_unit->str);
     lok(temp_unit->hp == 10);
     lok(temp_unit->str == 12);
     temp_unit->hp++;
@@ -660,6 +690,8 @@ void tnecs_test_component_array() {
     lok(temp_unit->str == 13);
     lok(temp_pos->x == 0);
     lok(temp_pos->y == 0);
+
+    tnecs_world_destroy(arr_world);
 }
 
 void tnecs_test_world_progress() {
@@ -758,22 +790,58 @@ void tnecs_test_world_progress() {
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4) == 8 + 2 + 1);
 
     lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))] == 3);
+    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1)));
+    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][1] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2)));
+    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][2] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
     lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1))] == 1);
+    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
     lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2))] == 1);
+    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
     lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4))] == 0);
 
     lok(inclusive_world->num_typeflags == 8);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
+    tnecs_entity_t temp_todestroy = TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
+    tnecs_entity_destroy(inclusive_world, temp_todestroy);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Velocity);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world, Unit, Position, Velocity);
+    lok(inclusive_world->num_entities_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_ID2TYPEFLAG(inclusive_world, TNECS_SYSTEM_ID(inclusive_world, SystemMove)))] == 9);
+    lok(inclusive_world->num_entities_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_ID2TYPEFLAG(inclusive_world, TNECS_SYSTEM_ID(inclusive_world, SystemMovePhase1)))] == 2);
+    lok(inclusive_world->num_entities_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_ID2TYPEFLAG(inclusive_world, TNECS_SYSTEM_ID(inclusive_world, SystemMovePhase2)))] == 6);
+    lok(inclusive_world->num_entities_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_ID2TYPEFLAG(inclusive_world, TNECS_SYSTEM_ID(inclusive_world, SystemMovePhase4)))] == 12);
     lok(inclusive_world->num_typeflags == 8);
     tnecs_world_step(inclusive_world, 1);
 
     lok(inclusive_world->num_systems_torun == 9);
-    lok(inclusive_world->systems_torun[0] == &SystemMove); 
+    lok(inclusive_world->systems_torun[0] == &SystemMove);
     lok(inclusive_world->systems_torun[1] == &SystemMove);
-    lok(inclusive_world->systems_torun[2] == &SystemMove); 
+    lok(inclusive_world->systems_torun[2] == &SystemMove);
     lok(inclusive_world->systems_torun[3] == &SystemMove);
     lok(inclusive_world->systems_torun[4] == &SystemMovePhase1);
     lok(inclusive_world->systems_torun[5] == &SystemMovePhase1);
@@ -787,7 +855,6 @@ void tnecs_test_world_progress() {
     lok(inclusive_world->systems_torun[13] == NULL);
     lok(inclusive_world->systems_torun[14] == NULL);
     lok(inclusive_world->systems_torun[15] == NULL);
-    lok(inclusive_world->systems_torun[16] == NULL);
 
     struct tnecs_World * inclusive_world2 = tnecs_world_genesis();
 
@@ -795,10 +862,10 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_COMPONENT(inclusive_world2, Position);
     TNECS_REGISTER_COMPONENT(inclusive_world2, Sprite);
     TNECS_REGISTER_COMPONENT(inclusive_world2, Unit);
-    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMove, 0, 2,  Unit); // 4X
-    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMovePhase1, 0,1, Unit, Velocity);  // 2X
-    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMovePhase2, 0,4, Unit, Position); // 2X
-    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMovePhase4, 0,3, Unit, Position, Velocity); // 1X
+    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMove, 0, 2, Unit); // 4X
+    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMovePhase1, 0, 1, Unit, Velocity);  // 2X
+    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMovePhase2, 0, 4, Unit, Position); // 2X
+    TNECS_REGISTER_SYSTEM_WEXCL_WPHASE(inclusive_world2, SystemMovePhase4, 0, 3, Unit, Position, Velocity); // 1X
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMove) == 8);
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase1) == 8 + 1);
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase2) == 8 + 2);
@@ -810,7 +877,7 @@ void tnecs_test_world_progress() {
     lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase4))] == 0);
 
     lok(inclusive_world2->num_typeflags == 8);
-    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world2, Unit);                                                            
+    TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world2, Unit);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world2, Unit, Velocity);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world2, Unit, Position);
     TNECS_ENTITY_CREATE_WCOMPONENTS(inclusive_world2, Unit, Position, Velocity);
@@ -820,9 +887,9 @@ void tnecs_test_world_progress() {
     lok(inclusive_world2->num_systems_torun == 9);
     lok(inclusive_world2->systems_torun[0] == &SystemMovePhase1);
     lok(inclusive_world2->systems_torun[1] == &SystemMovePhase1);
-    lok(inclusive_world2->systems_torun[2] == &SystemMove); 
+    lok(inclusive_world2->systems_torun[2] == &SystemMove);
     lok(inclusive_world2->systems_torun[3] == &SystemMove);
-    lok(inclusive_world2->systems_torun[4] == &SystemMove); 
+    lok(inclusive_world2->systems_torun[4] == &SystemMove);
     lok(inclusive_world2->systems_torun[5] == &SystemMove);
     lok(inclusive_world2->systems_torun[6] == &SystemMovePhase4);
     lok(inclusive_world2->systems_torun[7] == &SystemMovePhase2);
@@ -834,8 +901,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world2->systems_torun[13] == NULL);
     lok(inclusive_world2->systems_torun[14] == NULL);
     lok(inclusive_world2->systems_torun[15] == NULL);
-    lok(inclusive_world2->systems_torun[16] == NULL);
-
+    tnecs_world_destroy(inclusive_world2);
+    tnecs_world_destroy(inclusive_world);
 }
 
 void tnecs_other_benchmarks() {
@@ -860,6 +927,84 @@ void tnecs_other_benchmarks() {
     t_1 = get_us();
     dupprintf(globalf, "tnecs_hash_sdbm: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
+}
+
+void tnecs_test_grow() {
+    struct tnecs_World * grow_world = tnecs_world_genesis();
+
+    lok(grow_world->len_entities == TNECS_INITIAL_ENTITY_LEN);
+    lok(grow_world->len_typeflags == TNECS_INITIAL_SYSTEM_LEN);
+    lok(grow_world->num_typeflags == 1);
+    lok(grow_world->len_systems == TNECS_INITIAL_SYSTEM_LEN);
+    lok(grow_world->num_systems == 1);
+    lok(grow_world->len_phases == TNECS_INITIAL_PHASE_LEN);
+    lok(grow_world->num_phases == 1);
+    lok(grow_world->num_entities_open == 0);
+    lok(grow_world->len_entities_open == TNECS_INITIAL_ENTITY_LEN);
+
+    for (size_t i = 0; i < grow_world->len_entities; i++) {
+        lok(grow_world->entity_typeflags[i] == 0);
+        lok(grow_world->entity_orders[i] == 0);
+        lok(grow_world->entities[i] == 0);
+    }
+
+    for (size_t i = 0; i < grow_world->len_typeflags; i++) {
+        lok(grow_world->num_entities_bytype[i] == 0);
+        lok(grow_world->len_entities_bytype[i] == TNECS_INITIAL_ENTITY_LEN);
+        for (size_t j = 0; j < grow_world->len_entities_bytype[i]; j++) {
+            lok(grow_world->entities_bytype[i][j] == 0);
+        }
+        lok(grow_world->num_components_bytype[i] == 0);
+    }
+
+    for (size_t i = 0; i < grow_world->len_phases; i++) {
+        lok(grow_world->num_systems_byphase[i] == 0);
+        lok(grow_world->len_systems_byphase[i] == TNECS_INITIAL_PHASE_LEN);
+        for (size_t j = 0; j < grow_world->len_systems_byphase[i]; j++) {
+            lok(grow_world->systems_byphase[i][j] == 0);
+        }
+    }
+
+    tnecs_growArray_entity(grow_world);
+    lok(grow_world->len_entities == TNECS_INITIAL_ENTITY_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+
+    for (size_t i = 0; i < grow_world->len_entities; i++) {
+        lok(grow_world->entity_typeflags[i] == 0);
+        lok(grow_world->entity_orders[i] == 0);
+        lok(grow_world->entities[i] == 0);
+    }
+
+    size_t test_typeflagid = 0;
+    tnecs_growArray_bytype(grow_world, test_typeflagid);
+    lok(grow_world->num_entities_bytype[test_typeflagid] == 0);
+    lok(grow_world->len_entities_bytype[test_typeflagid] == TNECS_INITIAL_ENTITY_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+    for (size_t j = 0; j < grow_world->len_entities_bytype[test_typeflagid]; j++) {
+        lok(grow_world->entities_bytype[test_typeflagid][j] == 0);
+    }
+
+    test_typeflagid = 1;
+    tnecs_growArray_bytype(grow_world, test_typeflagid);
+    lok(grow_world->num_entities_bytype[test_typeflagid] == 0);
+    lok(grow_world->len_entities_bytype[test_typeflagid] == TNECS_INITIAL_ENTITY_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+    for (size_t j = 0; j < grow_world->len_entities_bytype[test_typeflagid]; j++) {
+        lok(grow_world->entities_bytype[test_typeflagid][j] == 0);
+    }
+    for (size_t i = (test_typeflagid + 1); i < grow_world->len_typeflags; i++) {
+        lok(grow_world->num_entities_bytype[i] == 0);
+        lok(grow_world->len_entities_bytype[i] == TNECS_INITIAL_ENTITY_LEN);
+        for (size_t j = 0; j < grow_world->len_entities_bytype[i]; j++) {
+            lok(grow_world->entities_bytype[i][j] == 0);
+        }
+        lok(grow_world->num_components_bytype[i] == 0);
+    }
+
+
+    tnecs_growArray_system(grow_world);
+    tnecs_growArray_typeflag(grow_world);
+    tnecs_growArray_phase(grow_world);
+
+
+    tnecs_world_destroy(grow_world);
 }
 
 
@@ -1004,6 +1149,7 @@ int main() {
     lrun("e_create", tnecs_test_entity_creation);
     lrun("c_add", tnecs_test_component_add);
     lrun("c_array", tnecs_test_component_array);
+    lrun("grow", tnecs_test_grow);
     lrun("progress", tnecs_test_world_progress);
     lresults();
 
