@@ -316,7 +316,7 @@ size_t tnecs_register_typeflag(struct tnecs_World * in_world, size_t num_compone
             for (size_t j = 1 ; j < (in_world->num_typeflags); j++) {
                 if (i != j) {
                     if (TNECS_TYPEFLAG_IS_SUPERTYPE(in_world->typeflags[i], in_world->typeflags[j])) {
-                        in_world->supertype_id_bytype[i][in_world->num_supertype_ids[i]++] = j;
+                        in_world->supertype_id_bytype[i][in_world->num_supertype_ids[i]++] = j; // j is a supertype of i
                     }
                 }
             }
