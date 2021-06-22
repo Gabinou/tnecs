@@ -25,10 +25,15 @@ Videogame Example:
 In tnecs, an entity is an ```uint64_t``` index. 
 A component is user-defined ```struct```. 
 A system is a user-defined ```function```.
-All live inside the ```world```, the ```struct tnecs_World```. 
+All live inside the ```world```. 
 
-The systems iterate exclusively over the entities that have exactly the user-defined set of components, in phases.
-Phases are user-defined ```size_t``` and system execution order is first-come first-served by default.
+The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
+Phases are user-defined ```uint8_t```.
+System execution order is first-come first-served by default.
+Systems are inclusive by default, meaning that they run over entities with additional components to the system's.
+
+## To Do
+- Save system names.
 
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.

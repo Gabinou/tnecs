@@ -1,33 +1,33 @@
 
 ## Initializing the world
 ```c
-    struct tnecs_World * world = tnecs_init();
+    struct tnecs_World * world = tnecs_world_genesis();
 ```
 The world contains everything tnecs needs.
 
 ## Entity creation/destruction
 ```c
-    tnecs_entity_t Silou = tnecs_new_entity(world);
-    tnecs_entity_t Pirou = TNECS_NEW_ENTITY(world);
+    tnecs_entity_t Silou = tnecs_entity_create(world);
+    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(world);
 ```
 ```tnecs_entity_t``` is a ```uint64_t``` index. 
 
-Entity 0 is always reserved for NULL.
+Entity index 0 is always reserved for NULL.
 
 Entities can be created with an index:
 ```c
-    tnecs_entity_t Silou = tnecs_new_entity_windex(world, 100);
-    tnecs_entity_t Pirou = TNECS_NEW_ENTITY(world, 100);
+    tnecs_entity_t Silou = tnecs_entity_create_windex(world, 100);
+    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(world, 100);
 ```
-```TNECS_NEW_ENTITY``` is an overloaded macro.
+```TNECS_ENTITY_CREATE``` is an overloaded macro.
 
 Entities can be created in batches, with indices:
 ```c
-    TNECS_NEW_ENTITIES(world, 100);
-    tnecs_new_entities(world, 100);
+    TNECS_ENTITIES_CREATE(world, 100);
+    tnecs_entities_create(world, 100);
     tnecs_entity_t to_create[100];
-    TNECS_NEW_ENTITIES(world, 100, to_create);
-    tnecs_new_entities_windex(world, 100, to_create);
+    TNECS_ENTITIES_CREATE(world, 100, to_create);
+    tnecs_entities_create_windices(world, 100, to_create);
 ```
 ```TNECS_NEW_ENTITIES``` is also an overloaded macro.
 
@@ -44,7 +44,7 @@ A component is a user-defined struct:
 When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
 ```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
 
-```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. For now, this implies that a maximal number of 63 components can be registered.
+```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. Component index 0 is reserved for the NULL component. For now, this implies that a maximal number of 63 components can be registered.
 
 NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. system typeflags. 
 
@@ -53,7 +53,7 @@ The component's type can be obtained with:
     tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(world, Position); 
 ```
 
-The relation between component ids and flags is:
+The relation between component indices and flags is:
 ```c
     Position_flag == (1 << (Position_id - 1));
     Position_id == ((tnecs_component_t)(log2(Position_id) + 1.1f));  // casting to int truncates to 0
@@ -64,7 +64,7 @@ which are accessible through the macros:
     Position_flag == TNECS_COMPONENT_TYPE2ID(Position_id);
 ```
 
-You can get a component id with:
+You can get a component index with:
 ```c
     TNECS_COMPONENT_NAME2ID(world, Position);
 ```
@@ -90,7 +90,7 @@ By default, all component bits are set to zero with ```calloc```.
 
 Entities can be created with any number of components directly with this variadic macro: 
 ```c
-    tnecs_entity_t Perignon = TNECS_NEW_ENTITY_WCOMPONENTS(world, Position, Unit);
+    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(world, Position, Unit);
 ```
 ```TNECS_NEW_ENTITY_WCOMPONENTS``` wraps around the variadic function ```tnecs_new_entity_wcomponents``` by counting the number of input components and hashing their names. So you can also write, if you wish:
 
@@ -112,10 +112,16 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
     }
 
     TNECS_REGISTER_SYSTEM(world, SystemMove, Position, Unit); 
-```
-System_id 0 is always reserved for NULL. By default, the system phase is set to 0, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
-Phases are greater than zero ```size_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
+```
+System index 0 is reserved for NULL. Default phase is 0, the NULL phase, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
+
+By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 
+Systems run for every compatible supertype of the system typeflag, for any component list superset.
+If the system is set to exclusive, only the entities that have only exactly the system's components are ran.
+
+Systems can be registered directly with a phase and exclusivity:
+Phases are greater than zero ```uint8_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
 enum SYSTEM_PHASES {
     SYSTEM_PHASE_NULL = 0,
@@ -123,15 +129,17 @@ enum SYSTEM_PHASES {
     SYSTEM_PHASE_MID = 2,
     SYSTEM_PHASE_POST = 3,
 };
+    TNECS_REGISTER_SYSTEM_WPHASE(world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit); 
+    bool isExclusive = true;
+    TNECS_REGISTER_SYSTEM_WEXCL(world, SystemMove, isExclusive, Position, Unit); 
+    TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(world, SystemMove, MYPHASE, isExclusive, Position, Unit); 
 
-TNECS_REGISTER_SYSTEM_WPHASE(world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit); 
 ```
 
 ## Updating the world
 ```c
 tnecs_time_ns_t frame_deltat;
-world_progress(world, frame_deltat);
+tnecs_world_step(world, frame_deltat);
 ```
-```world_progress``` computes previous frame time
-
- ```deltat``` if 0 is inputted. The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
+```tnecs_world_step``` computes time from previous frame time  ```deltat``` if 0 is inputted, with an included 0.1 microsecond resolution clock. 
+The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
