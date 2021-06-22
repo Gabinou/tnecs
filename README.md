@@ -32,6 +32,9 @@ Phases are user-defined ```uint8_t```.
 System execution order is first-come first-served by default.
 Systems are inclusive by default, meaning that they run over entities with additional components to the system's.
 
+## To Do
+- Save system names.
+
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 

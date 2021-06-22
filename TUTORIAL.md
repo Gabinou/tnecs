@@ -141,4 +141,5 @@ enum SYSTEM_PHASES {
 tnecs_time_ns_t frame_deltat;
 tnecs_world_step(world, frame_deltat);
 ```
-```tnecs_world_step``` computes previous frame time  ```deltat``` if 0 is inputted. The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
+```tnecs_world_step``` computes time from previous frame time  ```deltat``` if 0 is inputted, with an included 0.1 microsecond resolution clock. 
+The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
