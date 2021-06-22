@@ -37,7 +37,6 @@ uint64_t get_ns() {
     return (uint64_t)((1e9 * now.QuadPart) / win_frequency.QuadPart);
 #endif
 }
-
 #ifdef MICROSECOND_CLOCK
 extern double get_us();
 #else
@@ -183,7 +182,6 @@ void tnecs_world_breath_components(struct tnecs_World * in_world) {
     in_world->num_components = TNECS_NULLSHIFT;
     in_world->component_names[0] = malloc(5);
     strncpy(in_world->component_names[0], "NULL", 5);
-
 }
 
 void tnecs_world_breath_systems(struct tnecs_World * in_world) {
@@ -355,7 +353,6 @@ tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world) {
     in_world->entities[out] = out;
     tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
     TNECS_DEBUG_ASSERT(in_world->entities[out] == out);
-
     TNECS_DEBUG_ASSERT(in_world->entities_bytype[TNECS_NULL][in_world->entity_orders[out]] == out);
     return (out);
 }
@@ -582,8 +579,7 @@ void tnecs_component_copy(struct tnecs_World * in_world, tnecs_entity_t in_entit
 }
 
 void tnecs_component_del(struct tnecs_World * in_world, tnecs_entity_t in_entity, tnecs_component_t old_typeflag) {
-    TNECS_DEBUG_PRINTF("tnecs_component_del \n");
-    // for input entity, delete ALL components from componentsbytype
+    TNECS_DEBUG_PRINTF("tnecs_component_del \n"); // deletes ALL components from componentsbytype
 
     size_t old_typeflag_id = tnecs_typeflagid(in_world, old_typeflag);
     size_t old_component_num = in_world->num_components_bytype[old_typeflag_id];
@@ -615,7 +611,6 @@ bool tnecs_component_migrate(struct tnecs_World * in_world, tnecs_entity_t in_en
 
 void tnecs_component_array_new(struct tnecs_World * in_world, size_t num_components, tnecs_component_t in_typeflag) {
     TNECS_DEBUG_PRINTF("tnecs_component_array_new\n");
-    // assumes new typeflag was added on top of world->typeflags
 
     struct tnecs_Components_Array * temp_comparray = (struct tnecs_Components_Array *)calloc(num_components, sizeof(struct tnecs_Components_Array));
     tnecs_component_t typeflag_reduced = in_typeflag, typeflag_added = 0, type_toadd, typeflag_id = tnecs_typeflagid(in_world, in_typeflag);

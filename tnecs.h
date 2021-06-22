@@ -128,7 +128,7 @@ typedef struct tnecs_Components_Array tnecs_component_array_t;
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
 #define TNECS_CONCATENATE2(arg1, arg2) arg1##arg2
-#define TNECS_IS_supertype(typeflag, type) ((type & typeflag) > 0)
+#define TNECS_IS_SUPERTYPE(typeflag, type) ((type & typeflag) > 0)
 
 /******************* HACKY DISTRIBUTION FOR VARIADIC MACROS ******************/
 // Distribution as in algebra: a(x+b) -> ax + ab
@@ -185,9 +185,9 @@ struct tnecs_World {
     tnecs_hash_t * system_hashes;                             // [system_id]
     char ** system_names;                                      // [system_id]
 
+    //_bytype arrays are exclusive
     size_t ** supertype_id_bytype;                            // [typeflag_id][typeflag_id_order]
     size_t * num_supertype_ids;                               // [typeflag_id]
-    // bytype arrays are exclusive -> entities unique in components_bytype
     struct tnecs_Components_Array ** components_bytype;       // [typeflag_id][component_order_bytype]
     tnecs_entity_t ** entities_bytype;                        // [typeflag_id][entity_order_bytype]
     tnecs_component_t ** components_idbytype;                 // [typeflag_id][component_order_bytype]
@@ -198,10 +198,8 @@ struct tnecs_World {
     void (** systems_torun)(struct tnecs_System_Input *);     // [torun_order] debug
     size_t num_systems_torun;
 
-    // len is allocated size
-    // num is active elements in array
-    size_t len_entities, len_typeflags, len_systems, len_phases;
-    size_t num_components, num_typeflags, num_systems, num_phases;
+    size_t len_entities, len_typeflags, len_systems, len_phases; // len is allocated size
+    size_t num_components, num_typeflags, num_systems, num_phases; // num is active elements
     size_t * entity_orders;                                   // [entity_id]
     size_t * num_components_bytype;                           // [typeflag_id]
     size_t * len_entities_bytype, * num_entities_bytype;      // [typeflag_id]
@@ -259,8 +257,7 @@ tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World * in_world, si
 
 void tnecs_entity_destroy(struct tnecs_World * in_world, tnecs_entity_t in_entity);
 
-// Overloaded macros:
-//     ->TNECS_ENTITY_CREATE, TNECS_ENTITIES_CREATE, TNECS_ADD_COMPONENT
+// Overloaded macros: -> TNECS_ENTITY_CREATE, TNECS_ENTITIES_CREATE, TNECS_ADD_COMPONENT
 #define TNECS_ENTITY_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE2, TNECS_ENTITY_CREATE1)(__VA_ARGS__)
 #define TNECS_CHOOSE_ENTITY_CREATE(_1,_2,NAME,...) NAME
 #define TNECS_ENTITY_CREATE1(world) tnecs_entity_create(world)
@@ -359,5 +356,4 @@ size_t setBits_KnR_uint64_t(uint64_t in_flags);
 #ifdef __cplusplus
 }
 #endif
-
 #endif // __TNECS_H__
