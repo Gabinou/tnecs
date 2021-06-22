@@ -42,6 +42,7 @@ A component is a user-defined struct:
     TNECS_REGISTER_COMPONENT(world, Position);
 ```
 When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
+Component names are stored at ```world->component_names[component_id]```.
 ```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
 
 ```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. Component index 0 is reserved for the NULL component. For now, this implies that a maximal number of 63 components can be registered.
@@ -77,7 +78,7 @@ Or, if you wish:
     tnecs_component_hash2id(world, TNECS_HASH("Position"));
 ```
 
-## Attach Components to Entities
+## Add Components to Entities
 ```c 
     TNECS_ADD_COMPONENT(world, Silou, Position);
 ```
@@ -90,7 +91,7 @@ By default, all component bits are set to zero with ```calloc```.
 
 Entities can be created with any number of components directly with this variadic macro: 
 ```c
-    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_WCOMPONENTS(world, Position, Unit);
+    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(world, Position, Unit);
 ```
 ```TNECS_NEW_ENTITY_WCOMPONENTS``` wraps around the variadic function ```tnecs_new_entity_wcomponents``` by counting the number of input components and hashing their names. So you can also write, if you wish:
 
@@ -117,7 +118,7 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
 System index 0 is reserved for NULL. Default phase is 0, the NULL phase, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
 By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 
-Systems run for every compatible supertype of the system typeflag, for any component list superset.
+Systems run for every compatible supertype of the system typeflag.
 If the system is set to exclusive, only the entities that have only exactly the system's components are ran.
 
 Systems can be registered directly with a phase and exclusivity:
@@ -129,10 +130,10 @@ enum SYSTEM_PHASES {
     SYSTEM_PHASE_MID = 2,
     SYSTEM_PHASE_POST = 3,
 };
-    TNECS_REGISTER_SYSTEM_WPHASE(world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit); 
+    TNECS_REGISTER_SYSTEM_wPHASE(world, SystemMove, SYSTEM_PHASE_PRE, Position, Unit); 
     bool isExclusive = true;
-    TNECS_REGISTER_SYSTEM_WEXCL(world, SystemMove, isExclusive, Position, Unit); 
-    TNECS_REGISTER_SYSTEM_WPHASE_WEXCL(world, SystemMove, MYPHASE, isExclusive, Position, Unit); 
+    TNECS_REGISTER_SYSTEM_wEXCL(world, SystemMove, isExclusive, Position, Unit); 
+    TNECS_REGISTER_SYSTEM_wPHASE_wEXCL(world, SystemMove, MYPHASE, isExclusive, Position, Unit); 
 
 ```
 
