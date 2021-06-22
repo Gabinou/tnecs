@@ -251,8 +251,8 @@ void tnecs_test_utilities() {
     lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
     lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
 
-    lok(TNECS_IS_SUPERTYPE(4, (4 + 8 + 16)));
-    lok(!TNECS_IS_SUPERTYPE(2, (4 + 8 + 16)));
+    lok(TNECS_TYPEFLAG_IS_SUPERTYPE(4, (4 + 8 + 16)));
+    lok(!TNECS_TYPEFLAG_IS_SUPERTYPE(2, (4 + 8 + 16)));
 
     lok(setBits_KnR_uint64_t(1) == 1);
     lok(setBits_KnR_uint64_t(2) == 1);

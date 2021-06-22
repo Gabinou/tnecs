@@ -127,7 +127,8 @@ typedef struct tnecs_Components_Array tnecs_component_array_t;
 #define TNECS_CONCATENATE(arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
 #define TNECS_CONCATENATE2(arg1, arg2) arg1##arg2
-#define TNECS_IS_SUPERTYPE(typeflag, type) ((type & typeflag) > 0)
+#define TNECS_TYPEFLAG_HAS_TYPE(typeflag, type) ((typeflag & type) > 0)
+#define TNECS_TYPEFLAG_IS_SUPERTYPE(typeflag1, typeflag2) ((typeflag1 & typeflag2) == typeflag1)
 
 /******************* HACKY DISTRIBUTION FOR VARIADIC MACROS ******************/
 // Distribution as in algebra: a(x+b) -> ax + ab
