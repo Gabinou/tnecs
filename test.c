@@ -10,6 +10,7 @@
 
 // TO DO:
 //   -> tests for component_del
+//   -> tests for entity destroy
 
 /* MINCTEST - Minimal C Test Library - 0.2.0
 *  ---------> MODIFIED FOR TNECS <----------

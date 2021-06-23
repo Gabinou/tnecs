@@ -5,6 +5,7 @@
     struct tnecs_World * world = tnecs_world_genesis();
 ```
 The world contains everything tnecs needs.
+Use ```tnecs_world_destroy``` to free all memory.
 
 ## Entity creation/destruction
 ```c
@@ -14,6 +15,7 @@ The world contains everything tnecs needs.
 ```tnecs_entity_t``` is a ```uint64_t``` index. 
 
 Entity index 0 is reserved for NULL.
+Entities can be destroyed with ```tnecs_entity_destroy```, which frees all associated components.
 
 Entities can be created with an index:
 ```c
@@ -122,7 +124,8 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
 System index 0 is reserved for NULL. 
 Default phase is 0, the NULL phase, which always runs first.
 Other phases run in order of their phase id. 
-```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
+Inside each phase, each system is run first come first served.
+This order can be cahnged with ```tnecs_system_order_switch```.
 
 By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 
 Inclusive systems are run once for every compatible supertype of the system typeflag (see ```systems_torun``` in the ```world```).
