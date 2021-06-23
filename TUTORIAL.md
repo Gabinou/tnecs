@@ -62,7 +62,7 @@ The component's type can be obtained with:
 The relation between component indices and flags is:
 ```c
     Position_flag == (1 << (Position_id - 1));
-    Position_id == ((tnecs_component_t)(log2(Position_id) + 1.1f));  // casting to int truncates to 0
+    Position_id == ((tnecs_component_t)(log2(Position_flag) + 1.1f));  // casting to int truncates to 0
 ```
 which are accessible through the macros:
 ```c
