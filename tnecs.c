@@ -58,10 +58,7 @@ struct tnecs_World * tnecs_world_genesis() {
         success &= tnecs_world_breath_typeflags(tnecs_world);
         success &= tnecs_world_breath_systems(tnecs_world);
         success &= tnecs_world_breath_components(tnecs_world);
-        if (!success) {
-            free(tnecs_world);
-            tnecs_world = NULL;
-        }
+        TNECS_DEBUG_ASSERT(success);
     }
     return (tnecs_world);
 }
