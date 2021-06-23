@@ -29,10 +29,6 @@ All live inside the ```world```.
 The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
 Phases are user-defined ```uint8_t```.
 System execution order is first-come first-served by default.
-Systems are inclusive by default, meaning that they run over entities with additional components to the system's.
-
-## To Do
-- Save system names.
 
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.
@@ -46,6 +42,7 @@ Make the _simplest possible_ C99 ECS library, only with the _minimum necessary f
 - Small: <1400 lines, 2 files.
 - Fast: see benchmarks in test.c
 - Simple: C99 API
+- Independent: only dependent on C99 standard libraries
 - FOSS: Free and Open Source
 
 ## Alternative ECS/Gamedev libraries for C/C++

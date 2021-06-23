@@ -94,8 +94,8 @@ extern "C" {
 #  include <windows.h>
 #endif
 
-extern uint64_t get_ns();
-extern double get_us();
+extern uint64_t tnecs_get_ns();
+extern double tnecs_get_us();
 
 /**************************** TYPE DEFINITIONS *******************************/
 typedef uint64_t tnecs_entity_t;     // simple 64 bit integer
@@ -104,7 +104,7 @@ typedef uint64_t tnecs_hash_t;
 typedef uint8_t tnecs_phase_t;
 typedef uint64_t tnecs_time_ns_t;
 typedef unsigned char tnecs_byte_t;
-typedef unsigned char tnecs_str_t;
+typedef char tnecs_str_t;
 typedef struct tnecs_World tnecs_world_t;
 typedef struct tnecs_System_Input tnecs_system_input_t;
 typedef struct tnecs_Components_Array tnecs_component_array_t;
@@ -226,8 +226,8 @@ struct tnecs_Components_Array {
 
 /**************************** WORLD FUNCTIONS ********************************/
 struct tnecs_World * tnecs_world_genesis();
-bool tnecs_world_destroy(struct tnecs_World * in_world);
-bool tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
+void tnecs_world_destroy(struct tnecs_World * in_world);
+void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat);
 bool tnecs_world_breath_entities(struct tnecs_World * in_world);
 bool tnecs_world_breath_components(struct tnecs_World * in_world);
 bool tnecs_world_breath_systems(struct tnecs_World * in_world);
@@ -345,8 +345,8 @@ bool tnecs_growArray_typeflag(struct tnecs_World * in_world);
 bool tnecs_growArray_phase(struct tnecs_World * in_world);
 
 /****************************** STRING HASHING *******************************/
-uint64_t tnecs_hash_djb2(const unsigned char * str); // slightly faster
-uint64_t tnecs_hash_sdbm(const unsigned char * str);
+uint64_t tnecs_hash_djb2(const char * str); // slightly faster
+uint64_t tnecs_hash_sdbm(const char * str);
 #define TNECS_HASH(name) tnecs_hash_djb2(name)
 
 /****************************** SET BIT COUNTING *****************************/

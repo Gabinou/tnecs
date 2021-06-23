@@ -43,12 +43,15 @@ A component is a user-defined struct:
     TNECS_REGISTER_COMPONENT(world, Position);
 ```
 When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
-Component names are stored at ```world->component_names[component_id]```.
 ```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
+Component names are stored at ```world->component_names[component_id]```.
 
-```tnecs_component_t``` is a ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. Component index 0 is reserved for the NULL component. For now, this implies that a maximal number of 63 components can be registered.
+```tnecs_component_t``` is an ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. 
+Component index 0 is reserved for the NULL component.
+For now, this implies that a maximal number of 63 components can be registered.
 
-NOTE: type/flag are used interchangeably for a ```uint64_t``` only with one bit set i.e. component type/flag. Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. system typeflags. 
+NOTE: type/flag are used interchangeably for an ```uint64_t``` only with one bit set i.e. component type/flag.
+Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. system typeflags. 
 
 The component's type can be obtained with:
 ```c
@@ -122,8 +125,8 @@ Other phases run in order of their phase id.
 ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
 By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 
-Inclusive systems are run once for every compatible supertype of the system typeflag ( see ```systems_torun``` in the ```world```).
-If the system is set to exclusive, it runs only one time for the entities that have exactly the system's components.
+Inclusive systems are run once for every compatible supertype of the system typeflag (see ```systems_torun``` in the ```world```).
+If the system is set to exclusive, it runs only one time for the entities that have exactly only the system's components.
 
 Systems can be registered directly with a phase and exclusivity:
 Phases are greater than zero ```uint8_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
@@ -146,9 +149,9 @@ enum SYSTEM_PHASES {
 tnecs_time_ns_t frame_deltat;
 tnecs_world_step(world, frame_deltat);
 ```
-```tnecs_world_step``` computes time from previous frame time  ```deltat``` if 0 is inputted, with an included 0.1 microsecond resolution clock. 
+```tnecs_world_step``` computes time from previous frame time  ```deltat``` if 0 is inputted, with the 0.1 microsecond resolution clock included in tnecs. 
 The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
 
 ## Error Handling
-Upon an error, functions/macros that output values fail return 0, which is always reserved for NULL, and ```NULL``` if the output is a pointer.
+Upon an error, functions/macros that output values fail return 0, and ```NULL``` if the output is a pointer.
 Otherwise, they return the value (e.g. ```tnecs_create_entity``` returns the entity index) or ```true```.
