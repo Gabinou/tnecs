@@ -120,7 +120,7 @@ Entities can be created with any number of components directly with this variadi
 ```
 
 ## Register System to the world
-A system is a user-defined function, with a ```struct * tnecs_System_Input``` pointer as input:
+A system is a user-defined function, with a ```struct * tnecs_System_Input``` pointer as input and no output:
 ```c
     void SystemMove(tnecs_system_input_t * in_input) {
         Position *p = TNECS_COMPONENTS_LIST(in_input, Position);
@@ -131,9 +131,7 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
             p[i].y += v[i].vy * in_input->deltat;
         }
     }
-
     TNECS_REGISTER_SYSTEM(world, SystemMove, Position, Unit); 
-
 ```
 System index 0 is reserved for NULL. 
 
