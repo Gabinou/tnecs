@@ -20,7 +20,7 @@ Entities can be destroyed with ```tnecs_entity_destroy```, which frees all assoc
 Entities can be created with an index:
 ```c
     tnecs_entity_t Silou = tnecs_entity_create_windex(world, 100);
-    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(world, 100);
+    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE(world, 101);
 ```
 ```TNECS_ENTITY_CREATE``` is an overloaded macro.
 
@@ -28,7 +28,7 @@ Entities can be created in batches, with indices:
 ```c
     TNECS_ENTITIES_CREATE(world, 100);
     tnecs_entities_create(world, 100);
-    tnecs_entity_t to_create[100];
+    tnecs_entity_t to_create[100] = ...;
     TNECS_ENTITIES_CREATE(world, 100, to_create);
     tnecs_entities_create_windices(world, 100, to_create);
 ```
@@ -44,16 +44,15 @@ A component is a user-defined struct:
 
     TNECS_REGISTER_COMPONENT(world, Position);
 ```
-When registered, the component names are stringified, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
+When registered, the component names are stringified, are stored at ```world->component_names[component_id]```, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
 ```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
-Component names are stored at ```world->component_names[component_id]```.
 
 ```tnecs_component_t``` is an ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. 
 Component index 0 is reserved for the NULL component.
 For now, this implies that a maximal number of 63 components can be registered.
 
-NOTE: type/flag are used interchangeably for an ```uint64_t``` only with one bit set i.e. component type/flag.
-Typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. system typeflags. 
+NOTE: type and flag are used interchangeably for an ```uint64_t``` only with one bit set i.e. component type or flag.
+A typeflag refers to a ```uint64_t``` bitflag with any number of set bits i.e. system typeflags. 
 
 The component's type can be obtained with:
 ```c
@@ -88,6 +87,21 @@ Or, if you wish:
 ```c 
     TNECS_ADD_COMPONENT(world, Silou, Position);
 ```
+By default, tnecs checks if the entity typeflag is new, when the new component is added.
+```TNECS_ADD_COMPONENT``` is an overloaded macro, so you can specify if the typeflag is not new and skip a check for better performance:
+
+```c
+    bool isNew = false;
+    TNECS_ADD_COMPONENT(world, Silou, Position, isNew);
+```
+Multiple components can also be added at once:
+```c
+    bool isNew = false;
+    TNECS_ADD_COMPONENTS(world, Pirou, isNew, Position, Velocity);
+```
+```TNECS_ADD_COMPONENTS``` is NOT an overloaded macro.
+
+You can get a pointer to the component:
 ```c 
     struct Position * pos_Silou = TNECS_GET_COMPONENT(world, Silou, Position);
     pos_Silou->x += 1;
@@ -122,17 +136,19 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
 
 ```
 System index 0 is reserved for NULL. 
+
+Phases are greater than zero ```uint8_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
 Default phase is 0, the NULL phase, which always runs first.
 Other phases run in order of their phase id. 
+
 Inside each phase, each system is run first come first served.
-This order can be cahnged with ```tnecs_system_order_switch```.
+This order can be changed with ```tnecs_system_order_switch```.
 
 By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 
-Inclusive systems are run once for every compatible supertype of the system typeflag (see ```systems_torun``` in the ```world```).
-If the system is set to exclusive, it runs only one time for the entities that have exactly only the system's components.
+Inclusive systems are run once for every compatible supertype of the system typeflag, in the order saved in ```systems_torun``` in the ```world``` after each step.
+If the system is set to exclusive, it runs only one time for the entities that only have exactly the system's components.
 
 Systems can be registered directly with a phase and exclusivity:
-Phases are greater than zero ```uint8_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
 ```c
 enum SYSTEM_PHASES {
     SYSTEM_PHASE_NULL = 0,
@@ -157,4 +173,4 @@ The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessi
 
 ## Error Handling
 Upon an error, functions/macros that output values fail return 0, and ```NULL``` if the output is a pointer.
-Otherwise, they return the value (e.g. ```tnecs_create_entity``` returns the entity index) or ```true```.
+Otherwise, they return the value e.g. ```tnecs_create_entity``` returns the entity index or equivalents that evaluate to ```true```.
