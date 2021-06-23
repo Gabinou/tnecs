@@ -1,4 +1,5 @@
 
+
 ## Initializing the world
 ```c
     struct tnecs_World * world = tnecs_world_genesis();
@@ -12,7 +13,7 @@ The world contains everything tnecs needs.
 ```
 ```tnecs_entity_t``` is a ```uint64_t``` index. 
 
-Entity index 0 is always reserved for NULL.
+Entity index 0 is reserved for NULL.
 
 Entities can be created with an index:
 ```c
@@ -115,11 +116,14 @@ A system is a user-defined function, with a ```struct * tnecs_System_Input``` po
     TNECS_REGISTER_SYSTEM(world, SystemMove, Position, Unit); 
 
 ```
-System index 0 is reserved for NULL. Default phase is 0, the NULL phase, which always runs first. Other phases run in order of their phase id. ```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
+System index 0 is reserved for NULL. 
+Default phase is 0, the NULL phase, which always runs first.
+Other phases run in order of their phase id. 
+```tnecs_system_input_t``` is alias for ```struct tnecs_System_Input```.
 
 By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 
-Systems run for every compatible supertype of the system typeflag.
-If the system is set to exclusive, only the entities that have only exactly the system's components are ran.
+Inclusive systems are run once for every compatible supertype of the system typeflag ( see ```systems_torun``` in the ```world```).
+If the system is set to exclusive, it runs only one time for the entities that have exactly the system's components.
 
 Systems can be registered directly with a phase and exclusivity:
 Phases are greater than zero ```uint8_t``` integers that can be defined any way one wishes, though I suggest using an ```enum```:
@@ -144,3 +148,7 @@ tnecs_world_step(world, frame_deltat);
 ```
 ```tnecs_world_step``` computes time from previous frame time  ```deltat``` if 0 is inputted, with an included 0.1 microsecond resolution clock. 
 The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
+
+## Error Handling
+Upon an error, functions/macros that output values fail return 0, which is always reserved for NULL, and ```NULL``` if the output is a pointer.
+Otherwise, they return the value (e.g. ```tnecs_create_entity``` returns the entity index) or ```true```.

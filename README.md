@@ -35,6 +35,8 @@ Systems are inclusive by default, meaning that they run over entities with addit
 ## To Do
 - Save system names.
 
+## To Do
+- Error Handling.
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 

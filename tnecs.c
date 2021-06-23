@@ -362,7 +362,7 @@ tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World * in_world, tnecs_e
 
     tnecs_entity_t out = 0;
     while (in_entity >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
-    if (!in_world->entities[in_entity]) {
+    if ((!in_world->entities[in_entity]) & (in_entity > 0)) {
         out = in_world->entities[in_entity] = in_entity;
         tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
     }
