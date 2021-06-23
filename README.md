@@ -2,7 +2,6 @@
     ![tnecs](logo.png "tnecs logo")
 </div>
 
-
 # tnecs (Tiny nECS) 
 
 Tiny C99 Entity-Component-System (ECS) library. [Read the Tutorial](https://gitlab.com/Gabinou/tnecs/-/blob/master/TUTORIAL.md).
@@ -35,8 +34,6 @@ Systems are inclusive by default, meaning that they run over entities with addit
 ## To Do
 - Save system names.
 
-## To Do
-- Error Handling.
 ## Installation
 Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 
@@ -46,7 +43,7 @@ Make the _simplest possible_ C99 ECS library, only with the _minimum necessary f
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
-- Small: <1500 lines, 2 files.
+- Small: <1400 lines, 2 files.
 - Fast: see benchmarks in test.c
 - Simple: C99 API
 - FOSS: Free and Open Source

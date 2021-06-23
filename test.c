@@ -440,7 +440,7 @@ void tnecs_test_system_registration() {
 }
 
 void tnecs_test_entity_creation() {
-    dupprintf(globalf, "tnecs_test_entity_creation \n");
+    // dupprintf(globalf, "tnecs_test_entity_creation \n");
     lok(test_world->entity_next == TNECS_NULLSHIFT);
     tnecs_entity_t Silou = tnecs_entity_create(test_world);
     lok(Silou == TNECS_NULLSHIFT);
@@ -520,11 +520,10 @@ void tnecs_test_entity_creation() {
 
     // Coverage for if in tnecs_register_component
     test_world2->num_components = 66;
-    TNECS_REGISTER_COMPONENT(test_world2, Unit2);
+    lok(TNECS_REGISTER_COMPONENT(test_world2, Unit2) ==0);
     test_world2->num_components = 2;
     test_world2->num_systems_byphase[0] = TNECS_INITIAL_PHASE_LEN;
     tnecs_world_destroy(test_world2);
-
 
     // Coverage for if in tnecs_register_system
     test_world2 = tnecs_world_genesis();
