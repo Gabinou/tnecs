@@ -46,8 +46,8 @@ Make the _simplest possible_ C99 ECS library, only with the _minimum necessary f
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
-- Small: <1300 lines, 2 files.
-- Fast: see simple benchmarks in test.c
+- Small: <1500 lines, 2 files.
+- Fast: see benchmarks in test.c
 - Simple: C99 API
 - FOSS: Free and Open Source
 

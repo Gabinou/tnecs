@@ -323,6 +323,8 @@ void tnecs_test_utilities() {
 }
 
 void tnecs_test_component_registration() {
+    test_world = tnecs_world_genesis();
+    lok(test_world != NULL);
     TNECS_REGISTER_COMPONENT(test_world, Position);
     size_t temp_comp_flag = 1;
     size_t temp_comp_id = 1;
@@ -793,6 +795,7 @@ void tnecs_test_world_progress() {
     tnecs_growArray_typeflag(test_world);
 
     struct tnecs_World * inclusive_world = tnecs_world_genesis();
+    lok(inclusive_world != NULL);
 
     TNECS_REGISTER_COMPONENT(inclusive_world, Velocity);
     TNECS_REGISTER_COMPONENT(inclusive_world, Position);
@@ -875,6 +878,7 @@ void tnecs_test_world_progress() {
     lok(inclusive_world->systems_torun[15] == NULL);
 
     struct tnecs_World * inclusive_world2 = tnecs_world_genesis();
+    lok(inclusive_world2 != NULL);
 
     TNECS_REGISTER_COMPONENT(inclusive_world2, Velocity);
     TNECS_REGISTER_COMPONENT(inclusive_world2, Position);
@@ -1067,6 +1071,7 @@ void tnecs_other_benchmarks() {
 
 void tnecs_test_grow() {
     struct tnecs_World * grow_world = tnecs_world_genesis();
+    lok(grow_world != NULL);
 
     lok(grow_world->len_entities == TNECS_INITIAL_ENTITY_LEN);
     lok(grow_world->len_typeflags == TNECS_INITIAL_SYSTEM_LEN);
@@ -1300,8 +1305,7 @@ void test_log2() {
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
-    lrun("utilities", tnecs_test_utilities);
-    test_world = tnecs_world_genesis();
+    lrun("utilities", tnecs_test_utilities);    
     lrun("log2", test_log2);
     lrun("c_regis", tnecs_test_component_registration);
     lrun("s_regis", tnecs_test_system_registration);
