@@ -8,7 +8,7 @@ I also use the ```tcc``` compiler sometimes, so compiler-specific instructions a
 During the development of my game, I used several free and open source ECS libraries.
 They are quite feature-full and robust, but rather complex.
 I also found the usefulness of some of their features questionable.
-Ultimately, I wished to know if it really is impossible to outperform established software libraries.
+Ultimately, I wished to know if it really is impossible to for randos to outperform established software libraries.
 
 Anyhow, as was mentionned in the the [Readme](https://gitlab.com/Gabinou/tnecs/-/blob/master/README.md), in tnecs:
 - an entity is an ```uint64_t``` index, 
@@ -31,18 +31,18 @@ Each entity is associated with a single ```uint64_t``` typeflag, ibid. for syste
 Simple binary operators are used to check if a type is included in a typeflag, if a typeflag is a superset of another, etc.
 This effectively limits the number of components to 63, with 0 reserved for the NULL type, but this is more than enough in practice.
 
-Entities and components are arranged in 2D "bytype" arrays.
-Each new typeflag gets an id, with associated entities and components at the id.
-Then, each component/entity has an order at the typeflag index, determined on first come first served basis.
+Entities and components are arranged in "bytype" arrays of pointers.
+Each new typeflag gets an index, with associated entities and components array pointer at the index.
+Then, each component/entity has an order inside the "bytype" array, determined on a first come first served basis.
 The "bytype" arrays are exclusive, meaning entities and components are NOT copied for each compatible supertype.
-This saves some memory, but inclusive systems need to be called multiple times, once for each supertype.
+This saves some memory, but leads to the inclusive systems being called once for each supertype.
 It is unclear to me if the alternative is more performant.
 
-Systems are be ran in phases, so they are arranged in "byphase" arrays internally.
+Systems are be ran in phases, so they are arranged in "byphase" arrays of pointers.
 By default the NULL phase 0 is ran first.
 System order in these phases is first come first served by default, and can be set by the user with ```tnecs_system_order_switch```.
 
 ### Miscellaneous
 Memory is allocated with exponentially growing arrays.
 
-Macro tricks are used extensively: overloaded macros, macro distribution for variadic macros, counting the number of input arguments for variadic macros...
+Macro tricks are used extensively: overloaded macros, macro distribution for variadic macros, input arguments counting for variadic macros...
