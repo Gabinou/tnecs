@@ -1,5 +1,4 @@
 
-
 ## Ｏn tnecs' Design
 
 My motivation for tnecs is to make the _simplest possible_ C99 ECS library only with the _minimum necessary features_.
@@ -37,6 +36,9 @@ Then, each component/entity has an order inside the "bytype" array, determined o
 The "bytype" arrays are exclusive, meaning entities and components are NOT copied for each compatible supertype.
 This saves some memory, but leads to the inclusive systems being called once for each supertype.
 It is unclear to me if the alternative is more performant.
+
+Anyhow, every time a new component is added to an entity, its type changes, so each associated components and its index in the "bytype" arrays is copied over, then deleted from the previous location.
+This is somewhat of a costly operation, so I suggest you create entities with all of its components directly with the ```TNECS_ENTITY_CREATE_wCOMPONENTS``` macro.
 
 Systems are ran in phases, so they are arranged in "byphase" arrays of pointers.
 By default the NULL phase 0 is ran first.
