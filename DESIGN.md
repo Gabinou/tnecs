@@ -8,7 +8,7 @@ I also use the ```tcc``` compiler sometimes, so compiler-specific instructions a
 During the development of my game, I used several free and open source ECS libraries.
 They are quite feature-full and robust, but rather complex.
 I also found the usefulness of some of their features questionable.
-Ultimately, I wished to know if it really is impossible to for randos to outperform established software libraries.
+Ultimately, I wished to know if it really is impossible for randos to outperform established software libraries.
 
 Anyhow, as was mentionned in the the [Readme](https://gitlab.com/Gabinou/tnecs/-/blob/master/README.md), in tnecs:
 - an entity is an ```uint64_t``` index, 
@@ -38,7 +38,7 @@ The "bytype" arrays are exclusive, meaning entities and components are NOT copie
 This saves some memory, but leads to the inclusive systems being called once for each supertype.
 It is unclear to me if the alternative is more performant.
 
-Systems are be ran in phases, so they are arranged in "byphase" arrays of pointers.
+Systems are ran in phases, so they are arranged in "byphase" arrays of pointers.
 By default the NULL phase 0 is ran first.
 System order in these phases is first come first served by default, and can be set by the user with ```tnecs_system_order_switch```.
 
