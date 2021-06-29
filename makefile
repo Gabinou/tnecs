@@ -128,8 +128,4 @@ $(EXEC_CLANG): $(SOURCES_TEST) $(TARGETS_TNECS_CLANG); clang $< $(TARGETS_TNECS_
 
 
 .PHONY: clean
-clean: ; @echo "Cleaning tnecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL) 
-.PHONY: cleancov
-cleancov: ; @echo "Cleaning tnecs coverage tests" & rm -frv out *.gcda *.gcno *.gcov *.info
-.PHONY: cleanall
-cleanall: clean cleancov
+clean: ; @echo "Cleaning tnecs" & rm -frv $(TARGETS_ALL) $(EXEC_ALL) out *.gcda *.gcno *.gcov *.info *.bin *.exe
