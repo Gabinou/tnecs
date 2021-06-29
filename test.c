@@ -484,7 +484,7 @@ void tnecs_test_entity_creation() {
 
     // Coverage for if in tnecs_register_component
     test_world2->num_components = 66;
-    lok(TNECS_REGISTER_COMPONENT(test_world2, Unit2) ==0);
+    lok(TNECS_REGISTER_COMPONENT(test_world2, Unit2) == 0);
     test_world2->num_components = 2;
     test_world2->num_systems_byphase[0] = TNECS_INITIAL_PHASE_LEN;
     tnecs_world_destroy(test_world2);
@@ -1161,7 +1161,7 @@ void test_log2() {
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
-    lrun("utilities", tnecs_test_utilities);    
+    lrun("utilities", tnecs_test_utilities);
     lrun("log2", test_log2);
     lrun("c_regis", tnecs_test_component_registration);
     lrun("s_regis", tnecs_test_system_registration);
