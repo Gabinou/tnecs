@@ -37,6 +37,9 @@ Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 ## Motivation
 Make the _simplest possible_ C99 ECS library, only with the _minimum necessary features_. Compile with ```tcc```.
 
+## ToDo:
+- Thread Safety?
+
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
