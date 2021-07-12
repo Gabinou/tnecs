@@ -48,6 +48,3 @@ System order in these phases is first come first served by default, and can be s
 Memory is allocated with exponentially growing arrays.
 
 Macro tricks are used extensively: overloaded macros, macro distribution for variadic macros, input arguments counting for variadic macros...
-
-### Thread Safety
-    
