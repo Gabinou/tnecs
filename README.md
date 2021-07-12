@@ -38,7 +38,7 @@ Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 Make the _simplest possible_ C99 ECS library, only with the _minimum necessary features_. Compile with ```tcc```.
 
 ## ToDo:
-- Thread Safety?
+- [Thread Safety](https://gitlab.com/Gabinou/tnecs/-/blob/master/DESIGN.md)?
 
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
