@@ -1,6 +1,6 @@
 #ifndef __TNECS_H__
 #define __TNECS_H__
-// Tiny C99 Entity-Component-System (ECS) library.
+// tnecs v1.3: Tiny C99 Entity-Component-System (ECS) library.
 
 // Originally created for use in a game I am developping using C99: https://gitlab.com/Gabinou/firesagamaker. Title pending.
 
