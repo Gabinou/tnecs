@@ -3,7 +3,7 @@
 COMPILER:=gcc#tcc, gcc, clang
 # Optimization increase code speed by 5X-6X for gcc and clang ONLY
 
-# OS AND Processor detection 
+# OS AND Processor detection
 ifeq ($(OS),Windows_NT)
     OS_FLAG := WIN32
     ifeq ($(PROCESSOR_ARCHITEW6432),AMD64)
@@ -56,7 +56,7 @@ FLAGS_BUILD_TYPE = -O0 -g #Debug
 
 # FLAGS_ERROR := -Wall -pedantic-errors
 FLAGS_ERROR := -w
-INCLUDE_ALL := -I. 
+INCLUDE_ALL := -I.
 
 # astyle detection: isASTYLE is empty unless astyle exists
 ifeq ($(OS_FLAG),WIN32)
@@ -77,7 +77,7 @@ $(info $$EXTENSION is [$(EXTENSION)])
 ifeq ($(isASTYLE),)
 	ASTYLE :=
 else
-	ASTYLE := astyle 
+	ASTYLE := astyle
 endif
 
 EXEC := $(PREFIX)test$(EXTENSION)
@@ -86,12 +86,12 @@ EXEC_GCC := $(PREFIX)test_gcc$(EXTENSION)
 EXEC_CLANG := $(PREFIX)test_clang$(EXTENSION)
 EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG}
 
-.PHONY: all 
-all: ${ASTYLE} $(EXEC) run 
+.PHONY: all
+all: ${ASTYLE} $(EXEC) run
 SOURCES_TNECS := tnecs.c
 SOURCES_TEST := test.c
 HEADERS := $(wildcard *.h)
-SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_TNECS) 
+SOURCES_ALL := $(SOURCES_TEST) $(SOURCES_TNECS)
 TARGETS_TNECS := $(SOURCES_TNECS:.c=.o)
 TARGETS_TNECS_GCC := $(SOURCES_TNECS:.c=_gcc.o)
 TARGETS_TNECS_TCC := $(SOURCES_TNECS:.c=_tcc.o)
@@ -115,10 +115,9 @@ clang: $(EXEC_CLANG) ; $(EXEC_CLANG)
 astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
 
 $(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@ $(FLAGS_COV)
-
-$(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@ 
+$(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@
 $(TARGETS_TNECS_GCC) : $(SOURCES_TNECS) ; gcc $< -c -o $@
-$(TARGETS_TNECS_TCC) : $(SOURCES_TNECS) ; tcc $< -c -o $@ 
+$(TARGETS_TNECS_TCC) : $(SOURCES_TNECS) ; tcc $< -c -o $@
 
 $(EXEC): $(SOURCES_TEST) $(TARGETS_TNECS); ${COMPILER} $< $(TARGETS_TNECS) -o $@ $(CFLAGS) $(FLAGS_COV)
 $(EXEC_TCC): $(SOURCES_TEST) $(TARGETS_TNECS_TCC); tcc $< $(TARGETS_TNECS_TCC) -o $@ $(CFLAGS)
