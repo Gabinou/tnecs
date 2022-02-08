@@ -136,6 +136,11 @@ void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) 
                 system_typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
                 current_input.entity_typeflag_id = system_typeflag_id;
                 current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
+                if (in_world->num_systems_torun >= (in_world->len_systems_torun-1)) {
+                    size_t old_len = in_world->len_systems_torun;
+                    in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
+                    in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
+                }
                 in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
                 in_world->systems_byphase[phase_id][sorder](&current_input);
                 if (!in_world->system_exclusive[system_id]) {
@@ -199,8 +204,11 @@ bool tnecs_world_breath_systems(struct tnecs_World * in_world) {
 
     bool success = 1;
     in_world->len_systems = TNECS_INITIAL_SYSTEM_LEN;
+    in_world->len_systems_torun = TNECS_INITIAL_SYSTEM_LEN;
     in_world->num_systems = TNECS_NULLSHIFT;
-    success &= ((in_world->systems_torun = calloc(in_world->len_systems, sizeof(*in_world->systems_torun))) != NULL);
+    // success &= ((in_world->systems_torun = calloc(in_world->len_systems, sizeof(*in_world->systems_torun))) != NULL);
+    in_world->systems_torun = calloc(in_world->len_systems_torun, sizeof(*in_world->systems_torun));
+    assert(in_world->systems_torun);
     success &= ((in_world->system_typeflags = calloc(in_world->len_systems, sizeof(*in_world->system_typeflags))) != NULL);
     success &= ((in_world->system_hashes = calloc(in_world->len_systems, sizeof(*in_world->system_hashes))) != NULL);
     success &= ((in_world->system_phases = calloc(in_world->len_systems, sizeof(*in_world->system_phases))) != NULL);
@@ -248,8 +256,12 @@ size_t tnecs_register_system(struct tnecs_World * in_world, const char * in_name
     in_world->system_names[system_id] = malloc(strlen(in_name) + 1);
     strncpy(in_world->system_names[system_id], in_name, strlen(in_name) + 1);
     tnecs_hash_t in_hash = tnecs_hash_djb2(in_name);
-    if (in_world->num_systems >= in_world->len_systems) { tnecs_growArray_system(in_world); }
-    if (!in_world->phases[in_phase]) { tnecs_register_phase(in_world, in_phase); }
+    if (in_world->num_systems >= in_world->len_systems) {
+        tnecs_growArray_system(in_world);
+    }
+    if (!in_world->phases[in_phase]) {
+        tnecs_register_phase(in_world, in_phase);
+    }
     in_world->system_exclusive[system_id] = in_isExclusive;
     in_world->system_phases[system_id] = in_phase;
     in_world->system_hashes[system_id] = in_hash;
@@ -340,7 +352,9 @@ size_t tnecs_register_typeflag(struct tnecs_World * in_world, size_t num_compone
 
 size_t tnecs_register_phase(struct tnecs_World * in_world, tnecs_phase_t in_phase) {
     TNECS_DEBUG_PRINTF("tnecs_register_phase\n");
-    while (in_phase >= in_world->len_phases) { tnecs_growArray_phase(in_world); }
+    while (in_phase >= in_world->len_phases) {
+        tnecs_growArray_phase(in_world);
+    }
     in_world->phases[in_phase] = in_phase;
     in_world->num_phases = (in_phase >= in_world->num_phases) ? (in_phase + 1) : in_world->num_phases;
     return (in_phase);
@@ -358,7 +372,9 @@ tnecs_entity_t tnecs_entity_create(struct tnecs_World * in_world) {
     }
     if (out == TNECS_NULL) {
         do {
-            if (in_world->entity_next >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
+            if (in_world->entity_next >= in_world->len_entities) {
+                tnecs_growArray_entity(in_world);
+            }
             out = in_world->entity_next;
         } while (in_world->entities[in_world->entity_next++] != TNECS_NULL);
     }
@@ -374,7 +390,9 @@ tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World * in_world, tnecs_e
     TNECS_DEBUG_PRINTF("tnecs_entity_create_windex\n");
 
     tnecs_entity_t out = 0;
-    while (in_entity >= in_world->len_entities) { tnecs_growArray_entity(in_world); }
+    while (in_entity >= in_world->len_entities) {
+        tnecs_growArray_entity(in_world);
+    }
     if ((!in_world->entities[in_entity]) & (in_entity > 0)) {
         out = in_world->entities[in_entity] = in_entity;
         tnecs_entitiesbytype_add(in_world, out, TNECS_NULL);
@@ -386,7 +404,9 @@ tnecs_entity_t tnecs_entities_create(struct tnecs_World * in_world, size_t num) 
     TNECS_DEBUG_PRINTF("tnecs_entities_create\n");
 
     size_t created = 0;
-    while (created < num) {created += (tnecs_entity_create(in_world) > 0);}
+    while (created < num) {
+        created += (tnecs_entity_create(in_world) > 0);
+    }
     return (created);
 }
 
@@ -459,7 +479,9 @@ tnecs_entity_t tnecs_entity_add_components(struct tnecs_World * in_world, tnecs_
     tnecs_component_t typeflag_old = in_world->entity_typeflags[in_entity];
     TNECS_DEBUG_ASSERT((typeflag_toadd != typeflag_old));
     tnecs_component_t typeflag_new = typeflag_toadd + typeflag_old;
-    if (isNew) { tnecs_register_typeflag(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new); }
+    if (isNew) {
+        tnecs_register_typeflag(in_world, setBits_KnR_uint64_t(typeflag_new), typeflag_new);
+    }
     size_t typeflag_new_id = tnecs_typeflagid(in_world, typeflag_new);
     tnecs_component_migrate(in_world, in_entity, typeflag_old, typeflag_new);
     tnecs_entitiesbytype_migrate(in_world, in_entity, typeflag_old, typeflag_new);
@@ -842,8 +864,10 @@ bool tnecs_growArray_system(struct tnecs_World * in_world) {
     TNECS_DEBUG_ASSERT(old_len > 0);
     bool success = 1;
     in_world->len_systems *= TNECS_ARRAY_GROWTH_FACTOR;
+    in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
     success &= ((in_world->system_names = tnecs_realloc(in_world->system_names, old_len, in_world->len_systems, sizeof(*in_world->system_names))) != NULL);
-    success &= ((in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems, sizeof(*in_world->systems_torun))) != NULL);
+    success &= ((in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun))) != NULL);
+    // systems can be run multiple times.
     success &= ((in_world->system_phases = tnecs_realloc(in_world->system_phases, old_len, in_world->len_systems, sizeof(*in_world->system_phases))) != NULL);
     success &= ((in_world->system_orders = tnecs_realloc(in_world->system_orders, old_len, in_world->len_systems, sizeof(*in_world->system_orders))) != NULL);
     success &= ((in_world->system_exclusive = tnecs_realloc(in_world->system_exclusive, old_len, in_world->len_systems, sizeof(*in_world->system_exclusive))) != NULL);

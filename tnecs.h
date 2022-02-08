@@ -1,6 +1,6 @@
 #ifndef __TNECS_H__
 #define __TNECS_H__
-// tnecs v1.3: Tiny C99 Entity-Component-System (ECS) library.
+// Tiny C99 Entity-Component-System (ECS) library.
 
 // Originally created for use in a game I am developping using C99: https://gitlab.com/Gabinou/firesagamaker. Title pending.
 
@@ -107,6 +107,7 @@ typedef unsigned char tnecs_byte_t;
 typedef char tnecs_str_t;
 typedef struct tnecs_World tnecs_world_t;
 typedef struct tnecs_System_Input tnecs_system_input_t;
+typedef void (*tnecs_system_ptr)(struct tnecs_System_Input *);
 typedef struct tnecs_Components_Array tnecs_component_array_t;
 
 /***************************** CONSTANT DEFINITIONS **************************/
@@ -193,9 +194,10 @@ struct tnecs_World {
     tnecs_component_t ** components_flagbytype;               // [typeflag_id][component_order_bytype]
     size_t ** components_orderbytype;                         // [typeflag_id][component_id]
     size_t ** systems_idbyphase;                              // [phase_id][system_order]
-    void (* ** systems_byphase)(struct tnecs_System_Input *); // [phase_id][system_id]
-    void (** systems_torun)(struct tnecs_System_Input *);     // [torun_order] debug
+    tnecs_system_ptr ** systems_byphase; // [phase_id][system_id]
+    tnecs_system_ptr * systems_torun;     // [torun_order] debug
     size_t num_systems_torun;
+    size_t len_systems_torun;
 
     size_t len_entities, len_typeflags, len_systems, len_phases; // len is allocated size
     size_t num_components, num_typeflags, num_systems, num_phases; // num is active elements
