@@ -136,18 +136,25 @@ void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) 
                 system_typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
                 current_input.entity_typeflag_id = system_typeflag_id;
                 current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
-                if (in_world->num_systems_torun >= (in_world->len_systems_torun-1)) {
+                if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
                     size_t old_len = in_world->len_systems_torun;
                     in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
                     in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
                 }
                 in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+                /* running the exclusive systems in current phase */
                 in_world->systems_byphase[phase_id][sorder](&current_input);
                 if (!in_world->system_exclusive[system_id]) {
                     for (size_t tsub = 0; tsub < in_world->num_supertype_ids[system_typeflag_id]; tsub++) {
                         current_input.entity_typeflag_id = in_world->supertype_id_bytype[system_typeflag_id][tsub];
                         current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
+                        if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
+                            size_t old_len = in_world->len_systems_torun;
+                            in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
+                            in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
+                        }
                         in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+                        /* running the non-exclusive systems in current phase */
                         in_world->systems_byphase[phase_id][sorder](&current_input);
                     }
                 }
@@ -206,10 +213,8 @@ bool tnecs_world_breath_systems(struct tnecs_World * in_world) {
     in_world->len_systems = TNECS_INITIAL_SYSTEM_LEN;
     in_world->len_systems_torun = TNECS_INITIAL_SYSTEM_LEN;
     in_world->num_systems = TNECS_NULLSHIFT;
-    // success &= ((in_world->systems_torun = calloc(in_world->len_systems, sizeof(*in_world->systems_torun))) != NULL);
-    in_world->systems_torun = calloc(in_world->len_systems_torun, sizeof(*in_world->systems_torun));
-    assert(in_world->systems_torun);
     success &= ((in_world->system_typeflags = calloc(in_world->len_systems, sizeof(*in_world->system_typeflags))) != NULL);
+    success &= ((in_world->systems_torun = calloc(in_world->len_systems_torun, sizeof(tnecs_system_ptr))) != NULL);
     success &= ((in_world->system_hashes = calloc(in_world->len_systems, sizeof(*in_world->system_hashes))) != NULL);
     success &= ((in_world->system_phases = calloc(in_world->len_systems, sizeof(*in_world->system_phases))) != NULL);
     success &= ((in_world->system_orders = calloc(in_world->len_systems, sizeof(*in_world->system_orders))) != NULL);
@@ -817,10 +822,12 @@ size_t tnecs_typeflagid(struct tnecs_World * in_world, tnecs_component_t in_type
 /***************************** "DYNAMIC" ARRAYS ******************************/
 void * tnecs_realloc(void * ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
     TNECS_DEBUG_PRINTF("tnecs_realloc\n");
-
+    TNECS_DEBUG_ASSERT(ptr);
+    TNECS_DEBUG_ASSERT(new_len > old_len);
+    assert(new_len > old_len);
     void * temp = (void *)calloc(new_len, elem_bytesize);
-    memcpy(temp, ptr, old_len * elem_bytesize);
     TNECS_DEBUG_ASSERT(temp);
+    memcpy(temp, ptr, old_len * elem_bytesize);
     free(ptr);
     return (temp);
 }
@@ -861,12 +868,14 @@ bool tnecs_growArray_system(struct tnecs_World * in_world) {
     TNECS_DEBUG_PRINTF("tnecs_growArray_system\n");
 
     size_t old_len = in_world->len_systems;
+    size_t old_len_torun = in_world->len_systems_torun;
     TNECS_DEBUG_ASSERT(old_len > 0);
     bool success = 1;
     in_world->len_systems *= TNECS_ARRAY_GROWTH_FACTOR;
     in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
     success &= ((in_world->system_names = tnecs_realloc(in_world->system_names, old_len, in_world->len_systems, sizeof(*in_world->system_names))) != NULL);
-    success &= ((in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun))) != NULL);
+
+    success &= ((in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len_torun, in_world->len_systems_torun, sizeof(tnecs_system_ptr))) != NULL);
     // systems can be run multiple times.
     success &= ((in_world->system_phases = tnecs_realloc(in_world->system_phases, old_len, in_world->len_systems, sizeof(*in_world->system_phases))) != NULL);
     success &= ((in_world->system_orders = tnecs_realloc(in_world->system_orders, old_len, in_world->len_systems, sizeof(*in_world->system_orders))) != NULL);

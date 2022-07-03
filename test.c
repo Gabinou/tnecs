@@ -1023,7 +1023,6 @@ void tnecs_test_grow() {
         }
     }
 
-
     tnecs_world_destroy(grow_world);
 }
 
