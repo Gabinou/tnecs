@@ -119,47 +119,48 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
 void tnecs_world_step(struct tnecs_World * in_world, tnecs_time_ns_t in_deltat) {
     TNECS_DEBUG_PRINTF("tnecs_world_step\n");
 
-    struct tnecs_System_Input current_input;
-    current_input.world = in_world;
-    size_t system_id, current_phase, system_typeflag_id;
-    in_world->num_systems_torun = 0;
+    // struct tnecs_System_Input current_input;
+    // current_input.world = in_world;
+    // size_t system_id, current_phase, system_typeflag_id;
+    size_t current_phase;
+    // in_world->num_systems_torun = 0;
     if (!in_deltat) {
-        current_input.deltat = tnecs_get_ns() - in_world->previous_time;
-    } else {
-        current_input.deltat = in_deltat;
+        in_deltat = tnecs_get_ns() - in_world->previous_time;
     }
     for (size_t phase_id = 0; phase_id < in_world->num_phases; phase_id++) {
         current_phase = in_world->phases[phase_id];
-        if (phase_id == current_phase) {
-            for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
-                system_id = in_world->systems_idbyphase[phase_id][sorder];
-                system_typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
-                current_input.entity_typeflag_id = system_typeflag_id;
-                current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
-                if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
-                    size_t old_len = in_world->len_systems_torun;
-                    in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
-                    in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
-                }
-                in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
-                /* running the exclusive systems in current phase */
-                in_world->systems_byphase[phase_id][sorder](&current_input);
-                if (!in_world->system_exclusive[system_id]) {
-                    for (size_t tsub = 0; tsub < in_world->num_supertype_ids[system_typeflag_id]; tsub++) {
-                        current_input.entity_typeflag_id = in_world->supertype_id_bytype[system_typeflag_id][tsub];
-                        current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
-                        if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
-                            size_t old_len = in_world->len_systems_torun;
-                            in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
-                            in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
-                        }
-                        in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
-                        /* running the non-exclusive systems in current phase */
-                        in_world->systems_byphase[phase_id][sorder](&current_input);
-                    }
-                }
-            }
-        }
+        tnecs_systems_byphase_run_dt(in_world, current_phase, in_deltat);
+
+        // if (phase_id == current_phase) {
+        //     for (size_t sorder = 0; sorder < in_world->num_systems_byphase[phase_id]; sorder++) {
+        //         system_id = in_world->systems_idbyphase[phase_id][sorder];
+        //         system_typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[system_id]);
+        //         current_input.entity_typeflag_id = system_typeflag_id;
+        //         current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
+        //         if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
+        //             size_t old_len = in_world->len_systems_torun;
+        //             in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
+        //             in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
+        //         }
+        //         in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+        //         /* running the exclusive systems in current phase */
+        //         in_world->systems_byphase[phase_id][sorder](&current_input);
+        //         if (!in_world->system_exclusive[system_id]) {
+        //             for (size_t tsub = 0; tsub < in_world->num_supertype_ids[system_typeflag_id]; tsub++) {
+        //                 current_input.entity_typeflag_id = in_world->supertype_id_bytype[system_typeflag_id][tsub];
+        //                 current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
+        //                 if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
+        //                     size_t old_len = in_world->len_systems_torun;
+        //                     in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
+        //                     in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
+        //                 }
+        //                 in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+        //                 /* running the non-exclusive systems in current phase */
+        //                 in_world->systems_byphase[phase_id][sorder](&current_input);
+        //             }
+        //         }
+        //     }
+        // }
     }
     in_world->previous_time = tnecs_get_ns();
 }
@@ -252,6 +253,69 @@ bool tnecs_world_breath_typeflags(struct tnecs_World * in_world) {
     in_world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
     return (success);
 }
+
+/**************************** SYSTEM FUNCTIONS ********************************/
+void tnecs_system_run(struct tnecs_World * in_world, size_t in_system_id) {
+    TNECS_DEBUG_PRINTF("tnecs_system_run\n");
+    tnecs_system_run_dt(in_world, in_system_id, 0.0);
+}
+
+void tnecs_system_run_dt(struct tnecs_World * in_world, size_t in_system_id, tnecs_time_ns_t in_deltat) {
+    TNECS_DEBUG_PRINTF("tnecs_system_run_dt\n");
+    struct tnecs_System_Input current_input;
+    current_input.world = in_world;
+    current_input.deltat = in_deltat;
+    size_t system_typeflag_id;
+    in_world->num_systems_torun = 0;
+    size_t sorder = in_world->system_orders[in_system_id];
+    tnecs_phase_t phase_id = in_world->system_phases[in_system_id];
+
+    system_typeflag_id = tnecs_typeflagid(in_world, in_world->system_typeflags[in_system_id]);
+    current_input.entity_typeflag_id = system_typeflag_id;
+    current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
+    if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
+        size_t old_len = in_world->len_systems_torun;
+        in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
+        in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
+    }
+    in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+    /* running the exclusive systems in current phase */
+    in_world->systems_byphase[phase_id][sorder](&current_input);
+
+    if (!in_world->system_exclusive[in_system_id]) {
+        for (size_t tsub = 0; tsub < in_world->num_supertype_ids[system_typeflag_id]; tsub++) {
+            current_input.entity_typeflag_id = in_world->supertype_id_bytype[system_typeflag_id][tsub];
+            current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
+            if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
+                size_t old_len = in_world->len_systems_torun;
+                in_world->len_systems_torun *= TNECS_ARRAY_GROWTH_FACTOR;
+                in_world->systems_torun = tnecs_realloc(in_world->systems_torun, old_len, in_world->len_systems_torun, sizeof(*in_world->systems_torun));
+            }
+            in_world->systems_torun[in_world->num_systems_torun++] = in_world->systems_byphase[phase_id][sorder];
+            /* running the non-exclusive systems in current phase */
+            in_world->systems_byphase[phase_id][sorder](&current_input);
+        }
+    }
+}
+
+
+void tnecs_systems_byphase_run(struct tnecs_World * in_world, tnecs_phase_t in_phase_id) {
+    TNECS_DEBUG_PRINTF("tnecs_systems_byphase_run\n");
+    tnecs_systems_byphase_run_dt(in_world, in_phase_id, 0.0);
+}
+
+void tnecs_systems_byphase_run_dt(struct tnecs_World * in_world, tnecs_phase_t in_phase_id, tnecs_time_ns_t in_deltat) {
+    TNECS_DEBUG_PRINTF("tnecs_systems_byphase_run_dt\n");
+    size_t system_id, current_phase, system_typeflag_id;
+    current_phase = in_world->phases[in_phase_id];
+    if (in_phase_id == current_phase) {
+        for (size_t sorder = 0; sorder < in_world->num_systems_byphase[in_phase_id]; sorder++) {
+            system_id = in_world->systems_idbyphase[in_phase_id][sorder];
+            tnecs_system_run_dt(in_world, system_id, in_deltat);
+        }
+    }
+}
+
 
 /***************************** REGISTRATION **********************************/
 size_t tnecs_register_system(struct tnecs_World * in_world, const char * in_name, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase, bool in_isExclusive, size_t num_components, tnecs_component_t components_typeflag) {

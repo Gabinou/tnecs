@@ -235,6 +235,12 @@ bool tnecs_world_breath_components(struct tnecs_World * in_world);
 bool tnecs_world_breath_systems(struct tnecs_World * in_world);
 bool tnecs_world_breath_typeflags(struct tnecs_World * in_world);
 
+/**************************** SYSTEM FUNCTIONS ********************************/
+void tnecs_system_run(struct tnecs_World * in_world, size_t in_system_id);
+void tnecs_system_run_dt(struct tnecs_World * in_world, size_t in_system_id, tnecs_time_ns_t in_deltat);
+void tnecs_systems_byphase_run(struct tnecs_World * in_world, tnecs_phase_t in_phase_id);
+void tnecs_systems_byphase_run_dt(struct tnecs_World * in_world, tnecs_phase_t in_phase_id, tnecs_time_ns_t in_deltat);
+
 /***************************** REGISTRATION **********************************/
 tnecs_component_t tnecs_register_component(struct tnecs_World * in_world, const char * in_name, size_t in_bytesize);
 size_t tnecs_register_system(struct tnecs_World * in_world, const char * in_name, void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_run_phase, bool in_isExclusive, size_t component_num, tnecs_component_t component_typeflag);
