@@ -74,7 +74,7 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
         free(in_world->components_idbytype[i]);
         free(in_world->components_flagbytype[i]);
         free(in_world->components_orderbytype[i]);
-        free(in_world->supertype_id_bytype[i]);
+        free(in_world->archetype_id_bytype[i]);
         for (size_t j = 0; j < in_world->num_components_bytype[i]; j++) {
             free(in_world->components_bytype[i][j].components);
         }
@@ -99,10 +99,10 @@ void tnecs_world_destroy(struct tnecs_World * in_world) {
     free(in_world->len_systems_byphase);
     free(in_world->num_entities_bytype);
     free(in_world->num_systems_byphase);
-    free(in_world->num_supertype_ids);
+    free(in_world->num_archetype_ids);
     free(in_world->num_components_bytype);
     free(in_world->phases);
-    free(in_world->supertype_id_bytype);
+    free(in_world->archetype_id_bytype);
     free(in_world->systems_byphase);
     free(in_world->system_orders);
     free(in_world->system_exclusive);
@@ -206,10 +206,10 @@ bool tnecs_world_breath_typeflags(struct tnecs_World * in_world) {
 
     bool success = 1;
     success &= ((in_world->typeflags = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->typeflags))) != NULL);
-    success &= ((in_world->supertype_id_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->supertype_id_bytype))) != NULL);
-    success &= ((in_world->num_supertype_ids = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->num_supertype_ids))) != NULL);
+    success &= ((in_world->archetype_id_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->archetype_id_bytype))) != NULL);
+    success &= ((in_world->num_archetype_ids = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*in_world->num_archetype_ids))) != NULL);
     for (size_t i = 0; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
-        success &= ((in_world->supertype_id_bytype[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**in_world->supertype_id_bytype))) != NULL);
+        success &= ((in_world->archetype_id_bytype[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**in_world->archetype_id_bytype))) != NULL);
     }
     in_world->num_typeflags = TNECS_NULLSHIFT;
     in_world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
@@ -243,8 +243,8 @@ void tnecs_system_run_dt(struct tnecs_World * in_world, size_t in_system_id, tne
     in_world->systems_byphase[phase_id][sorder](&current_input);
 
     if (!in_world->system_exclusive[in_system_id]) {
-        for (size_t tsub = 0; tsub < in_world->num_supertype_ids[system_typeflag_id]; tsub++) {
-            current_input.entity_typeflag_id = in_world->supertype_id_bytype[system_typeflag_id][tsub];
+        for (size_t tsub = 0; tsub < in_world->num_archetype_ids[system_typeflag_id]; tsub++) {
+            current_input.entity_typeflag_id = in_world->archetype_id_bytype[system_typeflag_id][tsub];
             current_input.num_entities = in_world->num_entities_bytype[current_input.entity_typeflag_id];
             if (in_world->num_systems_torun >= (in_world->len_systems_torun - 1)) {
                 size_t old_len = in_world->len_systems_torun;
@@ -363,13 +363,13 @@ size_t tnecs_register_typeflag(struct tnecs_World * in_world, size_t num_compone
             typeflag_added += component_type_toadd;
             i++;
         }
-        // 4- Check supertypes.
+        // 4- Check archetypes.
         for (size_t i = 1 ; i < in_world->num_typeflags; i++) {
-            in_world->num_supertype_ids[i] = 0;
+            in_world->num_archetype_ids[i] = 0;
             for (size_t j = 1 ; j < (in_world->num_typeflags); j++) {
                 if (i != j) {
-                    if (TNECS_TYPEFLAG_IS_SUPERTYPE(in_world->typeflags[i], in_world->typeflags[j])) {
-                        in_world->supertype_id_bytype[i][in_world->num_supertype_ids[i]++] = j; // j is a supertype of i
+                    if (TNECS_TYPEFLAG_IS_ARCHETYPE(in_world->typeflags[i], in_world->typeflags[j])) {
+                        in_world->archetype_id_bytype[i][in_world->num_archetype_ids[i]++] = j; // j is a archetype of i
                     }
                 }
             }
@@ -919,15 +919,15 @@ bool tnecs_growArray_typeflag(struct tnecs_World * in_world) {
     success &= ((in_world->num_components_bytype = tnecs_realloc(in_world->num_components_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->num_components_bytype))) != NULL);
     success &= ((in_world->entities_bytype = tnecs_realloc(in_world->entities_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->entities_bytype))) != NULL);
     success &= ((in_world->num_entities_bytype = tnecs_realloc(in_world->num_entities_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->num_entities_bytype))) != NULL);
-    success &= ((in_world->num_supertype_ids = tnecs_realloc(in_world->num_supertype_ids, old_len, in_world->len_typeflags, sizeof(*in_world->num_supertype_ids))) != NULL);
+    success &= ((in_world->num_archetype_ids = tnecs_realloc(in_world->num_archetype_ids, old_len, in_world->len_typeflags, sizeof(*in_world->num_archetype_ids))) != NULL);
     success &= ((in_world->len_entities_bytype = tnecs_realloc(in_world->len_entities_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->len_entities_bytype))) != NULL);
     success &= ((in_world->components_idbytype = tnecs_realloc(in_world->components_idbytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_idbytype))) != NULL);
     success &= ((in_world->components_flagbytype = tnecs_realloc(in_world->components_flagbytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_flagbytype))) != NULL);
     success &= ((in_world->components_orderbytype = tnecs_realloc(in_world->components_orderbytype, old_len, in_world->len_typeflags, sizeof(*in_world->components_orderbytype))) != NULL);
-    success &= ((in_world->supertype_id_bytype = tnecs_realloc(in_world->supertype_id_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->supertype_id_bytype))) != NULL);
+    success &= ((in_world->archetype_id_bytype = tnecs_realloc(in_world->archetype_id_bytype, old_len, in_world->len_typeflags, sizeof(*in_world->archetype_id_bytype))) != NULL);
     for (size_t i = old_len; i < in_world->len_typeflags; i++) {
         success &= ((in_world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(**in_world->entities_bytype))) != NULL);
-        success &= ((in_world->supertype_id_bytype[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**in_world->supertype_id_bytype))) != NULL);
+        success &= ((in_world->archetype_id_bytype[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**in_world->archetype_id_bytype))) != NULL);
         in_world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
         in_world->num_entities_bytype[i] = 0;
     }

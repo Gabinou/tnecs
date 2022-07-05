@@ -230,8 +230,8 @@ void tnecs_test_utilities() {
     lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
     lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
 
-    lok(TNECS_TYPEFLAG_IS_SUPERTYPE(4, (4 + 8 + 16)));
-    lok(!TNECS_TYPEFLAG_IS_SUPERTYPE(2, (4 + 8 + 16)));
+    lok(TNECS_TYPEFLAG_IS_ARCHETYPE(4, (4 + 8 + 16)));
+    lok(!TNECS_TYPEFLAG_IS_ARCHETYPE(2, (4 + 8 + 16)));
 
     lok(setBits_KnR_uint64_t(1) == 1);
     lok(setBits_KnR_uint64_t(2) == 1);
@@ -773,15 +773,15 @@ void tnecs_test_world_progress() {
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2) == 8 + 2);
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4) == 8 + 2 + 1);
 
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))] == 3);
-    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1)));
-    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][1] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2)));
-    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][2] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1))] == 1);
-    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2))] == 1);
-    lok(inclusive_world->supertype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4))] == 0);
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))] == 3);
+    lok(inclusive_world->archetype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1)));
+    lok(inclusive_world->archetype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][1] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2)));
+    lok(inclusive_world->archetype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMove))][2] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1))] == 1);
+    lok(inclusive_world->archetype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase1))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2))] == 1);
+    lok(inclusive_world->archetype_id_bytype[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase2))][0] == TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4)));
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world, SystemMovePhase4))] == 0);
 
     lok(inclusive_world->num_typeflags == 8);
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit);
@@ -868,10 +868,10 @@ void tnecs_test_world_progress() {
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase2) == 8 + 2);
     lok(TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase4) == 8 + 2 + 1);
 
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMove))] == 3);
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase1))] == 1);
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase2))] == 1);
-    lok(inclusive_world->num_supertype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase4))] == 0);
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMove))] == 3);
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase1))] == 1);
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase2))] == 1);
+    lok(inclusive_world->num_archetype_ids[TNECS_TYPEFLAGID(inclusive_world2, TNECS_SYSTEM_NAME2TYPEFLAG(inclusive_world2, SystemMovePhase4))] == 0);
 
     lok(inclusive_world2->num_typeflags == 8);
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit);

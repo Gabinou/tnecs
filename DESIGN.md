@@ -33,8 +33,8 @@ This effectively limits the number of components to 63, with 0 reserved for the 
 Entities and components are arranged in "bytype" arrays of pointers.
 Each new typeflag gets an index, with associated entities and components array pointer at the index.
 Then, each component/entity has an order inside the "bytype" array, determined on a first come first served basis.
-The "bytype" arrays are exclusive, meaning entities and components are NOT copied for each compatible supertype.
-This saves some memory, but leads to the inclusive systems being called once for each supertype.
+The "bytype" arrays are exclusive, meaning entities and components are NOT copied for each compatible archetype.
+This saves some memory, but leads to the inclusive systems being called once for each archetype.
 It is unclear to me if the alternative is more performant.
 
 Anyhow, every time a new component is added to an entity, its type changes, so each associated components and its index in the "bytype" arrays is copied over, then deleted from the previous location.
