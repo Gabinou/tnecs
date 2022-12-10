@@ -609,7 +609,27 @@ void tnecs_test_component_remove() {
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
     lok(TNECS_ENTITY_HASCOMPONENT(test_world, Silou, Position));
     TNECS_REMOVE_COMPONENTS(test_world, Silou, Position);
-    // lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Silou, Position));
+    lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Silou, Position));
+
+    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position, Velocity);
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Position));
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity));
+    lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit));
+
+    TNECS_REMOVE_COMPONENTS(test_world, Perignon, Velocity);
+    lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity));
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Position));
+    lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit));
+
+    tnecs_entity_t Pirou = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position, Velocity, Unit);
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Position));
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Velocity));
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Unit));
+
+    TNECS_REMOVE_COMPONENTS(test_world, Pirou, Position, Velocity);
+    lok(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Unit));
+    lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Position));
+    lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Velocity));
 
 }
 
