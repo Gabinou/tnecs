@@ -112,7 +112,7 @@ gcc: $(EXEC_GCC) ; $(EXEC_GCC)
 .PHONY : clang
 clang: $(EXEC_CLANG) ; $(EXEC_CLANG)
 .PHONY : astyle
-astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --indent=spaces=4 --indent-switches --pad-oper --pad-comma --pad-header --unpad-paren  --align-pointer=middle --align-reference=middle --add-braces --add-one-line-braces --attach-return-type --convert-tabs --suffix=none *.h *.c
+astyle: $(HEADERS) $(SOURCES_ALL); astyle --style=java --options=style.txt *.h *.c
 
 $(TARGETS_TNECS) : $(SOURCES_TNECS) ; $(COMPILER) $< -c -o $@ $(FLAGS_COV)
 $(TARGETS_TNECS_CLANG) : $(SOURCES_TNECS) ; clang $< -c -o $@
