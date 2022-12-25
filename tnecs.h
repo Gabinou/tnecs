@@ -245,6 +245,8 @@ void tnecs_systems_byphase_run(struct tnecs_World * in_world, tnecs_phase_t in_p
                                void * user_data);
 void tnecs_systems_byphase_run_dt(struct tnecs_World * in_world, tnecs_phase_t in_phase_id,
                                   tnecs_time_ns_t in_deltat, void * user_data);
+void tnecs_custom_system_run(struct tnecs_World * in_world, tnecs_system_ptr custom_system,
+                             tnecs_component_t archetype, tnecs_time_ns_t in_deltat, void * user_data);
 
 /***************************** REGISTRATION **********************************/
 tnecs_component_t tnecs_register_component(struct tnecs_World * in_world, const char * in_name,

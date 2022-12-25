@@ -221,15 +221,32 @@ void SystemMove(struct tnecs_System_Input * in_input) {
 
 /*******************************ACTUAL TESTS***************************/
 void tnecs_test_utilities() {
-    lok(TNECS_COMPONENT_TYPE2ID(1) == 1);
-    lok(TNECS_COMPONENT_TYPE2ID(2) == 2);
-    lok(TNECS_COMPONENT_TYPE2ID(4) == 3);
-    lok(TNECS_COMPONENT_TYPE2ID(8) == 4);
-    lok(TNECS_COMPONENT_TYPE2ID(16) == 5);
-    lok(TNECS_COMPONENT_TYPE2ID(32) == 6);
-    lok(TNECS_COMPONENT_TYPE2ID(64) == 7);
-    lok(TNECS_COMPONENT_TYPE2ID(128) == 8);
-    lok(TNECS_COMPONENT_TYPE2ID(256) == 9);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 0) == 1);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 1) == 2);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 2) == 3);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 3) == 4);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 4) == 5);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 5) == 6);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 6) == 7);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 7) == 8);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 8) == 9);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 9) == 10);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 10) == 11);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 11) == 12);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 12) == 13);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 13) == 14);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 14) == 15);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 15) == 16);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 16) == 17);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 17) == 18);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 18) == 19);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 19) == 20);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 20) == 21);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 21) == 22);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 22) == 23);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 23) == 24);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 24) == 25);
+    lok(TNECS_COMPONENT_TYPE2ID(1 << 25) == 26);
 
     lok(TNECS_COMPONENT_ID2TYPE(1) == 1);
     lok(TNECS_COMPONENT_ID2TYPE(2) == 2);
@@ -502,13 +519,6 @@ void tnecs_test_entity_creation() {
     test_world2->num_typeflags = TNECS_INITIAL_SYSTEM_LEN;
     TNECS_REGISTER_COMPONENT(test_world2, Position2);
     lok(test_world2->num_components == 2);
-
-    // Coverage for if in tnecs_register_component
-    test_world2->num_components = 66;
-    lok(TNECS_REGISTER_COMPONENT(test_world2, Unit2) == 0);
-    test_world2->num_components = 2;
-    test_world2->num_systems_byphase[0] = TNECS_INITIAL_PHASE_LEN;
-    tnecs_world_destroy(test_world2);
 
     // Coverage for if in tnecs_register_system
     test_world2 = tnecs_world_genesis();
