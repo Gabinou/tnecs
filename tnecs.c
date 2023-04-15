@@ -50,15 +50,14 @@ double tnecs_get_us() {
 /**************************** WORLD FUNCTIONS ********************************/
 struct tnecs_World *tnecs_world_genesis() {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    struct tnecs_World *tnecs_world = (struct tnecs_World *)calloc(sizeof(struct tnecs_World), 1);
-    if (tnecs_world) {
-        bool success = 1;
-        success &= tnecs_world_breath_entities(tnecs_world);
-        success &= tnecs_world_breath_typeflags(tnecs_world);
-        success &= tnecs_world_breath_systems(tnecs_world);
-        success &= tnecs_world_breath_components(tnecs_world);
-        TNECS_DEBUG_ASSERT(success);
-    }
+    struct tnecs_World *tnecs_world = calloc(sizeof(struct tnecs_World), 1);
+    TNECS_DEBUG_ASSERT(tnecs_world);
+    bool success = 1;
+    success &= tnecs_world_breath_entities(tnecs_world);
+    success &= tnecs_world_breath_typeflags(tnecs_world);
+    success &= tnecs_world_breath_systems(tnecs_world);
+    success &= tnecs_world_breath_components(tnecs_world);
+    TNECS_DEBUG_ASSERT(success);
     return (tnecs_world);
 }
 
@@ -374,8 +373,8 @@ void tnecs_systems_byphase_run_dt(struct tnecs_World *world, tnecs_phase_t phase
 
 /***************************** REGISTRATION **********************************/
 size_t tnecs_register_system(struct tnecs_World *world, const char *name,
-                             void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase,
-                             bool in_isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
+                             void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t phase,
+                             bool isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Compute new id */
     size_t system_id = world->num_systems++;
@@ -385,39 +384,39 @@ size_t tnecs_register_system(struct tnecs_World *world, const char *name,
         tnecs_growArray_system(world);
 
     /* Realloc systems_byphase if too many */
-    if (world->num_systems_byphase[in_phase] >= world->len_systems_byphase[in_phase]) {
-        size_t olen =                           world->len_systems_byphase[in_phase];
-        size_t nlen =                           olen * TNECS_ARRAY_GROWTH_FACTOR;
-        world->len_systems_byphase[in_phase] =  nlen;
-        size_t bs =                             sizeof(**world->systems_byphase);
-        size_t bsid =                           sizeof(**world->systems_idbyphase);
+    if (world->num_systems_byphase[phase] >= world->len_systems_byphase[phase]) {
+        size_t olen =                        world->len_systems_byphase[phase];
+        size_t nlen =                        olen * TNECS_ARRAY_GROWTH_FACTOR;
+        world->len_systems_byphase[phase] =  nlen;
+        size_t bs =                          sizeof(**world->systems_byphase);
+        size_t bsid =                        sizeof(**world->systems_idbyphase);
 
-        tnecs_system_ptr *systems =             world->systems_byphase[in_phase];
-        size_t *system_id =                     world->systems_idbyphase[in_phase];
-        world->systems_byphase[in_phase] =      tnecs_realloc(systems, olen, nlen, bs);
-        world->systems_idbyphase[in_phase] =    tnecs_realloc(system_id, olen, nlen, bsid);
+        tnecs_system_ptr *systems =          world->systems_byphase[phase];
+        size_t *system_id =                  world->systems_idbyphase[phase];
+        world->systems_byphase[phase] =      tnecs_realloc(systems, olen, nlen, bs);
+        world->systems_idbyphase[phase] =    tnecs_realloc(system_id, olen, nlen, bsid);
     }
 
     /* -- Actual registration -- */
     /* Saving name and hash */
     world->system_names[system_id] =    malloc(strlen(name) + 1);
-    tnecs_hash_t in_hash =              tnecs_hash_djb2(name);
+    tnecs_hash_t hash =                 tnecs_hash_djb2(name);
     strncpy(world->system_names[system_id], name, strlen(name) + 1);
 
     /* Register new phase if didn't exist */
-    if (!world->phases[in_phase])
-        tnecs_register_phase(world, in_phase);
+    if (!world->phases[phase])
+        tnecs_register_phase(world, phase);
 
-    world->system_exclusive[system_id] =   in_isExclusive;
-    world->system_phases[system_id] =      in_phase;
-    world->system_hashes[system_id] =      in_hash;
+    world->system_exclusive[system_id] =   isExclusive;
+    world->system_phases[system_id] =      phase;
+    world->system_hashes[system_id] =      hash;
     world->system_typeflags[system_id] =   components_typeflag;
 
     /* System order */
-    size_t system_order =                               world->num_systems_byphase[in_phase]++;
+    size_t system_order =                               world->num_systems_byphase[phase]++;
     world->system_orders[system_id] =                   system_order;
-    world->systems_byphase[in_phase][system_order] =    in_system;
-    world->systems_idbyphase[in_phase][system_order] =  system_id;
+    world->systems_byphase[phase][system_order] =    in_system;
+    world->systems_idbyphase[phase][system_order] =  system_id;
     tnecs_register_typeflag(world, num_components, components_typeflag);
     return (system_id);
 }
@@ -509,13 +508,13 @@ size_t tnecs_register_typeflag(struct tnecs_World *world, size_t num_components,
     return (tID);
 }
 
-size_t tnecs_register_phase(struct tnecs_World *world, tnecs_phase_t in_phase) {
+size_t tnecs_register_phase(struct tnecs_World *world, tnecs_phase_t phase) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    while (in_phase >= world->len_phases)
+    while (phase >= world->len_phases)
         tnecs_growArray_phase(world);
-    world->phases[in_phase] =  in_phase;
-    world->num_phases = (in_phase >= world->num_phases) ? (in_phase + 1) : world->num_phases;
-    return (in_phase);
+    world->phases[phase] =  phase;
+    world->num_phases = (phase >= world->num_phases) ? (phase + 1) : world->num_phases;
+    return (phase);
 }
 
 /***************************** ENTITY MANIPULATION ***************************/
@@ -953,11 +952,11 @@ size_t tnecs_component_name2id(struct tnecs_World *world, const tnecs_str_t *nam
     return (tnecs_component_hash2id(world, tnecs_hash_djb2(name)));
 }
 
-size_t tnecs_component_hash2id(struct tnecs_World *world, tnecs_hash_t in_hash) {
+size_t tnecs_component_hash2id(struct tnecs_World *world, tnecs_hash_t hash) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     size_t out;
     for (size_t i = 0; i < world->num_components; i++) {
-        if (world->component_hashes[i] == in_hash) {
+        if (world->component_hashes[i] == hash) {
             out = i;
             break;
         }
@@ -965,10 +964,9 @@ size_t tnecs_component_hash2id(struct tnecs_World *world, tnecs_hash_t in_hash) 
     return (out);
 }
 
-size_t tnecs_component_order_bytype(struct tnecs_World *world, size_t cID,
-                                    tnecs_component_t typeflag) {
+size_t tnecs_component_order_bytype(struct tnecs_World *world, size_t cID, tnecs_component_t flag) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    tnecs_component_t tID = tnecs_typeflagid(world, typeflag);
+    tnecs_component_t tID = tnecs_typeflagid(world, flag);
     return (tnecs_component_order_bytypeid(world, cID, tID));
 }
 
@@ -1008,17 +1006,17 @@ tnecs_component_t tnecs_component_ids2typeflag(size_t argnum, ...) {
     return (out);
 }
 
-tnecs_component_t tnecs_component_hash2type(struct tnecs_World *world, tnecs_hash_t in_hash) {
+tnecs_component_t tnecs_component_hash2type(struct tnecs_World *world, tnecs_hash_t hash) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    return (TNECS_COMPONENT_ID2TYPE(tnecs_component_hash2id(world, in_hash)));
+    return (TNECS_COMPONENT_ID2TYPE(tnecs_component_hash2id(world, hash)));
 }
 
 size_t tnecs_system_name2id(struct tnecs_World *world, const tnecs_str_t *name) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    tnecs_hash_t in_hash = tnecs_hash_djb2(name);
+    tnecs_hash_t hash = tnecs_hash_djb2(name);
     size_t found = 0;
     for (size_t i = 0; i < world->num_systems; i++) {
-        if (world->system_hashes[i] == in_hash) {
+        if (world->system_hashes[i] == hash) {
             found = i;
             break;
         }
@@ -1026,8 +1024,7 @@ size_t tnecs_system_name2id(struct tnecs_World *world, const tnecs_str_t *name) 
     return (found);
 }
 
-tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World *world,
-                                             const tnecs_str_t *name) {
+tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World *world, const tnecs_str_t *name) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     size_t id = tnecs_system_name2id(world, name);
     return (world->system_typeflags[id]);
@@ -1062,10 +1059,11 @@ void *tnecs_arrdel(void *arr, size_t elem, size_t len, size_t bytesize) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     void *out;
     tnecs_byte_t *bytes = arr;
-    if (elem < (len - 1))
-        out = memcpy(bytes + (elem * bytesize), bytes + ((elem + 1) * bytesize),
-                     bytesize * (len - elem - 1));
-    else
+    if (elem < (len - 1)) {
+        tnecs_byte_t *dst = bytes + (elem * bytesize);
+        tnecs_byte_t *src = bytes + ((elem + 1) * bytesize);
+        out = memmove(dst, src, bytesize * (len - elem - 1));
+    } else
         out = memset(bytes + (elem * bytesize), TNECS_NULL, bytesize);
     return (out);
 }
@@ -1074,7 +1072,8 @@ void *tnecs_arrdel_scramble(void *arr, size_t elem, size_t len, size_t bytesize)
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     tnecs_byte_t *bytes = arr;
     if (elem != (len - 1))
-        memcpy(bytes + (elem * bytesize), bytes + ((len - 1) * bytesize), bytesize);
+        memmove(bytes + (elem * bytesize), bytes + ((len - 1) * bytesize), bytesize);
+
     memset(bytes + ((len - 1) * bytesize), TNECS_NULL, bytesize);
     return (arr);
 }
