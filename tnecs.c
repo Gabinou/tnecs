@@ -120,14 +120,13 @@ void tnecs_world_step(struct tnecs_World *world, tnecs_time_ns_t deltat) {
     tnecs_world_step_wdata(world, deltat, NULL);
 }
 
-void tnecs_world_step_wdata(struct tnecs_World *world, tnecs_time_ns_t deltat,
-                            void *user_data) {
+void tnecs_world_step_wdata(struct tnecs_World *world, tnecs_time_ns_t deltat, void *data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     world->num_systems_torun = 0;
     if (!deltat)
         deltat = tnecs_get_ns() - world->previous_time;
     for (size_t phase_id = 0; phase_id < world->num_phases; phase_id++)
-        tnecs_systems_byphase_run_dt(world, phase_id, deltat, user_data);
+        tnecs_systems_byphase_run_dt(world, phase_id, deltat, data);
     world->previous_time = tnecs_get_ns();
 }
 
@@ -323,80 +322,84 @@ void tnecs_system_run_dt(struct tnecs_World *world, size_t in_system_id,
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Building the systems input */
     struct tnecs_System_Input input = {.world = world, .deltat = deltat, .user_data = user_data};
-    size_t sorder =                     world->system_orders[in_system_id];
-    tnecs_phase_t phase_id =            world->system_phases[in_system_id];
-    size_t system_typeflag_id =         tnecs_typeflagid(world, world->system_typeflags[in_system_id]);
+    size_t sorder =                    world->system_orders[in_system_id];
+    tnecs_phase_t phase_id =           world->system_phases[in_system_id];
+    size_t system_typeflag_id =        tnecs_typeflagid(world, world->system_typeflags[in_system_id]);
 
-    input.entity_typeflag_id =          system_typeflag_id;
-    input.num_entities =                world->num_entities_bytype[input.entity_typeflag_id];
+    input.entity_typeflag_id =         system_typeflag_id;
+    input.num_entities =               world->num_entities_bytype[input.entity_typeflag_id];
 
     /* Running the exclusive systems in current phase */
     tnecs_system_torun_realloc(world);
-    world->systems_torun[world->num_systems_torun++] = world->systems_byphase[phase_id][sorder];
-    world->systems_byphase[phase_id][sorder](&input);
+    tnecs_system_ptr system =              world->systems_byphase[phase_id][sorder];
+    int system_num =                       world->num_systems_torun++;
+    world->systems_torun[system_num] =     world->systems_byphase[phase_id][sorder];
+    system(&input);
 
     if (world->system_exclusive[in_system_id])
         return;
 
     /* Running the inclusive systems in current phase */
     for (size_t tsub = 0; tsub < world->num_archetype_ids[system_typeflag_id]; tsub++) {
-        input.entity_typeflag_id =  world->archetype_id_bytype[system_typeflag_id][tsub];
-        input.num_entities =        world->num_entities_bytype[input.entity_typeflag_id];
+        input.entity_typeflag_id =         world->archetype_id_bytype[system_typeflag_id][tsub];
+        input.num_entities =               world->num_entities_bytype[input.entity_typeflag_id];
 
         tnecs_system_torun_realloc(world);
-        tnecs_system_ptr system =                          world->systems_byphase[phase_id][sorder];
-        world->systems_torun[world->num_systems_torun++] = system;
+        tnecs_system_ptr system =          world->systems_byphase[phase_id][sorder];
+        int system_num =                   world->num_systems_torun++;
+        world->systems_torun[system_num] = system;
         system(&input);
     }
 }
 
 
-void tnecs_systems_byphase_run(struct tnecs_World *world, tnecs_phase_t in_phase_id,
-                               void *user_data) {
+void tnecs_systems_byphase_run(struct tnecs_World *world, tnecs_phase_t phase_id, void *user_data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    tnecs_systems_byphase_run_dt(world, in_phase_id, 0, user_data);
+    tnecs_systems_byphase_run_dt(world, phase_id, 0, user_data);
 }
 
-void tnecs_systems_byphase_run_dt(struct tnecs_World *world, tnecs_phase_t in_phase_id,
+void tnecs_systems_byphase_run_dt(struct tnecs_World *world, tnecs_phase_t phase_id,
                                   tnecs_time_ns_t deltat, void *user_data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    size_t current_phase = world->phases[in_phase_id];
-    if (in_phase_id == current_phase) {
-        for (size_t sorder = 0; sorder < world->num_systems_byphase[in_phase_id]; sorder++) {
-            size_t system_id = world->systems_idbyphase[in_phase_id][sorder];
-            tnecs_system_run_dt(world, system_id, deltat, user_data);
-        }
+    size_t current_phase = world->phases[phase_id];
+    if (phase_id != current_phase)
+        return;
+
+    for (size_t sorder = 0; sorder < world->num_systems_byphase[phase_id]; sorder++) {
+        size_t system_id = world->systems_idbyphase[phase_id][sorder];
+        tnecs_system_run_dt(world, system_id, deltat, user_data);
     }
 }
 
 
 /***************************** REGISTRATION **********************************/
-size_t tnecs_register_system(struct tnecs_World *world, const char *in_name,
-                             void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase, bool in_isExclusive,
-                             size_t num_components, tnecs_component_t components_typeflag) {
+size_t tnecs_register_system(struct tnecs_World *world, const char *name,
+                             void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t in_phase,
+                             bool in_isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
 
     size_t system_id = world->num_systems++;
-    world->system_names[system_id] = malloc(strlen(in_name) + 1);
-    strncpy(world->system_names[system_id], in_name, strlen(in_name) + 1);
-    tnecs_hash_t in_hash = tnecs_hash_djb2(in_name);
+    world->system_names[system_id] = malloc(strlen(name) + 1);
+    strncpy(world->system_names[system_id], name, strlen(name) + 1);
+    tnecs_hash_t in_hash = tnecs_hash_djb2(name);
     if (world->num_systems >= world->len_systems)
         tnecs_growArray_system(world);
     if (!world->phases[in_phase])
         tnecs_register_phase(world, in_phase);
 
-    world->system_exclusive[system_id] = in_isExclusive;
-    world->system_phases[system_id] = in_phase;
-    world->system_hashes[system_id] = in_hash;
-    world->system_typeflags[system_id] = components_typeflag;
-    size_t system_order = world->num_systems_byphase[in_phase]++;
+    world->system_exclusive[system_id] =   in_isExclusive;
+    world->system_phases[system_id] =      in_phase;
+    world->system_hashes[system_id] =      in_hash;
+    world->system_typeflags[system_id] =   components_typeflag;
+    size_t system_order =                  world->num_systems_byphase[in_phase]++;
     if (world->num_systems_byphase[in_phase] >= world->len_systems_byphase[in_phase]) {
-        size_t old_len = world->len_systems_byphase[in_phase];
-        world->len_systems_byphase[in_phase] *= TNECS_ARRAY_GROWTH_FACTOR;
-        world->systems_byphase[in_phase] = tnecs_realloc(world->systems_byphase[in_phase], old_len,
-                                                         world->len_systems_byphase[in_phase], sizeof(**world->systems_byphase));
-        world->systems_idbyphase[in_phase] = tnecs_realloc(world->systems_idbyphase[in_phase],
-                                                           old_len, world->len_systems_byphase[in_phase], sizeof(**world->systems_idbyphase));
+        size_t olen = world->len_systems_byphase[in_phase];
+        size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
+        world->len_systems_byphase[in_phase] = nlen;
+        size_t bs = sizeof(**world->systems_byphase);
+        size_t bsid = sizeof(**world->systems_idbyphase);
+        world->systems_byphase[in_phase] = tnecs_realloc(world->systems_byphase[in_phase], olen, nlen, bs);
+        world->systems_idbyphase[in_phase] = tnecs_realloc(world->systems_idbyphase[in_phase], olen, nlen, bsid);
     }
     world->system_orders[system_id] = system_order;
     world->systems_byphase[in_phase][system_order] = in_system;
@@ -405,19 +408,18 @@ size_t tnecs_register_system(struct tnecs_World *world, const char *in_name,
     return (system_id);
 }
 
-tnecs_component_t tnecs_register_component(struct tnecs_World *world, const char *in_name,
-                                           size_t in_bytesize) {
+tnecs_component_t tnecs_register_component(struct tnecs_World *world, const char *name, size_t bytesize) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
 
     tnecs_component_t new_component_id = 0;
     TNECS_DEBUG_ASSERT(world->num_components < TNECS_COMPONENT_CAP);
     new_component_id = world->num_components++;
-    world->component_hashes[new_component_id] = tnecs_hash_djb2(in_name);
+    world->component_hashes[new_component_id] = tnecs_hash_djb2(name);
     tnecs_component_t new_component_flag = TNECS_COMPONENT_ID2TYPE(new_component_id);
-    TNECS_DEBUG_ASSERT(in_bytesize > 0);
-    world->component_bytesizes[new_component_id] = in_bytesize;
-    world->component_names[new_component_id] = malloc(strlen(in_name) + 1);
-    strncpy(world->component_names[new_component_id], in_name, strlen(in_name) + 1);
+    TNECS_DEBUG_ASSERT(bytesize > 0);
+    world->component_bytesizes[new_component_id] = bytesize;
+    world->component_names[new_component_id] = malloc(strlen(name) + 1);
+    strncpy(world->component_names[new_component_id], name, strlen(name) + 1);
     tnecs_register_typeflag(world, 1, new_component_flag);
     return (new_component_id);
 }
@@ -880,27 +882,27 @@ void tnecs_component_array_init(struct tnecs_World *world,
     in_array->components = calloc(TNECS_INITIAL_ENTITY_LEN, bytesize);
 }
 
-bool tnecs_system_order_switch(struct tnecs_World *world, tnecs_phase_t in_phase_id,
+bool tnecs_system_order_switch(struct tnecs_World *world, tnecs_phase_t phase_id,
                                size_t order1, size_t order2) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     void (* systems_temp)(struct tnecs_System_Input *);
-    TNECS_DEBUG_ASSERT(world->num_phases > in_phase_id);
-    TNECS_DEBUG_ASSERT(world->phases[in_phase_id]);
-    TNECS_DEBUG_ASSERT(world->num_systems_byphase[in_phase_id] > order1);
-    TNECS_DEBUG_ASSERT(world->num_systems_byphase[in_phase_id] > order2);
-    TNECS_DEBUG_ASSERT(world->systems_byphase[in_phase_id][order1]);
-    TNECS_DEBUG_ASSERT(world->systems_byphase[in_phase_id][order2]);
-    systems_temp = world->systems_byphase[in_phase_id][order1];
-    world->systems_byphase[in_phase_id][order1] = world->systems_byphase[in_phase_id][order2];
-    world->systems_byphase[in_phase_id][order2] = systems_temp;
-    return ((world->systems_byphase[in_phase_id][order1] != NULL)
-            && (world->systems_byphase[in_phase_id][order2] != NULL));
+    TNECS_DEBUG_ASSERT(world->num_phases > phase_id);
+    TNECS_DEBUG_ASSERT(world->phases[phase_id]);
+    TNECS_DEBUG_ASSERT(world->num_systems_byphase[phase_id] > order1);
+    TNECS_DEBUG_ASSERT(world->num_systems_byphase[phase_id] > order2);
+    TNECS_DEBUG_ASSERT(world->systems_byphase[phase_id][order1]);
+    TNECS_DEBUG_ASSERT(world->systems_byphase[phase_id][order2]);
+    systems_temp = world->systems_byphase[phase_id][order1];
+    world->systems_byphase[phase_id][order1] = world->systems_byphase[phase_id][order2];
+    world->systems_byphase[phase_id][order2] = systems_temp;
+    return ((world->systems_byphase[phase_id][order1] != NULL)
+            && (world->systems_byphase[phase_id][order2] != NULL));
 }
 
 /************************ UTILITY FUNCTIONS/MACROS ***************************/
-size_t tnecs_component_name2id(struct tnecs_World *world, const tnecs_str_t *in_name) {
+size_t tnecs_component_name2id(struct tnecs_World *world, const tnecs_str_t *name) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    return (tnecs_component_hash2id(world, tnecs_hash_djb2(in_name)));
+    return (tnecs_component_hash2id(world, tnecs_hash_djb2(name)));
 }
 
 size_t tnecs_component_hash2id(struct tnecs_World *world, tnecs_hash_t in_hash) {
@@ -965,9 +967,9 @@ tnecs_component_t tnecs_component_hash2type(struct tnecs_World *world, tnecs_has
     return (TNECS_COMPONENT_ID2TYPE(tnecs_component_hash2id(world, in_hash)));
 }
 
-size_t tnecs_system_name2id(struct tnecs_World *world, const tnecs_str_t *in_name) {
+size_t tnecs_system_name2id(struct tnecs_World *world, const tnecs_str_t *name) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    tnecs_hash_t in_hash = tnecs_hash_djb2(in_name);
+    tnecs_hash_t in_hash = tnecs_hash_djb2(name);
     size_t found = 0;
     for (size_t i = 0; i < world->num_systems; i++) {
         if (world->system_hashes[i] == in_hash) {
@@ -979,9 +981,9 @@ size_t tnecs_system_name2id(struct tnecs_World *world, const tnecs_str_t *in_nam
 }
 
 tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World *world,
-                                             const tnecs_str_t *in_name) {
+                                             const tnecs_str_t *name) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
-    size_t id = tnecs_system_name2id(world, in_name);
+    size_t id = tnecs_system_name2id(world, name);
     return (world->system_typeflags[id]);
 }
 
