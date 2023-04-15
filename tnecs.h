@@ -243,27 +243,26 @@ struct tnecs_Components_Array {
 
 /**************************** WORLD FUNCTIONS ********************************/
 struct tnecs_World *tnecs_world_genesis();
-void tnecs_world_destroy(struct tnecs_World *w);
-void tnecs_world_step(struct tnecs_World *w, tnecs_time_ns_t deltat);
-void tnecs_world_step_wdata(struct tnecs_World *w, tnecs_time_ns_t deltat, void *data);
-bool tnecs_world_breath_entities(struct tnecs_World *w);
-bool tnecs_world_breath_components(struct tnecs_World *w);
-bool tnecs_world_breath_systems(struct tnecs_World *w);
-bool tnecs_world_breath_typeflags(struct tnecs_World *w);
+void tnecs_world_destroy(struct tnecs_World            *w);
+void tnecs_world_step(struct tnecs_World               *w, tnecs_time_ns_t deltat);
+void tnecs_world_step_wdata(struct tnecs_World         *w, tnecs_time_ns_t deltat, void *data);
+bool tnecs_world_breath_entities(struct tnecs_World    *w);
+bool tnecs_world_breath_components(struct tnecs_World  *w);
+bool tnecs_world_breath_systems(struct tnecs_World     *w);
+bool tnecs_world_breath_typeflags(struct tnecs_World   *w);
 
 /**************************** SYSTEM FUNCTIONS ********************************/
-void tnecs_system_run(struct tnecs_World *w, size_t system_id, void *data);
-void tnecs_system_run_dt(struct tnecs_World *w, size_t system_id, tnecs_time_ns_t deltat,
-                         void *data);
+void tnecs_system_torun_realloc(struct tnecs_World *world);
+void tnecs_system_run(struct tnecs_World *w, size_t id, void *data);
+void tnecs_system_run_dt(struct tnecs_World *w, size_t id, tnecs_time_ns_t deltat, void *data);
 void tnecs_systems_byphase_run(struct tnecs_World *w, tnecs_phase_t phase_id, void *data);
 void tnecs_systems_byphase_run_dt(struct tnecs_World *w, tnecs_phase_t phase_id,
                                   tnecs_time_ns_t deltat, void *data);
-void tnecs_custom_system_run(struct tnecs_World *w, tnecs_system_ptr custom_system,
-                             tnecs_component_t archetype, tnecs_time_ns_t deltat, void *data);
+void tnecs_custom_system_run(struct tnecs_World *w, tnecs_system_ptr c, tnecs_component_t ar,
+                             tnecs_time_ns_t deltat, void *data);
 
 /***************************** REGISTRATION **********************************/
-tnecs_component_t tnecs_register_component(struct tnecs_World *w, const char *name,
-                                           size_t bytesize);
+tnecs_component_t tnecs_register_component(struct tnecs_World *w, const char *name, size_t bytes);
 size_t tnecs_register_system(struct tnecs_World *w, const char *name,
                              void (* system)(struct tnecs_System_Input *), tnecs_phase_t run_phase,
                              bool isExclusive, size_t component_num, tnecs_component_t component_typeflag);
