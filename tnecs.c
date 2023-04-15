@@ -694,17 +694,18 @@ void *tnecs_entity_get_component(struct tnecs_World *world, tnecs_entity_t in_en
     tnecs_component_t entity_typeflag = TNECS_ENTITY_TYPEFLAG(world, in_entity_id);
     void *out = NULL;
     // If entity has component, get output it. If not output NULL.
-    if ((component_flag & entity_typeflag) > 0) {
-        size_t typeflag_id = tnecs_typeflagid(world, entity_typeflag);
-        size_t component_order = tnecs_component_order_bytype(world, in_component_id, entity_typeflag);
-        TNECS_DEBUG_ASSERT(component_order <= world->num_components_bytype[typeflag_id]);
-        size_t entity_order = world->entity_orders[in_entity_id];
-        size_t bytesize = world->component_bytesizes[in_component_id];
-        struct tnecs_Components_Array *comp_array =
-                    &world->components_bytype[typeflag_id][component_order];
-        tnecs_byte_t *temp_component_bytesptr = (tnecs_byte_t *)(comp_array->components);
-        out = (temp_component_bytesptr + (bytesize * entity_order));
-    }
+    if ((component_flag & entity_typeflag) == 0)
+        return (out);
+
+    size_t typeflag_id = tnecs_typeflagid(world, entity_typeflag);
+    size_t component_order = tnecs_component_order_bytype(world, in_component_id, entity_typeflag);
+    TNECS_DEBUG_ASSERT(component_order <= world->num_components_bytype[typeflag_id]);
+    size_t entity_order = world->entity_orders[in_entity_id];
+    size_t bytesize = world->component_bytesizes[in_component_id];
+    struct tnecs_Components_Array *comp_array;
+    comp_array = &world->components_bytype[typeflag_id][component_order];
+    tnecs_byte_t *temp_component_bytesptr = (tnecs_byte_t *)(comp_array->components);
+    out = (temp_component_bytesptr + (bytesize * entity_order));
     return (out);
 }
 
@@ -718,9 +719,9 @@ size_t tnecs_entitiesbytype_add(struct tnecs_World *world, tnecs_entity_t in_ent
         tnecs_growArray_bytype(world, typeflag_id_new);
     }
     int new_order = world->num_entities_bytype[typeflag_id_new]++;
-    world->entity_typeflags[in_entity] = typeflag_new;
-    world->entity_orders[in_entity] = new_order;
-    world->entities_bytype[typeflag_id_new][new_order] = in_entity;
+    world->entity_orders[in_entity] =                     new_order;
+    world->entity_typeflags[in_entity] =                  typeflag_new;
+    world->entities_bytype[typeflag_id_new][new_order] =  in_entity;
     return (world->entity_orders[in_entity]);
 }
 
@@ -765,8 +766,8 @@ size_t tnecs_entitiesbytype_migrate(struct tnecs_World *world, tnecs_entity_t in
     tnecs_entitiesbytype_add(world, in_entity, typeflag_new);
     size_t typeflag_new_id = tnecs_typeflagid(world, typeflag_new);
     TNECS_DEBUG_ASSERT(world->entity_typeflags[in_entity] == typeflag_new);
-    TNECS_DEBUG_ASSERT(world->entity_orders[in_entity] ==
-                       world->num_entities_bytype[typeflag_new_id] - 1);
+    TNECS_DEBUG_ASSERT(world->entity_orders[in_entity] == world->num_entities_bytype[typeflag_new_id] -
+                       1);
     TNECS_DEBUG_ASSERT(world->entities_bytype[typeflag_new_id][world->entity_orders[in_entity]] ==
                        in_entity);
     size_t out = world->entity_orders[in_entity];
@@ -802,8 +803,8 @@ bool tnecs_component_copy(struct tnecs_World *world, tnecs_entity_t in_entity,
 
     TNECS_DEBUG_ASSERT(old_typeflag != TNECS_NULL);
     bool success = 1;
-    size_t old_typeflag_id = tnecs_typeflagid(world, old_typeflag);
-    size_t new_typeflag_id = tnecs_typeflagid(world, new_typeflag);
+    size_t old_typeflag_id =  tnecs_typeflagid(world, old_typeflag);
+    size_t new_typeflag_id =  tnecs_typeflagid(world, new_typeflag);
     size_t old_entity_order = world->entity_orders[in_entity];
     size_t new_entity_order = world->num_entities_bytype[new_typeflag_id];
 
@@ -1242,7 +1243,7 @@ bool tnecs_growArray_bytype(struct tnecs_World *world, size_t typeflag_id) {
     size_t olen = world->len_entities_bytype[typeflag_id];
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
     TNECS_DEBUG_ASSERT(olen > 0);
-    world->len_entities_bytype[typeflag_id] *= TNECS_ARRAY_GROWTH_FACTOR;
+    world->len_entities_bytype[typeflag_id] = nlen;
 
     size_t bsize = sizeof(*world->entities_bytype[typeflag_id]);
     tnecs_entity_t *ptr = world->entities_bytype[typeflag_id];
