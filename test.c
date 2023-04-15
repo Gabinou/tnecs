@@ -492,7 +492,7 @@ void tnecs_test_entity_creation() {
     lok(Servil == test_world->entities[Servil]);
     lok(test_world->len_entities > Servil);
 
-    tnecs_entity_t Rayan = tnecs_entity_create_windex(test_world, 666);
+    tnecs_entity_t Rayan = tnecs_entity_create_wID(test_world, 666);
     lok(test_world->len_entities > Rayan);
     lok(Rayan == test_world->entities[Rayan]);
     lok(!test_world->entities[Rayan + 1]);

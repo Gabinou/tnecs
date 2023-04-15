@@ -262,7 +262,7 @@ void tnecs_custom_system_run(struct tnecs_World *w, tnecs_system_ptr c, tnecs_co
                              tnecs_time_ns_t deltat, void *data);
 
 /***************************** REGISTRATION **********************************/
-tnecs_component_t tnecs_register_component(struct tnecs_World *w, const char *name, size_t bytes);
+tnecs_component_t tnecs_register_component(struct tnecs_World *w, const char *name, size_t b);
 size_t tnecs_register_system(struct tnecs_World *w, const char *name,
                              void (* system)(struct tnecs_System_Input *), tnecs_phase_t run_phase,
                              bool isExclusive, size_t component_num, tnecs_component_t component_typeflag);
@@ -280,10 +280,9 @@ size_t tnecs_register_phase(struct tnecs_World *w, tnecs_phase_t phase);
 
 /***************************** ENTITY MANIPULATION ***************************/
 tnecs_entity_t tnecs_entity_create(struct tnecs_World *w);
-tnecs_entity_t tnecs_entity_create_windex(struct tnecs_World *w, tnecs_entity_t entity);
+tnecs_entity_t tnecs_entity_create_wID(struct tnecs_World *w, tnecs_entity_t entity);
 tnecs_entity_t tnecs_entities_create(struct tnecs_World *w, size_t num);
-tnecs_entity_t tnecs_entities_create_windices(struct tnecs_World *w, size_t num,
-                                              tnecs_entity_t *entities);
+tnecs_entity_t tnecs_entities_create_wID(struct tnecs_World *w, size_t num, tnecs_entity_t *ents);
 tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World *w, size_t argnum, ...);
 
 tnecs_entity_t tnecs_entity_destroy(struct tnecs_World *w, tnecs_entity_t entity);
@@ -292,13 +291,13 @@ tnecs_entity_t tnecs_entity_destroy(struct tnecs_World *w, tnecs_entity_t entity
 #define TNECS_ENTITY_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE2, TNECS_ENTITY_CREATE1)(__VA_ARGS__)
 #define TNECS_CHOOSE_ENTITY_CREATE(_1,_2,NAME,...) NAME
 #define TNECS_ENTITY_CREATE1(world) tnecs_entity_create(world)
-#define TNECS_ENTITY_CREATE2(world, index) tnecs_entity_create_windex(world, index)
+#define TNECS_ENTITY_CREATE2(world, index) tnecs_entity_create_wID(world, index)
 #define TNECS_ENTITY_EXISTS(world, index) (world->entities[index] > TNECS_NULL)
 
 #define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITIES_CREATE(__VA_ARGS__, TNECS_ENTITIES_CREATE3, TNECS_ENTITIES_CREATE2)(__VA_ARGS__)
 #define TNECS_CHOOSE_ENTITIES_CREATE(_1,_2,_3,NAME,...) NAME
 #define TNECS_ENTITIES_CREATE2(world, num) tnecs_entities_create(world, num)
-#define TNECS_ENTITIES_CREATE3(world, num, indices) tnecs_entities_create_windices(world, num, indices)
+#define TNECS_ENTITIES_CREATE3(world, num, indices) tnecs_entities_create_wID(world, num, indices)
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_TYPEFLAG(world, entity) world->entity_typeflags[entity]
