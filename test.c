@@ -106,10 +106,7 @@ typedef struct Sprite {
     bool isAnimated;
 } Sprite;
 
-struct Unit Unit_default = {
-    .hp = 0,
-    .str = 0,
-};
+struct Unit Unit_default = {.hp = 0, .str = 0 };
 
 typedef struct Position2 {
     uint32_t x;

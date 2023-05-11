@@ -1,45 +1,33 @@
 #ifndef __TNECS_H__
 #define __TNECS_H__
-// Tiny C99 Entity-Component-System (ECS) library.
-
-// Originally created for use in a game I am developping using C99: https://gitlab.com/Gabinou/firesagamaker. Title pending.
-
-// ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
-// * OOP: Objects/Classes contain data and methods.
-// Methods act on objects.
-// Children classes inherit methods and data structure from parents.
-// * ECS: Components are purely data.
-// Any number of components can be attached to an entity.
-// Entities are acted upon by systems.
-
-// In tnecs, an entity is an ```uint64_t``` index.
-// A component is user-defined ```struct```.
-// A system is a user-defined ```function```.
-// All live inside the ```world```.
-
-// The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
-// Phases are user-defined ```uint8_t```.
-// System execution order is first-come first-served by default.
-// Systems are inclusive by default, meaning that they run over entities with additional components to the system's.
-
-/* Un-viral MIT License
+/* Tiny C99 Entity-Component-System (ECS) library.
+* tnecs.h
 *
-* Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
+* Copyright (C) Gabriel Taillon, 2023
 *
-* Permission is hereby granted, free of charge, to any person obtaining a copy
-* of this software and associated documentation files (the "Software"), to deal
-* in the Software without restriction, including without limitation the rights
-* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-* copies of the Software, and to permit persons to whom the Software is
-* furnished to do so.
+* ECSs are an alternative way to organize data and functions to
+* Object-Oriented programming (OOP).
+* OOP:
+* - Objects/Classes contain data and methods.
+* - Methods act on objects.
+* - Children classes inherit methods and data structure from parents.
+* ECS:
+* - Components are purely data.
+* - Any number of components can be attached to an entity.
+* - Entities are acted upon by systems.
 *
-* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-* SOFTWARE. */
+* In tnecs, an entity is an ```uint64_t``` index.
+* A component is user-defined ```struct```.
+* A system is a user-defined ```function```.
+* All live inside the ```world```.
+*
+* The systems iterate over the entities that have a user-defined set of components,
+* inclusively or exclusively, in phases.
+* Phases are user-defined ```uint8_t```.
+* System execution order is first-come first-served by default.
+* Systems are inclusive by default, meaning that they run over entities with
+* additional components to the system's.
+*/
 
 #include <stdio.h>
 #include <string.h>
@@ -180,24 +168,24 @@ struct tnecs_World {
     tnecs_phase_t     *restrict system_phases;                  // [system_id]
     bool              *restrict system_exclusive;               // [system_id]
     tnecs_phase_t     *restrict phases;                         // [phase_id]
-    size_t   * restrict system_orders;                           // [system_id]
+    size_t            *restrict system_orders;                  // [system_id]
     size_t            component_bytesizes[TNECS_COMPONENT_CAP]; // [component_id]
     tnecs_hash_t      component_hashes[TNECS_COMPONENT_CAP];    // [component_id]
-    char              * restrict component_names[TNECS_COMPONENT_CAP];    // [component_id]
-    tnecs_hash_t      *restrict system_hashes;                           // [system_id]
-    char              **restrict system_names;                           // [system_id]
+    char *restrict component_names[TNECS_COMPONENT_CAP];        // [component_id]
+    tnecs_hash_t      *restrict system_hashes;                  // [system_id]
+    char             **restrict system_names;                   // [system_id]
 
     //_bytype arrays are exclusive
-    size_t            **restrict archetype_id_bytype;               // [typeflag_id][typeflag_id_order]
-    size_t            * restrict num_archetype_ids;                  // [typeflag_id]
-    struct tnecs_Components_Array ** restrict components_bytype;     // [typeflag_id][component_order_bytype]
-    tnecs_entity_t    **restrict entities_bytype;                   // [typeflag_id][entity_order_bytype]
-    tnecs_component_t **restrict components_idbytype;               // [typeflag_id][component_order_bytype]
-    tnecs_component_t **restrict components_flagbytype;             // [typeflag_id][component_order_bytype]
-    size_t            **restrict components_orderbytype;            // [typeflag_id][component_id]
-    size_t            **restrict systems_idbyphase;                 // [phase_id][system_order]
-    tnecs_system_ptr  **restrict systems_byphase;                   // [phase_id][system_id]
-    tnecs_system_ptr  *restrict systems_torun;                      // [torun_order] debug
+    size_t            **restrict archetype_id_bytype;           // [typeflag_id][typeflag_id_order]
+    size_t             *restrict num_archetype_ids;             // [typeflag_id]
+    struct tnecs_Components_Array **restrict components_bytype; // [typeflag_id][component_order_bytype]
+    tnecs_entity_t    **restrict entities_bytype;               // [typeflag_id][entity_order_bytype]
+    tnecs_component_t **restrict components_idbytype;           // [typeflag_id][component_order_bytype]
+    tnecs_component_t **restrict components_flagbytype;         // [typeflag_id][component_order_bytype]
+    size_t            **restrict components_orderbytype;        // [typeflag_id][component_id]
+    size_t            **restrict systems_idbyphase;             // [phase_id][system_order]
+    tnecs_system_ptr  **restrict systems_byphase;               // [phase_id][system_id]
+    tnecs_system_ptr  *restrict systems_torun;                  // [torun_order] debug
     size_t            num_systems_torun;
     size_t            len_systems_torun;
 
@@ -209,12 +197,12 @@ struct tnecs_World {
     size_t            num_typeflags;                       // num is active elements
     size_t            num_systems;                         // num is active elements
     size_t            num_phases;                          // num is active elements
-    size_t   *restrict entity_orders;                      // [entity_id]
-    size_t   *restrict num_components_bytype;              // [typeflag_id]
-    size_t   *restrict len_entities_bytype;                // [typeflag_id]
-    size_t   *restrict num_entities_bytype;                // [typeflag_id]
-    size_t   *restrict len_systems_byphase;                // [phase_id]
-    size_t   *restrict num_systems_byphase;                // [phase_id]
+    size_t *restrict  entity_orders;                       // [entity_id]
+    size_t *restrict  num_components_bytype;               // [typeflag_id]
+    size_t *restrict  len_entities_bytype;                 // [typeflag_id]
+    size_t *restrict  num_entities_bytype;                 // [typeflag_id]
+    size_t *restrict  len_systems_byphase;                 // [phase_id]
+    size_t *restrict  num_systems_byphase;                 // [phase_id]
 
     size_t            num_entities_open;
     size_t            len_entities_open;
@@ -238,33 +226,39 @@ struct tnecs_Components_Array {
     tnecs_component_t   type;
     size_t              num_components;
     size_t              len_components;
-    void                *restrict components;                                        // [entity_order_bytype]
+    void                *restrict
+    components;                                        // [entity_order_bytype]
 };
 
 /**************************** WORLD FUNCTIONS ********************************/
 struct tnecs_World *tnecs_world_genesis();
-void tnecs_world_destroy(struct tnecs_World            *w);
-void tnecs_world_step(struct tnecs_World               *w, tnecs_time_ns_t deltat);
-void tnecs_world_step_wdata(struct tnecs_World         *restrict w, tnecs_time_ns_t deltat, void *restrict data);
-bool tnecs_world_breath_entities(struct tnecs_World    *w);
-bool tnecs_world_breath_components(struct tnecs_World  *w);
-bool tnecs_world_breath_systems(struct tnecs_World     *w);
-bool tnecs_world_breath_typeflags(struct tnecs_World   *w);
+void tnecs_world_destroy(struct tnecs_World             *w);
+void tnecs_world_step(struct tnecs_World                *w, tnecs_time_ns_t deltat);
+void tnecs_world_step_wdata(struct tnecs_World *restrict w, tnecs_time_ns_t deltat,
+                            void *restrict data);
+bool tnecs_world_breath_entities(struct tnecs_World     *w);
+bool tnecs_world_breath_components(struct tnecs_World   *w);
+bool tnecs_world_breath_systems(struct tnecs_World      *w);
+bool tnecs_world_breath_typeflags(struct tnecs_World    *w);
 
 /**************************** SYSTEM FUNCTIONS ********************************/
 void tnecs_system_torun_realloc(struct tnecs_World *world);
 void tnecs_system_run(struct tnecs_World *restrict w, size_t id, void *restrict data);
-void tnecs_system_run_dt(struct tnecs_World *restrict w, size_t id, tnecs_time_ns_t deltat, void *restrict data);
-void tnecs_systems_byphase_run(struct tnecs_World *restrict w, tnecs_phase_t phase_id, void *restrict data);
+void tnecs_system_run_dt(struct tnecs_World *restrict w, size_t id, tnecs_time_ns_t deltat,
+                         void *restrict data);
+void tnecs_systems_byphase_run(struct tnecs_World *restrict w, tnecs_phase_t phase_id,
+                               void *restrict data);
 void tnecs_systems_byphase_run_dt(struct tnecs_World *restrict w, tnecs_phase_t phase_id,
                                   tnecs_time_ns_t deltat, void *restrict data);
-void tnecs_custom_system_run(struct tnecs_World *restrict w, tnecs_system_ptr c, tnecs_component_t ar,
+void tnecs_custom_system_run(struct tnecs_World *restrict w, tnecs_system_ptr c,
+                             tnecs_component_t ar,
                              tnecs_time_ns_t deltat, void *restrict data);
 
 /***************************** REGISTRATION **********************************/
-tnecs_component_t tnecs_register_component(struct tnecs_World *restrict w, const char *restrict name, size_t b);
-size_t tnecs_register_system(struct tnecs_World *restrict w, const char * restrict name,
-                             void (* restrict system)(struct tnecs_System_Input *), tnecs_phase_t run_phase,
+tnecs_component_t tnecs_register_component(struct tnecs_World *restrict w,
+                                           const char *restrict name, size_t b);
+size_t tnecs_register_system(struct tnecs_World *restrict w, const char *restrict name,
+                             void (* system)(struct tnecs_System_Input *), tnecs_phase_t run_phase,
                              bool isExclusive, size_t component_num, tnecs_component_t component_typeflag);
 size_t tnecs_register_typeflag(struct tnecs_World *w, size_t num_components,
                                tnecs_component_t typeflag);
@@ -282,7 +276,8 @@ size_t tnecs_register_phase(struct tnecs_World *w, tnecs_phase_t phase);
 tnecs_entity_t tnecs_entity_create(struct tnecs_World *w);
 tnecs_entity_t tnecs_entity_create_wID(struct tnecs_World *w, tnecs_entity_t entity);
 tnecs_entity_t tnecs_entities_create(struct tnecs_World *w, size_t num);
-tnecs_entity_t tnecs_entities_create_wID(struct tnecs_World *restrict w, size_t num, tnecs_entity_t *restrict ents);
+tnecs_entity_t tnecs_entities_create_wID(struct tnecs_World *restrict w, size_t num,
+                                         tnecs_entity_t *restrict ents);
 tnecs_entity_t tnecs_entity_create_wcomponents(struct tnecs_World *w, size_t argnum, ...);
 
 tnecs_entity_t tnecs_entity_destroy(struct tnecs_World *w, tnecs_entity_t entity);
@@ -341,7 +336,7 @@ bool tnecs_component_migrate(struct tnecs_World *w, tnecs_entity_t entity,
 
 bool tnecs_component_array_new(struct tnecs_World *w, size_t num_components,
                                tnecs_component_t typeflag);
-void tnecs_component_array_init(struct tnecs_World * restrict w,
+void tnecs_component_array_init(struct tnecs_World *restrict w,
                                 struct tnecs_Components_Array *restrict array, size_t component_id);
 
 bool tnecs_system_order_switch(struct tnecs_World *w, tnecs_phase_t phase_id,
