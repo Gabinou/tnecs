@@ -55,7 +55,7 @@ endif
 FLAGS_BUILD_TYPE = -O0 -g #Debug
 
 # FLAGS_ERROR := -Wall -pedantic-errors
-FLAGS_ERROR := -w
+FLAGS_ERROR := -Wall
 INCLUDE_ALL := -I.
 
 # astyle detection: isASTYLE is empty unless astyle exists

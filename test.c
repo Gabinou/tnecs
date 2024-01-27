@@ -408,9 +408,7 @@ void tnecs_test_component_registration() {
 
 void tnecs_test_system_registration() {
     TNECS_REGISTER_SYSTEM_wEXCL(test_world, SystemMove, 1, Position, Velocity);
-    size_t temp_comp_flag = 1;
     size_t temp_comp_id = 1;
-    size_t temp_comp_order = 0;
     size_t temp_typeflag_id = 5;
     size_t temp_typeflag = 1 + 8;
 
@@ -473,8 +471,6 @@ void tnecs_test_entity_creation() {
         lok(temp_unit->hp  == 0);
         lok(temp_unit->str == 0);
     }
-
-    tnecs_entity_t Chasse = tnecs_entity_create(test_world);
 
     tnecs_entity_destroy(test_world, Silou);
     lok(test_world->entities_open[0] == Silou);
@@ -1001,11 +997,10 @@ void tnecs_other_benchmarks() {
     dupprintf(globalf, "\nOther tnecs benchmarks\n");
     double t_0, t_1;
 
-    uint64_t res_hash;
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        res_hash = TNECS_HASH("Position");
-        res_hash = TNECS_HASH("Unit");
+        TNECS_HASH("Position");
+        TNECS_HASH("Unit");
     }
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs_hash_djb2: %d iterations \n", ITERATIONS);
@@ -1013,8 +1008,8 @@ void tnecs_other_benchmarks() {
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        res_hash = tnecs_hash_sdbm("Unit");
-        res_hash = tnecs_hash_sdbm("Position");
+        tnecs_hash_sdbm("Unit");
+        tnecs_hash_sdbm("Position");
     }
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs_hash_sdbm: %d iterations \n", ITERATIONS);
@@ -1126,7 +1121,7 @@ void tnecs_test_grow() {
 
 
 void tnecs_benchmarks() {
-    printf("world size: %d bytes\n", sizeof(struct tnecs_World));
+    printf("world size: %ld bytes\n", sizeof(struct tnecs_World));
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
 
     double t_0;
@@ -1153,7 +1148,6 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     t_0 = tnecs_get_us();
-    tnecs_entity_t tnecs_temp_ent;
     for (size_t i = 0; i < ITERATIONS; i++) {
         tnecs_entities[i] = tnecs_entity_create(bench_world);
     }
@@ -1215,12 +1209,10 @@ void tnecs_benchmarks() {
 
     }
 
-    struct Unit2 *unit2temp;
-    struct Position2 *position2temp;
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        position2temp = TNECS_GET_COMPONENT(bench_world, tnecs_entities[i], Position2);
-        unit2temp = TNECS_GET_COMPONENT(bench_world, tnecs_entities[i], Unit2);
+        TNECS_GET_COMPONENT(bench_world, tnecs_entities[i], Position2);
+        TNECS_GET_COMPONENT(bench_world, tnecs_entities[i], Unit2);
     }
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: Component Get time: %d iterations \n", ITERATIONS);

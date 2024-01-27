@@ -1,6 +1,20 @@
 
 #include "tnecs.h"
 
+/************************* PRIVATE DECLARATIONS ******************************/
+/* --- WORLD FUNCTIONS --- */
+static bool tnecs_world_breath_entities(struct tnecs_World     *w);
+static bool tnecs_world_breath_components(struct tnecs_World   *w);
+static bool tnecs_world_breath_systems(struct tnecs_World      *w);
+static bool tnecs_world_breath_typeflags(struct tnecs_World    *w);
+
+/* --- SYSTEM FUNCTIONS --- */
+static void tnecs_system_torun_realloc(struct tnecs_World *world);
+
+/* --- REGISTRATION  --- */
+static size_t tnecs_register_typeflag(struct tnecs_World *w, size_t num_components,
+                                      tnecs_component_t typeflag);
+
 /********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
 uint64_t tnecs_get_ns() {
     static uint64_t is_init = 0;
@@ -119,8 +133,8 @@ void tnecs_world_step(struct tnecs_World *world, tnecs_time_ns_t deltat) {
     tnecs_world_step_wdata(world, deltat, NULL);
 }
 
-void tnecs_world_step_wdata(struct tnecs_World *restrict world, tnecs_time_ns_t deltat,
-                            void *restrict data) {
+void tnecs_world_step_wdata(struct tnecs_World *world, tnecs_time_ns_t deltat,
+                            void *data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     world->num_systems_torun = 0;
     if (!deltat)
@@ -279,14 +293,14 @@ bool tnecs_world_breath_typeflags(struct tnecs_World *world) {
 }
 
 /**************************** SYSTEM FUNCTIONS ********************************/
-void tnecs_system_run(struct tnecs_World *restrict world, size_t in_system_id,
-                      void *restrict user_data) {
+void tnecs_system_run(struct tnecs_World *world, size_t in_system_id,
+                      void *user_data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     tnecs_system_run_dt(world, in_system_id, 0, user_data);
 }
 
-void tnecs_custom_system_run(struct tnecs_World *restrict world, tnecs_system_ptr custom_system,
-                             tnecs_component_t archetype, tnecs_time_ns_t deltat, void *restrict user_data) {
+void tnecs_custom_system_run(struct tnecs_World *world, tnecs_system_ptr custom_system,
+                             tnecs_component_t archetype, tnecs_time_ns_t deltat, void *user_data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Building the systems input */
     struct tnecs_System_Input input = {.world = world, .deltat = deltat, .user_data = user_data};
@@ -318,8 +332,8 @@ void tnecs_system_torun_realloc(struct tnecs_World *world) {
     }
 }
 
-void tnecs_system_run_dt(struct tnecs_World *restrict world, size_t in_system_id,
-                         tnecs_time_ns_t deltat, void *restrict user_data) {
+void tnecs_system_run_dt(struct tnecs_World *world, size_t in_system_id,
+                         tnecs_time_ns_t deltat, void *user_data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Building the systems input */
     struct tnecs_System_Input input = {.world = world, .deltat = deltat, .user_data = user_data};
@@ -354,14 +368,14 @@ void tnecs_system_run_dt(struct tnecs_World *restrict world, size_t in_system_id
 }
 
 
-void tnecs_systems_byphase_run(struct tnecs_World *restrict world, tnecs_phase_t phase_id,
-                               void *restrict user_data) {
+void tnecs_systems_byphase_run(struct tnecs_World *world, tnecs_phase_t phase_id,
+                               void *user_data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     tnecs_systems_byphase_run_dt(world, phase_id, 0, user_data);
 }
 
-void tnecs_systems_byphase_run_dt(struct tnecs_World *restrict world, tnecs_phase_t phase_id,
-                                  tnecs_time_ns_t deltat, void *restrict user_data) {
+void tnecs_systems_byphase_run_dt(struct tnecs_World *world, tnecs_phase_t phase_id,
+                                  tnecs_time_ns_t deltat, void *user_data) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     size_t current_phase = world->phases[phase_id];
     if (phase_id != current_phase)
@@ -375,7 +389,7 @@ void tnecs_systems_byphase_run_dt(struct tnecs_World *restrict world, tnecs_phas
 
 
 /***************************** REGISTRATION **********************************/
-size_t tnecs_register_system(struct tnecs_World *restrict world, const char *restrict name,
+size_t tnecs_register_system(struct tnecs_World *world, const char *name,
                              void (* in_system)(struct tnecs_System_Input *), tnecs_phase_t phase,
                              bool isExclusive, size_t num_components, tnecs_component_t components_typeflag) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
@@ -424,8 +438,8 @@ size_t tnecs_register_system(struct tnecs_World *restrict world, const char *res
     return (system_id);
 }
 
-tnecs_component_t tnecs_register_component(struct tnecs_World *restrict world,
-                                           const char *restrict name,
+tnecs_component_t tnecs_register_component(struct tnecs_World *world,
+                                           const char *name,
                                            size_t bytesize) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Checks */
@@ -570,8 +584,8 @@ tnecs_entity_t tnecs_entities_create(struct tnecs_World *world, size_t num) {
     return (num);
 }
 
-tnecs_entity_t tnecs_entities_create_wID(struct tnecs_World *restrict world, size_t num,
-                                         tnecs_entity_t *restrict ents) {
+tnecs_entity_t tnecs_entities_create_wID(struct tnecs_World *world, size_t num,
+                                         tnecs_entity_t *ents) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     for (int i = 0; i < num; i++)
         TNECS_DEBUG_ASSERT(tnecs_entity_create_wID(world, ents[i]) > 0);
@@ -952,8 +966,8 @@ bool tnecs_system_order_switch(struct tnecs_World *world, tnecs_phase_t phase_id
 }
 
 /************************ UTILITY FUNCTIONS/MACROS ***************************/
-size_t tnecs_component_name2id(struct tnecs_World *restrict world,
-                               const tnecs_str_t *restrict name) {
+size_t tnecs_component_name2id(struct tnecs_World *world,
+                               const tnecs_str_t *name) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     return (tnecs_component_hash2id(world, tnecs_hash_djb2(name)));
 }
@@ -1029,8 +1043,8 @@ size_t tnecs_system_name2id(struct tnecs_World *world, const tnecs_str_t *name) 
     return (found);
 }
 
-tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World *restrict world,
-                                             const tnecs_str_t *restrict name) {
+tnecs_component_t tnecs_system_name2typeflag(struct tnecs_World *world,
+                                             const tnecs_str_t *name) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     size_t id = tnecs_system_name2id(world, name);
     return (world->system_typeflags[id]);
