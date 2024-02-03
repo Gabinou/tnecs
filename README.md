@@ -40,14 +40,10 @@ Make the _simplest possible_ C99 ECS library, only with the _minimum necessary f
 ## ToDo:
 - Thread Safety?
 
-I don't know enough about multithreading yet to be able to make any program thead-safe.
-As far as I know, tnecs can be used in multithreaded programs using locks and mutexes, with the implementation left up to the user.
-This is somewhat unsatisfying to me, so I'm doing some reading...
-
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
-- Small: <1400 lines, 2 files.
+- Small: <1700 lines, 2 files.
 - Fast: see benchmarks in test.c
 - Simple: C99 API
 - Independent: only dependent on C99 standard libraries
