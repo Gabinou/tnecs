@@ -1,7 +1,7 @@
 
 
 COMPILER:=gcc#tcc, gcc, clang
-# Optimization increase code speed by 5X-6X for gcc and clang ONLY
+# Optimization increases code speed by 5X-6X
 
 # OS AND Processor detection
 ifeq ($(OS),Windows_NT)
@@ -52,7 +52,7 @@ else
 endif
 
 # FLAGS_BUILD_TYPE = -O3 -DNDEBUG #Release
-FLAGS_BUILD_TYPE = -O0 -g #Debug
+FLAGS_BUILD_TYPE = -O0 -g -std=iso9899:1999 #Debug
 
 # FLAGS_ERROR := -Wall -pedantic-errors
 FLAGS_ERROR := -Wall
@@ -82,7 +82,7 @@ endif
 
 EXEC := $(PREFIX)test$(EXTENSION)
 EXEC_TCC := $(PREFIX)test_tcc$(EXTENSION)
-EXEC_GCC := $(PREFIX)test_gcc$(EXTENSION)
+EXEC_GCC := $(PREFIX)test_gcc$(EXTENSION*)
 EXEC_CLANG := $(PREFIX)test_clang$(EXTENSION)
 EXEC_ALL := ${EXEC} ${EXEC_TCC} ${EXEC_GCC} ${EXEC_CLANG}
 
