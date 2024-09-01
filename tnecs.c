@@ -153,19 +153,19 @@ bool _tnecs_world_breath_entities(struct tnecs_World *world) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     bool success = 1;
     /* Variables */
-    world->entity_next =        TNECS_NULLSHIFT;
-    world->len_entities =       TNECS_INITIAL_ENTITY_LEN;
-    world->len_entities_open =  TNECS_INITIAL_ENTITY_LEN;
-    world->num_entities_open =  0;
+    world->entity_next          = TNECS_NULLSHIFT;
+    world->len_entities         = TNECS_INITIAL_ENTITY_LEN;
+    world->len_entities_open    = TNECS_INITIAL_ENTITY_LEN;
+    world->num_entities_open    = 0;
 
     /* Allocs */
-    world->entities            = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entities));
-    world->entities_open       = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entities_open));
-    world->entity_orders       = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entity_orders));
-    world->entities_bytype     = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->entities_bytype));
-    world->entity_typeflags    = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entity_typeflags));
-    world->len_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->len_entities_bytype));
-    world->num_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->num_entities_bytype));
+    world->entities             = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entities));
+    world->entities_open        = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entities_open));
+    world->entity_orders        = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entity_orders));
+    world->entities_bytype      = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->entities_bytype));
+    world->entity_typeflags     = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entity_typeflags));
+    world->len_entities_bytype  = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->len_entities_bytype));
+    world->num_entities_bytype  = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->num_entities_bytype));
 
     /* Check allocs (same number as allocs) */
     success &= (world->entities             !=  NULL);
@@ -190,17 +190,17 @@ bool _tnecs_world_breath_components(struct tnecs_World *world) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Variables */
     bool success = 1;
-    world->num_components =               TNECS_NULLSHIFT;
+    world->num_components               = TNECS_NULLSHIFT;
     world->component_hashes[TNECS_NULL] = TNECS_NULL;
 
     /* Allocs */
     int syslen = TNECS_INITIAL_SYSTEM_LEN, namelen = 5;
-    world->components_bytype =            calloc(syslen, sizeof(*world->components_bytype));
-    world->num_components_bytype =        calloc(syslen, sizeof(*world->num_components_bytype));
-    world->components_idbytype =          calloc(syslen, sizeof(*world->components_idbytype));
-    world->components_flagbytype =        calloc(syslen, sizeof(*world->components_flagbytype));
-    world->components_orderbytype =       calloc(syslen, sizeof(*world->components_orderbytype));
-    world->component_names[TNECS_NULL] =  malloc(namelen);
+    world->components_bytype            = calloc(syslen, sizeof(*world->components_bytype));
+    world->components_idbytype          = calloc(syslen, sizeof(*world->components_idbytype));
+    world->num_components_bytype        = calloc(syslen, sizeof(*world->num_components_bytype));
+    world->components_flagbytype        = calloc(syslen, sizeof(*world->components_flagbytype));
+    world->components_orderbytype       = calloc(syslen, sizeof(*world->components_orderbytype));
+    world->component_names[TNECS_NULL]  = malloc(namelen);
 
     /* Check allocs (same number as allocs) */
     success &= (world->components_bytype       !=  NULL);
@@ -219,26 +219,26 @@ bool _tnecs_world_breath_systems(struct tnecs_World *world) {
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Variables */
     bool success = 1;
-    world->len_systems = TNECS_INITIAL_SYSTEM_LEN;
-    world->len_systems_torun = TNECS_INITIAL_SYSTEM_LEN;
-    world->num_systems = TNECS_NULLSHIFT;
-    world->len_phases = TNECS_INITIAL_PHASE_LEN;
-    world->num_phases = TNECS_NULLSHIFT;
+    world->len_phases           = TNECS_INITIAL_PHASE_LEN;
+    world->num_phases           = TNECS_NULLSHIFT;
+    world->len_systems          = TNECS_INITIAL_SYSTEM_LEN;
+    world->num_systems          = TNECS_NULLSHIFT;
+    world->len_systems_torun    = TNECS_INITIAL_SYSTEM_LEN;
 
     /* Allocs */
     int namelen = 5;
-    world->phases =                   calloc(world->len_phases, sizeof(*world->phases));
-    world->system_names =             calloc(world->len_systems, sizeof(*world->system_names));
-    world->systems_torun =            calloc(world->len_systems_torun, sizeof(tnecs_system_ptr));
-    world->system_hashes =            calloc(world->len_systems, sizeof(*world->system_hashes));
-    world->system_phases =            calloc(world->len_systems, sizeof(*world->system_phases));
-    world->system_orders =            calloc(world->len_systems, sizeof(*world->system_orders));
-    world->systems_byphase =          calloc(world->len_phases, sizeof(*world->systems_byphase));
-    world->system_typeflags =         calloc(world->len_systems, sizeof(*world->system_typeflags));
-    world->system_exclusive =         calloc(world->len_systems, sizeof(*world->system_exclusive));
-    world->systems_idbyphase =        calloc(world->len_phases, sizeof(*world->systems_idbyphase));
-    world->len_systems_byphase =      calloc(world->len_phases, sizeof(*world->len_systems_byphase));
-    world->num_systems_byphase =      calloc(world->len_phases, sizeof(*world->num_systems_byphase));
+    world->phases                   = calloc(world->len_phases,         sizeof(*world->phases));
+    world->system_names             = calloc(world->len_systems,        sizeof(*world->system_names));
+    world->systems_torun            = calloc(world->len_systems_torun,  sizeof(tnecs_system_ptr));
+    world->system_hashes            = calloc(world->len_systems,        sizeof(*world->system_hashes));
+    world->system_phases            = calloc(world->len_systems,        sizeof(*world->system_phases));
+    world->system_orders            = calloc(world->len_systems,        sizeof(*world->system_orders));
+    world->systems_byphase          = calloc(world->len_phases,         sizeof(*world->systems_byphase));
+    world->system_typeflags         = calloc(world->len_systems,        sizeof(*world->system_typeflags));
+    world->system_exclusive         = calloc(world->len_systems,        sizeof(*world->system_exclusive));
+    world->systems_idbyphase        = calloc(world->len_phases,         sizeof(*world->systems_idbyphase));
+    world->len_systems_byphase      = calloc(world->len_phases,         sizeof(*world->len_systems_byphase));
+    world->num_systems_byphase      = calloc(world->len_phases,         sizeof(*world->num_systems_byphase));
     world->system_names[TNECS_NULL] = malloc(namelen);
 
     /* Check allocs (same number as allocs) */
@@ -258,8 +258,8 @@ bool _tnecs_world_breath_systems(struct tnecs_World *world) {
 
     /* Alloc & check for entities_byphase elements */
     for (size_t i = 0; i < world->len_phases; i++) {
-        world->systems_byphase[i] =     calloc(world->len_phases, sizeof(**world->systems_byphase));
-        world->systems_idbyphase[i] =   calloc(world->len_phases, sizeof(**world->systems_idbyphase));
+        world->systems_byphase[i]   = calloc(world->len_phases, sizeof(**world->systems_byphase));
+        world->systems_idbyphase[i] = calloc(world->len_phases, sizeof(**world->systems_idbyphase));
         success &= world->systems_byphase[i]    != NULL;
         success &= world->systems_idbyphase[i]  != NULL;
         world->num_systems_byphase[i] = 0;
@@ -280,9 +280,9 @@ bool _tnecs_world_breath_typeflags(struct tnecs_World *world) {
     world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
 
     /* Allocs */
-    world->typeflags =           calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->typeflags));
-    world->archetype_id_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->archetype_id_bytype));
-    world->num_archetype_ids =   calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->num_archetype_ids));
+    world->typeflags            = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->typeflags));
+    world->archetype_id_bytype  = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->archetype_id_bytype));
+    world->num_archetype_ids    = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->num_archetype_ids));
 
     /* Check allocs (same number as allocs) */
     success &= (world->typeflags != NULL);
@@ -313,14 +313,14 @@ void tnecs_custom_system_run(struct tnecs_World *world, tnecs_system_ptr custom_
     TNECS_DEBUG_ASSERT(tID != TNECS_NULL);
 
     /* Running the exclusive custom system */
-    input.entity_typeflag_id =  tID;
-    input.num_entities =        world->num_entities_bytype[input.entity_typeflag_id];
+    input.entity_typeflag_id    = tID;
+    input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
     custom_system(&input);
 
     /* Running the non-exclusive/inclusive custom system */
     for (size_t tsub = 0; tsub < world->num_archetype_ids[tID]; tsub++) {
-        input.entity_typeflag_id =  world->archetype_id_bytype[tID][tsub];
-        input.num_entities =        world->num_entities_bytype[input.entity_typeflag_id];
+        input.entity_typeflag_id    = world->archetype_id_bytype[tID][tsub];
+        input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
         custom_system(&input);
     }
 }
@@ -328,10 +328,10 @@ void tnecs_custom_system_run(struct tnecs_World *world, tnecs_system_ptr custom_
 void _tnecs_system_torun_realloc(struct tnecs_World *world) {
     /* Realloc systems_to_run if too many */
     if (world->num_systems_torun >= (world->len_systems_torun - 1)) {
-        size_t old_len =            world->len_systems_torun;
-        size_t new_len =            old_len * TNECS_ARRAY_GROWTH_FACTOR;
-        world->len_systems_torun =  new_len;
-        size_t bytesize =           sizeof(*world->systems_torun);
+        size_t old_len              = world->len_systems_torun;
+        size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+        world->len_systems_torun    = new_len;
+        size_t bytesize             = sizeof(*world->systems_torun);
 
         world->systems_torun = tnecs_realloc(world->systems_torun, old_len, new_len, bytesize);
     }
@@ -342,18 +342,18 @@ void tnecs_system_run_dt(struct tnecs_World *world, size_t in_system_id,
     TNECS_DEBUG_PRINTF("%s\n", __func__);
     /* Building the systems input */
     struct tnecs_System_Input input = {.world = world, .deltat = deltat, .user_data = user_data};
-    size_t sorder =                    world->system_orders[in_system_id];
-    tnecs_phase phase_id =           world->system_phases[in_system_id];
-    size_t system_typeflag_id =        tnecs_typeflagid(world, world->system_typeflags[in_system_id]);
+    size_t sorder               = world->system_orders[in_system_id];
+    tnecs_phase phase_id        = world->system_phases[in_system_id];
+    size_t system_typeflag_id   = tnecs_typeflagid(world, world->system_typeflags[in_system_id]);
 
-    input.entity_typeflag_id =         system_typeflag_id;
-    input.num_entities =               world->num_entities_bytype[input.entity_typeflag_id];
+    input.entity_typeflag_id    = system_typeflag_id;
+    input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
 
     /* Running the exclusive systems in current phase */
     _tnecs_system_torun_realloc(world);
-    tnecs_system_ptr system =              world->systems_byphase[phase_id][sorder];
-    int system_num =                       world->num_systems_torun++;
-    world->systems_torun[system_num] =     world->systems_byphase[phase_id][sorder];
+    tnecs_system_ptr system             = world->systems_byphase[phase_id][sorder];
+    int system_num                      = world->num_systems_torun++;
+    world->systems_torun[system_num]    = world->systems_byphase[phase_id][sorder];
     system(&input);
 
     if (world->system_exclusive[in_system_id])
@@ -361,13 +361,13 @@ void tnecs_system_run_dt(struct tnecs_World *world, size_t in_system_id,
 
     /* Running the inclusive systems in current phase */
     for (size_t tsub = 0; tsub < world->num_archetype_ids[system_typeflag_id]; tsub++) {
-        input.entity_typeflag_id =         world->archetype_id_bytype[system_typeflag_id][tsub];
-        input.num_entities =               world->num_entities_bytype[input.entity_typeflag_id];
+        input.entity_typeflag_id    = world->archetype_id_bytype[system_typeflag_id][tsub];
+        input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
 
         _tnecs_system_torun_realloc(world);
-        tnecs_system_ptr system =          world->systems_byphase[phase_id][sorder];
-        int system_num =                   world->num_systems_torun++;
-        world->systems_torun[system_num] = system;
+        tnecs_system_ptr system             = world->systems_byphase[phase_id][sorder];
+        int system_num                      = world->num_systems_torun++;
+        world->systems_torun[system_num]    = system;
         system(&input);
     }
 }
@@ -407,38 +407,38 @@ size_t tnecs_register_system(struct tnecs_World *world, const char *name,
 
     /* Realloc systems_byphase if too many */
     if (world->num_systems_byphase[phase] >= world->len_systems_byphase[phase]) {
-        size_t olen =                        world->len_systems_byphase[phase];
-        size_t nlen =                        olen * TNECS_ARRAY_GROWTH_FACTOR;
-        world->len_systems_byphase[phase] =  nlen;
-        size_t bs =                          sizeof(**world->systems_byphase);
-        size_t bsid =                        sizeof(**world->systems_idbyphase);
+        size_t olen                         = world->len_systems_byphase[phase];
+        size_t nlen                         = olen * TNECS_ARRAY_GROWTH_FACTOR;
+        world->len_systems_byphase[phase]   = nlen;
+        size_t bs                           = sizeof(**world->systems_byphase);
+        size_t bsid                         = sizeof(**world->systems_idbyphase);
 
-        tnecs_system_ptr *systems =          world->systems_byphase[phase];
-        size_t *system_id =                  world->systems_idbyphase[phase];
-        world->systems_byphase[phase] =      tnecs_realloc(systems, olen, nlen, bs);
-        world->systems_idbyphase[phase] =    tnecs_realloc(system_id, olen, nlen, bsid);
+        tnecs_system_ptr *systems           = world->systems_byphase[phase];
+        size_t *system_id                   = world->systems_idbyphase[phase];
+        world->systems_byphase[phase]       = tnecs_realloc(systems, olen, nlen, bs);
+        world->systems_idbyphase[phase]     = tnecs_realloc(system_id, olen, nlen, bsid);
     }
 
     /* -- Actual registration -- */
     /* Saving name and hash */
-    world->system_names[system_id] =    malloc(strlen(name) + 1);
-    tnecs_hash hash =                 tnecs_hash_djb2(name);
+    world->system_names[system_id]  = malloc(strlen(name) + 1);
+    tnecs_hash hash                 = tnecs_hash_djb2(name);
     strncpy(world->system_names[system_id], name, strlen(name) + 1);
 
     /* Register new phase if didn't exist */
     if (!world->phases[phase])
         tnecs_register_phase(world, phase);
 
-    world->system_exclusive[system_id] =   isExclusive;
-    world->system_phases[system_id] =      phase;
-    world->system_hashes[system_id] =      hash;
-    world->system_typeflags[system_id] =   components_typeflag;
+    world->system_exclusive[system_id]  = isExclusive;
+    world->system_phases[system_id]     = phase;
+    world->system_hashes[system_id]     = hash;
+    world->system_typeflags[system_id]  = components_typeflag;
 
     /* System order */
-    size_t system_order =                               world->num_systems_byphase[phase]++;
-    world->system_orders[system_id] =                   system_order;
-    world->systems_byphase[phase][system_order] =    in_system;
-    world->systems_idbyphase[phase][system_order] =  system_id;
+    size_t system_order                             = world->num_systems_byphase[phase]++;
+    world->system_orders[system_id]                 = system_order;
+    world->systems_byphase[phase][system_order]     = in_system;
+    world->systems_idbyphase[phase][system_order]   = system_id;
     _tnecs_register_typeflag(world, num_components, components_typeflag);
     return (system_id);
 }
@@ -452,13 +452,13 @@ tnecs_component tnecs_register_component(struct tnecs_World *world,
     TNECS_DEBUG_ASSERT(bytesize > 0);
 
     /* Registering */
-    tnecs_component new_component_id =            world->num_components++;
-    world->component_hashes[new_component_id] =     tnecs_hash_djb2(name);
-    tnecs_component new_component_flag =          TNECS_COMPONENT_ID2TYPE(new_component_id);
-    world->component_bytesizes[new_component_id] =  bytesize;
+    tnecs_component new_component_id                = world->num_components++;
+    world->component_hashes[new_component_id]       = tnecs_hash_djb2(name);
+    tnecs_component new_component_flag              = TNECS_COMPONENT_ID2TYPE(new_component_id);
+    world->component_bytesizes[new_component_id]    = bytesize;
 
     /* Setting component name */
-    world->component_names[new_component_id] =      malloc(strlen(name) + 1);
+    world->component_names[new_component_id]        = malloc(strlen(name) + 1);
     strncpy(world->component_names[new_component_id], name, strlen(name) + 1);
     _tnecs_register_typeflag(world, 1, new_component_flag);
     return (new_component_id);
@@ -493,22 +493,22 @@ size_t _tnecs_register_typeflag(struct tnecs_World *world, size_t num_components
     // 3- Add all components to components_idbytype and components_flagbytype
     tnecs_component component_id_toadd, component_type_toadd;
     tnecs_component typeflag_reduced = typeflag_new, typeflag_added = 0;
-    size_t bytesize1 =  sizeof(**world->components_idbytype);
-    size_t bytesize2 =  sizeof(**world->components_flagbytype);
-    size_t bytesize3 =  sizeof(**world->components_orderbytype);
-    world->components_idbytype[tID] =     calloc(num_components,      bytesize1);
-    world->components_flagbytype[tID] =   calloc(num_components,      bytesize2);
-    world->components_orderbytype[tID] =  calloc(TNECS_COMPONENT_CAP, bytesize3);
+    size_t bytesize1 = sizeof(**world->components_idbytype);
+    size_t bytesize2 = sizeof(**world->components_flagbytype);
+    size_t bytesize3 = sizeof(**world->components_orderbytype);
+    world->components_idbytype[tID]     = calloc(num_components,      bytesize1);
+    world->components_flagbytype[tID]   = calloc(num_components,      bytesize2);
+    world->components_orderbytype[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize3);
     size_t i = 0;
     while (typeflag_reduced) {
         typeflag_reduced &= (typeflag_reduced - 1);
 
         component_type_toadd = (typeflag_reduced + typeflag_added) ^ typeflag_new;
-        typeflag_added +=      component_type_toadd;
-        component_id_toadd =   TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+        typeflag_added += component_type_toadd;
+        component_id_toadd = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
-        world->components_idbytype[tID][i] =   component_id_toadd;
-        world->components_flagbytype[tID][i] = component_type_toadd;
+        world->components_idbytype[tID][i]      = component_id_toadd;
+        world->components_flagbytype[tID][i]    = component_type_toadd;
 
         world->components_orderbytype[tID][component_id_toadd] = i++;
     }
@@ -614,8 +614,8 @@ tnecs_entity tnecs_entity_create_wcomponents(struct tnecs_World *world, size_t a
     tnecs_entity_add_components(world, new_entity, argnum, typeflag, true);
 
     /* Check */
-    size_t tID =       TNECS_TYPEFLAGID(world, typeflag);
-    size_t order =     world->entity_orders[new_entity];
+    size_t tID      = TNECS_TYPEFLAGID(world, typeflag);
+    size_t order    = world->entity_orders[new_entity];
     TNECS_DEBUG_ASSERT(world->entities_bytype[tID][order] == new_entity);
     TNECS_DEBUG_ASSERT(world->entities[new_entity] == new_entity);
     return (new_entity);
@@ -626,9 +626,9 @@ tnecs_entity tnecs_entity_destroy(struct tnecs_World *world, tnecs_entity entity
     TNECS_DEBUG_ASSERT(world->entities[entity]);
     TNECS_DEBUG_ASSERT(entity > TNECS_NULL);
     /* Preliminaries */
-    tnecs_component typeflag =  world->entity_typeflags[entity];
-    size_t tID =                  TNECS_TYPEFLAGID(world, typeflag);
-    size_t entity_order =         world->entity_orders[entity];
+    tnecs_component typeflag    = world->entity_typeflags[entity];
+    size_t tID                  = TNECS_TYPEFLAGID(world, typeflag);
+    size_t entity_order         = world->entity_orders[entity];
     TNECS_DEBUG_ASSERT(world->num_entities_bytype[tID] > TNECS_NULL);
     /* Delete components */
     tnecs_component_del(world, entity, typeflag);
@@ -638,16 +638,15 @@ tnecs_entity tnecs_entity_destroy(struct tnecs_World *world, tnecs_entity entity
     tnecs_entitiesbytype_del(world, entity, typeflag);
 
     /* Realloc entities_open if too many */
-    world->entities[entity] =          TNECS_NULL;
-    world->entity_orders[entity] =     TNECS_NULL;
-    world->entity_typeflags[entity] =  TNECS_NULL;
+    world->entities[entity]         = TNECS_NULL;
+    world->entity_orders[entity]    = TNECS_NULL;
+    world->entity_typeflags[entity] = TNECS_NULL;
     if ((world->num_entities_open + 1) >= world->len_entities_open) {
-        size_t old_len =            world->len_entities_open;
-        size_t new_len =            old_len * TNECS_ARRAY_GROWTH_FACTOR;
-        size_t bytesize =           sizeof(*world->entities_open);
-        world->len_entities_open =  new_len;
-
-        world->entities_open = tnecs_realloc(world->entities_open, old_len, new_len, bytesize);
+        size_t old_len              = world->len_entities_open;
+        size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+        size_t bytesize             = sizeof(*world->entities_open);
+        world->len_entities_open    = new_len;
+        world->entities_open        = tnecs_realloc(world->entities_open, old_len, new_len, bytesize);
     }
 
     /* Add deleted entity to open entities */
@@ -1276,9 +1275,9 @@ bool tnecs_growArray_bytype(struct tnecs_World *world, size_t tID) {
     size_t new_comp_num = world->num_components_bytype[tID];
     tnecs_component_array *current_array;
     for (size_t corder = 0; corder < new_comp_num; corder++) {
-        current_array =     &world->components_bytype[tID][corder];
-        size_t old_len =    current_array->len_components;
-        size_t new_len =    old_len * TNECS_ARRAY_GROWTH_FACTOR;
+        current_array   = &world->components_bytype[tID][corder];
+        size_t old_len  = current_array->len_components;
+        size_t new_len  = old_len * TNECS_ARRAY_GROWTH_FACTOR;
         current_array->len_components = new_len;
 
         size_t cID = world->components_idbytype[tID][corder];
