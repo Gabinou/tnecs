@@ -389,9 +389,6 @@ bool tnecs_growArray_phase(struct tnecs_World *w);
 
 /****************************** STRING HASHING *******************************/
 uint64_t tnecs_hash_djb2(const char *str);  // slightly faster
-uint64_t tnecs_hash_sdbm(const char *str);
-uint64_t tnecs_hash_combine(uint64_t h1, uint64_t h2);
-#define TNECS_HASH(name) tnecs_hash_djb2(name)
 
 /****************************** SET BIT COUNTING *****************************/
 size_t setBits_KnR_uint64_t(uint64_t flags);
