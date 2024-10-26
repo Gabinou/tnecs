@@ -558,8 +558,7 @@ tnecs_entity tnecs_entity_create(struct tnecs_World *world) {
         do {
             if (world->entity_next >= world->len_entities)
                 tnecs_growArray_entity(world);
-            out = world->entity_next;
-        } while (world->entities[world->entity_next++] != TNECS_NULL);
+        } while (world->entities[out = world->entity_next++] != TNECS_NULL);
     }
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
 
