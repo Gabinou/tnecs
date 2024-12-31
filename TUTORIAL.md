@@ -14,7 +14,7 @@ Use ```tnecs_world_destroy``` to free all memory.
 ```
 ```tnecs_entity_t``` is a ```uint64_t``` index. 
 
-Entity index 0 is reserved for NULL.
+Entity index 0 is reserved for ```TNECS_NULL```.
 Entities can be destroyed with ```tnecs_entity_destroy```, which frees all associated components.
 
 Entities can be created with an index:
@@ -44,7 +44,7 @@ A component is a user-defined struct:
 
     TNECS_REGISTER_COMPONENT(world, Position);
 ```
-When registered, the component names are stringified, are stored at ```world->component_names[component_id]```, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
+When registered, the component names are stringified, then stored at ```world->component_names[component_id]```, then hashed with ```TNECS_HASH``` and stored at ```world->component_hashes[component_id]```.
 ```TNECS_HASH``` is an alias for ```tnecs_hash_djb2``` by default.
 
 ```tnecs_component_t``` is an ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. 
@@ -164,9 +164,8 @@ enum SYSTEM_PHASES {
 ## Updating the world
 ```c
 tnecs_time_ns_t frame_deltat;
-tnecs_world_step(world, frame_deltat);
+tnecs_world_step(world, frame_deltat, NULL);
 ```
-```tnecs_world_step``` computes time from previous frame time  ```deltat``` if 0 is inputted, with the 0.1 microsecond resolution clock included in tnecs. 
 The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
 
 ## Error Handling

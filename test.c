@@ -476,6 +476,7 @@ void tnecs_test_entity_creation() {
     lok(test_world->entities_open[0] == Silou);
     lok(test_world->num_entities_open == 1);
     lok(!test_world->entities[Silou]);
+    test_world->reuse_entities = true;
     tnecs_entity_create(test_world);
     lok(test_world->entities[Silou]);
 
