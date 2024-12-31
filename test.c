@@ -773,7 +773,7 @@ void tnecs_test_world_progress() {
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
-    tnecs_world_step(test_world, 1);
+    tnecs_world_step(test_world, 1, NULL);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
 
@@ -792,7 +792,7 @@ void tnecs_test_world_progress() {
     lok(temp_position->y == 202);
     lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
-    tnecs_world_step(test_world, 1);
+    tnecs_world_step(test_world, 1, NULL);
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Position);
     temp_velocity = TNECS_GET_COMPONENT(test_world, Perignon, Velocity);
     lok(test_world->num_systems_torun == 5);
@@ -810,7 +810,7 @@ void tnecs_test_world_progress() {
     lok(temp_position->y == 204);
     lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
-    tnecs_world_step(test_world, 0);
+    tnecs_world_step(test_world, 0, NULL);
 
     lok(test_world->entity_typeflags[Perignon] == (1 + 8));
     lok(test_world->num_entities_bytype[TNECS_TYPEFLAGID(test_world, 1 + 8)] == 1);
@@ -907,7 +907,7 @@ void tnecs_test_world_progress() {
                                                               TNECS_SYSTEM_ID2TYPEFLAG(inclusive_world, TNECS_SYSTEM_NAME2ID(inclusive_world,
                                                                       SystemMovePhase4)))] == 12);
     lok(inclusive_world->num_typeflags == 8);
-    tnecs_world_step(inclusive_world, 1);
+    tnecs_world_step(inclusive_world, 1, NULL);
 
     lok(inclusive_world->num_systems_torun == 9);
     lok(inclusive_world->systems_torun[0] == &SystemMove);
@@ -971,7 +971,7 @@ void tnecs_test_world_progress() {
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit, Position);
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit, Position, Velocity);
     lok(inclusive_world2->num_typeflags == 8);
-    tnecs_world_step(inclusive_world2, 1);
+    tnecs_world_step(inclusive_world2, 1, NULL);
     lok(inclusive_world2->num_systems_torun == 9);
     lok(inclusive_world2->systems_torun[0] == &SystemMovePhase1);
     lok(inclusive_world2->systems_torun[1] == &SystemMovePhase1);
@@ -1220,7 +1220,7 @@ void tnecs_benchmarks() {
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
-        tnecs_world_step(bench_world, 1);
+        tnecs_world_step(bench_world, 1, NULL);
     }
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: World Step time: %d iterations %d entities \n", fps_iterations,

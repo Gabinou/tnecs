@@ -27,7 +27,7 @@ A system is a user-defined ```function```.
 All live inside the ```world```. 
 
 The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
-Phases are user-defined ```uint8_t```.
+Phases are user-defined ```uint32_t```.
 System execution order is first-come first-served by default.
 For more in-depth discussion about tnecs' design, see the [On Design](https://gitlab.com/Gabinou/tnecs/-/blob/master/DESIGN.md).
 
@@ -36,9 +36,6 @@ Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 
 ## Motivation
 Make the _simplest possible_ C99 ECS library, only with the _minimum necessary features_. Compile with ```tcc```.
-
-## ToDo:
-- Thread Safety?
 
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
@@ -60,4 +57,4 @@ Sanders Mertens for [his blog on ECS design](https://ajmmertens.medium.com/).
 He created [many other resources on ECSs](). 
 
 ## Credits
-Copyright (c) 2021 Average Bear Games, Made by Gabriel Taillon
+Copyright (c) 2025 Average Bear Games, Made by Gabriel Taillon
