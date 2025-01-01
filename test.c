@@ -174,7 +174,7 @@ void SystemMovePhase2(struct tnecs_System_Input *in_input) {
             == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
         lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world,
                                                              in_input->world->entity_typeflags[current_ent]));        // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
-        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+        // printf("in_inputf->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
         // in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]
     }
 }
@@ -1152,10 +1152,10 @@ void tnecs_benchmarks() {
     for (size_t i = 0; i < ITERATIONS; i++) {
         tnecs_entities[i] = tnecs_entity_create(bench_world);
     }
+
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: Entity Creation time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
@@ -1179,7 +1179,6 @@ void tnecs_benchmarks() {
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: Entity Add Component time: %d iterations \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
