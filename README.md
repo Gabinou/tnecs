@@ -51,6 +51,7 @@ For more in-depth discussion about tnecs' design, see the [On Design](https://gi
 tcc -c tnecs.c -o tnecs.o
 tcc -c test.c -o test.o
 tcc -o test test.o tnecs.o -lm
+./test
 ```
 
 ## Credits
