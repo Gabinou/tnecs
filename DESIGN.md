@@ -25,7 +25,7 @@ The most notable design feature is the use of a ```uint64_t``` as a bitflag to d
 For example, the first registered component has only its first bit set  ```0b0001```, the next one its second bit set ```0b0010```, etc.
 The component id is simply this set bit address, so ```component_type =  1 << (component_id - 1)```.
 
-This greatly simplifies the notion of a typeflag: it is just an ```uint64_t``` with any number of set bits for each component.
+This greatly simplifies the notion of a typeflag/archetype: it is just an ```uint64_t``` with any number of set bits for each component.
 Each entity is associated with a single ```uint64_t``` typeflag, ibid. for systems.
 Simple binary operators are used to check if a type is included in a typeflag, if a typeflag is a superset of another, etc.
 This effectively limits the number of components to 63, with 0 reserved for the NULL type, but this is more than enough in practice.
