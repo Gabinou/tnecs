@@ -9,7 +9,7 @@ The _simplest possible_ C99 ECS library, only with the _minimum necessary featur
 ## Features
 - Compatible: compiles with ```tcc```, ```gcc``` and ```clang```
 - Cross-platform: Windows, Linux, Android (termux)
-- Small: <1700 lines, 2 files.
+- Small: <2000 lines, 2 files.
 - Fast: see benchmarks in test.c
 - Simple: C99 API
 - Independent: only dependent on C99 standard libraries
