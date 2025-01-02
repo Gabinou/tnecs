@@ -348,22 +348,24 @@ size_t tnecs_register_system(struct tnecs_world *world, const char *name,
 
     /* Realloc systems_byphase if too many */
     if (world->num_systems_byphase[phase] >= world->len_systems_byphase[phase]) {
-        size_t olen =                        world->len_systems_byphase[phase];
-        size_t nlen =                        olen * TNECS_ARRAY_GROWTH_FACTOR;
-        world->len_systems_byphase[phase] =  nlen;
-        size_t bs =                          sizeof(**world->systems_byphase);
-        size_t bsid =                        sizeof(**world->systems_idbyphase);
+        size_t olen                         = world->len_systems_byphase[phase];
+        size_t nlen                         = olen * TNECS_ARRAY_GROWTH_FACTOR;
+        world->len_systems_byphase[phase]   = nlen;
+        size_t bs                           = sizeof(**world->systems_byphase);
+        size_t bsid                         = sizeof(**world->systems_idbyphase);
 
-        tnecs_system_ptr *systems =          world->systems_byphase[phase];
-        size_t *system_id =                  world->systems_idbyphase[phase];
-        world->systems_byphase[phase] =      tnecs_realloc(systems, olen, nlen, bs);
-        world->systems_idbyphase[phase] =    tnecs_realloc(system_id, olen, nlen, bsid);
+        tnecs_system_ptr *systems       = world->systems_byphase[phase];
+        size_t *system_id               = world->systems_idbyphase[phase];
+        world->systems_byphase[phase]   = tnecs_realloc(systems, olen, nlen, bs);
+        world->systems_idbyphase[phase] = tnecs_realloc(system_id, olen, nlen, bsid);
     }
 
     /* -- Actual registration -- */
     /* Saving name and hash */
-    world->system_names[system_id] =    malloc(strlen(name) + 1);
-    tnecs_hash hash =                 tnecs_hash_djb2(name);
+    world->system_names[system_id]  = malloc(strlen(name) + 1);
+    TNECS_ALLOC_CHECK(world->system_names[system_id]);
+
+    tnecs_hash hash                 = tnecs_hash_djb2(name);
     strncpy(world->system_names[system_id], name, strlen(name) + 1);
 
     /* Register new phase if didn't exist */
@@ -399,13 +401,15 @@ tnecs_component tnecs_register_component(struct tnecs_world *world,
 
 
     /* Registering */
-    tnecs_component new_component_id =            world->num_components++;
-    world->component_hashes[new_component_id] =     tnecs_hash_djb2(name);
-    tnecs_component new_component_flag =          TNECS_COMPONENT_ID2TYPE(new_component_id);
-    world->component_bytesizes[new_component_id] =  bytesize;
+    tnecs_component new_component_id                = world->num_components++;
+    world->component_hashes[new_component_id]       = tnecs_hash_djb2(name);
+    tnecs_component new_component_flag              = TNECS_COMPONENT_ID2TYPE(new_component_id);
+    world->component_bytesizes[new_component_id]    = bytesize;
 
     /* Setting component name */
-    world->component_names[new_component_id] =      malloc(strlen(name) + 1);
+    world->component_names[new_component_id] = malloc(strlen(name) + 1);
+    TNECS_ALLOC_CHECK(world->component_names[new_component_id]);
+
     strncpy(world->component_names[new_component_id], name, strlen(name) + 1);
     _tnecs_register_typeflag(world, 1, new_component_flag);
     return (new_component_id);
@@ -1061,7 +1065,6 @@ void *tnecs_realloc(void *ptr, size_t old_len, size_t new_len, size_t elem_bytes
     assert(new_len > old_len);
     void *realloced = (void *)calloc(new_len, elem_bytesize);
     TNECS_ALLOC_CHECK(realloced);
-    TNECS_DEBUG_ASSERT(realloced);
     memcpy(realloced, ptr, old_len * elem_bytesize);
     free(ptr);
     return (realloced);
@@ -1118,8 +1121,8 @@ b32 tnecs_growArray_system(struct tnecs_world *world) {
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
     size_t nlen_torun = olen_torun * TNECS_ARRAY_GROWTH_FACTOR;
     TNECS_DEBUG_ASSERT(olen > 0);
-    world->len_systems = nlen;
-    world->len_systems_torun = nlen_torun;
+    world->len_systems          = nlen;
+    world->len_systems_torun    = nlen_torun;
 
     size_t bytesize1 = sizeof(*world->systems_torun);
     size_t bytesize2 = sizeof(*world->system_names);
