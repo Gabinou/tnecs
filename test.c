@@ -263,11 +263,11 @@ size_t fps_iterations = 10;
 /*******************************TEST SYSTEMS***************************/
 tnecs_entity tnecs_entities[ITERATIONS];
 struct Unit unit_array[ARRAY_LEN];
-tnecs_entity *components_list;
-struct Position *temp_position;
-struct Unit *temp_unit;
-struct Sprite *temp_sprite;
-struct tnecs_World *test_world;
+tnecs_entity        *components_list;
+struct Position     *temp_position;
+struct Unit         *temp_unit;
+struct Sprite       *temp_sprite;
+struct tnecs_world  *test_world;
 
 void SystemMove(struct tnecs_System_Input *in_input) {
     // printf("SystemMove\n");
@@ -583,12 +583,12 @@ void tnecs_test_entity_creation() {
     lok(test_world->entities[in_ents[0]] == in_ents[0]);
     lok(test_world->entities[in_ents[1]] == in_ents[1]);
 
-    tnecs_World *test_world3 = NULL;
+    tnecs_world *test_world3 = NULL;
     tnecs_world_genesis(&test_world3);
-    tnecs_world_destroy(test_world3);
+    tnecs_world_destroy(&test_world3);
 
     // MORE TESTS FOR COVERAGE
-    tnecs_World *test_world2 = NULL;
+    tnecs_world *test_world2 = NULL;
     tnecs_world_genesis(&test_world2);
 
     test_world2->num_typeflags = TNECS_INIT_SYSTEM_LEN;
@@ -601,7 +601,7 @@ void tnecs_test_entity_creation() {
     TNECS_REGISTER_COMPONENT(test_world2, Position2);
     test_world2->num_systems_byphase[0] = TNECS_INIT_PHASE_LEN;
     TNECS_REGISTER_SYSTEM(test_world2, SystemMovePhase1, Position2);
-    tnecs_world_destroy(test_world2);
+    tnecs_world_destroy(&test_world2);
 
     // Coverage for "for" in tnecs_component_del
     tnecs_world_genesis(&test_world2);
@@ -609,7 +609,7 @@ void tnecs_test_entity_creation() {
     TNECS_REGISTER_COMPONENT(test_world2, Position2);
     tnecs_entity Erwin = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world2, Position2, Unit2);
     tnecs_component_del(test_world2, Erwin, (1 + 2));
-    tnecs_world_destroy(test_world2);
+    tnecs_world_destroy(&test_world2);
 }
 
 void tnecs_test_component_add() {
@@ -720,7 +720,7 @@ void tnecs_test_component_remove() {
 
 void tnecs_test_chunk() {
     lok(sizeof(tnecs_ArchetypeChunk) == TNECS_CHUNK_BYTESIZE);
-    tnecs_World *chunk_world = NULL;
+    tnecs_world *chunk_world = NULL;
     tnecs_world_genesis(&chunk_world);
 
     lok(TNECS_REGISTER_COMPONENT(chunk_world, Velocity));
@@ -753,7 +753,7 @@ void tnecs_test_chunk() {
 }
 
 void tnecs_test_component_array() {
-    tnecs_World *arr_world = NULL;
+    tnecs_world *arr_world = NULL;
     tnecs_world_genesis(&arr_world);
     
     lok(TNECS_REGISTER_COMPONENT(arr_world, Velocity));
@@ -853,7 +853,7 @@ void tnecs_test_component_array() {
     lok(temp_pos->x == 0);
     lok(temp_pos->y == 0);
 
-    tnecs_world_destroy(arr_world);
+    tnecs_world_destroy(&arr_world);
 }
 
 void tnecs_test_world_progress() {
@@ -936,7 +936,7 @@ void tnecs_test_world_progress() {
     tnecs_growArray_system(test_world);
     tnecs_growArray_typeflag(test_world);
 
-    struct tnecs_World *inclusive_world = NULL;
+    struct tnecs_world *inclusive_world = NULL;
     tnecs_world_genesis(&inclusive_world);
     lok(inclusive_world != NULL);
 
@@ -1044,7 +1044,7 @@ void tnecs_test_world_progress() {
     lok(inclusive_world->systems_torun[14] == NULL);
     lok(inclusive_world->systems_torun[15] == NULL);
 
-    struct tnecs_World *inclusive_world2 = NULL;
+    struct tnecs_world *inclusive_world2 = NULL;
     tnecs_world_genesis(&inclusive_world2);
     lok(inclusive_world2 != NULL);
 
@@ -1107,8 +1107,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world2->systems_torun[13] == NULL);
     lok(inclusive_world2->systems_torun[14] == NULL);
     lok(inclusive_world2->systems_torun[15] == NULL);
-    tnecs_world_destroy(inclusive_world2);
-    tnecs_world_destroy(inclusive_world);
+    tnecs_world_destroy(&inclusive_world2);
+    tnecs_world_destroy(&inclusive_world);
 }
 
 void tnecs_other_benchmarks() {
@@ -1135,7 +1135,7 @@ void tnecs_other_benchmarks() {
 }
 
 void tnecs_test_grow() {
-    struct tnecs_World *grow_world = NULL;
+    struct tnecs_world *grow_world = NULL;
     tnecs_world_genesis(&grow_world);
     lok(grow_world != NULL);
 
@@ -1237,18 +1237,18 @@ void tnecs_test_grow() {
         }
     }
 
-    tnecs_world_destroy(grow_world);
+    tnecs_world_destroy(&grow_world);
 }
 
 void tnecs_benchmarks() {
-    printf("world size: %ld bytes\n", sizeof(struct tnecs_World));
+    printf("world size: %ld bytes\n", sizeof(struct tnecs_world));
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
 
     double t_0;
     double t_1;
 
     t_0 = tnecs_get_us();
-    tnecs_World *bench_world = NULL;
+    tnecs_world *bench_world = NULL;
     tnecs_world_genesis(&bench_world);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: World Creation time \n");
@@ -1350,7 +1350,7 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", fps_iterations / 60.0f * 1e6);
 
     t_0 = tnecs_get_us();
-    tnecs_world_destroy(bench_world);
+    tnecs_world_destroy(&bench_world);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: World Destroy time: \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
@@ -1386,7 +1386,7 @@ int main() {
 
     tnecs_other_benchmarks();
     tnecs_benchmarks();
-    tnecs_world_destroy(test_world);
+    tnecs_world_destroy(&test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
     fclose(globalf);
     return (0);
