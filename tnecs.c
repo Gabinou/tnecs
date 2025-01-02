@@ -114,7 +114,7 @@ b32 tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
 b32 tnecs_world_step_phase(tnecs_world *world,  tnecs_phase  phase,
                            tnecs_ns     deltat, void        *data) {
     if (phase != world->phases[phase]) {
-        printf("Invalid phase '%d' \n", phase);
+        printf("tnecs: Invalid phase '%d' \n", phase);
         return(0);
     }
 
@@ -266,7 +266,7 @@ b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
     tnecs_system_input input = {.world = world, .deltat = deltat, .data = data};
     size_t tID = tnecs_typeflagid(world, archetype);
     if (tID == TNECS_NULL) {
-        printf("tnecs: Input archetype is unknown.");
+        printf("tnecs: Input archetype is unknown.\n");
         return(0);
     }
 
@@ -392,11 +392,11 @@ tnecs_component tnecs_register_component(tnecs_world *world,
                                          size_t bytesize) {
     /* Checks */
     if (bytesize <= 0) {
-        printf("tnecs: Component should have >0 bytesize.");
+        printf("tnecs: Component should have >0 bytesize.\n");
         return(TNECS_NULL);
     }
     if (world->num_components >= TNECS_COMPONENT_CAP) {
-        printf("tnecs: Component capacity reached.");
+        printf("tnecs: Component capacity reached.\n");
         return(TNECS_NULL);
     }
 
@@ -488,7 +488,7 @@ size_t _tnecs_register_typeflag(tnecs_world *world, size_t num_components,
 size_t tnecs_register_phase(tnecs_world *world, tnecs_phase phase) {
     if (phase <= 0)
         return(1);
-    
+
     while (phase >= world->len_phases) {
         TNECS_CHECK_CALL(tnecs_growArray_phase(world));
     }
@@ -514,7 +514,7 @@ tnecs_entity tnecs_entity_create(tnecs_world *world) {
         do {
             if (world->entity_next >= world->len_entities) {
                 if (!tnecs_growArray_entity(world)) {
-                    printf("tnecs: Could not allocate more memory for entities.");
+                    printf("tnecs: Could not allocate more memory for entities.\n");
                     return(TNECS_NULL);
                 }
             }
@@ -535,7 +535,7 @@ tnecs_entity tnecs_entity_create_wID(tnecs_world *world, tnecs_entity entity) {
     tnecs_entity out = 0;
     while (entity >= world->len_entities) {
         if (!tnecs_growArray_entity(world)) {
-            printf("tnecs: Could not allocate more memory for entities.");
+            printf("tnecs: Could not allocate more memory for entities.\n");
             return(TNECS_NULL);
         }
     }
@@ -550,7 +550,7 @@ tnecs_entity tnecs_entity_create_wID(tnecs_world *world, tnecs_entity entity) {
 tnecs_entity tnecs_entities_create(tnecs_world *world, size_t num) {
     for (int i = 0; i < num; i++) {
         if (tnecs_entity_create(world) <= TNECS_NULL) {
-            printf("tnecs: Could not create another entity.");
+            printf("tnecs: Could not create another entity.\n");
             return(TNECS_NULL);            
         }
     }
@@ -560,7 +560,7 @@ tnecs_entity tnecs_entities_create(tnecs_world *world, size_t num) {
 tnecs_entity tnecs_entities_create_wID(tnecs_world *world, size_t num, tnecs_entity *ents) {
     for (int i = 0; i < num; i++) {
         if (tnecs_entity_create_wID(world, ents[i]) <= TNECS_NULL) {
-            printf("tnecs: Could not create another entity_wID.");
+            printf("tnecs: Could not create another entity_wID.\n");
             return(TNECS_NULL);            
         }
     }
@@ -581,7 +581,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     /* Create entity with all components */
     tnecs_entity new_entity = tnecs_entity_create(world);
     if (new_entity == TNECS_NULL) {
-        printf("tnecs: could not create new entity");
+        printf("tnecs: could not create new entity\n");
         return(TNECS_NULL);
     }
     TNECS_CHECK_CALL(tnecs_entity_add_components(world, new_entity, argnum, typeflag, 1));
@@ -1094,7 +1094,7 @@ b32 tnecs_growArray_entity(tnecs_world *world) {
     size_t nlen = world->len_entities * TNECS_ARRAY_GROWTH_FACTOR;
     world->len_entities = nlen;
     if (nlen >= TNECS_ENTITIES_CAP) {
-        printf("tnecs: entities cap reached");
+        printf("tnecs: entities cap reached\n");
         return(TNECS_NULL);
     }
 
@@ -1180,7 +1180,7 @@ b32 tnecs_growArray_phase(tnecs_world *world) {
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
     world->len_phases = nlen;
     if (nlen >= TNECS_PHASES_CAP) {
-        printf("tnecs: phases cap reached");
+        printf("tnecs: phases cap reached\n");
         return(TNECS_NULL);
     }
 
@@ -1280,7 +1280,7 @@ tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const t
     // Adding all component bytesizes in archetype to chunk
     tnecs_component type            = 0;
     tnecs_component component_id    = 0;
-    size_t component_bytesize       = 0;
+    size_t cumul_bytesize       = 0;
 
     for (int i = 1; i < world->num_components; ++i) {
         // Checking if type in archetype
@@ -1294,16 +1294,26 @@ tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const t
         component_id = TNECS_COMPONENT_TYPE2ID(type);
         
         // Adding component bytesize to chunk header
-        component_bytesize = world->component_bytesizes[component_id];
-        mem_header[chunk.components_num] = component_bytesize; 
+        cumul_bytesize += world->component_bytesizes[component_id];
+        mem_header[chunk.components_num] = cumul_bytesize; 
         chunk.components_num++;
     }
 
     return(chunk);
 }
 
-size_t *tnecs_ArchetypeChunk_BytesizeArr(tnecs_ArchetypeChunk *chunk) {
+size_t *tnecs_ArchetypeChunk_BytesizeArr(const tnecs_ArchetypeChunk *chunk) {
     return((size_t*)chunk->mem);
+}
+
+void *tnecs_ArchetypeChunk_ComponentArr(const tnecs_ArchetypeChunk *chunk, size_t corder) {
+    size_t *header              = tnecs_ArchetypeChunk_BytesizeArr(chunk);
+    size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
+    size_t header_offset        = chunk->components_num * sizeof(size_t);
+    size_t components_offset    = corder * cumul_bytesize * chunk->entities_len;
+
+    tnecs_byte *bytemem = chunk->mem;
+    return(bytemem + header_offset + components_offset);
 }
 
 

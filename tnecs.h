@@ -213,13 +213,14 @@ typedef struct tnecs_ArchetypeChunk {
     size_t           entities_num; 
     size_t           entities_len; 
     // Raw memory chunk:
-    //  - Header: components bytesizes: components_num * size_t.
+    //  - Header: cumulative bytesizes: components_num * size_t.
     //  - Body:   components arrays, each: entities_len * component_bytesize.
     tnecs_byte       mem[TNECS_CHUNK_BYTESIZE - 3 * sizeof(size_t) - sizeof(tnecs_component)];
 } tnecs_ArchetypeChunk;
 
 tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const tnecs_component archetype);
-size_t *tnecs_ArchetypeChunk_BytesizeArr(tnecs_ArchetypeChunk *chunk);
+size_t  *tnecs_ArchetypeChunk_BytesizeArr( const tnecs_ArchetypeChunk *chunk);
+void    *tnecs_ArchetypeChunk_ComponentArr(const tnecs_ArchetypeChunk *chunk, size_t corder);
 
 /******************** WORLD FUNCTIONS **********************/
 b32 tnecs_world_genesis(tnecs_world **w);
