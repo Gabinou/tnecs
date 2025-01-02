@@ -16,19 +16,33 @@ static size_t _tnecs_register_typeflag(struct tnecs_World *w, size_t num_compone
                                        tnecs_component typeflag);
 
 /**************************** WORLD FUNCTIONS ********************************/
-struct tnecs_World *tnecs_world_genesis() {
-    struct tnecs_World *tnecs_world = calloc(sizeof(struct tnecs_World), 1);
-    TNECS_DEBUG_ASSERT(tnecs_world);
+b32 tnecs_world_genesis(struct tnecs_World **world) {
+    // Allocate world itself
+    if (*world != NULL) {
+        TNECS_DEBUG_ASSERT(tnecs_world_destroy(*world));   
+    }
+    *world = calloc(sizeof(struct tnecs_World), 1);
+    if (*world == NULL) {
+        printf("tnecs: Could not allocate world.");
+        return(false);
+    }
+
+    // Allocate world members
     b32 success = 1;
-    success &= _tnecs_world_breath_entities(tnecs_world);
-    success &= _tnecs_world_breath_typeflags(tnecs_world);
-    success &= _tnecs_world_breath_systems(tnecs_world);
-    success &= _tnecs_world_breath_components(tnecs_world);
-    TNECS_DEBUG_ASSERT(success);
-    return (tnecs_world);
+    success &= _tnecs_world_breath_entities(*world);
+    success &= _tnecs_world_breath_typeflags(*world);
+    success &= _tnecs_world_breath_systems(*world);
+    success &= _tnecs_world_breath_components(*world);
+    
+    if (success == false) {
+        printf("tnecs: Could not allocate world internals.");
+        return(false);
+    }
+
+    return(true);
 }
 
-void tnecs_world_destroy(struct tnecs_World *world) {
+b32 tnecs_world_destroy(struct tnecs_World *world) {
     for (size_t i = 0; i < world->len_phases; i++) {
         free(world->systems_byphase[i]);
         free(world->systems_idbyphase[i]);
@@ -78,6 +92,7 @@ void tnecs_world_destroy(struct tnecs_World *world) {
     free(world->system_names);
     free(world->typeflags);
     free(world);
+    return(true);
 }
 
 b32 tnecs_world_step(tnecs_World *world, tnecs_ns deltat, void *data) {
@@ -483,7 +498,7 @@ tnecs_entity tnecs_entity_create(struct tnecs_World *world) {
             if (world->entity_next >= world->len_entities) {
                 b32 success = tnecs_growArray_entity(world);
                 if (!success) {
-                    printf("tnecs: Could not allocate more memory for entities.")
+                    printf("tnecs: Could not allocate more memory for entities.");
                     return(TNECS_NULL);
                 }
             }
@@ -505,7 +520,7 @@ tnecs_entity tnecs_entity_create_wID(struct tnecs_World *world, tnecs_entity ent
     while (entity >= world->len_entities) {
         b32 success = tnecs_growArray_entity(world);
         if (!success) {
-            printf("tnecs: Could not allocate more memory for entities.")
+            printf("tnecs: Could not allocate more memory for entities.");
             return(TNECS_NULL);
         }
     }
@@ -518,15 +533,22 @@ tnecs_entity tnecs_entity_create_wID(struct tnecs_World *world, tnecs_entity ent
 }
 
 tnecs_entity tnecs_entities_create(struct tnecs_World *world, size_t num) {
-    for (int i = 0; i < num; i++)
-        TNECS_DEBUG_ASSERT(tnecs_entity_create(world) > 0);
+    for (int i = 0; i < num; i++) {
+        if (tnecs_entity_create(world) <= TNECS_NULL) {
+            printf("tnecs: Could not create another entity.");
+            return(TNECS_NULL);            
+        }
+    }
     return (num);
 }
 
-tnecs_entity tnecs_entities_create_wID(struct tnecs_World *world, size_t num,
-                                       tnecs_entity *ents) {
-    for (int i = 0; i < num; i++)
-        TNECS_DEBUG_ASSERT(tnecs_entity_create_wID(world, ents[i]) > 0);
+tnecs_entity tnecs_entities_create_wID(struct tnecs_World *world, size_t num, tnecs_entity *ents) {
+    for (int i = 0; i < num; i++) {
+        if (tnecs_entity_create_wID(world, ents[i]) <= TNECS_NULL) {
+            printf("tnecs: Could not create another entity_wID.");
+            return(TNECS_NULL);            
+        }
+    }
     return (num);
 }
 
@@ -676,9 +698,18 @@ size_t tnecs_entitiesbytype_add(struct tnecs_World *world, tnecs_entity entity,
 size_t tnecs_entitiesbytype_del(struct tnecs_World *world, tnecs_entity entity,
                                 tnecs_component typeflag_old) {
 
-    TNECS_DEBUG_ASSERT(entity);
-    TNECS_DEBUG_ASSERT(world->entities[entity] == entity);
-    TNECS_DEBUG_ASSERT(entity < world->len_entities);
+    if (entity <= TNECS_NULL) {
+        return(true);
+    }
+
+    if (world->entities[entity] != entity) {
+        return(true);
+    }
+
+    if (entity >= world->len_entities) {
+        return(true);
+    }
+
     size_t typeflag_old_id = tnecs_typeflagid(world, typeflag_old);
     size_t old_num = world->num_entities_bytype[typeflag_old_id];
     size_t entity_order_old = world->entity_orders[entity];

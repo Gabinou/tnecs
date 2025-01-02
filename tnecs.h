@@ -220,8 +220,8 @@ tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const t
 size_t *tnecs_ArchetypeChunk_BytesizeArr(tnecs_ArchetypeChunk *chunk);
 
 /******************** WORLD FUNCTIONS **********************/
-struct tnecs_World *tnecs_world_genesis();
-void tnecs_world_destroy(tnecs_World *w);
+b32 tnecs_world_genesis(tnecs_World **w);
+b32 tnecs_world_destroy(tnecs_World *w);
 
 b32 tnecs_world_step(      tnecs_World *w, tnecs_ns deltat, void *data);
 b32 tnecs_world_step_phase(tnecs_World *w, tnecs_phase phase, tnecs_ns deltat, void *data);
