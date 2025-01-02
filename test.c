@@ -194,7 +194,7 @@ typedef struct Unit2 {
     uint32_t str;
 } Unit2;
 
-void SystemMove2(struct tnecs_System_Input *in_input) {
+void SystemMove2(struct tnecs_system_input *in_input) {
     // printf("SystemMove2\n");
     struct Position2 *p = TNECS_COMPONENTS_LIST(in_input, Position2);
     struct Unit2 *v = TNECS_COMPONENTS_LIST(in_input, Unit2);
@@ -204,7 +204,7 @@ void SystemMove2(struct tnecs_System_Input *in_input) {
         p[i].y += v[i].str;
     }
 }
-void SystemMovePhase1(struct tnecs_System_Input *in_input) {
+void SystemMovePhase1(struct tnecs_system_input *in_input) {
     // printf("SystemMovePhase1\n");
     // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
@@ -224,7 +224,7 @@ void SystemMovePhase1(struct tnecs_System_Input *in_input) {
     //     p[i].y += v[i].str;
 }
 
-void SystemMovePhase4(struct tnecs_System_Input *in_input) {
+void SystemMovePhase4(struct tnecs_system_input *in_input) {
     // printf("SystemMovePhase4\n");
     for (int ent = 0; ent < in_input->num_entities; ent++) {
         tnecs_entity current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
@@ -239,7 +239,7 @@ void SystemMovePhase4(struct tnecs_System_Input *in_input) {
 
 }
 
-void SystemMovePhase2(struct tnecs_System_Input *in_input) {
+void SystemMovePhase2(struct tnecs_system_input *in_input) {
     // printf("SystemMovePhase2\n");
     // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
     // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
@@ -269,7 +269,7 @@ struct Unit         *temp_unit;
 struct Sprite       *temp_sprite;
 struct tnecs_world  *test_world;
 
-void SystemMove(struct tnecs_System_Input *in_input) {
+void SystemMove(struct tnecs_system_input *in_input) {
     // printf("SystemMove\n");
     struct Position *p = TNECS_COMPONENTS_LIST(in_input, Position);
     struct Velocity *v = TNECS_COMPONENTS_LIST(in_input, Velocity);
