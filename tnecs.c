@@ -19,7 +19,7 @@ static size_t _tnecs_register_typeflag(tnecs_world *w, size_t num_components,
 b32 tnecs_world_genesis(tnecs_world **world) {
     /* Allocate world itself */
     if (*world != NULL) {
-        TNECS_DEBUG_ASSERT(tnecs_world_destroy(world));   
+        TNECS_CHECK_CALL(tnecs_world_destroy(world));   
     }
     *world = calloc(1, sizeof(tnecs_world));
     TNECS_CHECK_ALLOC(*world);
@@ -103,14 +103,16 @@ b32 tnecs_world_destroy(tnecs_world **world) {
 
 b32 tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
     world->num_systems_torun = 0;
-    b32 success = 1;
-    for (size_t phase = 0; phase < world->num_phases; phase++)
-        success &= tnecs_world_step_phase(world, phase, deltat, data);
+    for (size_t phase = 0; phase < world->num_phases; phase++) {
+        if (!tnecs_world_step_phase(world, phase, deltat, data)) {
+            printf("tnecs: Could not run phase %d \n", phase);
+        }
+    }
     return(1);
 }
 
 b32 tnecs_world_step_phase(tnecs_world *world,  tnecs_phase  phase,
-                            tnecs_ns     deltat, void        *data) {
+                           tnecs_ns     deltat, void        *data) {
     if (phase != world->phases[phase]) {
         printf("Invalid phase '%d' \n", phase);
         return(0);
@@ -118,7 +120,7 @@ b32 tnecs_world_step_phase(tnecs_world *world,  tnecs_phase  phase,
 
     for (size_t sorder = 0; sorder < world->num_systems_byphase[phase]; sorder++) {
         size_t system_id = world->systems_idbyphase[phase][sorder];
-        tnecs_system_run(world, system_id, deltat, data);
+        TNECS_CHECK_CALL(tnecs_system_run(world, system_id, deltat, data));
     }
     return(1);
 }
@@ -341,7 +343,7 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
 
     /* Realloc systems if too many */
     if (world->num_systems >= world->len_systems)
-        tnecs_growArray_system(world);
+        TNECS_CHECK_CALL(tnecs_growArray_system(world));
 
     /* Realloc systems_byphase if too many */
     if (world->num_systems_byphase[phase] >= world->len_systems_byphase[phase]) {
@@ -369,7 +371,7 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
 
     /* Register new phase if didn't exist */
     if (!world->phases[phase])
-        tnecs_register_phase(world, phase);
+        TNECS_CHECK_CALL(tnecs_register_phase(world, phase));
 
     world->system_exclusive[system_id]  = isExclusive;
     world->system_phases[system_id]     = phase;
@@ -381,7 +383,7 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
     world->system_orders[system_id]                 = system_order;
     world->systems_byphase[phase][system_order]     = in_system;
     world->systems_idbyphase[phase][system_order]   = system_id;
-    _tnecs_register_typeflag(world, num_components, components_typeflag);
+    TNECS_CHECK_CALL(_tnecs_register_typeflag(world, num_components, components_typeflag));
     return (system_id);
 }
 
@@ -410,7 +412,7 @@ tnecs_component tnecs_register_component(tnecs_world *world,
     TNECS_CHECK_ALLOC(world->component_names[new_component_id]);
 
     strncpy(world->component_names[new_component_id], name, strlen(name) + 1);
-    _tnecs_register_typeflag(world, 1, new_component_flag);
+    TNECS_CHECK_CALL(_tnecs_register_typeflag(world, 1, new_component_flag));
     return (new_component_id);
 }
 
@@ -484,11 +486,14 @@ size_t _tnecs_register_typeflag(tnecs_world *world, size_t num_components,
 }
 
 size_t tnecs_register_phase(tnecs_world *world, tnecs_phase phase) {
+    if (phase <= 0)
+        return(1);
+    
     while (phase >= world->len_phases) {
-        tnecs_growArray_phase(world);
+        TNECS_CHECK_CALL(tnecs_growArray_phase(world));
     }
-    world->phases[phase] = phase;
-    world->num_phases = (phase >= world->num_phases) ? (phase + 1) : world->num_phases;
+    world->phases[phase]    = phase;
+    world->num_phases       = (phase >= world->num_phases) ? (phase + 1) : world->num_phases;
     return (phase);
 }
 
@@ -568,8 +573,8 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     va_start(ap, argnum);
     tnecs_component typeflag = 0;
     for (size_t i = 0; i < argnum; i++) {
-        tnecs_hash hash =  va_arg(ap, tnecs_hash);
-        typeflag +=          tnecs_component_hash2type(world, hash);
+        tnecs_hash hash = va_arg(ap, tnecs_hash);
+        typeflag += tnecs_component_hash2type(world, hash);
     }
     va_end(ap);
 
@@ -579,7 +584,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
         printf("tnecs: could not create new entity");
         return(TNECS_NULL);
     }
-    tnecs_entity_add_components(world, new_entity, argnum, typeflag, 1);
+    TNECS_CHECK_CALL(tnecs_entity_add_components(world, new_entity, argnum, typeflag, 1));
 
     /* Check */
     size_t tID      = TNECS_TYPEFLAGID(world, typeflag);
