@@ -72,17 +72,19 @@ typedef void (*tnecs_system_ptr)(struct tnecs_System_Input *);
 
 /******************* CONSTANT DEFINITIONS *******************/
 enum TNECS {
-    TNECS_NULL                  =     0, // entity, component, system, typeflag: 0 is NULL
-    TNECS_NULLSHIFT             =     1,
-    TNECS_COMPONENT_CAP         =    64,
-    TNECS_COMPONENT_MAX         =   TNECS_COMPONENT_CAP - 1,
-    TNECS_OPEN_IDS_BUFFER       =   128,
-    TNECS_INITIAL_ENTITY_LEN    =   128,
-    TNECS_INITIAL_PHASE_LEN     =     8,
-    TNECS_INITIAL_COMPONENT_LEN =     8,
-    TNECS_INITIAL_SYSTEM_LEN    =    16,
-    TNECS_CHUNK_BYTESIZE        = 16384,
-    TNECS_ARRAY_GROWTH_FACTOR   =     2 // in general 2 or 1.5
+    // entity, component, system, typeflag: 0 is NULL
+    TNECS_NULL                  =         0,
+    TNECS_NULLSHIFT             =         1,
+    TNECS_INIT_ENTITY_LEN       =       128,
+    TNECS_INIT_PHASE_LEN        =         8,
+    TNECS_INIT_COMPONENT_LEN    =         8,
+    TNECS_INIT_SYSTEM_LEN       =        16,
+    TNECS_COMPONENT_CAP         =        64,
+    TNECS_ENTITIES_CAP          = 100000000,
+    TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 8 + 1,
+    TNECS_OPEN_IDS_BUFFER       =       128,
+    TNECS_CHUNK_BYTESIZE        =     16384,
+    TNECS_ARRAY_GROWTH_FACTOR   =         2 // in general 2 or 1.5
 };
 
 /********************* UTILITY MACROS***********************/
@@ -203,7 +205,7 @@ typedef struct tnecs_Component_Array {
 } tnecs_Component_Array;
 
 // 2D array of n components.
-typedef struct tnecs_Components_Array {
+typedef struct tnecs_ArchetypeChunk {
     tnecs_component  archetype;
     size_t           components_num;
     size_t           entities_num; 
@@ -211,8 +213,11 @@ typedef struct tnecs_Components_Array {
     // Raw memory chunk:
     //  - Header: components bytesizes: components_num * size_t.
     //  - Body:   components arrays, each: entities_len * component_bytesize.
-    tnecs_byte       chunk[TNECS_CHUNK_BYTESIZE - sizeof(size_t) - sizeof(tnecs_component)];
-} tnecs_Components_Array;
+    tnecs_byte       mem[TNECS_CHUNK_BYTESIZE - 3 * sizeof(size_t) - sizeof(tnecs_component)];
+} tnecs_ArchetypeChunk;
+
+tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const tnecs_component archetype);
+size_t *tnecs_ArchetypeChunk_BytesizeArr(tnecs_ArchetypeChunk *chunk);
 
 /******************** WORLD FUNCTIONS **********************/
 struct tnecs_World *tnecs_world_genesis();

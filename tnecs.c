@@ -106,18 +106,18 @@ b32 _tnecs_world_breath_entities(struct tnecs_World *world) {
     b32 success = 1;
     /* Variables */
     world->entity_next =        TNECS_NULLSHIFT;
-    world->len_entities =       TNECS_INITIAL_ENTITY_LEN;
-    world->len_entities_open =  TNECS_INITIAL_ENTITY_LEN;
+    world->len_entities =       TNECS_INIT_ENTITY_LEN;
+    world->len_entities_open =  TNECS_INIT_ENTITY_LEN;
     world->num_entities_open =  0;
 
     /* Allocs */
-    world->entities            = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entities));
-    world->entities_open       = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entities_open));
-    world->entity_orders       = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entity_orders));
-    world->entities_bytype     = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->entities_bytype));
-    world->entity_typeflags    = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(*world->entity_typeflags));
-    world->len_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->len_entities_bytype));
-    world->num_entities_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->num_entities_bytype));
+    world->entities            = calloc(TNECS_INIT_ENTITY_LEN, sizeof(*world->entities));
+    world->entities_open       = calloc(TNECS_INIT_ENTITY_LEN, sizeof(*world->entities_open));
+    world->entity_orders       = calloc(TNECS_INIT_ENTITY_LEN, sizeof(*world->entity_orders));
+    world->entities_bytype     = calloc(TNECS_INIT_SYSTEM_LEN, sizeof(*world->entities_bytype));
+    world->entity_typeflags    = calloc(TNECS_INIT_ENTITY_LEN, sizeof(*world->entity_typeflags));
+    world->len_entities_bytype = calloc(TNECS_INIT_SYSTEM_LEN, sizeof(*world->len_entities_bytype));
+    world->num_entities_bytype = calloc(TNECS_INIT_SYSTEM_LEN, sizeof(*world->num_entities_bytype));
 
     /* Check allocs (same number as allocs) */
     success &= (world->entities             !=  NULL);
@@ -129,11 +129,11 @@ b32 _tnecs_world_breath_entities(struct tnecs_World *world) {
     success &= (world->num_entities_bytype  !=  NULL);
 
     /* Alloc & check for entities_bytype elements */
-    for (size_t i = 0; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
-        world->entities_bytype[i] =     calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(**world->entities_bytype));
+    for (size_t i = 0; i < TNECS_INIT_SYSTEM_LEN; i++) {
+        world->entities_bytype[i] =     calloc(TNECS_INIT_ENTITY_LEN, sizeof(**world->entities_bytype));
         success &= (world->entities_bytype[i] != NULL);
         world->num_entities_bytype[i] = 0;
-        world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
+        world->len_entities_bytype[i] = TNECS_INIT_ENTITY_LEN;
     }
     return (success);
 }
@@ -141,11 +141,12 @@ b32 _tnecs_world_breath_entities(struct tnecs_World *world) {
 b32 _tnecs_world_breath_components(struct tnecs_World *world) {
     /* Variables */
     b32 success = 1;
-    world->num_components =               TNECS_NULLSHIFT;
+    // NULL component always exists!;
+    world->num_components               = TNECS_NULLSHIFT;
     world->component_hashes[TNECS_NULL] = TNECS_NULL;
 
     /* Allocs */
-    int syslen = TNECS_INITIAL_SYSTEM_LEN, namelen = 5;
+    int syslen = TNECS_INIT_SYSTEM_LEN, namelen = 5;
     world->components_bytype =            calloc(syslen, sizeof(*world->components_bytype));
     world->num_components_bytype =        calloc(syslen, sizeof(*world->num_components_bytype));
     world->components_idbytype =          calloc(syslen, sizeof(*world->components_idbytype));
@@ -169,10 +170,10 @@ b32 _tnecs_world_breath_components(struct tnecs_World *world) {
 b32 _tnecs_world_breath_systems(struct tnecs_World *world) {
     /* Variables */
     b32 success = 1;
-    world->len_systems          = TNECS_INITIAL_SYSTEM_LEN;
-    world->len_systems_torun    = TNECS_INITIAL_SYSTEM_LEN;
+    world->len_systems          = TNECS_INIT_SYSTEM_LEN;
+    world->len_systems_torun    = TNECS_INIT_SYSTEM_LEN;
     world->num_systems          = TNECS_NULLSHIFT;
-    world->len_phases           = TNECS_INITIAL_PHASE_LEN;
+    world->len_phases           = TNECS_INIT_PHASE_LEN;
     world->num_phases           = TNECS_NULLSHIFT;
 
     /* Allocs */
@@ -226,12 +227,12 @@ b32 _tnecs_world_breath_typeflags(struct tnecs_World *world) {
     /* Variables */
     b32 success = 1;
     world->num_typeflags = TNECS_NULLSHIFT;
-    world->len_typeflags = TNECS_INITIAL_SYSTEM_LEN;
+    world->len_typeflags = TNECS_INIT_SYSTEM_LEN;
 
     /* Allocs */
-    world->typeflags =           calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->typeflags));
-    world->archetype_id_bytype = calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->archetype_id_bytype));
-    world->num_archetype_ids =   calloc(TNECS_INITIAL_SYSTEM_LEN, sizeof(*world->num_archetype_ids));
+    world->typeflags =           calloc(TNECS_INIT_SYSTEM_LEN, sizeof(*world->typeflags));
+    world->archetype_id_bytype = calloc(TNECS_INIT_SYSTEM_LEN, sizeof(*world->archetype_id_bytype));
+    world->num_archetype_ids =   calloc(TNECS_INIT_SYSTEM_LEN, sizeof(*world->num_archetype_ids));
 
     /* Check allocs (same number as allocs) */
     success &= (world->typeflags != NULL);
@@ -239,7 +240,7 @@ b32 _tnecs_world_breath_typeflags(struct tnecs_World *world) {
     success &= (world->num_archetype_ids != NULL);
 
     /* Alloc & check for id_bytype elements */
-    for (size_t i = 0; i < TNECS_INITIAL_SYSTEM_LEN; i++) {
+    for (size_t i = 0; i < TNECS_INIT_SYSTEM_LEN; i++) {
         world->archetype_id_bytype[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**world->archetype_id_bytype));
         success &= (world->archetype_id_bytype[i] != NULL);
     }
@@ -366,8 +367,15 @@ tnecs_component tnecs_register_component(struct tnecs_World *world,
                                          const char *name,
                                          size_t bytesize) {
     /* Checks */
-    TNECS_DEBUG_ASSERT(world->num_components < TNECS_COMPONENT_CAP);
-    TNECS_DEBUG_ASSERT(bytesize > 0);
+    if (bytesize <= 0) {
+        printf("tnecs: Component should have >0 bytesize.");
+        return(TNECS_NULL);
+    }
+    if (world->num_components >= TNECS_COMPONENT_CAP) {
+        printf("tnecs: Component capacity reached.");
+        return(TNECS_NULL);
+    }
+
 
     /* Registering */
     tnecs_component new_component_id =            world->num_components++;
@@ -449,8 +457,9 @@ size_t _tnecs_register_typeflag(struct tnecs_World *world, size_t num_components
 }
 
 size_t tnecs_register_phase(struct tnecs_World *world, tnecs_phase phase) {
-    while (phase >= world->len_phases)
+    while (phase >= world->len_phases) {
         tnecs_growArray_phase(world);
+    }
     world->phases[phase] = phase;
     world->num_phases = (phase >= world->num_phases) ? (phase + 1) : world->num_phases;
     return (phase);
@@ -460,8 +469,8 @@ size_t tnecs_register_phase(struct tnecs_World *world, tnecs_phase phase) {
 tnecs_entity tnecs_entity_create(struct tnecs_World *world) {
     tnecs_entity out = TNECS_NULL;
     
+    /* Check if an open entity exists */
     if (world->reuse_entities) {
-        /* Check if an open entity exists */
         while ((out == TNECS_NULL) && (world->num_entities_open > 0)) {
             out = world->entities_open[--world->num_entities_open];
             world->entities_open[world->num_entities_open] = TNECS_NULL;
@@ -471,8 +480,13 @@ tnecs_entity tnecs_entity_create(struct tnecs_World *world) {
     /* If no open entity existed, create one */
     if (out == TNECS_NULL) {
         do {
-            if (world->entity_next >= world->len_entities)
-                tnecs_growArray_entity(world);
+            if (world->entity_next >= world->len_entities) {
+                b32 success = tnecs_growArray_entity(world);
+                if (!success) {
+                    printf("tnecs: Could not allocate more memory for entities.")
+                    return(TNECS_NULL);
+                }
+            }
         } while (world->entities[out = world->entity_next++] != TNECS_NULL);
     }
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
@@ -488,8 +502,13 @@ tnecs_entity tnecs_entity_create(struct tnecs_World *world) {
 tnecs_entity tnecs_entity_create_wID(struct tnecs_World *world, tnecs_entity entity) {
     // TODO: What to do if entity existed before?
     tnecs_entity out = 0;
-    while (entity >= world->len_entities)
-        tnecs_growArray_entity(world);
+    while (entity >= world->len_entities) {
+        b32 success = tnecs_growArray_entity(world);
+        if (!success) {
+            printf("tnecs: Could not allocate more memory for entities.")
+            return(TNECS_NULL);
+        }
+    }
 
     if ((!world->entities[entity]) & (entity > 0)) {
         out = world->entities[entity] = entity;
@@ -857,8 +876,8 @@ void tnecs_component_array_init(struct tnecs_World *world, struct tnecs_Componen
 
     in_array->type = in_type;
     in_array->num_components    = 0;
-    in_array->len_components    = TNECS_INITIAL_COMPONENT_LEN;
-    in_array->components        = calloc(TNECS_INITIAL_COMPONENT_LEN, bytesize);
+    in_array->len_components    = TNECS_INIT_COMPONENT_LEN;
+    in_array->components        = calloc(TNECS_INIT_COMPONENT_LEN, bytesize);
 }
 
 b32 tnecs_system_order_switch(struct tnecs_World *world, tnecs_phase phase,
@@ -1015,6 +1034,10 @@ b32 tnecs_growArray_entity(struct tnecs_World *world) {
     size_t olen = world->len_entities;
     size_t nlen = world->len_entities * TNECS_ARRAY_GROWTH_FACTOR;
     world->len_entities = nlen;
+    if (nlen >= TNECS_ENTITIES_CAP) {
+        printf("tnecs: entities cap reached");
+        return(TNECS_NULL);
+    }
 
     size_t bytesize1 = sizeof(*world->entities);
     size_t bytesize2 = sizeof(*world->entity_orders);
@@ -1112,13 +1135,13 @@ b32 tnecs_growArray_typeflag(struct tnecs_World *world) {
 
 
     for (size_t i = olen; i < world->len_typeflags; i++) {
-        world->entities_bytype[i] = calloc(TNECS_INITIAL_ENTITY_LEN, sizeof(**world->entities_bytype));
+        world->entities_bytype[i] = calloc(TNECS_INIT_ENTITY_LEN, sizeof(**world->entities_bytype));
         world->archetype_id_bytype[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**world->archetype_id_bytype));
 
         success &= (world->entities_bytype[i] != NULL);
         success &= (world->archetype_id_bytype[i] != NULL);
 
-        world->len_entities_bytype[i] = TNECS_INITIAL_ENTITY_LEN;
+        world->len_entities_bytype[i] = TNECS_INIT_ENTITY_LEN;
         world->num_entities_bytype[i] = 0;
     }
     return (success);
@@ -1128,6 +1151,10 @@ b32 tnecs_growArray_phase(struct tnecs_World *world) {
     size_t olen = world->len_phases;
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
     world->len_phases = nlen;
+    if (nlen >= TNECS_PHASES_CAP) {
+        printf("tnecs: phases cap reached");
+        return(TNECS_NULL);
+    }
 
     size_t bytesize1 = sizeof(*world->phases);
     size_t bytesize2 = sizeof(*world->systems_byphase);
@@ -1152,13 +1179,13 @@ b32 tnecs_growArray_phase(struct tnecs_World *world) {
         size_t bysize1 = sizeof(**world->systems_byphase);
         size_t bysize2 = sizeof(**world->systems_idbyphase);
 
-        world->systems_byphase[i] =   calloc(TNECS_INITIAL_PHASE_LEN, bysize1);
-        world->systems_idbyphase[i] = calloc(TNECS_INITIAL_PHASE_LEN, bysize2);
+        world->systems_byphase[i] =   calloc(TNECS_INIT_PHASE_LEN, bysize1);
+        world->systems_idbyphase[i] = calloc(TNECS_INIT_PHASE_LEN, bysize2);
 
         success &= (world->systems_byphase[i]   != NULL);
         success &= (world->systems_idbyphase[i] != NULL);
 
-        world->len_systems_byphase[i] = TNECS_INITIAL_PHASE_LEN;
+        world->len_systems_byphase[i] = TNECS_INIT_PHASE_LEN;
         world->num_systems_byphase[i] = 0;
     }
     return (success);
@@ -1225,6 +1252,42 @@ uint64_t tnecs_hash_combine(uint64_t h1, uint64_t h2) {
     /* -> Should be simple and fast -> + or XOR */
     return (h1 ^ h2); // XOR ignores order
 }
+
+/* ArchetypeChunk */
+tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const tnecs_component archetype) {
+    // Chunk init
+    tnecs_ArchetypeChunk chunk = {0};
+    chunk.archetype     = archetype;
+    size_t *mem_header  = tnecs_ArchetypeChunk_BytesizeArr(&chunk);
+    // Adding all component bytesizes in archetype to chunk
+    tnecs_component type            = 0;
+    tnecs_component component_id    = 0;
+    size_t component_bytesize       = 0;
+
+    for (int i = 1; i < world->num_components; ++i) {
+        // Checking if type in archetype
+        type = 1ULL << (i - 1);
+
+        // Skip if type not in archetype
+        if ((archetype & type) == 0) {
+            continue;
+        }
+
+        component_id = TNECS_COMPONENT_TYPE2ID(type);
+        
+        // Adding component bytesize to chunk header
+        component_bytesize = world->component_bytesizes[component_id];
+        mem_header[chunk.components_num] = component_bytesize; 
+        chunk.components_num++;
+    }
+
+    return(chunk);
+}
+
+size_t *tnecs_ArchetypeChunk_BytesizeArr(tnecs_ArchetypeChunk *chunk) {
+    return((size_t*)chunk->mem);
+}
+
 
 /****************************** SET BIT COUNTING *****************************/
 size_t setBits_KnR_uint64_t(uint64_t in_flags) {

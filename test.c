@@ -165,13 +165,15 @@ typedef struct Position {
 } Position;
 
 typedef struct Unit {
-    uint32_t hp;
-    uint32_t str;
+    uint16_t hp;
+    uint16_t str;
 } Unit;
 
 typedef struct Velocity {
     uint64_t vx;
     uint64_t vy;
+    uint64_t vz;
+    uint64_t vw;
 } Velocity;
 
 
@@ -712,13 +714,47 @@ void tnecs_test_component_remove() {
 
 }
 
+void tnecs_test_chunk() {
+    lok(sizeof(tnecs_ArchetypeChunk) == TNECS_CHUNK_BYTESIZE);
+    struct tnecs_World *chunk_world = tnecs_world_genesis();
+
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Velocity));
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Position));
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Sprite));
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Unit));
+    lok(chunk_world->num_components == 5);
+    tnecs_component type1, type2, type3, type4;
+    type1 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Velocity);
+    type2 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Position);
+    type3 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Sprite);
+    type4 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Unit);
+
+    tnecs_component archetype = type1 + type2;
+    tnecs_ArchetypeChunk chunk;
+    chunk = tnecs_ArchetypeChunk_Init(chunk_world, archetype);
+    lok(chunk.components_num == 2);
+    size_t *bytesizes = tnecs_ArchetypeChunk_BytesizeArr(&chunk);
+    lok(bytesizes[0] == sizeof(Velocity));
+    lok(bytesizes[1] == sizeof(Position));
+
+    archetype = type1 + type2 + type3 + type4;
+    chunk = tnecs_ArchetypeChunk_Init(chunk_world, archetype);
+    lok(chunk.components_num == 4);
+    bytesizes = tnecs_ArchetypeChunk_BytesizeArr(&chunk);
+    lok(bytesizes[0] == sizeof(Velocity));
+    lok(bytesizes[1] == sizeof(Position));
+    lok(bytesizes[2] == sizeof(Sprite));
+    lok(bytesizes[3] == sizeof(Unit));
+
+}
+
 void tnecs_test_component_array() {
     struct tnecs_World *arr_world = tnecs_world_genesis();
 
-    TNECS_REGISTER_COMPONENT(arr_world, Velocity);
-    TNECS_REGISTER_COMPONENT(arr_world, Position);
-    TNECS_REGISTER_COMPONENT(arr_world, Sprite);
-    TNECS_REGISTER_COMPONENT(arr_world, Unit);
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Velocity));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Position));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Sprite));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Unit));
     TNECS_REGISTER_SYSTEM_wEXCL(arr_world, SystemMove, 0, Unit); // 4X
     TNECS_REGISTER_SYSTEM_wEXCL(arr_world, SystemMovePhase1, 0, Unit, Velocity);  // 2X
     TNECS_REGISTER_SYSTEM_wEXCL(arr_world, SystemMovePhase2, 0, Unit, Position); // 2X
@@ -1333,6 +1369,7 @@ int main() {
     lrun("c_remove",   tnecs_test_component_remove);
     lrun("c_array",    tnecs_test_component_array);
     lrun("grow",       tnecs_test_grow);
+    lrun("cs_array",   tnecs_test_chunk);
     lrun("progress",   tnecs_test_world_progress);
     lresults();
 
