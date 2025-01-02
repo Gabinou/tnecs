@@ -247,10 +247,12 @@ size_t tnecs_register_phase(struct tnecs_world *w, tnecs_phase phase);
 #define TNECS_REGISTER_SYSTEM_wEXCL_wPHASE(world, pfunc, excl, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
-#define TNECS_ALLOC_CHECK(name) if (name == NULL) { \
-    printf("tnecs: could not allocate " #name);\
-    return(false);\
-}
+#define TNECS_ALLOC_CHECK(name) do {\
+        if (name == NULL) { \
+            printf("tnecs: could not allocate " #name "\n"); \
+            return(false); \
+        } \
+    } while (0)
 
 /************ ENTITY MANIPULATION *************/
 /* -- Public -- */

@@ -22,10 +22,7 @@ b32 tnecs_world_genesis(struct tnecs_world **world) {
         TNECS_DEBUG_ASSERT(tnecs_world_destroy(world));   
     }
     *world = calloc(1, sizeof(tnecs_world));
-    if (*world == NULL) {
-        printf("tnecs: Could not allocate world.");
-        return(false);
-    }
+    TNECS_ALLOC_CHECK(*world);
 
     // Allocate world members
     b32 success = 1;
