@@ -227,7 +227,7 @@ b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase phase, tnecs_ns deltat, v
 
 /******************* SYSTEM FUNCTIONS ********************/
 void tnecs_system_run(tnecs_world *w, size_t id, tnecs_ns deltat, void *data);
-void tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
+b32  tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
                              tnecs_component ar, tnecs_ns deltat, void *data);
 
 /************* REGISTRATION *********************/

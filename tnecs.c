@@ -43,67 +43,67 @@ b32 tnecs_world_genesis(struct tnecs_world **world) {
 }
 
 b32 tnecs_world_destroy(tnecs_world **world) {
-    for (size_t i = 0; i < *world->len_phases; i++) {
-        if (*world->systems_byphase != NULL)
-            free(*world->systems_byphase[i]);
-        if (*world->systems_idbyphase != NULL)
-            free(*world->systems_idbyphase[i]);
+    for (size_t i = 0; i < (*world)->len_phases; i++) {
+        if ((*world)->systems_byphase != NULL)
+            free((*world)->systems_byphase[i]);
+        if ((*world)->systems_idbyphase != NULL)
+            free((*world)->systems_idbyphase[i]);
     }
-    for (size_t i = 0; i < *world->len_typeflags; i++) {
-        if (*world->entities_bytype != NULL)
-            free(*world->entities_bytype[i]);
-        if (*world->components_idbytype != NULL)
-            free(*world->components_idbytype[i]);
-        if (*world->components_flagbytype != NULL)
-            free(*world->components_flagbytype[i]);
-        if (*world->components_orderbytype != NULL)
-            free(*world->components_orderbytype[i]);
-        if (*world->archetype_id_bytype != NULL)
-            free(*world->archetype_id_bytype[i]);
-        if (*world->components_bytype != NULL) {
-            for (size_t j = 0; j < *world->num_components_bytype[i]; j++) {
-                free(*world->components_bytype[i][j].components);
+    for (size_t i = 0; i < (*world)->len_typeflags; i++) {
+        if ((*world)->entities_bytype != NULL)
+            free((*world)->entities_bytype[i]);
+        if ((*world)->components_idbytype != NULL)
+            free((*world)->components_idbytype[i]);
+        if ((*world)->components_flagbytype != NULL)
+            free((*world)->components_flagbytype[i]);
+        if ((*world)->components_orderbytype != NULL)
+            free((*world)->components_orderbytype[i]);
+        if ((*world)->archetype_id_bytype != NULL)
+            free((*world)->archetype_id_bytype[i]);
+        if ((*world)->components_bytype != NULL) {
+            for (size_t j = 0; j < (*world)->num_components_bytype[i]; j++) {
+                free((*world)->components_bytype[i][j].components);
             }
-            free(*world->components_bytype[i]);
+            free((*world)->components_bytype[i]);
         }
     }
-    for (size_t i = 0; i < *world->num_components; i++) {
-        if (*world->component_names[i] != NULL) {
-            free(*world->component_names[i]);
-            *world->component_names[i] = NULL;
+    for (size_t i = 0; i < (*world)->num_components; i++) {
+        if ((*world)->component_names[i] != NULL) {
+            free((*world)->component_names[i]);
+            (*world)->component_names[i] = NULL;
         }
     }
-    for (size_t i = 0; i < *world->num_systems; i++) {
-        if (*world->system_names != NULL)
-            free(*world->system_names[i]);
+    for (size_t i = 0; i < (*world)->num_systems; i++) {
+        if ((*world)->system_names != NULL)
+            free((*world)->system_names[i]);
     }
-    free(*world->components_bytype);
-    free(*world->components_idbytype);
-    free(*world->components_flagbytype);
-    free(*world->components_orderbytype);
-    free(*world->entities_bytype);
-    free(*world->entity_orders);
-    free(*world->entities);
-    free(*world->entities_open);
-    free(*world->entity_typeflags);
-    free(*world->len_entities_bytype);
-    free(*world->len_systems_byphase);
-    free(*world->num_entities_bytype);
-    free(*world->num_systems_byphase);
-    free(*world->num_archetype_ids);
-    free(*world->num_components_bytype);
-    free(*world->phases);
-    free(*world->archetype_id_bytype);
-    free(*world->systems_byphase);
-    free(*world->system_orders);
-    free(*world->system_exclusive);
-    free(*world->systems_torun);
-    free(*world->systems_idbyphase);
-    free(*world->system_typeflags);
-    free(*world->system_phases);
-    free(*world->system_hashes);
-    free(*world->system_names);
-    free(*world->typeflags);
+    free((*world)->components_bytype);
+    free((*world)->components_idbytype);
+    free((*world)->components_flagbytype);
+    free((*world)->components_orderbytype);
+    free((*world)->entities_bytype);
+    free((*world)->entity_orders);
+    free((*world)->entities);
+    free((*world)->entities_open);
+    free((*world)->entity_typeflags);
+    free((*world)->len_entities_bytype);
+    free((*world)->len_systems_byphase);
+    free((*world)->num_entities_bytype);
+    free((*world)->num_systems_byphase);
+    free((*world)->num_archetype_ids);
+    free((*world)->num_components_bytype);
+    free((*world)->phases);
+    free((*world)->archetype_id_bytype);
+    free((*world)->systems_byphase);
+    free((*world)->system_orders);
+    free((*world)->system_exclusive);
+    free((*world)->systems_torun);
+    free((*world)->systems_idbyphase);
+    free((*world)->system_typeflags);
+    free((*world)->system_phases);
+    free((*world)->system_hashes);
+    free((*world)->system_names);
+    free((*world)->typeflags);
     free(*world);
 
     *world = NULL;
@@ -278,12 +278,15 @@ b32 _tnecs_world_breath_typeflags(struct tnecs_world *world) {
 }
 
 /**************************** SYSTEM FUNCTIONS ********************************/
-void tnecs_custom_system_run(struct tnecs_world *world, tnecs_system_ptr custom_system,
+b32 tnecs_custom_system_run(struct tnecs_world *world, tnecs_system_ptr custom_system,
                              tnecs_component archetype, tnecs_ns deltat, void *data) {
     /* Building the systems input */
     struct tnecs_System_Input input = {.world = world, .deltat = deltat, .data = data};
     size_t tID = tnecs_typeflagid(world, archetype);
-    TNECS_DEBUG_ASSERT(tID != TNECS_NULL);
+    if (tID != TNECS_NULL) {
+        printf("tnecs: Input archetype is unknown.");
+        return(false);
+    }
 
     /* Running the exclusive custom system */
     input.entity_typeflag_id =  tID;
@@ -296,6 +299,7 @@ void tnecs_custom_system_run(struct tnecs_world *world, tnecs_system_ptr custom_
         input.num_entities =        world->num_entities_bytype[input.entity_typeflag_id];
         custom_system(&input);
     }
+    return(true);
 }
 
 void _tnecs_system_torun_realloc(struct tnecs_world *world) {
