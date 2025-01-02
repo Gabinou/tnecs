@@ -320,7 +320,7 @@ b32 tnecs_component_migrate(struct tnecs_world *w, tnecs_entity entity,
 
 b32 tnecs_component_array_new(struct tnecs_world *w, size_t num_components,
                                tnecs_component typeflag);
-void tnecs_component_array_init(struct tnecs_world *w,
+b32 tnecs_component_array_init(struct tnecs_world *w,
                                 struct tnecs_Component_Array *array, size_t component_id);
 
 b32 tnecs_system_order_switch(struct tnecs_world *w, tnecs_phase phase,
