@@ -385,7 +385,6 @@ void tnecs_test_utilities() {
 }
 
 void tnecs_test_component_registration() {
-    tnecs_World *test_world = NULL;
     tnecs_world_genesis(&test_world);
     lok(test_world != NULL);
     TNECS_REGISTER_COMPONENT(test_world, Position);
@@ -479,7 +478,7 @@ void tnecs_test_component_registration() {
                                                              Velocity)] == TNECS_HASH("Velocity"));
 
     lok(TNECS_COMPONENT_IDS2TYPEFLAG(1, 2, 3) == (1 + 2 + 4));
-    lok(TNECS_COMPONENT_NAMES2TYPEFLAG(test_world, Position, Unit, Velocity) == (1 + 2 + 8));
+    lok(TNECS_COMPONENT_NAMES2TYPEFLAG(test_world , Position, Unit, Velocity) == (1 + 2 + 8));
 
 }
 

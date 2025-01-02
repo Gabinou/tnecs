@@ -44,25 +44,39 @@ b32 tnecs_world_genesis(struct tnecs_World **world) {
 
 b32 tnecs_world_destroy(struct tnecs_World *world) {
     for (size_t i = 0; i < world->len_phases; i++) {
-        free(world->systems_byphase[i]);
-        free(world->systems_idbyphase[i]);
+        if (world->systems_byphase != NULL)
+            free(world->systems_byphase[i]);
+        if (world->systems_idbyphase != NULL)
+            free(world->systems_idbyphase[i]);
     }
     for (size_t i = 0; i < world->len_typeflags; i++) {
-        free(world->entities_bytype[i]);
-        free(world->components_idbytype[i]);
-        free(world->components_flagbytype[i]);
-        free(world->components_orderbytype[i]);
-        free(world->archetype_id_bytype[i]);
-        for (size_t j = 0; j < world->num_components_bytype[i]; j++) {
-            free(world->components_bytype[i][j].components);
+        if (world->entities_bytype != NULL)
+            free(world->entities_bytype[i]);
+        if (world->components_idbytype != NULL)
+            free(world->components_idbytype[i]);
+        if (world->components_flagbytype != NULL)
+            free(world->components_flagbytype[i]);
+        if (world->components_orderbytype != NULL)
+            free(world->components_orderbytype[i]);
+        if (world->archetype_id_bytype != NULL)
+            free(world->archetype_id_bytype[i]);
+        if (world->components_bytype != NULL) {
+            for (size_t j = 0; j < world->num_components_bytype[i]; j++) {
+                free(world->components_bytype[i][j].components);
+
+            }
+            free(world->components_bytype[i]);
         }
-        free(world->components_bytype[i]);
     }
     for (size_t i = 0; i < world->num_components; i++) {
-        free(world->component_names[i]);
+        if (world->component_names[i] != NULL) {
+            free(world->component_names[i]);
+            world->component_names[i] = NULL;
+        }
     }
     for (size_t i = 0; i < world->num_systems; i++) {
-        free(world->system_names[i]);
+        if (world->system_names != NULL)
+            free(world->system_names[i]);
     }
     free(world->components_bytype);
     free(world->components_idbytype);
@@ -92,6 +106,8 @@ b32 tnecs_world_destroy(struct tnecs_World *world) {
     free(world->system_names);
     free(world->typeflags);
     free(world);
+
+    memset(world, 0, sizeof(*world));
     return(true);
 }
 
