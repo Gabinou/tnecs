@@ -1301,6 +1301,9 @@ tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const t
 
     return(chunk);
 }
+b32 tnecs_ArchetypeChunk_Full(const tnecs_ArchetypeChunk *chunk) {
+    return(chunk->entities_num == chunk->entities_len);
+}
 
 size_t *tnecs_ArchetypeChunk_BytesizeArr(const tnecs_ArchetypeChunk *chunk) {
     return((size_t*)chunk->mem);

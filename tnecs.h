@@ -152,33 +152,33 @@ typedef struct tnecs_world {
     char           **system_names;                              // [system_id]
 
     //_bytype arrays are exclusive
-    size_t           **archetype_id_bytype;                 // [typeflag_id][typeflag_id_order]
-    size_t            *num_archetype_ids;                   // [typeflag_id]
-    tnecs_component_array **components_bytype;       // [typeflag_id][component_order_bytype]
-    tnecs_entity     **entities_bytype;                     // [typeflag_id][entity_order_bytype]
-    tnecs_component  **components_idbytype;                 // [typeflag_id][component_order_bytype]
-    tnecs_component  **components_flagbytype;               // [typeflag_id][component_order_bytype]
-    size_t           **components_orderbytype;              // [typeflag_id][component_id]
-    size_t           **systems_idbyphase;                   // [phase][system_order]
-    tnecs_system_ptr **systems_byphase;                     // [phase][system_id]
-    tnecs_system_ptr *systems_torun;                        // [torun_order] debug
+    size_t           **archetype_id_bytype;     // [typeflag_id][typeflag_id_order]
+    size_t            *num_archetype_ids;       // [typeflag_id]
+    tnecs_component_array **components_bytype;  // [typeflag_id][component_order_bytype]
+    tnecs_entity     **entities_bytype;         // [typeflag_id][entity_order_bytype]
+    tnecs_component  **components_idbytype;     // [typeflag_id][component_order_bytype]
+    tnecs_component  **components_flagbytype;   // [typeflag_id][component_order_bytype]
+    size_t           **components_orderbytype;  // [typeflag_id][component_id]
+    size_t           **systems_idbyphase;       // [phase][system_order]
+    tnecs_system_ptr **systems_byphase;         // [phase][system_id]
+    tnecs_system_ptr *systems_torun;            // [torun_order] debug
     size_t            num_systems_torun;
     size_t            len_systems_torun;
 
-    size_t            len_entities;                         // len is allocated size
-    size_t            len_typeflags;                        // len is allocated size
-    size_t            len_systems;                          // len is allocated size
-    size_t            len_phases;                           // len is allocated size
-    size_t            num_components;                       // num is active elements
-    size_t            num_typeflags;                        // num is active elements
-    size_t            num_systems;                          // num is active elements
-    size_t            num_phases;                           // num is active elements
-    size_t           *entity_orders;                        // [entity_id]
-    size_t           *num_components_bytype;                // [typeflag_id]
-    size_t           *len_entities_bytype;                  // [typeflag_id]
-    size_t           *num_entities_bytype;                  // [typeflag_id]
-    size_t           *len_systems_byphase;                  // [phase]
-    size_t           *num_systems_byphase;                  // [phase]
+    size_t            len_entities;             // len is allocated size
+    size_t            len_typeflags;            // len is allocated size
+    size_t            len_systems;              // len is allocated size
+    size_t            len_phases;               // len is allocated size
+    size_t            num_components;           // num is active elements
+    size_t            num_typeflags;            // num is active elements
+    size_t            num_systems;              // num is active elements
+    size_t            num_phases;               // num is active elements
+    size_t           *entity_orders;            // [entity_id]
+    size_t           *num_components_bytype;    // [typeflag_id]
+    size_t           *len_entities_bytype;      // [typeflag_id]
+    size_t           *num_entities_bytype;      // [typeflag_id]
+    size_t           *len_systems_byphase;      // [phase]
+    size_t           *num_systems_byphase;      // [phase]
 
     size_t            num_entities_open;
     size_t            len_entities_open;
@@ -203,10 +203,15 @@ typedef struct tnecs_component_array {
     tnecs_component  type;
     size_t           num_components;
     size_t           len_components;
+    // problems: 
+    //      - components array is not in structure
+    //      - need 2 allocs: for struct, and then array
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
 
 // 2D array of n components.
+// - Each component has an array inside the chunk.
+// - 
 typedef struct tnecs_ArchetypeChunk {
     tnecs_component  archetype;
     size_t           components_num;
@@ -221,6 +226,7 @@ typedef struct tnecs_ArchetypeChunk {
 tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const tnecs_component archetype);
 size_t  *tnecs_ArchetypeChunk_BytesizeArr( const tnecs_ArchetypeChunk *chunk);
 void    *tnecs_ArchetypeChunk_ComponentArr(const tnecs_ArchetypeChunk *chunk, size_t corder);
+b32      tnecs_ArchetypeChunk_Full(const tnecs_ArchetypeChunk *chunk);
 
 /******************** WORLD FUNCTIONS **********************/
 b32 tnecs_world_genesis(tnecs_world **w);
