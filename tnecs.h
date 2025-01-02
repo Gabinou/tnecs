@@ -247,6 +247,10 @@ size_t tnecs_register_phase(struct tnecs_world *w, tnecs_phase phase);
 #define TNECS_REGISTER_SYSTEM_wEXCL_wPHASE(world, pfunc, excl, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2typeflag(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
+#define TNECS_ALLOC_CHECK(name) if (name == NULL) { \
+    printf("tnecs: could not allocate " #name);\
+    return(false);\
+}
 
 /************ ENTITY MANIPULATION *************/
 /* -- Public -- */
@@ -257,7 +261,7 @@ tnecs_entity tnecs_entities_create_wID(struct tnecs_world *w, size_t num,
                                        tnecs_entity *ents);
 tnecs_entity tnecs_entity_create_wcomponents(struct tnecs_world *w, size_t argnum, ...);
 
-tnecs_entity tnecs_entity_destroy(struct tnecs_world *w, tnecs_entity entity);
+b32 tnecs_entity_destroy(struct tnecs_world *w, tnecs_entity entity);
 
 // Overloaded macros: -> TNECS_ENTITY_CREATE, TNECS_ENTITIES_CREATE, TNECS_ADD_COMPONENT
 #define TNECS_ENTITY_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE2, TNECS_ENTITY_CREATE1)(__VA_ARGS__)

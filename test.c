@@ -596,6 +596,8 @@ void tnecs_test_entity_creation() {
     lok(test_world2->num_components == 2);
 
     // Coverage for if in tnecs_register_system
+    tnecs_world_destroy(&test_world2);
+    lok(test_world2 == NULL);
     tnecs_world_genesis(&test_world2);
 
     TNECS_REGISTER_COMPONENT(test_world2, Position2);

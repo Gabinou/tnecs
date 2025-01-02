@@ -584,19 +584,29 @@ tnecs_entity tnecs_entity_create_wcomponents(struct tnecs_world *world, size_t a
 
     /* Create entity with all components */
     tnecs_entity new_entity = tnecs_entity_create(world);
+    if (new_entity == TNECS_NULL) {
+        printf("tnecs: could not create new entity");
+        return(TNECS_NULL);
+    }
     tnecs_entity_add_components(world, new_entity, argnum, typeflag, true);
 
     /* Check */
-    size_t tID =       TNECS_TYPEFLAGID(world, typeflag);
-    size_t order =     world->entity_orders[new_entity];
+    size_t tID      = TNECS_TYPEFLAGID(world, typeflag);
+    size_t order    = world->entity_orders[new_entity];
     TNECS_DEBUG_ASSERT(world->entities_bytype[tID][order] == new_entity);
     TNECS_DEBUG_ASSERT(world->entities[new_entity] == new_entity);
     return (new_entity);
 }
 
-tnecs_entity tnecs_entity_destroy(struct tnecs_world *world, tnecs_entity entity) {
-    TNECS_DEBUG_ASSERT(world->entities[entity]);
-    TNECS_DEBUG_ASSERT(entity > TNECS_NULL);
+b32 tnecs_entity_destroy(struct tnecs_world *world, tnecs_entity entity) {
+    if (entity <= TNECS_NULL) {
+        return(true);
+    }
+
+    if (world->entities[entity] <= TNECS_NULL) {
+        return(true);
+    }
+
     /* Preliminaries */
     tnecs_component typeflag =  world->entity_typeflags[entity];
     size_t tID =                  TNECS_TYPEFLAGID(world, typeflag);
@@ -636,9 +646,12 @@ tnecs_entity tnecs_entity_destroy(struct tnecs_world *world, tnecs_entity entity
 /*****************************************************************************/
 tnecs_entity tnecs_entity_add_components(struct tnecs_world *world, tnecs_entity entity,
                                          size_t num_components_toadd, tnecs_component typeflag_toadd, b32 isNew) {
-
-    TNECS_DEBUG_ASSERT(num_components_toadd > 0);
-    TNECS_DEBUG_ASSERT(typeflag_toadd > 0);
+    if (num_components_toadd <= 0) {
+        return(TNECS_NULL);
+    }
+    if (typeflag_toadd <= 0) {
+        return(TNECS_NULL);
+    }
     tnecs_component typeflag_old = world->entity_typeflags[entity];
     TNECS_DEBUG_ASSERT(!(typeflag_toadd & typeflag_old));
     tnecs_component typeflag_new = typeflag_toadd + typeflag_old;
@@ -652,9 +665,9 @@ tnecs_entity tnecs_entity_add_components(struct tnecs_world *world, tnecs_entity
     tnecs_entitiesbytype_migrate(world, entity, typeflag_old, typeflag_new);
 
     size_t new_order = world->num_entities_bytype[tID_new] - 1;
-    TNECS_DEBUG_ASSERT(world->entity_typeflags[entity]                    == typeflag_new);
+    TNECS_DEBUG_ASSERT(world->entity_typeflags[entity]            == typeflag_new);
     TNECS_DEBUG_ASSERT(world->entities_bytype[tID_new][new_order] == entity);
-    TNECS_DEBUG_ASSERT(world->entity_orders[entity]                       == new_order);
+    TNECS_DEBUG_ASSERT(world->entity_orders[entity]               == new_order);
     return (world->entities[entity]);
 }
 
