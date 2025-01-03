@@ -1272,11 +1272,11 @@ uint64_t tnecs_hash_combine(uint64_t h1, uint64_t h2) {
 }
 
 /* ArchetypeChunk */
-tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const tnecs_component archetype) {
+tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype) {
     // Chunk init
-    tnecs_ArchetypeChunk chunk = {0};
+    tnecs_chunk chunk = {0};
     chunk.archetype     = archetype;
-    size_t *mem_header  = tnecs_ArchetypeChunk_BytesizeArr(&chunk);
+    size_t *mem_header  = tnecs_chunk_BytesizeArr(&chunk);
     // Adding all component bytesizes in archetype to chunk
     tnecs_component type            = 0;
     tnecs_component component_id    = 0;
@@ -1299,18 +1299,30 @@ tnecs_ArchetypeChunk tnecs_ArchetypeChunk_Init(const tnecs_world *world, const t
         chunk.components_num++;
     }
 
+    chunk.entities_len = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
     return(chunk);
 }
-b32 tnecs_ArchetypeChunk_Full(const tnecs_ArchetypeChunk *chunk) {
-    return(chunk->entities_num == chunk->entities_len);
+// Order of entity in entities_bytype -> index of chunk components are stored in
+size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order) {
+    return(entity_order / chunk->entities_len);
 }
 
-size_t *tnecs_ArchetypeChunk_BytesizeArr(const tnecs_ArchetypeChunk *chunk) {
+// Order of entity in entities_bytype -> order of components in current ArchetypeChunk
+size_t tnecs_EntityOrder_to_ChunkOrder(const tnecs_chunk *chunk, const size_t entity_order) {
+    return(entity_order % chunk->entities_len);
+}
+
+size_t *tnecs_chunk_BytesizeArr(const tnecs_chunk *chunk) {
     return((size_t*)chunk->mem);
 }
+size_t  tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk) {
+    size_t * header = tnecs_chunk_BytesizeArr(chunk);
+    TNECS_DEBUG_ASSERT(chunk->components_num > 0);
+    return(header[chunk->components_num - 1]);
+}
 
-void *tnecs_ArchetypeChunk_ComponentArr(const tnecs_ArchetypeChunk *chunk, size_t corder) {
-    size_t *header              = tnecs_ArchetypeChunk_BytesizeArr(chunk);
+void *tnecs_chunk_ComponentArr(const tnecs_chunk *chunk, const size_t corder) {
+    size_t *header              = tnecs_chunk_BytesizeArr(chunk);
     size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
     size_t header_offset        = chunk->components_num * sizeof(size_t);
     size_t components_offset    = corder * cumul_bytesize * chunk->entities_len;

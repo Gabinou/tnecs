@@ -48,6 +48,7 @@ For more in-depth discussion about tnecs' design, see the [On Design](https://gi
 ## Running tests
 
 ```bash
+rm tnecs.o test.o
 tcc -c -g tnecs.c -o tnecs.o
 tcc -c -g test.c -o test.o
 tcc -g -o test test.o tnecs.o -lm

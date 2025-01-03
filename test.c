@@ -721,7 +721,7 @@ void tnecs_test_component_remove() {
 }
 
 void tnecs_test_chunk() {
-    lok(sizeof(tnecs_ArchetypeChunk) == TNECS_CHUNK_BYTESIZE);
+    lok(sizeof(tnecs_chunk) == TNECS_CHUNK_BYTESIZE);
     tnecs_world *chunk_world = NULL;
     tnecs_world_genesis(&chunk_world);
 
@@ -737,17 +737,19 @@ void tnecs_test_chunk() {
     type4 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Unit);
 
     tnecs_component archetype = type1 + type2;
-    tnecs_ArchetypeChunk chunk;
-    chunk = tnecs_ArchetypeChunk_Init(chunk_world, archetype);
+    tnecs_chunk chunk;
+    chunk = tnecs_chunk_Init(chunk_world, archetype);
     lok(chunk.components_num == 2);
-    size_t *bytesizes = tnecs_ArchetypeChunk_BytesizeArr(&chunk);
+    size_t *bytesizes = tnecs_chunk_BytesizeArr(&chunk);
     lok(bytesizes[0] == sizeof(Velocity));
     lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
+    lok(chunk.entities_len > 0);
+    lok(chunk.entities_len == TNECS_CHUNK_COMPONENTS_BYTESIZE / (sizeof(Velocity) + sizeof(Position)));
 
     archetype = type1 + type2 + type3 + type4;
-    chunk = tnecs_ArchetypeChunk_Init(chunk_world, archetype);
+    chunk = tnecs_chunk_Init(chunk_world, archetype);
     lok(chunk.components_num == 4);
-    bytesizes = tnecs_ArchetypeChunk_BytesizeArr(&chunk);
+    bytesizes = tnecs_chunk_BytesizeArr(&chunk);
     lok(bytesizes[0] == sizeof(Velocity));
     lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
     lok(bytesizes[2] == sizeof(Velocity) + sizeof(Position) +sizeof(Sprite));
