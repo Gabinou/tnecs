@@ -284,6 +284,7 @@ b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
     return(1);
 }
 
+// TODO REMOVE???
 b32 _tnecs_system_torun_realloc(tnecs_world *world) {
     /* Realloc systems_to_run if too many */
     if (world->num_systems_torun >= (world->len_systems_torun - 1)) {
@@ -1117,6 +1118,7 @@ b32 tnecs_growArray_system(tnecs_world *world) {
     world->len_systems          = nlen;
     world->len_systems_torun    = nlen_torun;
 
+    // TODO: remove systems_torun from from growArray_system
     world->systems_torun    = tnecs_realloc(world->systems_torun,    olen_torun, nlen_torun, sizeof(*world->systems_torun));
     TNECS_CHECK_ALLOC(world->systems_torun);
     world->system_names     = tnecs_realloc(world->system_names,     olen,       nlen,       sizeof(*world->system_names));
