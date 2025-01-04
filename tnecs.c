@@ -8,9 +8,6 @@ static b32 _tnecs_world_breath_components(tnecs_world   *w);
 static b32 _tnecs_world_breath_systems(tnecs_world      *w);
 static b32 _tnecs_world_breath_typeflags(tnecs_world    *w);
 
-/* --- SYSTEM FUNCTIONS --- */
-static b32 _tnecs_system_torun_realloc(tnecs_world *world);
-
 /* --- REGISTRATION  --- */
 static size_t _tnecs_register_typeflag(tnecs_world *w, size_t num_components,
                                        tnecs_component typeflag);
@@ -284,10 +281,8 @@ b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
     return(1);
 }
 
-// TODO REMOVE???
-b32 _tnecs_system_torun_realloc(tnecs_world *world) {
+b32 tnecs_growArray_torun(tnecs_world *world) {
     /* Realloc systems_to_run if too many */
-    if (world->num_systems_torun >= (world->len_systems_torun - 1)) {
         size_t old_len              = world->len_systems_torun;
         size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
         world->len_systems_torun    = new_len;
@@ -295,7 +290,6 @@ b32 _tnecs_system_torun_realloc(tnecs_world *world) {
 
         world->systems_torun = tnecs_realloc(world->systems_torun, old_len, new_len, bytesize);
         TNECS_CHECK_ALLOC(world->systems_torun);
-    }
     return(1);
 }
 
@@ -311,7 +305,9 @@ b32 tnecs_system_run(tnecs_world *world, size_t in_system_id,
     input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
 
     /* Running the exclusive systems in current phase */
-    TNECS_CHECK_CALL(_tnecs_system_torun_realloc(world));
+    while (world->num_systems_torun >= (world->len_systems_torun - 1)) {
+        TNECS_CHECK_CALL(tnecs_growArray_torun(world));
+    }
     
     tnecs_system_ptr system             = world->systems_byphase[phase][sorder];
     size_t system_num                   = world->num_systems_torun++;
@@ -325,8 +321,9 @@ b32 tnecs_system_run(tnecs_world *world, size_t in_system_id,
     for (size_t tsub = 0; tsub < world->num_archetype_ids[system_typeflag_id]; tsub++) {
         input.entity_typeflag_id    = world->archetype_id_bytype[system_typeflag_id][tsub];
         input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
-
-        TNECS_CHECK_CALL(_tnecs_system_torun_realloc(world));
+        while (world->num_systems_torun >= (world->len_systems_torun - 1)) {
+            TNECS_CHECK_CALL(tnecs_growArray_torun(world));
+        }
         tnecs_system_ptr system             = world->systems_byphase[phase][sorder];
         size_t system_num                      = world->num_systems_torun++;
         world->systems_torun[system_num]    = system;
@@ -1111,16 +1108,10 @@ b32 tnecs_growArray_entity(tnecs_world *world) {
 
 b32 tnecs_growArray_system(tnecs_world *world) {
     size_t olen = world->len_systems;
-    size_t olen_torun = world->len_systems_torun;
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
-    size_t nlen_torun = olen_torun * TNECS_ARRAY_GROWTH_FACTOR;
     TNECS_DEBUG_ASSERT(olen > 0);
     world->len_systems          = nlen;
-    world->len_systems_torun    = nlen_torun;
 
-    // TODO: remove systems_torun from from growArray_system
-    world->systems_torun    = tnecs_realloc(world->systems_torun,    olen_torun, nlen_torun, sizeof(*world->systems_torun));
-    TNECS_CHECK_ALLOC(world->systems_torun);
     world->system_names     = tnecs_realloc(world->system_names,     olen,       nlen,       sizeof(*world->system_names));
     TNECS_CHECK_ALLOC(world->system_names);
     world->system_phases    = tnecs_realloc(world->system_phases,    olen,       nlen,       sizeof(*world->system_phases));

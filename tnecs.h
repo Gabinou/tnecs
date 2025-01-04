@@ -151,7 +151,7 @@ typedef struct tnecs_world {
     tnecs_hash      *system_hashes;                             // [system_id]
     char           **system_names;                              // [system_id]
 
-    //_bytype arrays are exclusive
+    //_bytype arrays are exc lusive
     size_t           **archetype_id_bytype;     // [typeflag_id][typeflag_id_order]
     size_t            *num_archetype_ids;       // [typeflag_id]
     tnecs_component_array **components_bytype;  // [typeflag_id][component_order_bytype]
@@ -213,6 +213,7 @@ typedef struct tnecs_component_array {
 // tnecs_Chunk: memory reserved for all components of archetype
 // - Each component has an array inside the chunk.
 // - Each chunk is 16kB total.
+// - Entity order determines if chunk is full
 #define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t) - sizeof(tnecs_component))
 typedef struct tnecs_chunk {
     tnecs_component  archetype;
@@ -395,6 +396,7 @@ b32 tnecs_growArray_entity(tnecs_world *w);
 b32 tnecs_growArray_system(tnecs_world *w);
 b32 tnecs_growArray_typeflag(tnecs_world *w);
 b32 tnecs_growArray_phase(tnecs_world *w);
+b32 tnecs_growArray_torun(tnecs_world *w);
 
 /****************** STRING HASHING ****************/
 uint64_t tnecs_hash_djb2(const char *str);  // slightly faster
