@@ -102,7 +102,7 @@ b32 tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
     world->num_systems_torun = 0;
     for (size_t phase = 0; phase < world->num_phases; phase++) {
         if (!tnecs_world_step_phase(world, phase, deltat, data)) {
-            printf("tnecs: Could not run phase %d \n", phase);
+            printf("tnecs: Could not run phase %zu \n", phase);
         }
     }
     return(1);
@@ -1002,7 +1002,7 @@ void tnecs_component_names_print(tnecs_world *world, tnecs_entity entity) {
     tnecs_component typeflag = world->entity_typeflags[entity];
     size_t tID               = tnecs_typeflagid(world, typeflag);
     size_t comp_num          = world->num_components_bytype[tID];
-    printf("Entity %d: ", entity);
+    printf("Entity %llu: ", entity);
     for (size_t corder = 0; corder < comp_num; corder++) {
         size_t component_id = world->components_idbytype[tID][corder];
         printf("%s, ", world->component_names[component_id]);
@@ -1314,7 +1314,7 @@ size_t  tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk) {
     return(header[chunk->components_num - 1]);
 }
 
-void *tnecs_chunk_ComponentArr(const tnecs_chunk *chunk, const size_t corder) {
+void *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder) {
     size_t *header              = tnecs_chunk_BytesizeArr(chunk);
     size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
     size_t header_offset        = chunk->components_num * sizeof(size_t);

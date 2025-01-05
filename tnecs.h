@@ -56,7 +56,7 @@ extern "C" {
 #endif
 
 /******************* TYPE DEFINITIONS *******************/
-typedef uint64_t        tnecs_entity;     // simple 64 bit integer
+typedef unsigned long long int       tnecs_entity;     // simple 64 bit integer
 typedef uint64_t        tnecs_component;  // 64 bit flags -> MAX 63 components
 typedef uint64_t        tnecs_hash;
 typedef uint32_t        tnecs_phase;
@@ -228,7 +228,7 @@ typedef struct tnecs_chunk {
 tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype);
 size_t  *tnecs_chunk_BytesizeArr( const tnecs_chunk *chunk);
 size_t   tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk);
-void    *tnecs_chunk_ComponentArr(const tnecs_chunk *chunk, const size_t corder);
+void    *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder);
 b32      tnecs_chunk_Full(const tnecs_chunk *chunk);
 
 size_t tnecs_EntityOrder_to_ChunkOrder(     const tnecs_chunk *chunk, const size_t entity_order);
