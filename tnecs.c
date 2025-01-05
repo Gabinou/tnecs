@@ -1335,3 +1335,14 @@ size_t setBits_KnR_uint64_t(uint64_t in_flags) {
     }
     return (count);
 }
+
+
+void *Arena_Ptr(Arena *arena, i64 handle) {
+    if (!Arena_isValid(arena))
+        return(NULL);
+    
+    if ((handle < 0LL) || (handle >= arena->_fill))
+        return(NULL);
+        
+    return(arena->_start + handle);
+}

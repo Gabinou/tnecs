@@ -225,6 +225,16 @@ typedef struct tnecs_chunk {
     tnecs_byte       mem[TNECS_CHUNK_COMPONENTS_BYTESIZE];
 } tnecs_chunk;
 
+// Arena with memory is in struct (flexible array member) */
+// No copy assignment.
+// No local variable, only ptr.
+typedef struct tnecs_arena {
+    i64              size;     /* [bytes]  total malloced bytesize     */
+    i64             fill;     /* [bytes]  part of _start used         */
+    byte            mem[];
+} tnecs_arena;
+
+
 tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype);
 size_t  *tnecs_chunk_BytesizeArr( const tnecs_chunk *chunk);
 size_t   tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk);
