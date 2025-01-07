@@ -214,15 +214,24 @@ typedef struct tnecs_component_array {
 typedef struct tnecs_arena_array {
     i64 handle;
     size_t num;
-    size_t len;
 } tnecs_arena_array;
 
+typedef struct tnecs_arena_vec {
+    i64 handle;
+    size_t num;
+    size_t len
+} tnecs_arena_vec;
+
 typedef struct tnecs_phase_arena {
+    i64 arena;
+    size_t len;
     tnecs_arena_array systems_byphase;
     tnecs_arena_array systems_idbyphase;
 } tnecs_phase_arena;
 
 typedef struct tnecs_entities_arena {
+    i64 arena;
+    size_t len;
     tnecs_arena_array entities;
     tnecs_arena_array entity_archetype;
     tnecs_arena_array entity_orders;
@@ -230,6 +239,7 @@ typedef struct tnecs_entities_arena {
 
 typedef struct tnecs_system_arena {
     i64 arena;
+    size_t len;
     tnecs_arena_array system_typeflag;
     tnecs_arena_array system_id;
     tnecs_arena_array system_order;
@@ -241,24 +251,22 @@ typedef struct tnecs_system_arena {
     
 typedef struct tnecs_archetype_arena {
     i64 arena;
-    tnecs_arena_array archetype_id;
-    // len/num of bytgpe arrays is archetype_id.num/lene
-    tnecs_arena_array *archetype_id_bytype;
-    tnecs_arena_array *components_id_bytype;
-    tnecs_arena_array *components_flags_bytype;
-    tnecs_arena_array *components_order_bytype;
-    tnecs_arena_array *entities_bytype;
+    tnecs_arena_vec archetype_id;
+    // len/num of bytylpe arrays is archetype_id.num/lene
+    tnecs_arena_vec *archetype_id_bytype;
+    tnecs_arena_vec *components_id_bytype;
+    tnecs_arena_vec *components_flags_bytype;
+    tnecs_arena_vec *components_order_bytype;
+    tnecs_arena_vec *entities_bytype;
+    tnecs_arena_vec *chunks_bytype;
 } tnecs_typeflag_arena;
 
-
 typedef struct tnecs_components_arena {
- ,size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
- size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
+    size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
 
     tnecs_hash       component_hashes[TNECS_COMPONENT_CAP];     // [component_id]
 
     char            *component_names[TNECS_COMPONENT_CAP];      // [component_id]
-    tnecs_chunk **archetype_chunks;  // [typeflag_id][chunk_order],
 } tnecs_components_arena;
   
 
@@ -270,9 +278,8 @@ typedef struct tnecs_local_world {
     tnecs_archetype_arena    archetypes;
     tnecs_components_arena   components;
     
-    tnecs_arena_array entities_open;
-
-    tnecs_arena_array system_torun;
+    tnecs_arena_vec entities_open;
+    tnecs_arena_vec system_torun;
     
     b32 reuse_entities;
 
