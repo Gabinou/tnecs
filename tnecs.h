@@ -231,9 +231,9 @@ typedef struct tnecs_entities_arena {
     size_t num;
     size_t len;
     // All handles
-    i64 entities;
-    i64 archetype;
-    i64 orders;
+    i64 entities; /* *tnecs_entity */
+    i64 archetype; /* *tnecs_component */
+    i64 orders; /* *size_t */
 } tnecs_entities_arena;
 
 typedef struct tnecs_system_arena {
@@ -241,13 +241,12 @@ typedef struct tnecs_system_arena {
     size_t num;
     size_t len;
     // All handles
-    i64 id;
-    i64 typeflag;
-    i64 order;
-    i64 names;
-    i64 hashes;
-    i64 phases;
-    i64 exclusive;
+    i64 archetype; /* *tnecs_componentv*/
+    i64 order; /* *size_t */
+    i64 names; /* *i64 */
+    i64 hashes; /* *tnecs_hash */
+    i64 phases; /* *tnecs_phase */
+    i64 exclusive; /* *b32 */
 } tnecs_system_arena;
     
 typedef struct tnecs_archetype_arena {
@@ -255,14 +254,14 @@ typedef struct tnecs_archetype_arena {
     size_t num;
     size_t len;
     
-    i64 archetype_id;
+    i64 archetype_id;  /* */
     // len/num of bytype arrays is archetype_id.num/lene
-    i64 archetype_id_bytype;
-    i64 components_id_bytype;
-    i64 components_flags_bytype;
-    i64 components_order_bytype;
-    i64 entities_bytype;
-    i64 chunks_bytype;
+    i64 archetype_id_bytype;  /* */
+    i64 components_id_bytype; /* */
+    i64 components_flags_bytype; /* */
+    i64 components_order_bytype; /* */
+    i64 entities_bytype;  /* */
+    i64 chunks_bytype;  /* */
 } tnecs_typeflag_arena;
 
 typedef struct tnecs_components_arena {
