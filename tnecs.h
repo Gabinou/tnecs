@@ -57,7 +57,8 @@ extern "C" {
 
 /******************* TYPE DEFINITIONS *******************/
 typedef unsigned long long int       tnecs_entity;     // simple 64 bit integer
-typedef uint64_t        tnecs_component;  // 64 bit flags -> MAX 63 components
+typedef tnecs_entity tnecs_component;  // 64 bit flags -> MAX 63 components
+typedef long long int i64;  // 64 bit flags -> MAX 63 components
 typedef uint64_t        tnecs_hash;
 typedef uint32_t        tnecs_phase;
 typedef uint64_t        tnecs_ns;
@@ -155,6 +156,7 @@ typedef struct tnecs_world {
     size_t           **archetype_id_bytype;     // [typeflag_id][typeflag_id_order]
     size_t            *num_archetype_ids;       // [typeflag_id]
     tnecs_component_array **components_bytype;  // [typeflag_id][component_order_bytype]
+    ,,
     tnecs_entity     **entities_bytype;         // [typeflag_id][entity_order_bytype]
     tnecs_component  **components_idbytype;     // [typeflag_id][component_order_bytype]
     tnecs_component  **components_flagbytype;   // [typeflag_id][component_order_bytype]
@@ -185,7 +187,7 @@ typedef struct tnecs_world {
     tnecs_entity      entity_next;
     tnecs_entity     *entities_open;
 
-    b32 reuse_entities;
+    b32 reuse_entities;,
 } tnecs_world;
 
 typedef struct tnecs_system_input {
@@ -209,7 +211,74 @@ typedef struct tnecs_component_array {
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
 
+typedef struct tnecs_arena_array {
+    i64 handle;
+    size_t num;
+    size_t len;
+} tnecs_arena_array;
 
+typedef struct tnecs_phase_arena {
+    tnecs_arena_array systems_byphase;
+    tnecs_arena_array systems_idbyphase;
+} tnecs_phase_arena;
+
+typedef struct tnecs_entities_arena {
+    tnecs_arena_array entities;
+    tnecs_arena_array entity_archetype;
+    tnecs_arena_array entity_orders;
+} tnecs_entities_arena;
+
+typedef struct tnecs_system_arena {
+    i64 arena;
+    tnecs_arena_array system_typeflag;
+    tnecs_arena_array system_id;
+    tnecs_arena_array system_order;
+    tnecs_arena_array system_names;
+    tnecs_arena_array system_hashes;
+    tnecs_arena_array system_phases;
+    tnecs_arena_array system_exclusive;
+} tnecs_system_arena;
+    
+typedef struct tnecs_archetype_arena {
+    i64 arena;
+    tnecs_arena_array archetype_id;
+    // len/num of bytgpe arrays is archetype_id.num/lene
+    tnecs_arena_array *archetype_id_bytype;
+    tnecs_arena_array *components_id_bytype;
+    tnecs_arena_array *components_flags_bytype;
+    tnecs_arena_array *components_order_bytype;
+    tnecs_arena_array *entities_bytype;
+} tnecs_typeflag_arena;
+
+
+typedef struct tnecs_components_arena {
+ ,size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
+ size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
+
+    tnecs_hash       component_hashes[TNECS_COMPONENT_CAP];     // [component_id]
+
+    char            *component_names[TNECS_COMPONENT_CAP];      // [component_id]
+    tnecs_chunk **archetype_chunks;  // [typeflag_id][chunk_order],
+} tnecs_components_arena;
+  
+
+typedef struct tnecs_local_world {
+    tnecs_phase_arena        phases;
+    tnecs_system_arena       systems;
+    tnecs_typeflag_arena     archetypes;
+    tnecs_entities_arena     entities;
+    tnecs_archetype_arena    archetypes;
+    tnecs_components_arena   components;
+    
+    tnecs_arena_array entities_open;
+
+    tnecs_arena_array system_torun;
+    
+    b32 reuse_entities;
+
+    tnecs_byte mem[];
+} tnecs_local_world;
+    
 // tnecs_Chunk: memory reserved for all components of archetype
 // - Each component has an array inside the chunk.
 // - Each chunk is 16kB total.
@@ -229,7 +298,7 @@ typedef struct tnecs_chunk {
 // No copy assignment.
 // No local variable, only ptr.
 typedef struct tnecs_arena {
-    i64              size;     /* [bytes]  total malloced bytesize     */
+    i64             size;     /* [bytes]  total malloced bytesize     */
     i64             fill;     /* [bytes]  part of _start used         */
     byte            mem[];
 } tnecs_arena;

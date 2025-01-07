@@ -1336,13 +1336,73 @@ size_t setBits_KnR_uint64_t(uint64_t in_flags) {
     return (count);
 }
 
+/*** tnecs_arens ***/
 
-void *Arena_Ptr(Arena *arena, i64 handle) {
-    if (!Arena_isValid(arena))
+b32 tnecs_arena_valid(tnecs_arena *arena) {
+    if (arena == NULL)
+      return(0);
+    if (arena->size <= 0LL)
+      return(0);
+    if (arena->fill > arena->size)
+      return(0);
+    
+    return(1);
+}
+
+i64 tnecs_arena_push(tnecs_arena *arena, i64 size) {
+    if (!tnecs_arena_valid(arena))
+        return(0);
+    
+    /* Checking if out of memory */
+    i64 new_size = size + arena->fill;
+    if (new_size > arena->size)
+         tnecs_arena_grow(arena);
+
+    i64 oldfill = arena->fill;
+    arena->fill += size;
+
+    return(oldfill);
+}
+
+// RISKY: USER MUST BE UPDATED WITH _Arena_Realloc_Handle.
+i64 tnecs_arena_realloc(Arena *arena, i64 handle, i64 old_len, i64 new_len) {
+    // Move over memory after handle 
+    size_t newfill = arena->fill - old_len + new_len;
+    
+    if (newfill > arena->size)
+         tnecs_arena_grow(arena);
+         
+    memmove(
+        arena->_start + handle + old_len,
+        arena->_start + handle + new_len,
+        arena->fill - old_len
+    );
+    return(BEARENA_OK);
+}
+
+i64 tnecs_arena_realloc_handle(i64 handle, i64 new_len) {
+    return(handle + new_len);
+}
+
+i64 tnecs_arena_push_zero(Arena *arena, i64 size) {
+    if (!tnecs_arena_valid(arena))
+        return(0);
+
+    /* _Arena_Push does the error checking */
+    i64 handle = tnecs_arena_push(arena, size);
+    if (handle < 0)
+        return(0);
+
+    memset(tnecs_arena_ptr(arena, handle), 0, (size_t)size);
+    return(handle);
+}
+
+void *tnecs_arena_ptr(Arena *arena, i64 handle) {
+    if (!tnecs_arena_valid(arena))
         return(NULL);
     
-    if ((handle < 0LL) || (handle >= arena->_fill))
+    if ((handle < 0LL) || (handle >= arena->fill))
         return(NULL);
         
-    return(arena->_start + handle);
+    return(arena->start + handle);
 }
