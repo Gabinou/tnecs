@@ -116,7 +116,7 @@ b32 _tnecs_world_breath_entities(tnecs_world *world) {
     world->entities.order       = tnecs_arena_push(entity_arena, bytesize_order);
     world->entities.archetype   = tnecs_arena_push(entity_arena, bytesize_archetype);
 
-    TNECS_CHECK_ALLOC(world->entities.entity);
+    TNECS_CHECK_ALLOC(world->entities.id);
     TNECS_CHECK_ALLOC(world->entities.archetype);
     TNECS_CHECK_ALLOC(world->entities.order);
 
@@ -124,12 +124,12 @@ b32 _tnecs_world_breath_entities(tnecs_world *world) {
 }
 
 b32 _tnecs_world_breath_components(tnecs_world *world) {
-    /* NULL component always exists! */
-    world->num_components               = TNECS_NULLSHIFT;
-    world->component_hashes[TNECS_NULL] = TNECS_NULL;
+    // /* NULL component always exists! */
+    // world->num_components               = TNECS_NULLSHIFT;
+    // world->component_hashes[TNECS_NULL] = TNECS_NULL;
 
-    /* Set name of first component */
-    strncpy(world->component_names[TNECS_NULL], "NULL\0", namelen);
+    // /* Set name of first component */
+    // strncpy(world->component_names[TNECS_NULL], "NULL\0", namelen);
     return(1);
 }
 
@@ -147,7 +147,7 @@ b32 _tnecs_world_breath_systems(tnecs_world *world) {
     bytesize_total              = tnecs_round_up(bytesize_total);
 
     /* Alloc child arena in parent arena */
-    tnecs_arena *world_arena   = tnecs_world_arena(*world);
+    tnecs_arena *world_arena   = tnecs_world_arena(world);
     world->systems.arena      = tnecs_arena_push(world_arena, bytesize_total);
     TNECS_CHECK_ALLOC(world->systems.arena);
 
