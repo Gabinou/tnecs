@@ -151,8 +151,8 @@ b32 _tnecs_world_breath_systems(tnecs_world *world) {
     world->systems.arena      = tnecs_arena_push(world_arena, bytesize_total);
     TNECS_CHECK_ALLOC(world->systems.arena);
 
-    tnecs_arean *systems_arena  = tnecs_arena_ptr(world_arena, world->systems.arena);
-    systems_arena.fill          = TNECS_NULLSHIFT;
+    tnecs_arena *systems_arena  = tnecs_arena_ptr(world_arena, world->systems.arena);
+    systems_arena->fill          = TNECS_NULLSHIFT;
 
     world->systems.hash         = tnecs_arena_push(systems_arena, bytesize_hash);
     world->systems.name         = tnecs_arena_push(systems_arena, bytesize_name);
@@ -171,9 +171,10 @@ b32 _tnecs_world_breath_systems(tnecs_world *world) {
     /* Set name of NULL system */
     i64 *system_names_array = tnecs_arena_ptr(systems_arena, world->systems.name);
     // TODO: name adding utility
-    system_names_array[0]   = tnecs_arena_push(systems_arena, 5);
+    size_t namelen = 5;
+    system_names_array[0]   = tnecs_arena_push(systems_arena, namelen);
     char *null_system_name  = tnecs_arena_ptr(systems_arena, system_names_array[0]);
-    strncpy(world->system.names[TNECS_NULL], "NULL\0", namelen);
+    strncpy(null_system_name, "NULL\0", namelen);
 
     return(1);
 }
@@ -190,17 +191,17 @@ b32 _tnecs_world_breath_phases(tnecs_world *world) {
     bytesize_total= tnecs_round_up(bytesize_total);
 
     /* Alloc child arena in parent arena */
-    tnecs_arena *world_arena    = tnecs_world_arena(*world);
-    world->phases.handle        = tnecs_arena_push(world_arena, bytesize_total);
-    TNECS_CHECK_ALLOC(world->phases.handle);
+    tnecs_arena *world_arena    = tnecs_world_arena(world);
+    world->phases.arena         = tnecs_arena_push(world_arena, bytesize_total);
+    TNECS_CHECK_ALLOC(world->phases.arena);
 
-    tnecs_arena *phases_arena       = tnecs_arena_ptr(world_arena, world->phases.handle);
-    phases_arena.fill               = TNECS_NULLSHIFT;
+    tnecs_arena *phases_arena       = tnecs_arena_ptr(world_arena, world->phases.arena);
+    phases_arena->fill               = TNECS_NULLSHIFT;
 
-    world->phases.num_byphase       = tnecs_arena_push(systems_arena, bytesize_numbyphase);
-    world->phases.len_byphase       = tnecs_arena_push(systems_arena, bytesize_byphase);
-    world->phases.system_byphase    = tnecs_arena_push(systems_arena, bytesize_byphase);
-    world->phases.system_idbyphase  = tnecs_arena_push(systems_arena, bytesize_idbyphase);
+    world->phases.num_byphase       = tnecs_arena_push(phases_arena, bytesize_numbyphase);
+    world->phases.len_byphase       = tnecs_arena_push(phases_arena, bytesize_byphase);
+    world->phases.system_byphase    = tnecs_arena_push(phases_arena, bytesize_byphase);
+    world->phases.system_idbyphase  = tnecs_arena_push(phases_arena, bytesize_idbyphase);
     TNECS_CHECK_ALLOC(world->phases.system_byphase);
     TNECS_CHECK_ALLOC(world->phases.system_idbyphase);
 
@@ -224,11 +225,11 @@ b32 _tnecs_world_breath_phases(tnecs_world *world) {
     return(1);
 }
 
-b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
+b32 _tnecs_world_breath_archetype(tnecs_world *world) {
 
     /* Variables */
-    world->num_archetypes = TNECS_NULLSHIFT;
-    world->len_archetypes = TNECS_INIT_SYSTEM_LEN;
+    // world->num_archetypes = TNECS_NULLSHIFT;
+    // world->len_archetypes = TNECS_INIT_SYSTEM_LEN;
 
     return(1);
 }
@@ -1322,16 +1323,16 @@ b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
 //     return(0);
 // }
 
-// b32 tnecs_arena_valid(tnecs_arena *arena) {
-//     if (arena == NULL)
-//       return(0);
-//     if (arena->size <= 0LL)
-//       return(0);
-//     if (arena->fill > arena->size)
-//       return(0);
+b32 tnecs_arena_valid(tnecs_arena *arena) {
+    if (arena == NULL)
+      return(0);
+    if (arena->size <= 0LL)
+      return(0);
+    if (arena->fill > arena->size)
+      return(0);
     
-//     return(1);
-// }
+    return(1);
+}
 
 // i64 tnecs_arena_push(tnecs_arena *arena, i64 size) {
 //     if (!tnecs_arena_valid(arena))
