@@ -268,14 +268,14 @@ b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
     }
 
     /* Running the exclusive custom system */
-    input.entity_typeflag_id =  tID;
-    input.num_entities =        world->num_entities_bytype[input.entity_typeflag_id];
+    input.entity_typeflag_id    = tID;
+    input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
     custom_system(&input);
 
     /* Running the non-exclusive/inclusive custom system */
     for (size_t tsub = 0; tsub < world->num_archetype_ids[tID]; tsub++) {
-        input.entity_typeflag_id =  world->archetype_id_bytype[tID][tsub];
-        input.num_entities =        world->num_entities_bytype[input.entity_typeflag_id];
+        input.entity_typeflag_id    = world->archetype_id_bytype[tID][tsub];
+        input.num_entities          = world->num_entities_bytype[input.entity_typeflag_id];
         custom_system(&input);
     }
     return(1);
