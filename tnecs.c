@@ -456,11 +456,11 @@ size_t _tnecs_register_typeflag(tnecs_world *world, size_t num_components,
         typeflag_reduced &= (typeflag_reduced - 1);
 
         component_type_toadd = (typeflag_reduced + typeflag_added) ^ typeflag_new;
-        typeflag_added +=      component_type_toadd;
-        component_id_toadd =   TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+        typeflag_added      += component_type_toadd;
+        component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
-        world->components_idbytype[tID][i] =   component_id_toadd;
-        world->components_flagbytype[tID][i] = component_type_toadd;
+        world->components_idbytype[tID][i]      = component_id_toadd;
+        world->components_flagbytype[tID][i]    = component_type_toadd;
 
         world->components_orderbytype[tID][component_id_toadd] = i++;
     }
@@ -1338,6 +1338,10 @@ size_t setBits_KnR_uint64_t(uint64_t in_flags) {
 
 /*** tnecs_arens ***/
 
+b32 tnecs_arena_grow(tnecs_arena *arena) {
+    return(0);
+}
+
 b32 tnecs_arena_valid(tnecs_arena *arena) {
     if (arena == NULL)
       return(0);
@@ -1365,7 +1369,7 @@ i64 tnecs_arena_push(tnecs_arena *arena, i64 size) {
 }
 
 // RISKY: USER MUST BE UPDATED WITH _Arena_Realloc_Handle.
-i64 tnecs_arena_realloc(Arena *arena, i64 handle, i64 old_len, i64 new_len) {
+i64 tnecs_arena_realloc(tnecs_arena *arena, i64 handle, i64 old_len, i64 new_len) {
     // Move over memory after handle 
     size_t newfill = arena->fill - old_len + new_len;
     
@@ -1373,18 +1377,28 @@ i64 tnecs_arena_realloc(Arena *arena, i64 handle, i64 old_len, i64 new_len) {
          tnecs_arena_grow(arena);
          
     memmove(
-        arena->_start + handle + old_len,
-        arena->_start + handle + new_len,
+        arena->mem + handle + old_len,
+        arena->mem + handle + new_len,
         arena->fill - old_len
     );
-    return(BEARENA_OK);
+    return(1);
 }
 
 i64 tnecs_arena_realloc_handle(i64 handle, i64 new_len) {
     return(handle + new_len);
 }
 
-i64 tnecs_arena_push_zero(Arena *arena, i64 size) {
+void *tnecs_arena_ptr(tnecs_arena *arena, i64 handle) {
+    if (!tnecs_arena_valid(arena))
+        return(NULL);
+    
+    if ((handle < 0LL) || (handle >= arena->fill))
+        return(NULL);
+        
+    return(arena->mem + handle);
+}
+
+i64 tnecs_arena_push_zero(tnecs_arena *arena, i64 size) {
     if (!tnecs_arena_valid(arena))
         return(0);
 
@@ -1395,14 +1409,4 @@ i64 tnecs_arena_push_zero(Arena *arena, i64 size) {
 
     memset(tnecs_arena_ptr(arena, handle), 0, (size_t)size);
     return(handle);
-}
-
-void *tnecs_arena_ptr(Arena *arena, i64 handle) {
-    if (!tnecs_arena_valid(arena))
-        return(NULL);
-    
-    if ((handle < 0LL) || (handle >= arena->fill))
-        return(NULL);
-        
-    return(arena->start + handle);
 }
