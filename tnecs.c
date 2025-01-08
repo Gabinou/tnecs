@@ -42,8 +42,6 @@ b32 tnecs_world_destroy(tnecs_world **world) {
             free((*world)->entities_bytype[i]);
         if ((*world)->components_idbytype != NULL)
             free((*world)->components_idbytype[i]);
-        if ((*world)->components_flagbytype != NULL)
-            free((*world)->components_flagbytype[i]);
         if ((*world)->components_orderbytype != NULL)
             free((*world)->components_orderbytype[i]);
         if ((*world)->archetype_id_bytype != NULL)
@@ -67,7 +65,6 @@ b32 tnecs_world_destroy(tnecs_world **world) {
     }
     free((*world)->components_bytype);
     free((*world)->components_idbytype);
-    free((*world)->components_flagbytype);
     free((*world)->components_orderbytype);
     free((*world)->entities_bytype);
     free((*world)->entity_orders);
@@ -169,8 +166,6 @@ b32 _tnecs_world_breath_components(tnecs_world *world) {
     TNECS_CHECK_ALLOC(world->num_components_bytype);
     world->components_idbytype          = calloc(syslen, sizeof(*world->components_idbytype));
     TNECS_CHECK_ALLOC(world->components_idbytype);
-    world->components_flagbytype        = calloc(syslen, sizeof(*world->components_flagbytype));
-    TNECS_CHECK_ALLOC(world->components_flagbytype);
     world->components_orderbytype       = calloc(syslen, sizeof(*world->components_orderbytype));
     TNECS_CHECK_ALLOC(world->components_orderbytype);
     world->component_names[TNECS_NULL]  = malloc(namelen);
@@ -438,17 +433,14 @@ size_t _tnecs_register_typeflag(tnecs_world *world, size_t num_components,
     // 2- Add arrays to components_bytype[tID] for each component
     tnecs_component_array_new(world, num_components, typeflag_new);
 
-    // 3- Add all components to components_idbytype and components_flagbytype
+    // 3- Add all components to components_idbytype
     tnecs_component component_id_toadd, component_type_toadd;
     tnecs_component typeflag_reduced = typeflag_new, typeflag_added = 0;
     size_t bytesize1 =  sizeof(**world->components_idbytype);
-    size_t bytesize2 =  sizeof(**world->components_flagbytype);
-    size_t bytesize3 =  sizeof(**world->components_orderbytype);
+    size_t bytesize2 =  sizeof(**world->components_orderbytype);
     world->components_idbytype[tID]     = calloc(num_components,      bytesize1);
     TNECS_CHECK_ALLOC(world->components_idbytype[tID]);
-    world->components_flagbytype[tID]   = calloc(num_components,      bytesize2);
-    TNECS_CHECK_ALLOC(world->components_flagbytype[tID]);
-    world->components_orderbytype[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize3);
+    world->components_orderbytype[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize2);
     TNECS_CHECK_ALLOC(world->components_orderbytype[tID]);
 
     size_t i = 0;
@@ -460,7 +452,6 @@ size_t _tnecs_register_typeflag(tnecs_world *world, size_t num_components,
         component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
         world->components_idbytype[tID][i]      = component_id_toadd;
-        world->components_flagbytype[tID][i]    = component_type_toadd;
 
         world->components_orderbytype[tID][component_id_toadd] = i++;
     }
@@ -1151,8 +1142,6 @@ b32 tnecs_growArray_typeflag(tnecs_world *world) {
     TNECS_CHECK_ALLOC(world->archetype_id_bytype);
     world->num_components_bytype    = tnecs_realloc(world->num_components_bytype,  olen, nlen, sizeof(*world->num_components_bytype));
     TNECS_CHECK_ALLOC(world->num_components_bytype);
-    world->components_flagbytype    = tnecs_realloc(world->components_flagbytype,  olen, nlen, sizeof(*world->components_flagbytype));
-    TNECS_CHECK_ALLOC(world->components_flagbytype);
     world->components_orderbytype   = tnecs_realloc(world->components_orderbytype, olen, nlen, sizeof(*world->components_orderbytype));
     TNECS_CHECK_ALLOC(world->components_orderbytype);
 

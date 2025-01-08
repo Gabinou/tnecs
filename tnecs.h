@@ -160,7 +160,6 @@ typedef struct tnecs_world {
     tnecs_component_array **components_bytype;  // [typeflag_id][component_order_bytype]
     tnecs_entity     **entities_bytype;         // [typeflag_id][entity_order_bytype]
     tnecs_component  **components_idbytype;     // [typeflag_id][component_order_bytype]
-    tnecs_component  **components_flagbytype;   // [typeflag_id][component_order_bytype] *unused
     size_t           **components_orderbytype;  // [typeflag_id][component_id]
     size_t           **systems_idbyphase;       // [phase][system_order]
     tnecs_system_ptr **systems_byphase;         // [phase][system_id]
