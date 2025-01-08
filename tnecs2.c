@@ -46,11 +46,11 @@ tnecs_arena *tnecs_world_arena(tnecs_world *world) {
 }
 
 
-// b32 tnecs_world_destroy(tnecs_world **world) {
-//     free(*world);
-//     *world = NULL;
-//     return(1);
-// }
+b32 tnecs_world_destroy(tnecs_world **world) {
+    free(*world);
+    *world = NULL;
+    return(1);
+}
 
 // b32 tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
 //     world->num_systems_torun = 0;
@@ -929,14 +929,14 @@ b32 _tnecs_world_breath_archetype(tnecs_world *world) {
 // }
 
 // /************************ UTILITY FUNCTIONS/MACROS ***************************/
-// size_t tnecs_round_up(size_t to_round) {
-//     // Round up to nearest multiple of TNECS_ROUNDING_MULTIPLE
-//     size_t remainder = to_round % TNECS_ROUNDING_MULTIPLE;
-//     if (remainder == 0)
-//         return to_round;
+size_t tnecs_round_up(size_t to_round) {
+    // Round up to nearest multiple of TNECS_ROUNDING_MULTIPLE
+    size_t remainder = to_round % TNECS_ROUNDING_MULTIPLE;
+    if (remainder == 0)
+        return to_round;
 
-//     return numToRound + multiple - remainder;
-// }
+    return to_round + TNECS_ROUNDING_MULTIPLE - remainder;
+}
 
 // size_t tnecs_component_name2id(tnecs_world *world,
 //                                const char *name) {
@@ -1334,20 +1334,20 @@ b32 tnecs_arena_valid(tnecs_arena *arena) {
     return(1);
 }
 
-// i64 tnecs_arena_push(tnecs_arena *arena, i64 size) {
-//     if (!tnecs_arena_valid(arena))
-//         return(0);
+i64 tnecs_arena_push(tnecs_arena *arena, i64 size) {
+    if (!tnecs_arena_valid(arena))
+        return(0);
     
-//     /* Checking if out of memory */
-//     i64 new_size = size + arena->fill;
-//     if (new_size > arena->size)
-//          tnecs_arena_grow(arena);
+    /* Checking if out of memory */
+    i64 new_size = size + arena->fill;
+    // if (new_size > arena->size)
+         // tnecs_arena_grow(arena);
 
-//     i64 oldfill = arena->fill;
-//     arena->fill += size;
+    i64 oldfill = arena->fill;
+    arena->fill += size;
 
-//     return(oldfill);
-// }
+    return(oldfill);
+}
 
 // // RISKY: USER MUST BE UPDATED WITH _Arena_Realloc_Handle.
 // i64 tnecs_arena_realloc(tnecs_arena *arena, i64 handle, i64 old_len, i64 new_len) {
