@@ -1381,7 +1381,7 @@ void *tnecs_arena_ptr(tnecs_arena *arena, i64 handle) {
     if (!tnecs_arena_valid(arena))
         return(NULL);
     
-    if ((handle < 0LL) || (handle >= arena->fill))
+    if ((handle < 0ull) || (handle >= arena->fill))
         return(NULL);
         
     return(arena->mem + handle);
