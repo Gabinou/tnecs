@@ -712,6 +712,42 @@ void tnecs_test_component_remove() {
 
 }
 
+void tnecs_test_chunk() {
+    lok(sizeof(tnecs_chunk) == TNECS_CHUNK_BYTESIZE);
+    tnecs_world *chunk_world = NULL;
+    tnecs_world_genesis(&chunk_world);
+
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Velocity));
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Position));
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Sprite));
+    lok(TNECS_REGISTER_COMPONENT(chunk_world, Unit));
+    lok(chunk_world->num_components == 5);
+    tnecs_component type1, type2, type3, type4;
+    type1 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Velocity);
+    type2 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Position);
+    type3 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Sprite);
+    type4 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Unit);
+
+    tnecs_component archetype = type1 + type2;
+    tnecs_chunk chunk;
+    chunk = tnecs_chunk_Init(chunk_world, archetype);
+    lok(chunk.components_num == 2);
+    size_t *bytesizes = tnecs_chunk_BytesizeArr(&chunk);
+    lok(bytesizes[0] == sizeof(Velocity));
+    lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
+    lok(chunk.entities_len > 0);
+    lok(chunk.entities_len == TNECS_CHUNK_COMPONENTS_BYTESIZE / (sizeof(Velocity) + sizeof(Position)));
+
+    archetype = type1 + type2 + type3 + type4;
+    chunk = tnecs_chunk_Init(chunk_world, archetype);
+    lok(chunk.components_num == 4);
+    bytesizes = tnecs_chunk_BytesizeArr(&chunk);
+    lok(bytesizes[0] == sizeof(Velocity));
+    lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
+    lok(bytesizes[2] == sizeof(Velocity) + sizeof(Position) +sizeof(Sprite));
+    lok(bytesizes[3] == sizeof(Velocity) + sizeof(Position) +sizeof(Sprite) + sizeof(Unit));
+}
+
 void tnecs_test_component_array() {
     tnecs_world *arr_world = NULL;
     tnecs_world_genesis(&arr_world);
@@ -1340,6 +1376,7 @@ int main() {
     lrun("c_remove",   tnecs_test_component_remove);
     lrun("c_array",    tnecs_test_component_array);
     lrun("grow",       tnecs_test_grow);
+    lrun("cs_array",   tnecs_test_chunk);
     lrun("progress",   tnecs_test_world_progress);
     lresults();
 
