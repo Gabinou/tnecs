@@ -216,17 +216,16 @@ typedef struct tnecs_array {
     size_t   len;
 } tnecs_array;
 
-typedef struct tnecs_phase {
+typedef struct tnecs_phases {
     size_t num;
     size_t len;
 
-    size_t           *len_systems_byphase;      // [phase_id]
-    size_t           *num_systems_byphase;      // [phase_id]
-
-    tnecs_phase       *id;                      // [phase_id]
-    size_t           **systems_idbyphase;       // [phase_id][system_order]
-    tnecs_system_ptr **systems_byphase;         // [phase_id][system_id]
-} tnecs_phase;
+    tnecs_phase       *id;          // [phase_id]
+    size_t            *len_systems; // [phase_id]
+    size_t            *num_systems; // [phase_id]
+    size_t           **systems_id;  // [phase_id][system_order]
+    tnecs_system_ptr **systems;     // [phase_id][system_id]
+} tnecs_phases;
 
 typedef struct tnecs_entities {
     // entities.num has slightly different meaning:
@@ -257,39 +256,41 @@ typedef struct tnecs_archetype {
     size_t num;
     size_t len;
 
-    size_t           *num_components_bytype;    // [archetype_id]
-    size_t           *len_entities_bytype;      // [archetype_id]
-    size_t           *num_entities_bytype;      // [archetype_id]
+    tnecs_component  *id;                       // [archetype_id]
+
+    size_t           *num_components;           // [archetype_id]
+    size_t           *len_entities;             // [archetype_id]
+    size_t           *num_entities;             // [archetype_id]
     size_t           *num_archetype_ids;        // [archetype_id]
 
-    size_t           **archetype_id_bytype;     // [archetype_id][archetype_id_order]
-    tnecs_entity     **entities_bytype;         // [archetype_id][entity_order_bytype]
-    size_t           **components_orderbytype;  // [archetype_id][component_id]
-    tnecs_component  *archetypes;               // [archetype_id]
-    tnecs_component  **components_idbytype;     // [archetype_id][component_order_bytype]
-    tnecs_component_array **components_bytype;  // [archetype_id][component_order_bytype]
+    size_t           **archetype_id;            // [archetype_id][archetype_id_order]
+    tnecs_entity     **entities;                // [archetype_id][entity_order_bytype]
+    size_t           **components_order;        // [archetype_id][component_id]
+    tnecs_component  **components_id;           // [archetype_id][component_order_bytype]
+    tnecs_component_array **components;         // [archetype_id][component_order_bytype]
     // TODO use chunks instead of tnecs_component_array 
     // tnecs_chunk **chunks_bytype;             // [archetype_id][chunk_order_bytype][component]
 
 } tnecs_archetype;
 
 typedef struct tnecs_components {
-    size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
-    tnecs_hash       component_hashes[TNECS_COMPONENT_CAP];     // [component_id]
-    char            *component_names[TNECS_COMPONENT_CAP];      // [component_id]
+    size_t           num;
+    size_t           bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
+    tnecs_hash       hashes[TNECS_COMPONENT_CAP];     // [component_id]
+    char            *names[TNECS_COMPONENT_CAP];      // [component_id]
 } tnecs_components;
   
 
 /*** tnecs_worlds ***/
 typedef struct tnecs_world {
-    tnecs_phase         phases;
+    tnecs_archetype     bytype;
+    tnecs_phases        byphase;
     tnecs_system        systems;
     tnecs_entities      entities;
-    tnecs_archetype     archetypes;
     tnecs_components    components;
     
     tnecs_array entities_open;
-    tnecs_array system_torun;
+    tnecs_array systems_torun;
     
     b32 reuse_entities;
 } tnecs_world;

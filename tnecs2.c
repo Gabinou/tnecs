@@ -392,52 +392,52 @@ b32 _tnecs_world_breath_archetype(tnecs_world *world) {
 //     return (new_component_id);
 // }
 
-// size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
-//                                 tnecs_component archetype_new) {
-//     // 0- Check if archetype exists, return
-//     size_t tID = 0;
-//     for (size_t i = 0 ; i < world->num_archetypes; i++) {
-//         if (archetype_new == world->archetypes[i]) {
-//             tID = i;
-//             break;
-//         }
-//     }
-//     if (tID)
-//         return (tID);
+size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
+                                tnecs_component archetype_new) {
+    // 0- Check if archetype exists, return
+    size_t tID = 0;
+    for (size_t i = 0 ; i < world->num_archetypes; i++) {
+        if (archetype_new == world->archetypes[i]) {
+            tID = i;
+            break;
+        }
+    }
+    if (tID)
+        return (tID);
 
-//     // 1- Add new components_bytype at [tID]
-//     if ((world->num_archetypes + 1) >= world->len_archetypes)
-//         tnecs_growArray_archetype(world);
-//     world->archetypes[world->num_archetypes++] = archetype_new;
-//     tID = tnecs_archetypeid(world, archetype_new);
-//     TNECS_DEBUG_ASSERT(tID == (world->num_archetypes - 1));
-//     world->num_components_bytype[tID] = num_components;
+    // 1- Add new components_bytype at [tID]
+    if ((world->num_archetypes + 1) >= world->len_archetypes)
+        tnecs_growArray_archetype(world);
+    world->archetypes[world->num_archetypes++] = archetype_new;
+    tID = tnecs_archetypeid(world, archetype_new);
+    TNECS_DEBUG_ASSERT(tID == (world->num_archetypes - 1));
+    world->num_components_bytype[tID] = num_components;
 
-//     // 2- Add arrays to components_bytype[tID] for each component
-//     tnecs_component_array_new(world, num_components, archetype_new);
+    // 2- Add arrays to components_bytype[tID] for each component
+    tnecs_component_array_new(world, num_components, archetype_new);
 
-//     // 3- Add all components to components_idbytype
-//     tnecs_component component_id_toadd, component_type_toadd;
-//     tnecs_component archetype_reduced = archetype_new, archetype_added = 0;
-//     size_t bytesize1 =  sizeof(**world->components_idbytype);
-//     size_t bytesize2 =  sizeof(**world->components_orderbytype);
-//     world->components_idbytype[tID]     = calloc(num_components,      bytesize1);
-//     TNECS_CHECK_ALLOC(world->components_idbytype[tID]);
-//     world->components_orderbytype[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize2);
-//     TNECS_CHECK_ALLOC(world->components_orderbytype[tID]);
+    // 3- Add all components to components_idbytype
+    tnecs_component component_id_toadd, component_type_toadd;
+    tnecs_component archetype_reduced = archetype_new, archetype_added = 0;
+    size_t bytesize1 =  sizeof(**world->components_idbytype);
+    size_t bytesize2 =  sizeof(**world->components_orderbytype);
+    world->components_idbytype[tID]     = calloc(num_components,      bytesize1);
+    TNECS_CHECK_ALLOC(world->components_idbytype[tID]);
+    world->components_orderbytype[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize2);
+    TNECS_CHECK_ALLOC(world->components_orderbytype[tID]);
 
-//     size_t i = 0;
-//     while (archetype_reduced) {
-//         archetype_reduced &= (archetype_reduced - 1);
+    size_t i = 0;
+    while (archetype_reduced) {
+        archetype_reduced &= (archetype_reduced - 1);
 
-//         component_type_toadd = (archetype_reduced + archetype_added) ^ archetype_new;
-//         archetype_added      += component_type_toadd;
-//         component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+        component_type_toadd = (archetype_reduced + archetype_added) ^ archetype_new;
+        archetype_added      += component_type_toadd;
+        component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
-//         world->components_idbytype[tID][i]      = component_id_toadd;
+        world->components_idbytype[tID][i]      = component_id_toadd;
 
-//         world->components_orderbytype[tID][component_id_toadd] = i++;
-//     }
+        world->components_orderbytype[tID][component_id_toadd] = i++;
+    }
 
 //     // 4- Check archetypes.
 //     for (size_t i = 1 ; i < world->num_archetypes; i++) {

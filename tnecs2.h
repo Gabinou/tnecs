@@ -219,7 +219,7 @@ typedef struct tnecs_world {
     tnecs_components_arena   components;
     
     tnecs_arena_array entities_open;
-    tnecs_arena_array system_torun;
+    tnecs_arena_array systems_torun;
     
     b32 reuse_entities;
 
