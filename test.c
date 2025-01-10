@@ -210,10 +210,10 @@ void SystemMovePhase1(struct tnecs_system_input *in_input) {
     // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int ent = 0; ent < in_input->num_entities; ent++) {
         // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
-        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+        // printf("in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
         tnecs_entity current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
         lok(current_ent);
-        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
+        lok(in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
             == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
         lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world,
                                                              in_input->world->entity_typeflags[current_ent]));
@@ -229,12 +229,12 @@ void SystemMovePhase4(struct tnecs_system_input *in_input) {
     for (int ent = 0; ent < in_input->num_entities; ent++) {
         tnecs_entity current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
         lok(current_ent);
-        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
+        lok(in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
             == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
         lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world,
                                                              in_input->world->entity_typeflags[current_ent]));
         // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
-        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+        // printf("in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
     }
 
 }
@@ -246,11 +246,11 @@ void SystemMovePhase2(struct tnecs_system_input *in_input) {
     for (int ent = 0; ent < in_input->num_entities; ent++) {
         tnecs_entity current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
         lok(current_ent);
-        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
+        lok(in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
             == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
         lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world,
                                                              in_input->world->entity_typeflags[current_ent]));        // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
-        // printf("in_inputf->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+        // printf("in_inputf->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
         // in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]
     }
 }
@@ -276,11 +276,11 @@ void SystemMove(struct tnecs_system_input *in_input) {
     for (int ent = 0; ent < in_input->num_entities; ent++) {
         tnecs_entity current_ent = in_input->world->entities_bytype[in_input->entity_typeflag_id][ent];
         lok(current_ent);
-        lok(in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
+        lok(in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]
             == in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
         lok(in_input->entity_typeflag_id == tnecs_typeflagid(in_input->world,
                                                              in_input->world->entity_typeflags[current_ent]));        // printf("in_input->world->entities_bytype[in_input->entity_typeflag_id][ent] %d\n", in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]);
-        // printf("in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
+        // printf("in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]] %d\n", in_input->world->entities.id[in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]]);
 
         // in_input->world->entities_bytype[in_input->entity_typeflag_id][ent]
         p[ent].x = p[ent].x + v[ent].vx;
@@ -543,25 +543,25 @@ void tnecs_test_entity_creation() {
     tnecs_entity_destroy(test_world, Silou);
     lok(test_world->entities_open[0] == Silou);
     lok(test_world->num_entities_open == 1);
-    lok(!test_world->entities[Silou]);
+    lok(!test_world->entities.id[Silou]);
     test_world->reuse_entities = true;
     tnecs_entity_create(test_world);
-    lok(test_world->entities[Silou]);
+    lok(test_world->entities.id[Silou]);
 
     tnecs_entity Servil = 900;
     lok(test_world->len_entities < Servil);
     TNECS_ENTITY_CREATE(test_world, Servil);
-    lok(Servil == test_world->entities[Servil]);
+    lok(Servil == test_world->entities.id[Servil]);
     lok(test_world->len_entities > Servil);
 
     tnecs_entity Rayan = tnecs_entity_create_wID(test_world, 666);
     lok(test_world->len_entities > Rayan);
-    lok(Rayan == test_world->entities[Rayan]);
-    lok(!test_world->entities[Rayan + 1]);
-    lok(!test_world->entities[Rayan - 1]);
+    lok(Rayan == test_world->entities.id[Rayan]);
+    lok(!test_world->entities.id[Rayan + 1]);
+    lok(!test_world->entities.id[Rayan - 1]);
 
     tnecs_entity Pierre = TNECS_ENTITY_CREATE(test_world, 667);
-    lok(Pierre == test_world->entities[Pierre]);
+    lok(Pierre == test_world->entities.id[Pierre]);
 
     TNECS_ENTITIES_CREATE(test_world, 100);
     lok(test_world->entity_next == 104);
@@ -572,8 +572,8 @@ void tnecs_test_entity_creation() {
 
     tnecs_entity in_ents[2] = {3001, 3002};
     TNECS_ENTITIES_CREATE(test_world, 2, in_ents);
-    lok(test_world->entities[in_ents[0]] == in_ents[0]);
-    lok(test_world->entities[in_ents[1]] == in_ents[1]);
+    lok(test_world->entities.id[in_ents[0]] == in_ents[0]);
+    lok(test_world->entities.id[in_ents[1]] == in_ents[1]);
 
     tnecs_world *test_world3 = NULL;
     tnecs_world_genesis(&test_world3);
@@ -1114,7 +1114,7 @@ void tnecs_test_grow() {
     for (size_t i = 0; i < grow_world->len_entities; i++) {
         lok(grow_world->entity_typeflags[i] == 0);
         lok(grow_world->entity_orders[i] == 0);
-        lok(grow_world->entities[i] == 0);
+        lok(grow_world->entities.id[i] == 0);
     }
 
     for (size_t i = 0; i < grow_world->len_typeflags; i++) {
@@ -1140,7 +1140,7 @@ void tnecs_test_grow() {
     for (size_t i = 0; i < grow_world->len_entities; i++) {
         lok(grow_world->entity_typeflags[i] == 0);
         lok(grow_world->entity_orders[i] == 0);
-        lok(grow_world->entities[i] == 0);
+        lok(grow_world->entities.id[i] == 0);
     }
 
     size_t test_typeflagid = 0;
@@ -1272,7 +1272,7 @@ void tnecs_benchmarks() {
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
         tnecs_entities2[i] = TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2, Unit2);
-        TNECS_DEBUG_ASSERT(bench_world->entities[tnecs_entities2[i]] == tnecs_entities2[i]);
+        TNECS_DEBUG_ASSERT(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
     }
     TNECS_DEBUG_ASSERT(bench_world->len_entities_bytype[3] == 32768);
     TNECS_DEBUG_ASSERT(bench_world->num_entities_bytype[3] == 19999);
@@ -1283,7 +1283,7 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     for (size_t i = 0; i < ITERATIONS; i++) {
-        TNECS_DEBUG_ASSERT(bench_world->entities[tnecs_entities2[i]] == tnecs_entities2[i]);
+        TNECS_DEBUG_ASSERT(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
         tnecs_entity_destroy(bench_world, tnecs_entities2[i]);
         TNECS_DEBUG_ASSERT(bench_world->num_entities_bytype[3] == (19999 - i - 1));
 
