@@ -162,6 +162,15 @@ typedef struct tnecs_chunk {
     tnecs_byte       mem[TNECS_CHUNK_COMPONENTS_BYTESIZE];
 } tnecs_chunk;
 
+tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype);
+size_t  *tnecs_chunk_BytesizeArr( const tnecs_chunk *chunk);
+size_t   tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk);
+void    *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder);
+b32      tnecs_chunk_Full(const tnecs_chunk *chunk);
+
+size_t tnecs_EntityOrder_to_ChunkOrder(    const tnecs_chunk *chunk, const size_t entity_order);
+size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order);
+
 typedef struct tnecs_array {
     void    *arr;
     size_t   num;
