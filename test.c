@@ -328,8 +328,8 @@ void tnecs_test_utilities() {
     lok(TNECS_COMPONENT_ID2TYPE(5) == 16);
     lok(TNECS_COMPONENT_ID2TYPE(6) == 32);
 
-    lok(TNECS_archetype_IS_ARCHETYPE(4, (4 + 8 + 16)));
-    lok(!TNECS_archetype_IS_ARCHETYPE(2, (4 + 8 + 16)));
+    lok(TNECS_ARCHETYPE_IS_SUBTYPE(4, (4 + 8 + 16)));
+    lok(!TNECS_ARCHETYPE_IS_SUBTYPE(2, (4 + 8 + 16)));
 
     lok(setBits_KnR_uint64_t(1) == 1);
     lok(setBits_KnR_uint64_t(2) == 1);
