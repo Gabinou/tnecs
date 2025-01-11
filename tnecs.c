@@ -603,7 +603,6 @@ b32 tnecs_entities_open_reuse(tnecs_world *world) {
     // Check for open entities. If not in entities_open, add them.
 
     for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities.num; i++) {
-        
         if ((world->entities.id[i] == TNECS_NULL) && !tnecs_entity_isOpen(world, i)) {
             tnecs_growArray_entities_open(world);
             tnecs_entity *arr = world->entities_open.arr; 
@@ -614,11 +613,14 @@ b32 tnecs_entities_open_reuse(tnecs_world *world) {
 };
 
 b32 tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
+    if (entity <= TNECS_NULL) {
+        return(0);
+    }
 
     tnecs_entity *open_arr = world->entities_open.arr; 
    
-    for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities_open.num++; i++) {
-        if (open_arr[i] == entity){
+    for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities_open.num; i++) {
+        if (open_arr[i] == entity) {
             return(1);
         }
     }
@@ -628,6 +630,7 @@ b32 tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
 
 b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     if (entity <= TNECS_NULL) {
+        return(1);
     }
 
     if (world->entities.id[entity] <= TNECS_NULL) {

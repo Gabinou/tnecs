@@ -545,8 +545,9 @@ void tnecs_test_entity_creation() {
     lok(test_world->entities_open.num == 0);
     lok(!test_world->entities.id[Silou]);
     tnecs_entities_open_reuse(test_world);
-    lok(test_world->entities_open.num == 2);
-    lok(open_arr[1] == Silou);
+    lok(test_world->entities_open.num == 1);
+    lok(open_arr[0] != TNECS_NULL);
+    lok(open_arr[0] == Silou);
     tnecs_entity_create(test_world);
     lok(test_world->entities.id[Silou]);
 
