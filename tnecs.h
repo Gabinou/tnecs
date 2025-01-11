@@ -308,6 +308,7 @@ tnecs_entity tnecs_entities_create_wID(tnecs_world *w, size_t num,
                                        tnecs_entity *ents);
 tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *w, size_t argnum, ...);
 b32 tnecs_entities_open_queue(tnecs_world *w);
+b32 tnecs_entity_isOpen(tnecs_world *w, tnecs_entity ent);
 
 b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 
@@ -414,12 +415,13 @@ void *tnecs_arrdel(         void *arr, size_t elem,     size_t len,     size_t b
 void *tnecs_realloc(        void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
 void *tnecs_arrdel_scramble(void *arr, size_t elem,     size_t len,     size_t bytesize);
 
-b32 tnecs_growArray_phase(      tnecs_world *w);
-b32 tnecs_growArray_torun(      tnecs_world *w);
-b32 tnecs_growArray_bytype(     tnecs_world *w, size_t archetype_id);
-b32 tnecs_growArray_entity(     tnecs_world *w);
-b32 tnecs_growArray_system(     tnecs_world *w);
-b32 tnecs_growArray_archetype(  tnecs_world *w);
+b32 tnecs_growArray_phase(          tnecs_world *w);
+b32 tnecs_growArray_torun(          tnecs_world *w);
+b32 tnecs_growArray_bytype(         tnecs_world *w, size_t archetype_id);
+b32 tnecs_growArray_entity(         tnecs_world *w);
+b32 tnecs_growArray_system(         tnecs_world *w);
+b32 tnecs_growArray_archetype(      tnecs_world *w);
+b32 tnecs_growArray_entities_open(  tnecs_world *w);
 
 /****************** STRING HASHING ****************/
 uint64_t tnecs_hash_djb2(const char *str);  // slightly faster

@@ -584,10 +584,46 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     return (new_entity);
 }
 
-b32 tnecs_entities_open_queue(tnecs_world *w) {
+
+b32 tnecs_growArray_entities_open(tnecs_world *world) {
+        /* Realloc entities_open if too many */
+        if ((world->entities_open.num + 1) >= world->entities_open.len) {
+            size_t old_len              = world->entities_open.len;
+            size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+            size_t bytesize             = sizeof(tnecs_entity);
+            world->entities_open.len    = new_len;
+
+            world->entities_open.arr = tnecs_realloc(world->entities_open.arr, old_len, new_len, bytesize);
+            TNECS_CHECK_ALLOC(world->entities_open.arr);
+        }
+}
+
+b32 tnecs_entities_open_queue(tnecs_world *world) {
     // Check for open entities. If not in entities_open, add them.
+
+    for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities.num; i++) {
+        
+        if (world->entities[i] == TNECS_NULL) && !tnecs_entity_isOpen(world, i) {
+            tnecs_entity *arr = world->entities_open.arr; 
+            arr[world->entities_open.num++] = entity;   
+        }
+
+    }
+
     return(1);
 };
+
+b32 tnecs_entity_isOpen(tnecs_world *world, tnecs_entity ent) {
+
+    tnecs_entity *open_arr = world->entities_open.arr; 
+   
+    for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities_open.num++; i++) {
+        if (open_arr[i] == entity){
+            return(1);
+        }
+    }
+    return(0);
+}
 
 
 b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
@@ -619,16 +655,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     world->entities.archetypes[entity] = TNECS_NULL;
 
     if (world->reuse_entities) {
-        /* Realloc entities_open if too many */
-        if ((world->entities_open.num + 1) >= world->entities_open.len) {
-            size_t old_len              = world->entities_open.len;
-            size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-            size_t bytesize             = sizeof(tnecs_entity);
-            world->entities_open.len    = new_len;
 
-            world->entities_open.arr = tnecs_realloc(world->entities_open.arr, old_len, new_len, bytesize);
-            TNECS_CHECK_ALLOC(world->entities_open.arr);
-        }
         /* Add deleted entity to open entities */
         tnecs_entity *arr = world->entities_open.arr; 
         arr[world->entities_open.num++] = entity;
