@@ -624,8 +624,8 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     /* Add deleted entity to open entities */
     tnecs_entity *arr =world->entities_open.arr; 
     arr[world->entities_open.num++] = entity;
-    TNECS_DEBUG_ASSERT(world->entities.id[entity]            == TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]    == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(world->entities.id[entity]           == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]   == TNECS_NULL);
     TNECS_DEBUG_ASSERT(world->entities.orders[entity]       == TNECS_NULL);
     TNECS_DEBUG_ASSERT(world->entities.orders[entity_order] != entity);
     return (world->entities.id[entity] == TNECS_NULL);
@@ -761,17 +761,17 @@ b32 tnecs_entitiesbytype_migrate(tnecs_world *world, tnecs_entity entity,
                                     tnecs_component archetype_old, tnecs_component archetype_new) {
     /* Migrate entities into correct bytype array */
     TNECS_CHECK_CALL(tnecs_entitiesbytype_del(world, entity, archetype_old));
-    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]  == TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities.orders[entity]     == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]   == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(world->entities.orders[entity]       == TNECS_NULL);
     TNECS_CHECK_CALL(tnecs_entitiesbytype_add(world, entity, archetype_new));
 
     /* Checks */
     size_t tID_new      = tnecs_archetypeid(world, archetype_new);
     size_t order_new    = world->entities.orders[entity];
-    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]            == archetype_new);
+    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]         == archetype_new);
     TNECS_DEBUG_ASSERT(world->bytype.num_entities[tID_new] - 1    == order_new);
     TNECS_DEBUG_ASSERT(world->bytype.entities[tID_new][order_new] == entity);
-    return (true);
+    return (1);
 }
 
 b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
@@ -865,8 +865,8 @@ b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
     size_t old_comp_num = world->bytype.num_components[old_tID];
     for (size_t corder = 0; corder < old_comp_num; corder++) {
         size_t current_component_id = world->bytype.components_id[old_tID][corder];
-        tnecs_component_array *old_array = &world->bytype.components[old_tID][corder];
-        tnecs_byte *comp_ptr =             old_array->components;
+        tnecs_component_array   *old_array  = &world->bytype.components[old_tID][corder];
+        tnecs_byte              *comp_ptr   = old_array->components;
         TNECS_DEBUG_ASSERT(comp_ptr != NULL);
 
         /* Scramble components too */
