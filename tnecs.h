@@ -37,9 +37,9 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <math.h>
-// #ifndef log2 // tcc SUCKS and DOES NOT define log2
-//     #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
-// #endif
+#ifndef log2 // tcc SUCKS and DOES NOT define log2
+    #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,7 +86,6 @@ typedef void (*tnecs_system_ptr)(struct tnecs_system_input *);
 
 /******************* CONSTANT DEFINITIONS *******************/
 enum TNECS {
-    // entity, component, system, archetype: 0 is NULL
     TNECS_NULL                  =         0,
     TNECS_NULLSHIFT             =         1,
     TNECS_INIT_ENTITY_LEN       =       128,
@@ -98,7 +97,7 @@ enum TNECS {
     TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 8 + 1,
     TNECS_OPEN_IDS_BUFFER       =       128,
     TNECS_CHUNK_BYTESIZE        =     16384,
-    TNECS_ARRAY_GROWTH_FACTOR   =         2 // in general 2 or 1.5
+    TNECS_ARRAY_GROWTH_FACTOR   =         2
 };
 
 /********************* UTILITY MACROS***********************/
@@ -107,8 +106,8 @@ enum TNECS {
 #define TNECS_CONCATENATE( arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
 #define TNECS_CONCATENATE2(arg1, arg2) arg1##arg2
-#define TNECS_archetype_HAS_TYPE(archetype, type) ((archetype & type) > 0)
-#define TNECS_archetype_IS_ARCHETYPE(archetype1, archetype2) ((archetype1 & archetype2) == archetype1) // checks if archetype2 is a archetype of archetype1
+#define TNECS_ARCHETYPE_HAS_TYPE(archetype, type) ((archetype & type) > 0)
+#define TNECS_ARCHETYPE_IS_SUBTYPE(archetype1, archetype2) ((archetype1 & archetype2) == archetype1) 
 
 /*********** HACKY DISTRIBUTION FOR VARIADIC MACROS *********/
 // Distribution as in algebra: a(x+b) -> ax + ab
@@ -248,10 +247,8 @@ typedef struct tnecs_world {
     b32 reuse_entities;
 } tnecs_world;
 
-
-
 typedef struct tnecs_system_input {
-    // Note: Systems run over entity_order_bytype for entity_order_bytype
+    // Note: Systems run over entity_order_bytype
     tnecs_world     *world;
     tnecs_ns         deltat;
     tnecs_component  system_archetype;
@@ -260,14 +257,15 @@ typedef struct tnecs_system_input {
     void            *data;
 } tnecs_system_input;
 
-// 1D array of 1 component.
 typedef struct tnecs_component_array {
+    // 1D array of 1 component.
     tnecs_component  type;
     size_t           num_components;
     size_t           len_components;
-    // problems: 
+    // Problems: 
     //      - components array is not in structure
     //      - need 2 allocs: for struct, and then array
+    // Solution: Chunks 
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
 
@@ -281,7 +279,7 @@ b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, 
 /******************* SYSTEM FUNCTIONS ********************/
 b32 tnecs_system_run(tnecs_world *w, size_t id, tnecs_ns deltat, void *data);
 b32 tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
-                             tnecs_component ar, tnecs_ns deltat, void *data);
+                            tnecs_component ar, tnecs_ns deltat, void *data);
 
 /************* REGISTRATION *********************/
 tnecs_component tnecs_register_component(tnecs_world *w,
@@ -309,6 +307,7 @@ tnecs_entity tnecs_entities_create(tnecs_world *w, size_t num);
 tnecs_entity tnecs_entities_create_wID(tnecs_world *w, size_t num,
                                        tnecs_entity *ents);
 tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *w, size_t argnum, ...);
+b32 tnecs_entity_open_queue(tnecs_world *w);
 
 b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 
