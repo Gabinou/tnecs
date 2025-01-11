@@ -612,6 +612,11 @@ b32 tnecs_entities_open_reuse(tnecs_world *world) {
     return(1);
 };
 
+b32 tnecs_entities_open_flush(tnecs_world *w) {
+    // Get rid of all entities in entities_open.
+    world->entities_open.num = 0;
+}
+
 b32 tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
     if (entity <= TNECS_NULL) {
         return(0);
@@ -641,9 +646,9 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     }
 
     /* Preliminaries */
-    tnecs_component archetype =  world->entities.archetypes[entity];
-    size_t tID =                  TNECS_ARCHETYPEID(world, archetype);
-    size_t entity_order =         world->entities.orders[entity];
+    tnecs_component archetype   = world->entities.archetypes[entity];
+    size_t tID                  = TNECS_ARCHETYPEID(world, archetype);
+    size_t entity_order         = world->entities.orders[entity];
     TNECS_DEBUG_ASSERT(world->bytype.num_entities[tID] > TNECS_NULL);
     /* Delete components */
     tnecs_component_del(world, entity, archetype);
