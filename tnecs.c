@@ -1311,21 +1311,21 @@ tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component arc
         
         // Adding component bytesize to chunk header
         cumul_bytesize += world->components.bytesizes[component_id];
-        mem_header[chunk.components_num++] = cumul_bytesize; 
+        mem_header[chunk.num_components++] = cumul_bytesize; 
     }
 
-    chunk.entities_len = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
+    chunk.len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
     return(chunk);
 }
 
 // Order of entity in entities_bytype -> index of chunk components are stored in
 size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order) {
-    return(entity_order / chunk->entities_len);
+    return(entity_order / chunk->len_entities);
 }
 
 // Order of entity in entities_bytype -> order of components in current ArchetypeChunk
 size_t tnecs_EntityOrder_to_ChunkOrder(const tnecs_chunk *chunk, const size_t entity_order) {
-    return(entity_order % chunk->entities_len);
+    return(entity_order % chunk->len_entities);
 }
 
 size_t *tnecs_chunk_BytesizeArr(const tnecs_chunk *chunk) {
@@ -1333,17 +1333,17 @@ size_t *tnecs_chunk_BytesizeArr(const tnecs_chunk *chunk) {
 }
 size_t  tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk) {
     size_t *header = tnecs_chunk_BytesizeArr(chunk);
-    if (chunk->components_num <= 0) {
+    if (chunk->num_components <= 0) {
         return(0);
     }
-    return(header[chunk->components_num - 1]);
+    return(header[chunk->num_components - 1]);
 }
 
 void *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder) {
     size_t *header              = tnecs_chunk_BytesizeArr(chunk);
     size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
-    size_t header_offset        = chunk->components_num * sizeof(size_t);
-    size_t components_offset    = corder * cumul_bytesize * chunk->entities_len;
+    size_t header_offset        = chunk->num_components * sizeof(size_t);
+    size_t components_offset    = corder * cumul_bytesize * chunk->len_entities;
 
     tnecs_byte *bytemem = chunk->mem;
     return(bytemem + header_offset + components_offset);

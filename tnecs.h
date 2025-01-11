@@ -151,11 +151,11 @@ enum TNECS {
 // - Each component has an array inside the chunk.
 // - Each chunk is 16kB total.
 // - Entity order determines if chunk is full
-#define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t) - sizeof(tnecs_component))
+#define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t))
 
 typedef struct tnecs_chunk {
-    size_t           components_num; 
-    size_t           entities_len; 
+    size_t           num_components; 
+    size_t           len_entities; 
 
     // Raw memory chunk:
     //  - Header: cumulative bytesizes: components_num * size_t.
