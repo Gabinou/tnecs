@@ -366,8 +366,8 @@ b32 tnecs_entitiesbytype_migrate(tnecs_world *w, tnecs_entity entity,
                                     tnecs_component old_type, tnecs_component new_type);
 
 b32 tnecs_component_add(tnecs_world *w, tnecs_component flag);
-b32 tnecs_component_copy(tnecs_world *w, tnecs_entity entity,
-                          tnecs_component old_flag, tnecs_component new_flag);
+b32 tnecs_component_copy(tnecs_world *w, const tnecs_entity entity,
+                        const tnecs_component old_flag, const tnecs_component new_flag);
 b32 tnecs_component_del(tnecs_world *w, tnecs_entity entity,
                          tnecs_component old_flag);
 b32 tnecs_component_migrate(tnecs_world *w, tnecs_entity entity,
