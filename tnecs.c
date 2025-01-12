@@ -349,7 +349,7 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
     world->systems.names[system_id] = malloc(strlen(name) + 1);
     TNECS_CHECK_ALLOC(world->systems.names[system_id]);
 
-    tnecs_hash hash                 = tnecs_hash_djb2(name);
+    tnecs_hash hash                 = TNECS_HASH(name);
     strncpy(world->systems.names[system_id], name, strlen(name) + 1);
 
     /* Register new phase if didn't exist */
@@ -386,7 +386,7 @@ tnecs_component tnecs_register_component(tnecs_world    *world,
 
     /* Registering */
     tnecs_component new_component_id                = world->components.num++;
-    world->components.hashes[new_component_id]      = tnecs_hash_djb2(name);
+    world->components.hashes[new_component_id]      = TNECS_HASH(name);
     tnecs_component new_component_flag              = TNECS_COMPONENT_ID2TYPE(new_component_id);
     world->components.bytesizes[new_component_id] = bytesize;
 
@@ -988,7 +988,7 @@ b32 tnecs_system_order_switch(tnecs_world *world, tnecs_phase phase,
 /************************ UTILITY FUNCTIONS/MACROS ***************************/
 size_t tnecs_component_name2id(tnecs_world *world,
                                const char *name) {
-    return (tnecs_component_hash2id(world, tnecs_hash_djb2(name)));
+    return (tnecs_component_hash2id(world, TNECS_HASH(name)));
 }
 
 size_t tnecs_component_hash2id(tnecs_world *world, tnecs_hash hash) {
@@ -1057,7 +1057,7 @@ tnecs_component tnecs_component_hash2type(tnecs_world *world, tnecs_hash hash) {
 }
 
 size_t tnecs_system_name2id(tnecs_world *world, const char *name) {
-    tnecs_hash hash = tnecs_hash_djb2(name);
+    tnecs_hash hash = TNECS_HASH(name);
     size_t found = 0;
     for (size_t i = 0; i < world->systems.num; i++) {
         if (world->systems.hashes[i] == hash) {
@@ -1274,30 +1274,6 @@ uint64_t tnecs_hash_djb2(const char *str) {
     int32_t str_char;
     while ((str_char = *str++))
         hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
-    return (hash);
-}
-
-uint64_t tnecs_hash_sdbm(const char *str) {
-    /* sdbm hashing algorithm by Dan Bernstein.
-    * Description: This algorithm was created for sdbm (a public-domain
-    * reimplementation of ndbm) database library. It was found to do
-    * well in scrambling bits, causing better distribution of the
-    * keys and fewer splits. It also happens to be a good general hashing
-    * function with good distribution. The actual function is
-    *hash(i) = hash(i - 1) * 65599 + str[i]; what is included below
-    * is the faster version used in gawk. [* there is even a faster,
-    * duff-device version] the magic constant 65599 was picked out of
-    * thin air while experimenting with different constants, and turns
-    * out to be a prime. this is one of the algorithms used in
-    * berkeley db (see sleepycat) and elsewhere.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-
-    uint64_t hash = 0;
-    uint32_t str_char;
-    while ((str_char = *str++)) {
-        hash = str_char + (hash << 6) + (hash << 16) - hash;
-    }
     return (hash);
 }
 

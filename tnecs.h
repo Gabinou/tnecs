@@ -326,7 +326,6 @@ b32 tnecs_entity_isOpen(tnecs_world *w, tnecs_entity ent);
 
 b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 
-// Overloaded macros: -> TNECS_ENTITIES_CREATE, TNECS_ADD_COMPONENT
 #define TNECS_ENTITY_EXISTS(world, index) (world->entities[index] > TNECS_NULL)
 
 #define TNECS_ENTITY_CREATE(world) tnecs_entity_create(world)
@@ -434,8 +433,7 @@ b32 tnecs_grow_system_byphase(  tnecs_world *w, const tnecs_phase phase);
 b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID, const size_t corder);
 
 /****************** STRING HASHING ****************/
-uint64_t tnecs_hash_djb2(const char *str);  // slightly faster
-uint64_t tnecs_hash_sdbm(const char *str);
+uint64_t tnecs_hash_djb2(const char *str);
 uint64_t tnecs_hash_combine(uint64_t h1, uint64_t h2);
 #define TNECS_HASH(name) tnecs_hash_djb2(name)
 
