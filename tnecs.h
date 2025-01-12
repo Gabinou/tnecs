@@ -224,19 +224,19 @@ typedef struct tnecs_archetype {
     size_t num;
     size_t len;
 
-    tnecs_component  *id;                       // [archetype_id]
+    tnecs_component  *id;                   // [archetype_id]
 
-    size_t           *num_components;           // [archetype_id]
-    size_t           *len_entities;             // [archetype_id]
-    size_t           *num_entities;             // [archetype_id]
-    size_t           *num_archetype_ids;        // [archetype_id]
+    size_t           *num_components;       // [archetype_id]
+    size_t           *len_entities;         // [archetype_id]
+    size_t           *num_entities;         // [archetype_id]
+    size_t           *num_archetype_ids;    // [archetype_id]
 
-    size_t           **archetype_id;            // [archetype_id][archetype_id_order]
-    tnecs_entity     **entities;                // [archetype_id][entity_order_bytype]
-    size_t           **components_order;        // [archetype_id][component_id]
-    tnecs_component  **components_id;           // [archetype_id][component_order_bytype]
-    tnecs_component_array **components;         // [archetype_id][component_order_bytype]
-    tnecs_chunk **chunks_bytype;             // [archetype_id][chunk_order_bytype][component]
+    size_t           **archetype_id;        // [archetype_id][archetype_id_order]
+    tnecs_entity     **entities;            // [archetype_id][entity_order_bytype]
+    size_t           **components_order;    // [archetype_id][component_id]
+    tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
+    tnecs_component_array **components;     // [archetype_id][component_order_bytype]
+    tnecs_chunk      **chunks;              // [archetype_id][chunk_order_bytype]
 
 } tnecs_archetype;
 
