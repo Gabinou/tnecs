@@ -37,6 +37,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <math.h>
+
 #ifndef log2 // tcc SUCKS and DOES NOT define log2
     #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
 #endif
@@ -68,9 +69,8 @@ extern "C" {
     } while (0)
 
 /******************* TYPE DEFINITIONS *******************/
-typedef unsigned long long int  tnecs_entity;       // simple 64 bit integer
-typedef tnecs_entity            tnecs_component;    // 64 bit flags -> MAX 63 components
-typedef long long int           i64;                // 64 bit flags -> MAX 63 components
+typedef unsigned long long int  tnecs_entity;       // 64 bit int
+typedef tnecs_entity            tnecs_component;    // 64 bit flag
 typedef uint64_t                tnecs_hash;
 typedef uint32_t                tnecs_phase;
 typedef uint64_t                tnecs_ns;
