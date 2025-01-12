@@ -1262,10 +1262,11 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
 }
 
 /********************** CHUNKS *********************/
-tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype) {
+tnecs_chunk tnecs_chunk_Init(tnecs_world *world, const tnecs_component archetype) {
     // Chunk init
     tnecs_chunk chunk = {0};
     size_t *mem_header  = tnecs_chunk_BytesizeArr(&chunk);
+    size_t tID = tnecs_archetypeid(world, archetype);
 
     // Adding all component bytesizes in archetype to chunk
     tnecs_component component_id    = 0;
@@ -1287,6 +1288,7 @@ tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component arc
     }
 
     TNECS_DEBUG_ASSERT(cumul_bytesize > 0);
+    TNECS_DEBUG_ASSERT(chunk.num_components == world->bytype.num_components[tID]);
 
     chunk.len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
     return(chunk);
