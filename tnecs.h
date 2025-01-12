@@ -91,6 +91,7 @@ enum TNECS {
     TNECS_INIT_PHASE_LEN        =         8,
     TNECS_INIT_COMPONENT_LEN    =         8,
     TNECS_INIT_SYSTEM_LEN       =        16,
+    TNECS_INIT_ARCHETYPE_LEN    =        16,
     TNECS_COMPONENT_CAP         =        64,
     TNECS_ENTITIES_CAP          = 100000000,
     TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 8 + 1,
@@ -235,8 +236,7 @@ typedef struct tnecs_archetype {
     size_t           **components_order;        // [archetype_id][component_id]
     tnecs_component  **components_id;           // [archetype_id][component_order_bytype]
     tnecs_component_array **components;         // [archetype_id][component_order_bytype]
-    // TODO use chunks instead of tnecs_component_array 
-    // tnecs_chunk **chunks_bytype;             // [archetype_id][chunk_order_bytype][component]
+    tnecs_chunk **chunks_bytype;             // [archetype_id][chunk_order_bytype][component]
 
 } tnecs_archetype;
 
@@ -429,6 +429,7 @@ b32 tnecs_grow_archetype(       tnecs_world *w);
 b32 tnecs_grow_entities_open(   tnecs_world *w);
 b32 tnecs_grow_system_byphase(  tnecs_world *w, const tnecs_phase phase);
 b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID, const size_t corder);
+b32 tnecs_grow_chunks( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID, const size_t corder);
 
 /****************** STRING HASHING ****************/
 tnecs_hash tnecs_hash_djb2(const char *str);

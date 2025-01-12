@@ -388,11 +388,11 @@ void tnecs_test_component_registration() {
     tnecs_world_genesis(&test_world);
     lok(test_world != NULL);
     TNECS_REGISTER_COMPONENT(test_world, Position);
-    size_t temp_comp_flag   = 1;
-    size_t temp_comp_id     = 1;
-    size_t temp_comp_order  = 0;
-    size_t temp_archetype_id = 1;
-    size_t temp_archetype    = 1;
+    size_t temp_comp_flag       = 1;
+    size_t temp_comp_id         = 1;
+    size_t temp_comp_order      = 0;
+    size_t temp_archetype_id    = 1;
+    size_t temp_archetype       = 1;
     lok(tnecs_component_hash2type(test_world, TNECS_HASH("Position")) == temp_archetype);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
