@@ -173,7 +173,6 @@ typedef struct tnecs_chunk {
     //  - Header: cumulative bytesizes: components_num * size_t.
     //  - Body:   components arrays, each: entities_len * component_bytesize.
     //            component order -> tnecs_component_order.
-
     tnecs_byte       mem[TNECS_CHUNK_COMPONENTS_BYTESIZE];
 } tnecs_chunk;
 
@@ -251,10 +250,10 @@ typedef struct tnecs_components {
 
 /*** tnecs_worlds ***/
 typedef struct tnecs_world {
-    tnecs_archetype     bytype;
     tnecs_phases        byphase;
     tnecs_system        systems;
     tnecs_entities      entities;
+    tnecs_archetype     bytype;
     tnecs_components    components;
     
     tnecs_array entities_open;
@@ -370,7 +369,7 @@ b32 tnecs_component_copy(tnecs_world *w, const tnecs_entity entity,
 b32 tnecs_component_del(tnecs_world *w, tnecs_entity entity,
                          tnecs_component old_flag);
 b32 tnecs_component_migrate(tnecs_world *w, tnecs_entity entity,
-                             tnecs_component old_flag, tnecs_component new_flag);
+                            tnecs_component old_flag, tnecs_component new_flag);
 
 b32 tnecs_component_array_new(tnecs_world *w, size_t num_components,
                                tnecs_component archetype);
@@ -434,7 +433,7 @@ b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr,
 
 /****************** STRING HASHING ****************/
 tnecs_hash tnecs_hash_djb2(const char *str);
-tnecs_hash tnecs_hash_combine(tnecs_hash h1, tnecs_hash h2);
+tnecs_hash tnecs_hash_combine(const tnecs_hash h1, const tnecs_hash h2);
 #define TNECS_HASH(name) tnecs_hash_djb2(name)
 
 /****************** SET BIT COUNTING *****************/

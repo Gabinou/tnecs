@@ -276,18 +276,6 @@ b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
     return(1);
 }
 
-b32 tnecs_grow_torun(tnecs_world *world) {
-    /* Realloc systems_torun if too many */
-        size_t old_len              = world->systems_torun.len;
-        size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-        world->systems_torun.len    = new_len;
-        size_t bytesize             = sizeof(tnecs_system_ptr);
-
-        world->systems_torun.arr    = tnecs_realloc(world->systems_torun.arr, old_len, new_len, bytesize);
-        TNECS_CHECK_ALLOC(world->systems_torun.arr);
-    return(1);
-}
-
 b32 tnecs_system_run(tnecs_world *world, size_t in_system_id,
                     tnecs_ns     deltat, void *data) {
     /* Building the systems input */
@@ -545,21 +533,6 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     return (new_entity);
 }
 
-
-b32 tnecs_grow_entities_open(tnecs_world *world) {
-    /* Realloc entities_open if too many */
-    if ((world->entities_open.num + 1) >= world->entities_open.len) {
-        size_t old_len              = world->entities_open.len;
-        size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-        size_t bytesize             = sizeof(tnecs_entity);
-        world->entities_open.len    = new_len;
-
-        world->entities_open.arr = tnecs_realloc(world->entities_open.arr, old_len, new_len, bytesize);
-        TNECS_CHECK_ALLOC(world->entities_open.arr);
-    }
-    return(1);        
-}
-
 b32 tnecs_entities_open_reuse(tnecs_world *world) {
     // Check for open entities. If not in entities_open, add them.
 
@@ -804,21 +777,6 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
 
     return(1);
 }
-
-b32 tnecs_grow_component_array(tnecs_world *world, tnecs_component_array *comp_arr, const size_t tID, const size_t corder) {
-    size_t old_len      = comp_arr->len_components;
-    size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-    size_t new_comp_num = world->bytype.num_components[tID];
-    comp_arr->len_components = new_len;
-
-    size_t cID = world->bytype.components_id[tID][corder];
-
-    size_t bytesize         = world->components.bytesizes[cID];
-    comp_arr->components    = tnecs_realloc(comp_arr->components, old_len, new_len, bytesize);
-    TNECS_CHECK_ALLOC(comp_arr->components);
-    return(1);
-}
-
 
 b32 tnecs_component_copy(tnecs_world *world, const tnecs_entity entity,
                         const tnecs_component old_archetype, const tnecs_component new_archetype) {
@@ -1085,7 +1043,7 @@ size_t tnecs_archetypeid(tnecs_world *world, tnecs_component archetype) {
     return (id);
 }
 
-/***************************** "DYNAMIC" ARRAYS ******************************/
+/******************* "DYNAMIC" ARRAYS ********************/
 void *tnecs_realloc(void *ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
     if (!ptr)
         return(0);
@@ -1116,6 +1074,48 @@ void *tnecs_arrdel_scramble(void *arr, size_t elem, size_t len, size_t bytesize)
     memset(bytes + ((len - 1) * bytesize), TNECS_NULL, bytesize);
     return (arr);
 }
+
+
+b32 tnecs_grow_torun(tnecs_world *world) {
+    /* Realloc systems_torun if too many */
+        size_t old_len              = world->systems_torun.len;
+        size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+        world->systems_torun.len    = new_len;
+        size_t bytesize             = sizeof(tnecs_system_ptr);
+
+        world->systems_torun.arr    = tnecs_realloc(world->systems_torun.arr, old_len, new_len, bytesize);
+        TNECS_CHECK_ALLOC(world->systems_torun.arr);
+    return(1);
+}
+
+b32 tnecs_grow_entities_open(tnecs_world *world) {
+    /* Realloc entities_open if too many */
+    if ((world->entities_open.num + 1) >= world->entities_open.len) {
+        size_t old_len              = world->entities_open.len;
+        size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+        size_t bytesize             = sizeof(tnecs_entity);
+        world->entities_open.len    = new_len;
+
+        world->entities_open.arr = tnecs_realloc(world->entities_open.arr, old_len, new_len, bytesize);
+        TNECS_CHECK_ALLOC(world->entities_open.arr);
+    }
+    return(1);        
+}
+
+b32 tnecs_grow_component_array(tnecs_world *world, tnecs_component_array *comp_arr, const size_t tID, const size_t corder) {
+    size_t old_len      = comp_arr->len_components;
+    size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t new_comp_num = world->bytype.num_components[tID];
+    comp_arr->len_components = new_len;
+
+    size_t cID = world->bytype.components_id[tID][corder];
+
+    size_t bytesize         = world->components.bytesizes[cID];
+    comp_arr->components    = tnecs_realloc(comp_arr->components, old_len, new_len, bytesize);
+    TNECS_CHECK_ALLOC(comp_arr->components);
+    return(1);
+}
+
 
 b32 tnecs_grow_entity(tnecs_world *world) {
     size_t olen = world->entities.len;
@@ -1247,7 +1247,7 @@ b32 tnecs_grow_system_byphase(tnecs_world *world, const tnecs_phase phase) {
     return(1);
 }
 
-b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
+b32 tnecs_grow_bytype(tnecs_world *world, const size_t tID) {
     size_t olen = world->bytype.len_entities[tID];
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
     TNECS_DEBUG_ASSERT(olen > 0);
@@ -1294,10 +1294,6 @@ b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_compone
 
     TNECS_DEBUG_ASSERT(tID > TNECS_NULL);
     TNECS_DEBUG_ASSERT(cumul_bytesize > 0);
-    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
-    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
-    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
-    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
     TNECS_DEBUG_ASSERT(chunk->num_components == world->bytype.num_components[tID]);
 
     chunk->len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
@@ -1335,7 +1331,7 @@ void *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder) {
     return(bytemem + header_offset + components_offset);
 }
 
-/****************************** STRING HASHING *******************************/
+/******************** STRING HASHING *********************/
 tnecs_hash tnecs_hash_djb2(const char *str) {
     /* djb2 hashing algorithm by Dan Bernstein.
     * Description: This algorithm (k=33) was first reported by dan bernstein many
@@ -1351,7 +1347,7 @@ tnecs_hash tnecs_hash_djb2(const char *str) {
     return (hash);
 }
 
-tnecs_hash tnecs_hash_combine(tnecs_hash h1, tnecs_hash h2) {
+tnecs_hash tnecs_hash_combine(const tnecs_hash h1, const tnecs_hash h2) {
     /* SotA: need to combine couple hashes into 1. Max 4-5? */
     /* -> Order of combination should not matter -> + or XOR  */
     /* -> Should be simple and fast -> + or XOR */
