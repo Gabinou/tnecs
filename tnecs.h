@@ -159,7 +159,6 @@ typedef struct tnecs_component_array {
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
 
-
 // tnecs_Chunk: memory reserved for all components of archetype
 // - Each component has an array inside the chunk.
 // - Each chunk is 16kB total.
