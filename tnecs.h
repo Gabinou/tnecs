@@ -95,7 +95,6 @@ enum TNECS {
     TNECS_COMPONENT_CAP         =        64,
     TNECS_ENTITIES_CAP          = 100000000,
     TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 8 + 1,
-    TNECS_OPEN_IDS_BUFFER       =       128,
     TNECS_ARRAY_GROWTH_FACTOR   =         2
 };
 
@@ -177,7 +176,7 @@ typedef struct tnecs_entities {
     // - If reuse_entities is true, they are added to entities_open, and reused.
     // - If reuse_entities is false, entities do not get added to entities_open. 
     //      - Call tnecs_entities_open_reuse to add open entities to 
-    //        entities_open and slaate them for reuse.
+    //        entities_open and slate them for reuse.
     size_t num;
     size_t len;
 
@@ -260,7 +259,7 @@ b32 tnecs_system_run(tnecs_world *w, size_t id, tnecs_ns deltat, void *data);
 b32 tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
                             tnecs_component ar, tnecs_ns deltat, void *data);
 
-/************* REGISTRATION *********************/
+/******************* REGISTRATION *******************/
 tnecs_component tnecs_register_component(tnecs_world *w, const char *name,
                                          const size_t b);
 
@@ -268,7 +267,6 @@ size_t tnecs_register_system(tnecs_world *w, const char *name,
                              tnecs_system_ptr system, tnecs_phase run_phase,
                              b32 isExclusive, size_t component_num, tnecs_component component_archetype);
 size_t tnecs_register_phase(tnecs_world *w, tnecs_phase phase);
-
 
 #define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, #pfunc, &pfunc, 0, 0, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 #define TNECS_REGISTER_SYSTEM_wPHASE(world, pfunc, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, 0,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
