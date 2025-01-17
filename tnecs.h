@@ -187,7 +187,6 @@ typedef struct tnecs_system {
     size_t num;
     size_t len;
 
-    char           **names;         // [system_id]
     tnecs_phase     *phases;        // [system_id]
     size_t          *orders;        // [system_id]
     b32             *exclusive;     // [system_id]
@@ -214,7 +213,6 @@ typedef struct tnecs_archetype {
 typedef struct tnecs_components {
     size_t           num;
     size_t           bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
-    char            *names[TNECS_COMPONENT_CAP];      // [component_id]
 } tnecs_components;
 
 
@@ -253,21 +251,20 @@ b32 tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
                             tnecs_component ar, tnecs_ns deltat, void *data);
 
 /******************* REGISTRATION *******************/
-tnecs_component tnecs_register_component(tnecs_world *w, const char *name,
-                                         const size_t b);
+tnecs_component tnecs_register_component(tnecs_world *w, const size_t b);
 
-size_t tnecs_register_system(tnecs_world *w, const char *name,
+size_t tnecs_register_system(tnecs_world *w,
                              tnecs_system_ptr system, tnecs_phase run_phase,
                              b32 isExclusive, size_t component_num, tnecs_component component_archetype);
 size_t tnecs_register_phase(tnecs_world *w, tnecs_phase phase);
 
-#define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, #pfunc, &pfunc, 0, 0, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wPHASE(world, pfunc, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, 0,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wEXCL(world, pfunc, excl, ...) tnecs_register_system(world, #pfunc, &pfunc, 0, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wPHASE_wEXCL(pfunc, phase, excl, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wEXCL_wPHASE(pfunc, excl, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, &pfunc, 0, 0, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wPHASE(world, pfunc, phase, ...) tnecs_register_system(world, &pfunc, phase, 0,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wEXCL(world, pfunc, excl, ...) tnecs_register_system(world, &pfunc, 0, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wPHASE_wEXCL(pfunc, phase, excl, ...) tnecs_register_system(world, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wEXCL_wPHASE(pfunc, excl, phase, ...) tnecs_register_system(world, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
 
-#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
+#define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, sizeof(name))
 
 /************ ENTITY MANIPULATION *************/
 /* -- Public -- */
@@ -301,10 +298,10 @@ b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity ent);
 /********************************************************/
 tnecs_entity tnecs_entity_add_components(tnecs_world *w, tnecs_entity entity,
                                          size_t num_components, tnecs_component archetype, b32 isNew);
-b32  tnecs_entity_remove_components(tnecs_world *w,
-                                    tnecs_entity entity, size_t num_components, tnecs_component archetype);
+b32  tnecs_entity_remove_components(tnecs_world *w, tnecs_entity entity,
+                                    size_t num_components, tnecs_component archetype);
 void *tnecs_get_component(tnecs_world *w, tnecs_entity entity,
-                                 tnecs_component component_id);
+                          tnecs_component component_id);
 
 b32 tnecs_entitiesbytype_add(tnecs_world *w, tnecs_entity entity,
                              tnecs_component new_type);
@@ -323,8 +320,8 @@ b32 tnecs_component_migrate(tnecs_world *w, tnecs_entity entity,
 
 b32 tnecs_component_array_new(tnecs_world *w, size_t num_components,
                               tnecs_component archetype);
-b32 tnecs_component_array_init(tnecs_world *w,
-                               tnecs_component_array *array, size_t component_id);
+b32 tnecs_component_array_init(tnecs_world *w, tnecs_component_array *array,
+                               size_t component_id);
 
 b32 tnecs_system_order_switch(tnecs_world *w, tnecs_phase phase,
                               size_t order1, size_t order2);
@@ -357,8 +354,8 @@ b32 tnecs_grow_system(          tnecs_world *w);
 b32 tnecs_grow_archetype(       tnecs_world *w);
 b32 tnecs_grow_entities_open(   tnecs_world *w);
 b32 tnecs_grow_system_byphase(  tnecs_world *w, const tnecs_phase phase);
-b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID,
-                                const size_t corder);
+b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr,
+                                const size_t tID, const size_t corder);
 
 /****************** SET BIT COUNTING *****************/
 size_t setBits_KnR_uint64_t(uint64_t flags);

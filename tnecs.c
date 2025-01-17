@@ -55,16 +55,6 @@ b32 tnecs_world_destroy(tnecs_world **world) {
             free((*world)->bytype.components[i]);
         }
     }
-    for (size_t i = TNECS_NULLSHIFT; i < (*world)->components.num; i++) {
-        if ((*world)->components.names[i] != NULL) {
-            free((*world)->components.names[i]);
-            (*world)->components.names[i] = NULL;
-        }
-    }
-    for (size_t i = 0; i < (*world)->systems.num; i++) {
-        if ((*world)->systems.names != NULL)
-            free((*world)->systems.names[i]);
-    }
     free((*world)->bytype.components);
     free((*world)->bytype.components_id);
     free((*world)->bytype.components_order);
@@ -88,7 +78,6 @@ b32 tnecs_world_destroy(tnecs_world **world) {
     free((*world)->byphase.systems_id);
     free((*world)->systems.archetypes);
     free((*world)->systems.phases);
-    free((*world)->systems.names);
     free((*world)->bytype.id);
     free(*world);
 
@@ -121,14 +110,8 @@ b32 tnecs_world_step_phase(tnecs_world *world,  tnecs_phase  phase,
 }
 
 b32 _tnecs_world_breath_components(tnecs_world *world) {
-    size_t namelen = 5;
     world->components.num                   = TNECS_NULLSHIFT;
     world->components.bytesizes[TNECS_NULL] = TNECS_NULL;
-    world->components.names[TNECS_NULL]     = malloc(namelen);
-    TNECS_CHECK_ALLOC(world->components.names[TNECS_NULL]);
-
-    /* Set name of first component */
-    strncpy(world->components.names[TNECS_NULL], "NULL\0", namelen);
     return (1);
 }
 
@@ -192,10 +175,6 @@ b32 _tnecs_world_breath_systems(tnecs_world *world) {
     world->systems.num          = TNECS_NULLSHIFT;
 
     /* Allocs */
-    size_t namelen = 5;
-    world->systems.names                = calloc(world->systems.len,
-                                                 sizeof(*world->systems.names));
-    world->systems.names[TNECS_NULL]    = malloc(namelen);
     world->systems.phases               = calloc(world->systems.len,
                                                  sizeof(*world->systems.phases));
     world->systems.orders               = calloc(world->systems.len,
@@ -206,16 +185,12 @@ b32 _tnecs_world_breath_systems(tnecs_world *world) {
                                                  sizeof(*world->systems.exclusive));
     world->systems_torun.arr            = calloc(world->systems_torun.len,  sizeof(tnecs_system_ptr));
 
-    TNECS_CHECK_ALLOC(world->systems.names);
     TNECS_CHECK_ALLOC(world->systems_torun.arr);
     TNECS_CHECK_ALLOC(world->systems.phases);
     TNECS_CHECK_ALLOC(world->systems.orders);
     TNECS_CHECK_ALLOC(world->systems.archetypes);
     TNECS_CHECK_ALLOC(world->systems.exclusive);
-    TNECS_CHECK_ALLOC(world->systems.names[TNECS_NULL]);
 
-    /* Set name of first system */
-    strncpy(world->systems.names[TNECS_NULL], "NULL\0", namelen);
     return (1);
 }
 
@@ -334,7 +309,7 @@ b32 tnecs_system_run(tnecs_world *world, size_t in_system_id,
 }
 
 /***************************** REGISTRATION **********************************/
-size_t tnecs_register_system(tnecs_world *world, const char *name,
+size_t tnecs_register_system(tnecs_world *world,
                              tnecs_system_ptr in_system, tnecs_phase phase,
                              b32 isExclusive, size_t num_components, tnecs_component components_archetype) {
     /* Compute new id */
@@ -349,12 +324,6 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
         TNECS_CHECK_CALL(tnecs_grow_system_byphase(world, phase));
 
     /* -- Actual registration -- */
-    /* Saving name */
-    world->systems.names[system_id] = calloc(1, strlen(name) + 1);
-    TNECS_CHECK_ALLOC(world->systems.names[system_id]);
-
-    strncpy(world->systems.names[system_id], name, strlen(name) + 1);
-
     /* Register new phase if didn't exist */
     if (!world->byphase.id[phase])
         TNECS_CHECK_CALL(tnecs_register_phase(world, phase));
@@ -373,7 +342,6 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
 }
 
 tnecs_component tnecs_register_component(tnecs_world    *world,
-                                         const char     *name,
                                          const size_t    bytesize) {
     /* Checks */
     if (bytesize <= 0) {
@@ -385,18 +353,10 @@ tnecs_component tnecs_register_component(tnecs_world    *world,
         return (TNECS_NULL);
     }
 
-
     /* Registering */
     tnecs_component new_component_id                = world->components.num++;
     tnecs_component new_component_flag              = TNECS_COMPONENT_ID2TYPE(new_component_id);
     world->components.bytesizes[new_component_id]   = bytesize;
-
-    /* Setting component name */
-    world->components.names[new_component_id] = calloc(1, strlen(name) + 1);
-    TNECS_CHECK_ALLOC(world->components.names[new_component_id]);
-
-    strncpy(world->components.names[new_component_id], name, strlen(name) + 1);
-    TNECS_CHECK_CALL(_tnecs_register_archetype(world, 1, new_component_flag));
     return (new_component_id);
 }
 
@@ -1089,9 +1049,6 @@ b32 tnecs_grow_system(tnecs_world *world) {
     TNECS_DEBUG_ASSERT(olen > 0);
     world->systems.len          = nlen;
 
-    world->systems.names        = tnecs_realloc(world->systems.names,     olen, nlen,
-                                                sizeof(*world->systems.names));
-    TNECS_CHECK_ALLOC(world->systems.names);
     world->systems.phases       = tnecs_realloc(world->systems.phases,    olen, nlen,
                                                 sizeof(*world->systems.phases));
     TNECS_CHECK_ALLOC(world->systems.phases);
