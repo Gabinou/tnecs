@@ -96,7 +96,6 @@ enum TNECS {
     TNECS_ENTITIES_CAP          = 100000000,
     TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 8 + 1,
     TNECS_OPEN_IDS_BUFFER       =       128,
-    TNECS_CHUNK_BYTESIZE        =     16384,
     TNECS_ARRAY_GROWTH_FACTOR   =         2
 };
 
@@ -152,29 +151,8 @@ typedef struct tnecs_component_array {
     tnecs_component  type;
     size_t           num_components;
     size_t           len_components;
-    // Problems: 
-    //      - components array is not in structure
-    //      - need 2 allocs: for struct, and then array
-    // Solution: Chunks 
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
-
-// tnecs_Chunk: memory reserved for all components of archetype
-// - Each component has an array inside the chunk.
-// - Each chunk is 16kB total.
-// - Entity order determines if chunk is full
-#define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t))
-
-typedef struct tnecs_chunk {
-    size_t           num_components; 
-    size_t           len_entities; 
-
-    // Raw memory chunk:
-    //  - Header: cumulative bytesizes: components_num * size_t.
-    //  - Body:   components arrays, each: entities_len * component_bytesize.
-    //            component order -> tnecs_component_order.
-    tnecs_byte       mem[TNECS_CHUNK_COMPONENTS_BYTESIZE];
-} tnecs_chunk;
 
 typedef struct tnecs_array {
     void    *arr;
@@ -229,14 +207,12 @@ typedef struct tnecs_archetype {
     size_t           *len_entities;         // [archetype_id]
     size_t           *num_entities;         // [archetype_id]
     size_t           *num_archetype_ids;    // [archetype_id]
-    size_t           *len_chunks;           // [archetype_id]
 
     size_t           **archetype_id;        // [archetype_id][archetype_id_order]
     tnecs_entity     **entities;            // [archetype_id][entity_order_bytype]
     size_t           **components_order;    // [archetype_id][component_id]
     tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
     tnecs_component_array **components;     // [archetype_id][component_order_bytype]
-    tnecs_chunk      **chunks;              // [archetype_id][chunk_order_bytype]
 
 } tnecs_archetype;
 
@@ -271,16 +247,6 @@ typedef struct tnecs_system_input {
     size_t           entity_archetype_id;
     void            *data;
 } tnecs_system_input;
-
-/******************** CHUNK **********************/
-b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype);
-b32 tnecs_chunk_new(tnecs_world *world, tnecs_component archetype);
-size_t  *tnecs_chunk_mem(   tnecs_chunk *chunk);
-size_t   tnecs_chunk_cumul_bytesize( tnecs_chunk *chunk);
-void    *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder);
-
-size_t tnecs_chunk_order(    tnecs_chunk *chunk, const size_t entity_order);
-size_t tnecs_chunk_component_order(tnecs_chunk *chunk, const size_t entity_order);
 
 /******************** WORLD FUNCTIONS **********************/
 b32 tnecs_world_genesis(tnecs_world **w);
@@ -430,7 +396,6 @@ b32 tnecs_grow_archetype(       tnecs_world *w);
 b32 tnecs_grow_entities_open(   tnecs_world *w);
 b32 tnecs_grow_system_byphase(  tnecs_world *w, const tnecs_phase phase);
 b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID, const size_t corder);
-b32 tnecs_grow_chunks( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID, const size_t corder);
 
 /****************** STRING HASHING ****************/
 tnecs_hash tnecs_hash_djb2(const char *str);

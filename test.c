@@ -1218,42 +1218,6 @@ void tnecs_test_grow() {
     tnecs_world_destroy(&grow_world);
 }
 
-void tnecs_test_chunk() {
-    lok(sizeof(tnecs_chunk) == TNECS_CHUNK_BYTESIZE);
-    tnecs_world *chunk_world = NULL;
-    tnecs_world_genesis(&chunk_world);
-
-    lok(TNECS_REGISTER_COMPONENT(chunk_world, Velocity));
-    lok(TNECS_REGISTER_COMPONENT(chunk_world, Position));
-    lok(TNECS_REGISTER_COMPONENT(chunk_world, Sprite));
-    lok(TNECS_REGISTER_COMPONENT(chunk_world, Unit));
-    lok(chunk_world->components.num == 5);
-    tnecs_component type1, type2, type3, type4;
-    type1 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Velocity);
-    type2 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Position);
-    type3 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Sprite);
-    type4 = TNECS_COMPONENT_NAME2TYPE(chunk_world, Unit);
-
-    tnecs_component archetype = type1 + type2;
-    tnecs_chunk chunk;
-    lok(tnecs_chunk_init(&chunk, chunk_world, archetype));
-    lok(chunk.num_components == 2);
-    size_t *bytesizes = tnecs_chunk_mem(&chunk);
-    lok(bytesizes[0] == sizeof(Velocity));
-    lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
-    lok(chunk.len_entities > 0);
-    lok(chunk.len_entities == TNECS_CHUNK_COMPONENTS_BYTESIZE / (sizeof(Velocity) + sizeof(Position)));
-
-    archetype = type1 + type2 + type3 + type4;
-    lok(tnecs_chunk_init(&chunk, chunk_world, archetype));
-    lok(chunk.num_components == 4);
-    bytesizes = tnecs_chunk_mem(&chunk);
-    lok(bytesizes[0] == sizeof(Velocity));
-    lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
-    lok(bytesizes[2] == sizeof(Velocity) + sizeof(Position) +sizeof(Sprite));
-    lok(bytesizes[3] == sizeof(Velocity) + sizeof(Position) +sizeof(Sprite) + sizeof(Unit));
-}
-
 void tnecs_benchmarks() {
     printf("world size: %ld bytes\n", sizeof(struct tnecs_world));
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
@@ -1390,7 +1354,6 @@ int main() {
     lrun("log2",       test_log2);
     lrun("c_regis",    tnecs_test_component_registration);
     lrun("s_regis",    tnecs_test_system_registration);
-    lrun("chunk",      tnecs_test_chunk);
     lrun("e_create",   tnecs_test_entity_creation);
     lrun("c_add",      tnecs_test_component_add);
     lrun("c_remove",   tnecs_test_component_remove);
