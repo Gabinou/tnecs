@@ -507,14 +507,14 @@ tnecs_entity tnecs_entity_create(tnecs_world *world) {
                     return(TNECS_NULL);
                 }
             }
-        } while (world->entities[out = world->entity_next++] != TNECS_NULL);
+        } while (world->entities.id[out = world->entity_next++] != TNECS_NULL);
     }
     TNECS_DEBUG_ASSERT(out != TNECS_NULL);
 
     /* Set entity and checks  */
-    world->entities[out] = out;
+    world->entities.id[out] = out;
     tnecs_entitiesbytype_add(world, out, TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities[out] == out);
+    TNECS_DEBUG_ASSERT(world->entities.id[out] == out);
     TNECS_DEBUG_ASSERT(world->entities_bytype[TNECS_NULL][world->entity_orders[out]] == out);
     return (out);
 }
@@ -529,8 +529,8 @@ tnecs_entity tnecs_entity_create_wID(tnecs_world *world, tnecs_entity entity) {
         }
     }
 
-    if ((!world->entities[entity]) & (entity > 0)) {
-        out = world->entities[entity] = entity;
+    if ((!world->entities.id[entity]) & (entity > 0)) {
+        out = world->entities.id[entity] = entity;
         tnecs_entitiesbytype_add(world, out, TNECS_NULL);
     }
     return (out);
@@ -579,7 +579,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     size_t tID      = TNECS_TYPEFLAGID(world, typeflag);
     size_t order    = world->entity_orders[new_entity];
     TNECS_DEBUG_ASSERT(world->entities_bytype[tID][order] == new_entity);
-    TNECS_DEBUG_ASSERT(world->entities[new_entity] == new_entity);
+    TNECS_DEBUG_ASSERT(world->entities.id[new_entity] == new_entity);
     return (new_entity);
 }
 
@@ -588,7 +588,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
         return(1);
     }
 
-    if (world->entities[entity] <= TNECS_NULL) {
+    if (world->entities.id[entity] <= TNECS_NULL) {
         return(1);
     }
 
@@ -605,7 +605,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     tnecs_entitiesbytype_del(world, entity, typeflag);
 
     /* Realloc entities_open if too many */
-    world->entities[entity]         = TNECS_NULL;
+    world->entities.id[entity]         = TNECS_NULL;
     world->entity_orders[entity]    = TNECS_NULL;
     world->entity_typeflags[entity] = TNECS_NULL;
     if ((world->num_entities_open + 1) >= world->len_entities_open) {
@@ -620,11 +620,11 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 
     /* Add deleted entity to open entities */
     world->entities_open[world->num_entities_open++] = entity;
-    TNECS_DEBUG_ASSERT(world->entities[entity]            == TNECS_NULL);
+    TNECS_DEBUG_ASSERT(world->entities.id[entity]            == TNECS_NULL);
     TNECS_DEBUG_ASSERT(world->entity_typeflags[entity]    == TNECS_NULL);
     TNECS_DEBUG_ASSERT(world->entity_orders[entity]       == TNECS_NULL);
     TNECS_DEBUG_ASSERT(world->entity_orders[entity_order] != entity);
-    return (world->entities[entity] == TNECS_NULL);
+    return (world->entities.id[entity] == TNECS_NULL);
 }
 
 /*****************************************************************************/
@@ -654,7 +654,7 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
     TNECS_DEBUG_ASSERT(world->entity_typeflags[entity]            == typeflag_new);
     TNECS_DEBUG_ASSERT(world->entities_bytype[tID_new][new_order] == entity);
     TNECS_DEBUG_ASSERT(world->entity_orders[entity]               == new_order);
-    return (world->entities[entity]);
+    return (world->entities.id[entity]);
 }
 
 b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity,
@@ -720,7 +720,7 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
         return(1);
     }
 
-    if (world->entities[entity] != entity) {
+    if (world->entities.id[entity] != entity) {
         return(1);
     }
 
