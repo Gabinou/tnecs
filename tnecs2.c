@@ -18,79 +18,23 @@ b32 tnecs_world_genesis(tnecs_world **world) {
     if (*world != NULL) {
         TNECS_CHECK_CALL(tnecs_world_destroy(world));   
     }
-    *world = calloc(1, sizeof(tnecs_world));
-    TNECS_CHECK_ALLOC(*world);
 
-    /* Allocate world members */
+    /* TODO: Compute memory needed by all other members */
     TNECS_CHECK_CALL(_tnecs_world_breath_entities(*world));
     TNECS_CHECK_CALL(_tnecs_world_breath_typeflags(*world));
     TNECS_CHECK_CALL(_tnecs_world_breath_systems(*world));
     TNECS_CHECK_CALL(_tnecs_world_breath_components(*world));
 
+    /* Allocate enough to contain all arenas in memory */
+    *world = calloc(1, sizeof(tnecs_world));
+    TNECS_CHECK_ALLOC(*world);
+
+
     return(1);
 }
 
 b32 tnecs_world_destroy(tnecs_world **world) {
-    for (size_t i = 0; i < (*world)->len_phases; i++) {
-        if ((*world)->systems_byphase != NULL)
-            free((*world)->systems_byphase[i]);
-        if ((*world)->systems_idbyphase != NULL)
-            free((*world)->systems_idbyphase[i]);
-    }
-    for (size_t i = 0; i < (*world)->len_typeflags; i++) {
-        if ((*world)->entities_bytype != NULL)
-            free((*world)->entities_bytype[i]);
-        if ((*world)->components_idbytype != NULL)
-            free((*world)->components_idbytype[i]);
-        if ((*world)->components_orderbytype != NULL)
-            free((*world)->components_orderbytype[i]);
-        if ((*world)->archetype_id_bytype != NULL)
-            free((*world)->archetype_id_bytype[i]);
-        if ((*world)->components_bytype != NULL) {
-            for (size_t j = 0; j < (*world)->num_components_bytype[i]; j++) {
-                free((*world)->components_bytype[i][j].components);
-            }
-            free((*world)->components_bytype[i]);
-        }
-    }
-    for (size_t i = 0; i < (*world)->num_components; i++) {
-        if ((*world)->component_names[i] != NULL) {
-            free((*world)->component_names[i]);
-            (*world)->component_names[i] = NULL;
-        }
-    }
-    for (size_t i = 0; i < (*world)->num_systems; i++) {
-        if ((*world)->system_names != NULL)
-            free((*world)->system_names[i]);
-    }
-    free((*world)->components_bytype);
-    free((*world)->components_idbytype);
-    free((*world)->components_orderbytype);
-    free((*world)->entities_bytype);
-    free((*world)->entity_orders);
-    free((*world)->entities);
-    free((*world)->entities_open);
-    free((*world)->entity_typeflags);
-    free((*world)->len_entities_bytype);
-    free((*world)->len_systems_byphase);
-    free((*world)->num_entities_bytype);
-    free((*world)->num_systems_byphase);
-    free((*world)->num_archetype_ids);
-    free((*world)->num_components_bytype);
-    free((*world)->phases);
-    free((*world)->archetype_id_bytype);
-    free((*world)->systems_byphase);
-    free((*world)->system_orders);
-    free((*world)->system_exclusive);
-    free((*world)->systems_torun);
-    free((*world)->systems_idbyphase);
-    free((*world)->system_typeflags);
-    free((*world)->system_phases);
-    free((*world)->system_hashes);
-    free((*world)->system_names);
-    free((*world)->typeflags);
     free(*world);
-
     *world = NULL;
     return(1);
 }
