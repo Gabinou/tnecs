@@ -579,7 +579,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     TNECS_CHECK_CALL(tnecs_entity_add_components(world, new_entity, argnum, archetype, 1));
 
     /* Check */
-    size_t tID      = TNECS_archetypeID(world, archetype);
+    size_t tID      = TNECS_ARCHETYPEID(world, archetype);
     size_t order    = world->entities.orders[new_entity];
     TNECS_DEBUG_ASSERT(world->bytype.entities[tID][order] == new_entity);
     TNECS_DEBUG_ASSERT(world->entities.id[new_entity] == new_entity);
@@ -597,7 +597,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 
     /* Preliminaries */
     tnecs_component archetype =  world->entities.archetypes[entity];
-    size_t tID =                  TNECS_archetypeID(world, archetype);
+    size_t tID =                  TNECS_ARCHETYPEID(world, archetype);
     size_t entity_order =         world->entities.orders[entity];
     TNECS_DEBUG_ASSERT(world->bytype.num_entities[tID] > TNECS_NULL);
     /* Delete components */
@@ -982,7 +982,7 @@ size_t tnecs_component_order_bytypeid(tnecs_world *world, size_t cID, size_t tID
     return (order);
 }
 
-tnecs_component tnecs_components_names2archetype(tnecs_world *world, size_t argnum, ...) {
+tnecs_component tnecs_component_names2archetype(tnecs_world *world, size_t argnum, ...) {
     va_list ap;
     tnecs_component archetype = 0;
     va_start(ap, argnum);
