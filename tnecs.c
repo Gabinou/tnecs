@@ -1,7 +1,7 @@
 
 #include "tnecs.h"
 
-/************************* PRIVATE DECLARATIONS ******************************/
+/****************** PRIVATE DECLARATIONS *******************/
 /* --- WORLD FUNCTIONS --- */
 static b32 _tnecs_world_breath_systems(     tnecs_world *w);
 static b32 _tnecs_world_breath_entities(    tnecs_world *w);
@@ -12,7 +12,7 @@ static b32 _tnecs_world_breath_archetypes(  tnecs_world *w);
 static size_t _tnecs_register_archetype(tnecs_world *w, size_t num_components,
                                        tnecs_component archetype);
 
-/**************************** WORLD FUNCTIONS ********************************/
+/********************* WORLD FUNCTIONS ***********************/
 b32 tnecs_world_genesis(tnecs_world **world) {
     /* Allocate world itself */
     if (*world != NULL) {
@@ -1265,7 +1265,7 @@ b32 tnecs_grow_bytype(tnecs_world *world, const size_t tID) {
 b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype) {
     // Chunk init
     memset(chunk, 0, TNECS_CHUNK_BYTESIZE);
-    size_t *mem_header  = tnecs_chunk_BytesizeArr(chunk);
+    size_t *mem_header  = tnecs_chunk_mem(chunk);
     size_t tID = tnecs_archetypeid(world, archetype);
 
     // Adding all component bytesizes in archetype to chunk
@@ -1300,29 +1300,49 @@ b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_compone
     return(1);
 }
 
-// Order of entity in entities_bytype -> index of chunk components are stored in
-size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order) {
+// Order of entity in entities_bytype -> index of chunk the components are stored in
+size_t tnecs_chunk_order(tnecs_chunk *chunk, const size_t entity_order) {
     return(entity_order / chunk->len_entities);
 }
 
 // Order of entity in entities_bytype -> order of components in current ArchetypeChunk
-size_t tnecs_EntityOrder_to_ChunkOrder(const tnecs_chunk *chunk, const size_t entity_order) {
+size_t tnecs_chunk_component_order(tnecs_chunk *chunk, const size_t entity_order) {
     return(entity_order % chunk->len_entities);
 }
 
-size_t *tnecs_chunk_BytesizeArr(const tnecs_chunk *chunk) {
+// Get component from entity_order, corder
+void* tnecs_chunk_component(tnecs_chunk *chunks, const size_t entity_order, const size_t component_order) {
+    // Note: chunks is an array, all chunksw2#t5r4e3    w2aq1    have the same entities_len 
+    // -> can all use the chunk_order functions
+    size_t chunk_order      = tnecs_chunk_order(chunks, entity_order);
+    size_t chunk_component_order  = tnecs_chunk_component_order(chunks, entity_order);
+    tnecs_byte *byte_arr = tnecs_chunk_component_array(&chunks[chunk_order], component_order);
+    size_t *cumul_bytesize = tnecs_chunk_mem(chunks);
+
+    size_t component_bytesize = component_order == 0 ? cumul_bytesize[0] : cumul_bytesize[component_order] -cumul_bytesize[component_order - 1]; 
+
+    return(byte_arr + (component_bytesize * chunk_component_order));
+}
+
+
+size_t *tnecs_chunk_mem(tnecs_chunk *chunk) {
     return((size_t*)chunk->mem);
 }
-size_t  tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk) {
-    size_t *header = tnecs_chunk_BytesizeArr(chunk);
+
+size_t  tnecs_chunk_cumul_bytesize(tnecs_chunk *chunk) {
+    size_t *header = tnecs_chunk_mem(chunk);
     if (chunk->num_components <= 0) {
         return(0);
     }
     return(header[chunk->num_components - 1]);
 }
 
-void *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder) {
-    size_t *header              = tnecs_chunk_BytesizeArr(chunk);
+void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder) {
+    // Note: Array is valid from entity_order =
+    // [entities_len * chunk_order, (entities_len + 1) * chunk_order,]
+    // Array index is tnecs_chunk_component_order(entity_order)
+
+    size_t *header              = tnecs_chunk_mem(chunk);
     size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
     size_t header_offset        = chunk->num_components * sizeof(size_t);
     size_t components_offset    = corder * cumul_bytesize * chunk->len_entities;

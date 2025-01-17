@@ -1231,7 +1231,7 @@ void tnecs_test_chunk() {
     tnecs_chunk chunk;
     lok(tnecs_chunk_init(&chunk, chunk_world, archetype));
     lok(chunk.num_components == 2);
-    size_t *bytesizes = tnecs_chunk_BytesizeArr(&chunk);
+    size_t *bytesizes = tnecs_chunk_mem(&chunk);
     lok(bytesizes[0] == sizeof(Velocity));
     lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
     lok(chunk.len_entities > 0);
@@ -1240,7 +1240,7 @@ void tnecs_test_chunk() {
     archetype = type1 + type2 + type3 + type4;
     lok(tnecs_chunk_init(&chunk, chunk_world, archetype));
     lok(chunk.num_components == 4);
-    bytesizes = tnecs_chunk_BytesizeArr(&chunk);
+    bytesizes = tnecs_chunk_mem(&chunk);
     lok(bytesizes[0] == sizeof(Velocity));
     lok(bytesizes[1] == sizeof(Velocity) + sizeof(Position));
     lok(bytesizes[2] == sizeof(Velocity) + sizeof(Position) +sizeof(Sprite));

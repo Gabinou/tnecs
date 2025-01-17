@@ -274,13 +274,12 @@ typedef struct tnecs_system_input {
 
 /******************** CHUNK **********************/
 b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype);
-size_t  *tnecs_chunk_BytesizeArr(   const tnecs_chunk *chunk);
-size_t   tnecs_chunk_TotalBytesize( const tnecs_chunk *chunk);
-void    *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder);
-b32      tnecs_chunk_Full(          const tnecs_chunk *chunk);
+size_t  *tnecs_chunk_mem(   tnecs_chunk *chunk);
+size_t   tnecs_chunk_cumul_bytesize( tnecs_chunk *chunk);
+void    *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder);
 
-size_t tnecs_EntityOrder_to_ChunkOrder(    const tnecs_chunk *chunk, const size_t entity_order);
-size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order);
+size_t tnecs_chunk_order(    tnecs_chunk *chunk, const size_t entity_order);
+size_t tnecs_chunk_component_order(tnecs_chunk *chunk, const size_t entity_order);
 
 /******************** WORLD FUNCTIONS **********************/
 b32 tnecs_world_genesis(tnecs_world **w);
