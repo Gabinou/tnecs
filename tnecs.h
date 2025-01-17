@@ -423,13 +423,14 @@ void *tnecs_arrdel(         void *arr, size_t elem,     size_t len,     size_t b
 void *tnecs_realloc(        void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
 void *tnecs_arrdel_scramble(void *arr, size_t elem,     size_t len,     size_t bytesize);
 
-b32 tnecs_growArray_phase(          tnecs_world *w);
-b32 tnecs_growArray_torun(          tnecs_world *w);
-b32 tnecs_growArray_bytype(         tnecs_world *w, size_t archetype_id);
-b32 tnecs_growArray_entity(         tnecs_world *w);
-b32 tnecs_growArray_system(         tnecs_world *w);
-b32 tnecs_growArray_archetype(      tnecs_world *w);
-b32 tnecs_growArray_entities_open(  tnecs_world *w);
+b32 tnecs_grow_phase(          tnecs_world *w);
+b32 tnecs_grow_torun(          tnecs_world *w);
+b32 tnecs_grow_bytype(         tnecs_world *w, size_t archetype_id);
+b32 tnecs_grow_entity(         tnecs_world *w);
+b32 tnecs_grow_system(         tnecs_world *w);
+b32 tnecs_grow_archetype(      tnecs_world *w);
+b32 tnecs_grow_entities_open(  tnecs_world *w);
+b32 tnecs_grow_system_byphase(const tnecs_world *w, const tnecs_phase phase);
 
 /****************** STRING HASHING ****************/
 uint64_t tnecs_hash_djb2(const char *str);  // slightly faster

@@ -876,9 +876,9 @@ void tnecs_test_world_progress() {
     lok(test_world->bytype.num_entities[TNECS_ARCHETYPEID(test_world, 1 + 8)] == 1);
     tnecs_entity_destroy(test_world, Perignon);
 
-    tnecs_growArray_phase(test_world);
-    tnecs_growArray_system(test_world);
-    tnecs_growArray_archetype(test_world);
+    tnecs_grow_phase(test_world);
+    tnecs_grow_system(test_world);
+    tnecs_grow_archetype(test_world);
 
     struct tnecs_world *inclusive_world = NULL;
     tnecs_world_genesis(&inclusive_world);
@@ -1121,7 +1121,7 @@ void tnecs_test_grow() {
         }
     }
 
-    tnecs_growArray_entity(grow_world);
+    tnecs_grow_entity(grow_world);
     lok(grow_world->entities.len == TNECS_INIT_ENTITY_LEN * TNECS_ARRAY_GROWTH_FACTOR);
 
     for (size_t i = 0; i < grow_world->entities.len; i++) {
@@ -1131,7 +1131,7 @@ void tnecs_test_grow() {
     }
 
     size_t test_archetypeid = 0;
-    tnecs_growArray_bytype(grow_world, test_archetypeid);
+    tnecs_grow_bytype(grow_world, test_archetypeid);
     lok(grow_world->bytype.num_entities[test_archetypeid] == 0);
     lok(grow_world->bytype.len_entities[test_archetypeid] == TNECS_INIT_ENTITY_LEN *
         TNECS_ARRAY_GROWTH_FACTOR);
@@ -1140,7 +1140,7 @@ void tnecs_test_grow() {
     }
 
     test_archetypeid = 1;
-    tnecs_growArray_bytype(grow_world, test_archetypeid);
+    tnecs_grow_bytype(grow_world, test_archetypeid);
     lok(grow_world->bytype.num_entities[test_archetypeid] == 0);
     lok(grow_world->bytype.len_entities[test_archetypeid] == TNECS_INIT_ENTITY_LEN *
         TNECS_ARRAY_GROWTH_FACTOR);
@@ -1156,10 +1156,10 @@ void tnecs_test_grow() {
         lok(grow_world->bytype.num_components[i] == 0);
     }
 
-    tnecs_growArray_system(grow_world);
+    tnecs_grow_system(grow_world);
     lok(grow_world->systems.len == TNECS_INIT_SYSTEM_LEN * TNECS_ARRAY_GROWTH_FACTOR);
     lok(grow_world->systems.num == 1);
-    tnecs_growArray_archetype(grow_world);
+    tnecs_grow_archetype(grow_world);
     lok(grow_world->bytype.len == TNECS_INIT_SYSTEM_LEN * TNECS_ARRAY_GROWTH_FACTOR);
     lok(grow_world->bytype.num == 1);
 
@@ -1172,7 +1172,7 @@ void tnecs_test_grow() {
         lok(grow_world->bytype.num_components[i] == 0);
     }
 
-    tnecs_growArray_phase(grow_world);
+    tnecs_grow_phase(grow_world);
     lok(grow_world->byphase.len == TNECS_INIT_PHASE_LEN * TNECS_ARRAY_GROWTH_FACTOR);
 
     lok(grow_world->byphase.num== 1);
