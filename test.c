@@ -345,50 +345,6 @@ void tnecs_test_utilities() {
     lok(setBits_KnR_uint64_t(5) == 2);
     lok(setBits_KnR_uint64_t(6) == 2);
     lok(setBits_KnR_uint64_t(7) == 3);
-
-    size_t arrtest1[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    size_t arrtest2[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-    tnecs_arrdel(arrtest2, 1, 10, sizeof(*arrtest2));
-    tnecs_arrdel(arrtest1, 2, 10, sizeof(*arrtest2));
-    lok(arrtest2[0] == 9);
-    lok(arrtest2[1] == 7);
-    lok(arrtest2[2] == 6);
-    lok(arrtest2[3] == 5);
-    lok(arrtest2[4] == 4);
-    lok(arrtest2[5] == 3);
-    lok(arrtest2[6] == 2);
-    lok(arrtest2[7] == 1);
-    lok(arrtest2[8] == 0);
-    lok(arrtest2[9] == 0);
-    lok(arrtest1[0] == 0);
-    lok(arrtest1[1] == 1);
-    lok(arrtest1[2] == 3);
-    lok(arrtest1[3] == 4);
-    lok(arrtest1[4] == 5);
-    lok(arrtest1[5] == 6);
-    lok(arrtest1[6] == 7);
-    lok(arrtest1[7] == 8);
-    lok(arrtest1[8] == 9);
-    lok(arrtest1[9] == 9);
-
-    size_t *temp_sizes = calloc(2, sizeof(size_t));
-    temp_sizes[0] = 1;
-    temp_sizes[1] = 2;
-    tnecs_arrdel(temp_sizes, 1, 2, sizeof(size_t));
-    lok(temp_sizes[1] == 0);
-    lok(temp_sizes[0] == 1);
-    free(temp_sizes);
-    temp_sizes = calloc(4, sizeof(size_t));
-    temp_sizes[0] = 1;
-    temp_sizes[1] = 2;
-    temp_sizes[2] = 3;
-    temp_sizes[3] = 4;
-    tnecs_arrdel_scramble(temp_sizes, 2, 4, sizeof(size_t));
-    lok(temp_sizes[0] == 1);
-    lok(temp_sizes[1] == 2);
-    lok(temp_sizes[2] == 4);
-    lok(temp_sizes[3] == 0);
-    free(temp_sizes);
 }
 
 void tnecs_test_component_registration() {

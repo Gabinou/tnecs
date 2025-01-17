@@ -751,8 +751,8 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
     tnecs_entity top_entity = world->bytype.entities[archetype_old_id][old_num - 1];
 
     /* components scrambles -> entitiesbytype too */
-    tnecs_arrdel_scramble(world->bytype.entities[archetype_old_id], entity_order_old, old_num,
-                          sizeof(**world->bytype.entities));
+    tnecs_arrdel(world->bytype.entities[archetype_old_id], entity_order_old, old_num,
+                 sizeof(**world->bytype.entities));
 
     if (top_entity != entity) {
         world->entities.orders[top_entity] = entity_order_old;
@@ -880,7 +880,7 @@ b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
         /* Scramble components too */
         size_t comp_by       = world->components.bytesizes[current_component_id];
         size_t new_comp_num  = world->bytype.num_entities[old_tID];
-        tnecs_byte *scramble = tnecs_arrdel_scramble(comp_ptr, order_old, new_comp_num, comp_by);
+        tnecs_byte *scramble = tnecs_arrdel(comp_ptr, order_old, new_comp_num, comp_by);
         TNECS_CHECK_ALLOC(scramble);
 
         old_array->num_components--;
@@ -1079,18 +1079,6 @@ void *tnecs_realloc(void *ptr, size_t old_len, size_t new_len, size_t elem_bytes
 }
 
 void *tnecs_arrdel(void *arr, size_t elem, size_t len, size_t bytesize) {
-    void *out;
-    tnecs_byte *bytes = arr;
-    if (elem < (len - 1)) {
-        tnecs_byte *dst = bytes + (elem * bytesize);
-        tnecs_byte *src = bytes + ((elem + 1) * bytesize);
-        out = memmove(dst, src, bytesize * (len - elem - 1));
-    } else
-        out = memset(bytes + (elem * bytesize), TNECS_NULL, bytesize);
-    return (out);
-}
-
-void *tnecs_arrdel_scramble(void *arr, size_t elem, size_t len, size_t bytesize) {
     tnecs_byte *bytes = arr;
     if (elem != (len - 1))
         memmove(bytes + (elem * bytesize), bytes + ((len - 1) * bytesize), bytesize);

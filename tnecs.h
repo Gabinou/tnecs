@@ -36,7 +36,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdarg.h>
-#include <math.h>ss
+#include <math.h>
 #ifndef log2 // tcc SUCKS and DOES NOT define log2
     #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
 #endif
@@ -64,7 +64,7 @@ extern "C" {
         if (!call) { \
             printf("tnecs: failed function call " #call "\n"); \
             return(0); \
-        } \s
+        } \
     } while (0)
 
 /******************* TYPE DEFINITIONS *******************/
@@ -380,9 +380,8 @@ size_t tnecs_archetypeid(tnecs_world *w, tnecs_component archetype);
 #define TNECS_ARCHETYPEID(world, archetype) tnecs_archetypeid(world, archetype)
 
 /******************** "DYNAMIC" ARRAYS *********************/
-void *tnecs_arrdel(         void *arr, size_t elem,     size_t len,     size_t bytesize);
-void *tnecs_realloc(        void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
-void *tnecs_arrdel_scramble(void *arr, size_t elem,     size_t len,     size_t bytesize);
+void *tnecs_realloc(void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
+void *tnecs_arrdel( void *arr, size_t elem,     size_t len,     size_t bytesize);
 
 b32 tnecs_grow_phase(           tnecs_world *w);
 b32 tnecs_grow_torun(           tnecs_world *w);
