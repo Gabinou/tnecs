@@ -551,32 +551,10 @@ void tnecs_test_entity_creation() {
     tnecs_entity_create(test_world);
     lok(test_world->entities.id[Silou]);
 
-    tnecs_entity Servil = 900;
-    lok(test_world->entities.len < Servil);
-    TNECS_ENTITY_CREATE(test_world, Servil);
-    lok(Servil == test_world->entities.id[Servil]);
-    lok(test_world->entities.len > Servil);
-
-    tnecs_entity Rayan = tnecs_entity_create_wID(test_world, 666);
-    lok(test_world->entities.len > Rayan);
-    lok(Rayan == test_world->entities.id[Rayan]);
-    lok(!test_world->entities.id[Rayan + 1]);
-    lok(!test_world->entities.id[Rayan - 1]);
-
-    tnecs_entity Pierre = TNECS_ENTITY_CREATE(test_world, 667);
-    lok(Pierre == test_world->entities.id[Pierre]);
-
     TNECS_ENTITIES_CREATE(test_world, 100);
     lok(test_world->entities.num == 104);
-    lok(TNECS_ENTITY_CREATE(test_world, 104));
-    lok(!TNECS_ENTITY_CREATE(test_world, 104));
     lok(tnecs_entity_create(test_world));
-    lok(test_world->entities.num == 106);
-
-    tnecs_entity in_ents[2] = {3001, 3002};
-    TNECS_ENTITIES_CREATE(test_world, 2, in_ents);
-    lok(test_world->entities.id[in_ents[0]] == in_ents[0]);
-    lok(test_world->entities.id[in_ents[1]] == in_ents[1]);
+    lok(test_world->entities.num == 105);
 
     tnecs_world *test_world3 = NULL;
     tnecs_world_genesis(&test_world3);

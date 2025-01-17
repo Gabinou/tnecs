@@ -183,8 +183,9 @@ typedef struct tnecs_entities {
     // entities.num has slightly different meaning:
     // - Some entities might get deleted, but entities.num won't change.
     // - If reuse_entities is true, they are added to entities_open, and reused.
-    // - If reuse_entities is false, these entities are unusable. 
-    //      - Unless user calls tnecs_entities_open_reuse.
+    // - If reuse_entities is false, entities do not get added to entities_open. 
+    //      - Call tnecs_entities_open_reuse to add open entities to 
+    //        entities_open and slaate them for reuse.
     size_t num;
     size_t len;
 
@@ -302,28 +303,21 @@ size_t tnecs_register_phase(tnecs_world *w, tnecs_phase phase);
 /************ ENTITY MANIPULATION *************/
 /* -- Public -- */
 tnecs_entity tnecs_entity_create(tnecs_world *w);
-tnecs_entity tnecs_entity_create_wID(tnecs_world *w, tnecs_entity entity);
 tnecs_entity tnecs_entities_create(tnecs_world *w, size_t num);
-tnecs_entity tnecs_entities_create_wID(tnecs_world *w, size_t num,
-                                       tnecs_entity *ents);
 tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *w, size_t argnum, ...);
+
 b32 tnecs_entities_open_reuse(tnecs_world *w);
 b32 tnecs_entities_open_flush(tnecs_world *w);
+
 b32 tnecs_entity_isOpen(tnecs_world *w, tnecs_entity ent);
 
 b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 
-// Overloaded macros: -> TNECS_ENTITY_CREATE, TNECS_ENTITIES_CREATE, TNECS_ADD_COMPONENT
-#define TNECS_ENTITY_CREATE(...) TNECS_CHOOSE_ENTITY_CREATE(__VA_ARGS__, TNECS_ENTITY_CREATE2, TNECS_ENTITY_CREATE1)(__VA_ARGS__)
-#define TNECS_CHOOSE_ENTITY_CREATE(_1,_2,NAME,...) NAME
-#define TNECS_ENTITY_CREATE1(world) tnecs_entity_create(world)
-#define TNECS_ENTITY_CREATE2(world, index) tnecs_entity_create_wID(world, index)
+// Overloaded macros: -> TNECS_ENTITIES_CREATE, TNECS_ADD_COMPONENT
 #define TNECS_ENTITY_EXISTS(world, index) (world->entities[index] > TNECS_NULL)
 
-#define TNECS_ENTITIES_CREATE(...) TNECS_CHOOSE_ENTITIES_CREATE(__VA_ARGS__, TNECS_ENTITIES_CREATE3, TNECS_ENTITIES_CREATE2)(__VA_ARGS__)
-#define TNECS_CHOOSE_ENTITIES_CREATE(_1,_2,_3,NAME,...) NAME
-#define TNECS_ENTITIES_CREATE2(world, num) tnecs_entities_create(world, num)
-#define TNECS_ENTITIES_CREATE3(world, num, indices) tnecs_entities_create_wID(world, num, indices)
+#define TNECS_ENTITY_CREATE(world) tnecs_entity_create(world)
+#define TNECS_ENTITIES_CREATE(world, num) tnecs_entities_create(world, num)
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_ARCHETYPE(world, entity) world->entities.archetypes[entity]

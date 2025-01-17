@@ -520,37 +520,10 @@ tnecs_entity tnecs_entity_create(tnecs_world *world) {
     return (out);
 }
 
-tnecs_entity tnecs_entity_create_wID(tnecs_world *world, tnecs_entity entity) {
-    // TODO: What to do if entity existed before?
-    tnecs_entity out = 0;
-    while (entity >= world->entities.len) {
-        if (!tnecs_growArray_entity(world)) {
-            printf("tnecs: Could not allocate more memory for entities.\n");
-            return(TNECS_NULL);
-        }
-    }
-
-    if ((!world->entities.id[entity]) & (entity > 0)) {
-        out = world->entities.id[entity] = entity;
-        tnecs_entitiesbytype_add(world, out, TNECS_NULL);
-    }
-    return (out);
-}
-
 tnecs_entity tnecs_entities_create(tnecs_world *world, size_t num) {
     for (int i = 0; i < num; i++) {
         if (tnecs_entity_create(world) <= TNECS_NULL) {
             printf("tnecs: Could not create another entity.\n");
-            return(TNECS_NULL);            
-        }
-    }
-    return (num);
-}
-
-tnecs_entity tnecs_entities_create_wID(tnecs_world *world, size_t num, tnecs_entity *ents) {
-    for (int i = 0; i < num; i++) {
-        if (tnecs_entity_create_wID(world, ents[i]) <= TNECS_NULL) {
-            printf("tnecs: Could not create another entity_wID.\n");
             return(TNECS_NULL);            
         }
     }
@@ -612,9 +585,10 @@ b32 tnecs_entities_open_reuse(tnecs_world *world) {
     return(1);
 };
 
-b32 tnecs_entities_open_flush(tnecs_world *w) {
+b32 tnecs_entities_open_flush(tnecs_world *world) {
     // Get rid of all entities in entities_open.
     world->entities_open.num = 0;
+    return(1);
 }
 
 b32 tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
