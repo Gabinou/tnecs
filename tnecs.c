@@ -535,7 +535,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     tnecs_component archetype = 0;
     for (size_t i = 0; i < argnum; i++) {
         tnecs_component component_id = va_arg(ap, tnecs_component);
-        archetype += TNECS_COMPONENT_ID2TYPE(world, component_id);
+        archetype += TNECS_COMPONENT_ID2TYPE(component_id);
     }
     va_end(ap);
 
@@ -548,7 +548,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     TNECS_CHECK_CALL(tnecs_entity_add_components(world, new_entity, argnum, archetype, 1));
 
     /* Check */
-    size_t tID      = TNECS_ARCHETYPEID(world, archetype);
+    size_t tID      = tnecs_archetypeid(world, archetype);
     size_t order    = world->entities.orders[new_entity];
     TNECS_DEBUG_ASSERT(world->bytype.entities[tID][order]   == new_entity);
     TNECS_DEBUG_ASSERT(world->entities.id[new_entity]       == new_entity);
@@ -604,7 +604,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 
     /* Preliminaries */
     tnecs_component archetype   = world->entities.archetypes[entity];
-    size_t tID                  = TNECS_ARCHETYPEID(world, archetype);
+    size_t tID                  = tnecs_archetypeid(world, archetype);
     size_t entity_order         = world->entities.orders[entity];
     TNECS_DEBUG_ASSERT(world->bytype.num_entities[tID] > TNECS_NULL);
     /* Delete components */
@@ -968,21 +968,6 @@ b32 tnecs_system_order_switch(tnecs_world *world, tnecs_phase phase,
 }
 
 /************************ UTILITY FUNCTIONS/MACROS ***************************/
-size_t tnecs_component_name2id(tnecs_world *world,
-                               const char *name) {
-    return (tnecs_component_hash2id(world, TNECS_HASH(name)));
-}
-
-size_t tnecs_component_hash2id(tnecs_world *world, tnecs_hash hash) {
-    size_t out;
-    for (size_t i = TNECS_NULLSHIFT; i < world->components.num; i++) {
-        if (world->components.hashes[i] == hash) {
-            out = i;
-            break;
-        }
-    }
-    return (out);
-}
 
 size_t tnecs_component_order_bytype(tnecs_world *world, size_t cID, tnecs_component flag) {
     tnecs_component tID = tnecs_archetypeid(world, flag);
@@ -1008,28 +993,6 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...) {
         out += TNECS_COMPONENT_ID2TYPE(va_arg(ap, size_t));
     va_end(ap);
     return (out);
-}
-
-tnecs_component tnecs_component_hash2type(tnecs_world *world, tnecs_hash hash) {
-    return (TNECS_COMPONENT_ID2TYPE(tnecs_component_hash2id(world, hash)));
-}
-
-size_t tnecs_system_name2id(tnecs_world *world, const char *name) {
-    tnecs_hash hash = TNECS_HASH(name);
-    size_t found = 0;
-    for (size_t i = 0; i < world->systems.num; i++) {
-        if (world->systems.hashes[i] == hash) {
-            found = i;
-            break;
-        }
-    }
-    return (found);
-}
-
-tnecs_component tnecs_system_name2archetype(tnecs_world *world,
-                                            const char *name) {
-    size_t id = tnecs_system_name2id(world, name);
-    return (world->systems.archetypes[id]);
 }
 
 size_t tnecs_archetypeid(tnecs_world *world, tnecs_component archetype) {

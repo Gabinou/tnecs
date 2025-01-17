@@ -333,8 +333,6 @@ b32 tnecs_system_order_switch(tnecs_world *w, tnecs_phase phase,
                               size_t order1, size_t order2);
 
 /************* UTILITY FUNCTIONS/MACROS *************/
-size_t tnecs_component_name2id(tnecs_world *w, const char *name);
-size_t tnecs_component_hash2id(tnecs_world *w, tnecs_hash hash);
 size_t tnecs_component_order_bytype(tnecs_world *w, size_t component_id,
                                     tnecs_component archetype);
 size_t tnecs_component_order_bytypeid(tnecs_world *w, size_t component_id,
@@ -342,26 +340,14 @@ size_t tnecs_component_order_bytypeid(tnecs_world *w, size_t component_id,
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 tnecs_component tnecs_component_hash2type(tnecs_world *w, tnecs_hash hash);
 
-size_t tnecs_system_name2id(tnecs_world *w, const char *name);
-size_t tnecs_system_hash2id(tnecs_world *w, tnecs_hash hash);
-tnecs_component tnecs_system_name2archetype(tnecs_world *w, const char *name);
-
 size_t tnecs_archetypeid(tnecs_world *w, tnecs_component archetype);
 
-#define TNECS_COMPONENT_NAME2ID(world, name) tnecs_component_name2id(world, #name)
 #define TNECS_COMPONENT_TYPE2ID(type) (type >=1 ? (tnecs_component)(log2(type) + 1.1f): 0) // casting to int floors
-#define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
-#define TNECS_COMPONENT_HASH2TYPE(world, hash) tnecs_component_hash2type(world, hash)
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__))
 #define TNECS_COMPONENTS_LIST(input, component_id) (input->world->bytype.components[input->entity_archetype_id][input->world->bytype.components_order[input->entity_archetype_id][component_id]].components)
 
-#define TNECS_SYSTEM_NAME2ID(world, name) tnecs_system_name2id(world, #name)
 #define TNECS_SYSTEM_ID2ARCHETYPE(world, id) world->systems.archetypes[id]
-#define TNECS_SYSTEM_NAME2ARCHETYPE(world, name) tnecs_system_name2archetype(world, #name)
-#define TNECS_SYSTEM_NAME2ARCHETYPEID(world, name) tnecs_archetypeid(world, tnecs_system_name2archetype(world, #name))
-
-#define TNECS_ARCHETYPEID(world, archetype) tnecs_archetypeid(world, archetype)
 
 /******************** "DYNAMIC" ARRAYS *********************/
 void *tnecs_realloc(void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
