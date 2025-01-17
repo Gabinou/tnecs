@@ -55,7 +55,7 @@ b32 tnecs_world_destroy(tnecs_world **world) {
             free((*world)->bytype.components[i]);
         }
     }
-    for (size_t i = 0; i < (*world)->components.num; i++) {
+    for (size_t i = TNECS_NULLSHIFT; i < (*world)->components.num; i++) {
         if ((*world)->components.names[i] != NULL) {
             free((*world)->components.names[i]);
             (*world)->components.names[i] = NULL;
@@ -687,7 +687,7 @@ b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity,
 }
 
 
-void *tnecs_entity_get_component(tnecs_world *world, tnecs_entity eID,
+void *tnecs_get_component(tnecs_world *world, tnecs_entity eID,
                                  tnecs_component cID) {
 
     tnecs_component component_flag      = TNECS_COMPONENT_ID2TYPE(cID);
@@ -975,7 +975,7 @@ size_t tnecs_component_name2id(tnecs_world *world,
 
 size_t tnecs_component_hash2id(tnecs_world *world, tnecs_hash hash) {
     size_t out;
-    for (size_t i = 0; i < world->components.num; i++) {
+    for (size_t i = TNECS_NULLSHIFT; i < world->components.num; i++) {
         if (world->components.hashes[i] == hash) {
             out = i;
             break;

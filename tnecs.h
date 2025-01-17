@@ -237,7 +237,6 @@ typedef struct tnecs_world {
 } tnecs_world;
 
 typedef struct tnecs_system_input {
-    // Note: Systems run over entity_order_bytype
     tnecs_world     *world;
     tnecs_ns         deltat;
     tnecs_component  system_archetype;
@@ -296,7 +295,6 @@ b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_ARCHETYPE(world, entity) world->entities.archetypes[entity]
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entities.archetypes[entity] &tnecs_component_names2archetype(world, 1, #name)) > 0)
-#define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entities.archetypes[entity] &tnecs_component_names2archetype(world, 1, #name)) > 0)
 
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
@@ -307,8 +305,6 @@ b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 
 #define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) tnecs_entity_remove_components(world, entity_id, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 
-#define TNECS_GET_COMPONENT(world, entity_id, name) tnecs_entity_get_component(world, entity_id, tnecs_component_name2id(world, #name))
-
 /********************************************************/
 /****************** TNECS INTERNALS *********************/
 /********************************************************/
@@ -316,7 +312,7 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *w, tnecs_entity entity,
                                          size_t num_components, tnecs_component archetype, b32 isNew);
 b32  tnecs_entity_remove_components(tnecs_world *w,
                                     tnecs_entity entity, size_t num_components, tnecs_component archetype);
-void *tnecs_entity_get_component(tnecs_world *w, tnecs_entity entity,
+void *tnecs_get_component(tnecs_world *w, tnecs_entity entity,
                                  tnecs_component component_id);
 
 b32 tnecs_entitiesbytype_add(tnecs_world *w, tnecs_entity entity,
