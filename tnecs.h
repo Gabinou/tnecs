@@ -308,6 +308,7 @@ tnecs_entity tnecs_entities_create_wID(tnecs_world *w, size_t num,
                                        tnecs_entity *ents);
 tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *w, size_t argnum, ...);
 b32 tnecs_entities_open_reuse(tnecs_world *w);
+b32 tnecs_entities_open_flush(tnecs_world *w);
 b32 tnecs_entity_isOpen(tnecs_world *w, tnecs_entity ent);
 
 b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
