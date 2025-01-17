@@ -137,16 +137,6 @@ enum TNECS {
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 /************ STRUCTS DEFINITIONS ***************/
-typedef struct tnecs_system_input {
-    // Note: Systems run over entity_order_bytype for entity_order_bytype
-    tnecs_world     *world;
-    tnecs_ns         deltat;
-    tnecs_component  system_archetype;
-    size_t           num_entities;
-    size_t           entity_archetype_id;
-    void            *data;
-} tnecs_system_input;
-
 typedef struct tnecs_arena_array {
     i64 handle;
     size_t num;
@@ -236,6 +226,17 @@ typedef struct tnecs_world {
     tnecs_byte mem[];
 } tnecs_world;
     
+typedef struct tnecs_system_input {
+    // Note: Systems run over entity_order_bytype for entity_order_bytype
+    tnecs_world     *world;
+    tnecs_ns         deltat;
+    tnecs_component  system_archetype;
+    size_t           num_entities;
+    size_t           entity_archetype_id;
+    void            *data;
+} tnecs_system_input;
+
+
 // tnecs_Chunk: memory reserved for all components of archetype
 // - Each component has an array inside the chunk.
 // - Each chunk is 16kB total.
@@ -275,6 +276,7 @@ b32 tnecs_world_genesis(tnecs_world **w);
 b32 tnecs_world_destroy(tnecs_world **w);
 
 tnecs_arena *tnecs_world_arena(tnecs_world *w);
+void *tnecs_arena_ptr(tnecs_arena *arena, i64 handle);
 
 b32 tnecs_world_step(      tnecs_world *w, tnecs_ns     deltat, void *data);
 b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, void *data);
@@ -288,9 +290,12 @@ b32 tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
 tnecs_component tnecs_register_component(tnecs_world *w,
                                          const char *name, size_t b);
 
-size_t tnecs_register_system(tnecs_world *w, const char *name,
-                             tnecs_system_ptr system, tnecs_phase run_phase,
-                             b32 isExclusive, size_t component_num, tnecs_component component_archetype);
+// size_t tnecs_register_system(tnecs_world *w, const char *name,
+//                              tnecs_system_ptr system, tnecs_phase run_phase,
+//                              b32 isExclusive, size_t component_num, tnecs_component 
+// size_t tnecs_register_system(tnecs_world *w, const char *name,
+//                              tnecs_system_ptr system, tnecs_phase run_phase,
+//                              b32 isExclusive, size_t component_num, tnecs_component component_archetype);
 size_t tnecs_register_phase(tnecs_world *w, tnecs_phase phase);
 
 
@@ -379,10 +384,10 @@ b32 tnecs_component_del(tnecs_world *w, tnecs_entity entity,
 b32 tnecs_component_migrate(tnecs_world *w, tnecs_entity entity,
                              tnecs_component old_flag, tnecs_component new_flag);
 
-b32 tnecs_component_array_new(tnecs_world *w, size_t num_components,
-                               tnecs_component archetype);
-b32 tnecs_component_array_init(tnecs_world *w,
-                                tnecs_component_array *array, size_t component_id);
+// b32 tnecs_component_array_new(tnecs_world *w, size_t num_components,
+//                                tnecs_component archetype);
+// b32 tnecs_component_array_init(tnecs_world *w,
+//                                 tnecs_component_array *array, size_t component_id);
 
 b32 tnecs_system_order_switch(tnecs_world *w, tnecs_phase phase,
                                size_t order1, size_t order2);
