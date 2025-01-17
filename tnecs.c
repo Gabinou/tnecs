@@ -355,7 +355,7 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
 
     /* -- Actual registration -- */
     /* Saving name and hash */
-    world->systems.names[system_id] = malloc(strlen(name) + 1);
+    world->systems.names[system_id] = calloc(1, strlen(name) + 1);
     TNECS_CHECK_ALLOC(world->systems.names[system_id]);
 
     tnecs_hash hash                 = TNECS_HASH(name);
@@ -397,10 +397,10 @@ tnecs_component tnecs_register_component(tnecs_world    *world,
     tnecs_component new_component_id                = world->components.num++;
     world->components.hashes[new_component_id]      = TNECS_HASH(name);
     tnecs_component new_component_flag              = TNECS_COMPONENT_ID2TYPE(new_component_id);
-    world->components.bytesizes[new_component_id] = bytesize;
+    world->components.bytesizes[new_component_id]   = bytesize;
 
     /* Setting component name */
-    world->components.names[new_component_id] = malloc(strlen(name) + 1);
+    world->components.names[new_component_id] = calloc(1, strlen(name) + 1);
     TNECS_CHECK_ALLOC(world->components.names[new_component_id]);
 
     strncpy(world->components.names[new_component_id], name, strlen(name) + 1);
@@ -998,17 +998,6 @@ size_t tnecs_component_order_bytypeid(tnecs_world *world, size_t cID, size_t tID
         }
     }
     return (order);
-}
-
-tnecs_component tnecs_component_names2archetype(tnecs_world *world, size_t argnum, ...) {
-    va_list ap;
-    tnecs_component archetype = 0;
-    va_start(ap, argnum);
-    for (size_t i = 0; i < argnum; i++) {
-        archetype += world->bytype.id[tnecs_component_name2id(world, va_arg(ap, const char *))];
-    }
-    va_end(ap);
-    return (archetype);
 }
 
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...) {
