@@ -603,13 +603,11 @@ b32 tnecs_entities_open_queue(tnecs_world *world) {
 
     for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities.num; i++) {
         
-        if (world->entities[i] == TNECS_NULL) && !tnecs_entity_isOpen(world, i) {
+        if ((world->entities[i] == TNECS_NULL) && !tnecs_entity_isOpen(world, i)) {
             tnecs_entity *arr = world->entities_open.arr; 
-            arr[world->entities_open.num++] = entity;   
+            arr[world->entities_open.num++] = entity;
         }
-
     }
-
     return(1);
 };
 
