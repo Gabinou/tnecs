@@ -385,9 +385,9 @@ b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 #define TNECS_ENTITIES_CREATE3(world, num, indices) tnecs_entities_create_wID(world, num, indices)
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
-#define TNECS_ENTITY_archetype(world, entity) world->entity_archetypes[entity]
-#define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entity_archetypes[entity] &tnecs_component_names2archetype(world, 1, #name)) > 0)
-#define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entity_archetypes[entity] &tnecs_component_names2archetype(world, 1, #name)) > 0)
+#define TNECS_ENTITY_ARCHETYPE(world, entity) world->entities.archetypes[entity]
+#define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entities.archetypes[entity] &tnecs_component_names2archetype(world, 1, #name)) > 0)
+#define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entities.archetypes[entity] &tnecs_component_names2archetype(world, 1, #name)) > 0)
 
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
