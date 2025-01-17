@@ -230,6 +230,7 @@ typedef struct tnecs_archetype {
     size_t           *len_entities;         // [archetype_id]
     size_t           *num_entities;         // [archetype_id]
     size_t           *num_archetype_ids;    // [archetype_id]
+    size_t           *len_chunks;           // [archetype_id]
 
     size_t           **archetype_id;        // [archetype_id][archetype_id_order]
     tnecs_entity     **entities;            // [archetype_id][entity_order_bytype]
@@ -274,6 +275,7 @@ typedef struct tnecs_system_input {
 
 /******************** CHUNK **********************/
 b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype);
+b32 tnecs_chunk_new(tnecs_world *world, tnecs_component archetype);
 size_t  *tnecs_chunk_mem(   tnecs_chunk *chunk);
 size_t   tnecs_chunk_cumul_bytesize( tnecs_chunk *chunk);
 void    *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder);
