@@ -152,6 +152,7 @@ enum TNECS {
 // - Each chunk is 16kB total.
 // - Entity order determines if chunk is full
 #define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t) - sizeof(tnecs_component))
+
 typedef struct tnecs_chunk {
     size_t           components_num; 
     size_t           entities_len; 
@@ -159,17 +160,10 @@ typedef struct tnecs_chunk {
     // Raw memory chunk:
     //  - Header: cumulative bytesizes: components_num * size_t.
     //  - Body:   components arrays, each: entities_len * component_bytesize.
+    //            component order -> tnecs_component_order.
+
     tnecs_byte       mem[TNECS_CHUNK_COMPONENTS_BYTESIZE];
 } tnecs_chunk;
-
-tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype);
-size_t  *tnecs_chunk_BytesizeArr( const tnecs_chunk *chunk);
-size_t   tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk);
-void    *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder);
-b32      tnecs_chunk_Full(const tnecs_chunk *chunk);
-
-size_t tnecs_EntityOrder_to_ChunkOrder(    const tnecs_chunk *chunk, const size_t entity_order);
-size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order);
 
 typedef struct tnecs_array {
     void    *arr;
@@ -278,6 +272,16 @@ typedef struct tnecs_component_array {
     // Solution: Chunks 
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
+
+/******************** CHUNK **********************/
+tnecs_chunk tnecs_chunk_Init(       const tnecs_world *world, const tnecs_component archetype);
+size_t  *tnecs_chunk_BytesizeArr(   const tnecs_chunk *chunk);
+size_t   tnecs_chunk_TotalBytesize( const tnecs_chunk *chunk);
+void    *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder);
+b32      tnecs_chunk_Full(          const tnecs_chunk *chunk);
+
+size_t tnecs_EntityOrder_to_ChunkOrder(    const tnecs_chunk *chunk, const size_t entity_order);
+size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order);
 
 /******************** WORLD FUNCTIONS **********************/
 b32 tnecs_world_genesis(tnecs_world **w);

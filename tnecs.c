@@ -1292,33 +1292,32 @@ size_t setBits_KnR_uint64_t(uint64_t in_flags) {
 tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype) {
     // Chunk init
     tnecs_chunk chunk = {0};
-    chunk.archetype     = archetype;
     size_t *mem_header  = tnecs_chunk_BytesizeArr(&chunk);
+
     // Adding all component bytesizes in archetype to chunk
     tnecs_component type            = 0;
     tnecs_component component_id    = 0;
-    size_t cumul_bytesize       = 0;
+    size_t cumul_bytesize           = 0;
 
-    for (int i = 1; i < world->num_components; ++i) {
-        // Checking if type in archetype
-        type = 1ULL << (i - 1);
+    // Compute component order the same ways _tnecs_register_archetype
+    //  component order is -> tnecs_component_order()
+    tnecs_component component_type_toadd = 0, archetype_reduced = archetype, archetype_added = 0;
+    while (archetype_reduced) {
+        archetype_reduced &= (archetype_reduced - 1);
 
-        // Skip if type not in archetype
-        if ((archetype & type) == 0) {
-            continue;
-        }
-
-        component_id = TNECS_COMPONENT_TYPE2ID(type);
+        component_type_toadd    = (archetype_reduced + archetype_added) ^ archetype;
+        archetype_added        += component_type_toadd;
+        component_id            = TNECS_COMPONENT_TYPE2ID(type);
         
         // Adding component bytesize to chunk header
-        cumul_bytesize += world->component_bytesizes[component_id];
-        mem_header[chunk.components_num] = cumul_bytesize; 
-        chunk.components_num++;
+        cumul_bytesize += world->components.bytesizes[component_id];
+        mem_header[chunk.components_num++] = cumul_bytesize; 
     }
 
     chunk.entities_len = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
     return(chunk);
 }
+
 // Order of entity in entities_bytype -> index of chunk components are stored in
 size_t tnecs_EntityOrder_to_ArchetypeChunk(const tnecs_chunk *chunk, const size_t entity_order) {
     return(entity_order / chunk->entities_len);
@@ -1333,8 +1332,10 @@ size_t *tnecs_chunk_BytesizeArr(const tnecs_chunk *chunk) {
     return((size_t*)chunk->mem);
 }
 size_t  tnecs_chunk_TotalBytesize(const tnecs_chunk *chunk) {
-    size_t * header = tnecs_chunk_BytesizeArr(chunk);
-    TNECS_DEBUG_ASSERT(chunk->components_num > 0);
+    size_t *header = tnecs_chunk_BytesizeArr(chunk);
+    if (chunk->components_num <= 0) {
+        return(0);
+    }
     return(header[chunk->components_num - 1]);
 }
 
