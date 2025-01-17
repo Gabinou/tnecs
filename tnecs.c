@@ -1261,41 +1261,7 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
     return(1);
 }
 
-/****************************** STRING HASHING *******************************/
-uint64_t tnecs_hash_djb2(const char *str) {
-    /* djb2 hashing algorithm by Dan Bernstein.
-    * Description: This algorithm (k=33) was first reported by dan bernstein many
-    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
-    * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
-    * (why it works better than many other constants, prime or not) has never been adequately explained.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    uint64_t hash = 5381;
-    int32_t str_char;
-    while ((str_char = *str++))
-        hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
-    return (hash);
-}
-
-uint64_t tnecs_hash_combine(uint64_t h1, uint64_t h2) {
-    /* SotA: need to combine couple hashes into 1. Max 4-5? */
-    /* -> Order of combination should not matter -> + or XOR  */
-    /* -> Should be simple and fast -> + or XOR */
-    return (h1 ^ h2); // XOR ignores order
-}
-
-/*************** SET BIT COUNTING *******************/
-size_t setBits_KnR_uint64_t(uint64_t in_flags) {
-    // Credits to Kernighan and Ritchie in the C Programming Language
-    size_t count = 0;
-    while (in_flags) {
-        in_flags &= (in_flags - 1);
-        count++;
-    }
-    return (count);
-}
-
-/********************** CHUNKs *********************/
+/********************** CHUNKS *********************/
 tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component archetype) {
     // Chunk init
     tnecs_chunk chunk = {0};
@@ -1355,4 +1321,38 @@ void *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder) {
 
     tnecs_byte *bytemem = chunk->mem;
     return(bytemem + header_offset + components_offset);
+}
+
+/****************************** STRING HASHING *******************************/
+tnecs_hash tnecs_hash_djb2(const char *str) {
+    /* djb2 hashing algorithm by Dan Bernstein.
+    * Description: This algorithm (k=33) was first reported by dan bernstein many
+    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
+    * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
+    * (why it works better than many other constants, prime or not) has never been adequately explained.
+    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
+    * [2] http://www.cse.yorku.ca/~oz/hash.html */
+    tnecs_hash hash = 5381;
+    int32_t str_char;
+    while ((str_char = *str++))
+        hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
+    return (hash);
+}
+
+tnecs_hash tnecs_hash_combine(tnecs_hash h1, tnecs_hash h2) {
+    /* SotA: need to combine couple hashes into 1. Max 4-5? */
+    /* -> Order of combination should not matter -> + or XOR  */
+    /* -> Should be simple and fast -> + or XOR */
+    return (h1 ^ h2); // XOR ignores order
+}
+
+/*************** SET BIT COUNTING *******************/
+size_t setBits_KnR_uint64_t(uint64_t in_flags) {
+    // Credits to Kernighan and Ritchie in 'C Programming Language'
+    size_t count = 0;
+    while (in_flags) {
+        in_flags &= (in_flags - 1);
+        count++;
+    }
+    return (count);
 }

@@ -16,7 +16,7 @@
 * - Any number of components can be attached to an entity.
 * - Entities are acted upon by systems.
 *
-* In tnecs, an entity is an ```uint64_t``` index.
+* In tnecs, an entity is an ```ull``` index.
 * A component is user-defined ```struct```.
 * A system is a user-defined ```function```.
 * All live inside the ```world```.
@@ -433,8 +433,8 @@ b32 tnecs_grow_system_byphase(  tnecs_world *w, const tnecs_phase phase);
 b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID, const size_t corder);
 
 /****************** STRING HASHING ****************/
-uint64_t tnecs_hash_djb2(const char *str);
-uint64_t tnecs_hash_combine(uint64_t h1, uint64_t h2);
+tnecs_hash tnecs_hash_djb2(const char *str);
+tnecs_hash tnecs_hash_combine(tnecs_hash h1, tnecs_hash h2);
 #define TNECS_HASH(name) tnecs_hash_djb2(name)
 
 /****************** SET BIT COUNTING *****************/
