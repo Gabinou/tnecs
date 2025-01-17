@@ -79,7 +79,6 @@ typedef unsigned char           tnecs_byte;
 
 /*** Forward declarations ***/
 typedef struct tnecs_system_input     tnecs_system_input;
-typedef struct tnecs_component_array  tnecs_component_array;
 
 /*** Function pointer ***/
 typedef void (*tnecs_system_ptr)(struct tnecs_system_input *);
@@ -147,6 +146,19 @@ enum TNECS {
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 /************ STRUCTS DEFINITIONS ***************/
+typedef struct tnecs_component_array {
+    // 1D array of 1 component.
+    tnecs_component  type;
+    size_t           num_components;
+    size_t           len_components;
+    // Problems: 
+    //      - components array is not in structure
+    //      - need 2 allocs: for struct, and then array
+    // Solution: Chunks 
+    void            *components;      /* [entity_order_bytype] */
+} tnecs_component_array;
+
+
 // tnecs_Chunk: memory reserved for all components of archetype
 // - Each component has an array inside the chunk.
 // - Each chunk is 16kB total.
@@ -261,20 +273,8 @@ typedef struct tnecs_system_input {
     void            *data;
 } tnecs_system_input;
 
-typedef struct tnecs_component_array {
-    // 1D array of 1 component.
-    tnecs_component  type;
-    size_t           num_components;
-    size_t           len_components;
-    // Problems: 
-    //      - components array is not in structure
-    //      - need 2 allocs: for struct, and then array
-    // Solution: Chunks 
-    void            *components;      /* [entity_order_bytype] */
-} tnecs_component_array;
-
 /******************** CHUNK **********************/
-tnecs_chunk tnecs_chunk_Init(       const tnecs_world *world, const tnecs_component archetype);
+tnecs_chunk tnecs_chunk_Init(       tnecs_world *world, const tnecs_component archetype);
 size_t  *tnecs_chunk_BytesizeArr(   const tnecs_chunk *chunk);
 size_t   tnecs_chunk_TotalBytesize( const tnecs_chunk *chunk);
 void    *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder);
