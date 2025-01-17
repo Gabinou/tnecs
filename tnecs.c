@@ -1011,19 +1011,6 @@ tnecs_component tnecs_component_names2archetype(tnecs_world *world, size_t argnu
     return (archetype);
 }
 
-void tnecs_components_names_print(tnecs_world *world, tnecs_entity entity) {
-    tnecs_component archetype = world->entities.archetypes[entity];
-    size_t tID               = tnecs_archetypeid(world, archetype);
-    size_t comp_num          = world->bytype.num_components[tID];
-    printf("Entity %llu: ", entity);
-    for (size_t corder = 0; corder < comp_num; corder++) {
-        size_t component_id = world->bytype.components_id[tID][corder];
-        printf("%s, ", world->components.names[component_id]);
-    }
-    printf("\n");
-}
-
-
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...) {
     tnecs_component out = 0;
     va_list ap;
