@@ -255,10 +255,10 @@ typedef struct Unit2 {
 //     }
 // }
 
-// /*****************************TEST CONSTANTS***************************/
-// #define ITERATIONS 10000
-// #define ARRAY_LEN 100
-// size_t fps_iterations = 10;
+/*****************************TEST CONSTANTS***************************/
+#define ITERATIONS 10000
+#define ARRAY_LEN 100
+size_t fps_iterations = 10;
 
 // /*******************************TEST SYSTEMS***************************/
 // tnecs_entity tnecs_entities[ITERATIONS];
@@ -267,7 +267,7 @@ typedef struct Unit2 {
 // struct Position     *temp_position;
 // struct Unit         *temp_unit;
 // struct Sprite       *temp_sprite;
-// struct tnecs_world  *test_world;
+struct tnecs_world  *test_world;
 
 // void SystemMove(struct tnecs_system_input *in_input) {
 //     // printf("SystemMove\n");
@@ -1349,6 +1349,7 @@ void tnecs_benchmarks() {
     tnecs_world_destroy(&bench_world);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: World Destroy time: \n", ITERATIONS);
+    dupprintf(globalf, "tnecs: World Destroy time: \n", ITERATIONS);
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
 }
@@ -1380,7 +1381,7 @@ int main() {
     // lrun("progress",   tnecs_test_world_progress);
     // lresults();
 
-    tnecs_other_benchmarks();
+    // tnecs_other_benchmarks();
     tnecs_benchmarks();
     tnecs_world_destroy(&test_world);
     dupprintf(globalf, "tnecs Test End \n \n");

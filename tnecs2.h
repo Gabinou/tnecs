@@ -277,6 +277,7 @@ b32 tnecs_world_destroy(tnecs_world **w);
 
 tnecs_arena *tnecs_world_arena(tnecs_world *w);
 void *tnecs_arena_ptr(tnecs_arena *arena, i64 handle);
+i64 tnecs_arena_push(tnecs_arena *arena, i64 size);
 
 b32 tnecs_world_step(      tnecs_world *w, tnecs_ns     deltat, void *data);
 b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, void *data);
