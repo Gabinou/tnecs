@@ -158,7 +158,6 @@ typedef struct tnecs_world {
     size_t           **archetype_id_bytype;     // [typeflag_id][typeflag_id_order]
     size_t            *num_archetype_ids;       // [typeflag_id]
     tnecs_component_array **components_bytype;  // [typeflag_id][component_order_bytype]
-    ,,
     tnecs_entity     **entities_bytype;         // [typeflag_id][entity_order_bytype]
     tnecs_component  **components_idbytype;     // [typeflag_id][component_order_bytype]
     tnecs_component  **components_flagbytype;   // [typeflag_id][component_order_bytype] *unused
@@ -189,7 +188,7 @@ typedef struct tnecs_world {
     tnecs_entity      entity_next;
     tnecs_entity     *entities_open;
 
-    b32 reuse_entities;,
+    b32 reuse_entities;
 } tnecs_world;
 
 typedef struct tnecs_system_input {
@@ -267,7 +266,7 @@ typedef struct tnecs_archetype_arena {
     i64 components_order_bytype;    // *i64 -> *size_t
     i64 entities_bytype;            // *i64 -> *tnecs_entity
     i64 chunks_bytype;              // *i64 -> *tnecs_chunk
-} tnecs_typeflag_arena;
+} tnecs_archetype_arena;
 
 typedef struct tnecs_components_arena {
     size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
@@ -279,7 +278,6 @@ typedef struct tnecs_components_arena {
 typedef struct tnecs_local_world {
     tnecs_phase_arena        phases;
     tnecs_system_arena       systems;
-    tnecs_typeflag_arena     archetypes;
     tnecs_entities_arena     entities;
     tnecs_archetype_arena    archetypes;
     tnecs_components_arena   components;
@@ -311,9 +309,9 @@ typedef struct tnecs_chunk {
 // No copy assignment.
 // No local variable, only ptr.
 typedef struct tnecs_arena {
-    i64             size;     /* [bytes]  total malloced bytesize     */
-    i64             fill;     /* [bytes]  part of _start used         */
-    byte            mem[];
+    i64         size;     /* [bytes]  total malloced bytesize     */
+    i64         fill;     /* [bytes]  part of _start used         */
+    tnecs_byte  mem[];
 } tnecs_arena;
 
 
