@@ -88,7 +88,6 @@ b32 tnecs_world_destroy(tnecs_world **world) {
     free((*world)->byphase.systems_id);
     free((*world)->systems.archetypes);
     free((*world)->systems.phases);
-    free((*world)->systems.hashes);
     free((*world)->systems.names);
     free((*world)->bytype.id);
     free(*world);
@@ -124,7 +123,6 @@ b32 tnecs_world_step_phase(tnecs_world *world,  tnecs_phase  phase,
 b32 _tnecs_world_breath_components(tnecs_world *world) {
     size_t namelen = 5;
     world->components.num                   = TNECS_NULLSHIFT;
-    world->components.hashes[TNECS_NULL]    = TNECS_NULL;
     world->components.bytesizes[TNECS_NULL] = TNECS_NULL;
     world->components.names[TNECS_NULL]     = malloc(namelen);
     TNECS_CHECK_ALLOC(world->components.names[TNECS_NULL]);
@@ -198,8 +196,6 @@ b32 _tnecs_world_breath_systems(tnecs_world *world) {
     world->systems.names                = calloc(world->systems.len,
                                                  sizeof(*world->systems.names));
     world->systems.names[TNECS_NULL]    = malloc(namelen);
-    world->systems.hashes               = calloc(world->systems.len,
-                                                 sizeof(*world->systems.hashes));
     world->systems.phases               = calloc(world->systems.len,
                                                  sizeof(*world->systems.phases));
     world->systems.orders               = calloc(world->systems.len,
@@ -212,7 +208,6 @@ b32 _tnecs_world_breath_systems(tnecs_world *world) {
 
     TNECS_CHECK_ALLOC(world->systems.names);
     TNECS_CHECK_ALLOC(world->systems_torun.arr);
-    TNECS_CHECK_ALLOC(world->systems.hashes);
     TNECS_CHECK_ALLOC(world->systems.phases);
     TNECS_CHECK_ALLOC(world->systems.orders);
     TNECS_CHECK_ALLOC(world->systems.archetypes);
@@ -354,11 +349,10 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
         TNECS_CHECK_CALL(tnecs_grow_system_byphase(world, phase));
 
     /* -- Actual registration -- */
-    /* Saving name and hash */
+    /* Saving name */
     world->systems.names[system_id] = calloc(1, strlen(name) + 1);
     TNECS_CHECK_ALLOC(world->systems.names[system_id]);
 
-    tnecs_hash hash                 = TNECS_HASH(name);
     strncpy(world->systems.names[system_id], name, strlen(name) + 1);
 
     /* Register new phase if didn't exist */
@@ -367,7 +361,6 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
 
     world->systems.exclusive[system_id]     = isExclusive;
     world->systems.phases[system_id]        = phase;
-    world->systems.hashes[system_id]        = hash;
     world->systems.archetypes[system_id]    = components_archetype;
 
     /* System order */
@@ -395,7 +388,6 @@ tnecs_component tnecs_register_component(tnecs_world    *world,
 
     /* Registering */
     tnecs_component new_component_id                = world->components.num++;
-    world->components.hashes[new_component_id]      = TNECS_HASH(name);
     tnecs_component new_component_flag              = TNECS_COMPONENT_ID2TYPE(new_component_id);
     world->components.bytesizes[new_component_id]   = bytesize;
 
@@ -1106,9 +1098,6 @@ b32 tnecs_grow_system(tnecs_world *world) {
     world->systems.orders       = tnecs_realloc(world->systems.orders,    olen, nlen,
                                                 sizeof(*world->systems.orders));
     TNECS_CHECK_ALLOC(world->systems.orders);
-    world->systems.hashes       = tnecs_realloc(world->systems.hashes,    olen, nlen,
-                                                sizeof(*world->systems.hashes));
-    TNECS_CHECK_ALLOC(world->systems.hashes);
     world->systems.exclusive    = tnecs_realloc(world->systems.exclusive, olen, nlen,
                                                 sizeof(*world->systems.exclusive));
     TNECS_CHECK_ALLOC(world->systems.exclusive);
@@ -1236,29 +1225,6 @@ b32 tnecs_grow_bytype(tnecs_world *world, const size_t tID) {
     TNECS_CHECK_ALLOC(world->bytype.entities[tID]);
 
     return (1);
-}
-
-/******************** STRING HASHING *********************/
-tnecs_hash tnecs_hash_djb2(const char *str) {
-    /* djb2 hashing algorithm by Dan Bernstein.
-    * Description: This algorithm (k=33) was first reported by dan bernstein many
-    * years ago in comp.lang.c. Another version of this algorithm (now favored by bernstein)
-    * uses xor: hash(i) = hash(i - 1) * 33 ^ str[i]; the magic of number 33
-    * (why it works better than many other constants, prime or not) has never been adequately explained.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-    tnecs_hash hash = 5381;
-    int32_t str_char;
-    while ((str_char = *str++))
-        hash = ((hash << 5) + hash) + str_char; /* hash * 33 + c */
-    return (hash);
-}
-
-tnecs_hash tnecs_hash_combine(const tnecs_hash h1, const tnecs_hash h2) {
-    /* SotA: need to combine couple hashes into 1. Max 4-5? */
-    /* -> Order of combination should not matter -> + or XOR  */
-    /* -> Should be simple and fast -> + or XOR */
-    return (h1 ^ h2); // XOR ignores order
 }
 
 /*************** SET BIT COUNTING *******************/

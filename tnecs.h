@@ -70,7 +70,6 @@ extern "C" {
 /******************* TYPE DEFINITIONS *******************/
 typedef unsigned long long int  tnecs_entity;       // 64 bit int
 typedef tnecs_entity            tnecs_component;    // 64 bit flag
-typedef uint64_t                tnecs_hash;
 typedef uint32_t                tnecs_phase;
 typedef uint64_t                tnecs_ns;
 typedef int32_t                 b32;
@@ -191,7 +190,6 @@ typedef struct tnecs_system {
     char           **names;         // [system_id]
     tnecs_phase     *phases;        // [system_id]
     size_t          *orders;        // [system_id]
-    tnecs_hash      *hashes;        // [system_id]
     b32             *exclusive;     // [system_id]
     tnecs_component *archetypes;    // [system_id]
 } tnecs_system;
@@ -216,7 +214,6 @@ typedef struct tnecs_archetype {
 typedef struct tnecs_components {
     size_t           num;
     size_t           bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
-    tnecs_hash       hashes[TNECS_COMPONENT_CAP];     // [component_id]
     char            *names[TNECS_COMPONENT_CAP];      // [component_id]
 } tnecs_components;
 
@@ -285,7 +282,7 @@ b32 tnecs_entity_isOpen( tnecs_world *w, tnecs_entity ent);
 b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity ent);
 
 #define TNECS_ENTITY_EXISTS(world, index) (world->entities[index] > TNECS_NULL)
-#define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
+#define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_DONOTHING, __VA_ARGS__))
 
 #define TNECS_ENTITY_ARCHETYPE(world, entity) world->entities.archetypes[entity]
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, component_id) ((world->entities.archetypes[entity] & tnecs_component_ids2archetype(1, cid)) > 0)
@@ -338,7 +335,6 @@ size_t tnecs_component_order_bytype(tnecs_world *w, size_t component_id,
 size_t tnecs_component_order_bytypeid(tnecs_world *w, size_t component_id,
                                       size_t archetype_id);
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
-tnecs_component tnecs_component_hash2type(tnecs_world *w, tnecs_hash hash);
 
 size_t tnecs_archetypeid(tnecs_world *w, tnecs_component archetype);
 
@@ -363,11 +359,6 @@ b32 tnecs_grow_entities_open(   tnecs_world *w);
 b32 tnecs_grow_system_byphase(  tnecs_world *w, const tnecs_phase phase);
 b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID,
                                 const size_t corder);
-
-/****************** STRING HASHING ****************/
-tnecs_hash tnecs_hash_djb2(const char *str);
-tnecs_hash tnecs_hash_combine(const tnecs_hash h1, const tnecs_hash h2);
-#define TNECS_HASH(name) tnecs_hash_djb2(name)
 
 /****************** SET BIT COUNTING *****************/
 size_t setBits_KnR_uint64_t(uint64_t flags);

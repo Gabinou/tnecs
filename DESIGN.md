@@ -17,8 +17,7 @@ Anyhow, as was mentionned in the the [Readme](https://gitlab.com/Gabinou/tnecs/-
 
 For perfomance reasons, everything inside the world is an array.
 Whenever entities are created, components and systems are registered, an associated index is created.
-Component and systems names are hashed and saved for faster comparisons later.
-Their names are also recorded as strings for convenience.
+Their names are recorded as strings for convenience.
 Index 0 is always reserved for NULL.
 
 The most notable design feature is the use of a ```uint64_t``` as a bitflag to denote the component type.
