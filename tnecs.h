@@ -266,11 +266,11 @@ size_t tnecs_register_system(tnecs_world *w, const char *name,
                              b32 isExclusive, size_t component_num, tnecs_component component_archetype);
 size_t tnecs_register_phase(tnecs_world *w, tnecs_phase phase);
 
-#define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, #pfunc, &pfunc, 0, 0, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wPHASE(world, pfunc, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, 0,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wEXCL(world, pfunc, excl, ...) tnecs_register_system(world, #pfunc, &pfunc, 0, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wPHASE_wEXCL(world, pfunc, phase, excl, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
-#define TNECS_REGISTER_SYSTEM_wEXCL_wPHASE(world, pfunc, excl, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM(world, pfunc, ...) tnecs_register_system(world, #pfunc, &pfunc, 0, 0, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wPHASE(world, pfunc, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, 0,TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wEXCL(world, pfunc, excl, ...) tnecs_register_system(world, #pfunc, &pfunc, 0, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wPHASE_wEXCL(pfunc, phase, excl, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM_wEXCL_wPHASE(pfunc, excl, phase, ...) tnecs_register_system(world, #pfunc, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
 
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, #name, sizeof(name))
 
@@ -294,12 +294,12 @@ b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
 #define TNECS_ENTITY_ARCHETYPE(world, entity) world->entities.archetypes[entity]
-#define TNECS_ENTITY_HASCOMPONENT(world, entity, name) ((world->entities.archetypes[entity] &tnecs_component_names2archetype(world, 1, #name)) > 0)
+#define TNECS_ENTITY_HASCOMPONENT(world, entity, component_id) ((world->entities.archetypes[entity] & tnecs_component_ids2archetype(1, cid)) > 0)
 
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
-#define TNECS_ADD_COMPONENT3(world, entity_id, component) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2archetype(world, 1, #component), true)
-#define TNECS_ADD_COMPONENT4(world, entity_id, component, isnewtype) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_names2archetype(world, 1, #component), isnewtype)
+#define TNECS_ADD_COMPONENT3(world, entity_id, component_id) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_ids2archetype(1, component_id), true)
+#define TNECS_ADD_COMPONENT4(world, entity_id, component_id, isnewtype) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_ids2archetype(1, component_id), isnewtype)
 
 #define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)), isnewtype)
 
@@ -345,7 +345,7 @@ size_t tnecs_component_order_bytype(tnecs_world *w, size_t component_id,
                                     tnecs_component archetype);
 size_t tnecs_component_order_bytypeid(tnecs_world *w, size_t component_id,
                                       size_t archetype_id);
-tnecs_component tnecs_component_names2archetype(tnecs_world *w, size_t argnum, ...);
+// tnecs_component tnecs_component_names2archetype(tnecs_world *w, size_t argnum, ...);
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 tnecs_component tnecs_component_hash2type(tnecs_world *w, tnecs_hash hash);
 
@@ -359,9 +359,9 @@ size_t tnecs_archetypeid(tnecs_world *w, tnecs_component archetype);
 #define TNECS_COMPONENT_TYPE2ID(type) (type >=1 ? (tnecs_component)(log2(type) + 1.1f): 0) // casting to int floors
 #define TNECS_COMPONENT_HASH2ID(world, hash) tnecs_component_hash2id(world, hash)
 #define TNECS_COMPONENT_HASH2TYPE(world, hash) tnecs_component_hash2type(world, hash)
-#define TNECS_COMPONENT_NAME2TYPE(world, name) tnecs_component_names2archetype(world, 1, #name)
-#define TNECS_COMPONENT_NAMES2ARCHETYPE(world, ...) tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
-#define TNECS_COMPONENT_NAMES2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+// #define TNECS_COMPONENT_NAME2TYPE(world, name) tnecs_component_names2archetype(world, 1, #name)
+// #define TNECS_COMPONENT_NAMES2ARCHETYPE(world, ...) tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__))
+// #define TNECS_COMPONENT_NAMES2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_names2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__))
 #define TNECS_COMPONENTS_LIST(input, component_id) (input->world->bytype.components[input->entity_archetype_id][input->world->bytype.components_order[input->entity_archetype_id][component_id]].components)
