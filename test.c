@@ -201,6 +201,11 @@ typedef struct Unit2 {
     uint64_t res;
 } Unit2;
 
+#undef TNECS_COMPONENTS_LIST
+#define TNECS_COMPONENTS_LIST(input, component_name) (input->world->bytype.components[input->entity_archetype_id][input->world->bytype.components_order[input->entity_archetype_id][tnecs_component_name2id(input->world, #component_name)]].components)
+
+#define TNECS_GET_COMPONENT(world, entity_id, name) tnecs_get_component(world, entity_id, tnecs_component_name2id(world, #name))
+
 void SystemMove2(struct tnecs_system_input *in_input) {
     // printf("SystemMove2\n");
     struct Position2    *p = TNECS_COMPONENTS_LIST(in_input, Position2);
