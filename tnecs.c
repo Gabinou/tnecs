@@ -529,13 +529,13 @@ tnecs_entity tnecs_entities_create(tnecs_world *world, size_t num) {
 }
 
 tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, ...) {
-    /* Get archetype of all vararg components */
+    /* Get archetype of all vararg components ids */
     va_list ap;
     va_start(ap, argnum);
     tnecs_component archetype = 0;
     for (size_t i = 0; i < argnum; i++) {
-        tnecs_hash hash = va_arg(ap, tnecs_hash);
-        archetype += tnecs_component_hash2type(world, hash);
+        tnecs_component component_id = va_arg(ap, tnecs_component);
+        archetype += TNECS_COMPONENT_ID2TYPE(world, component_id);
     }
     va_end(ap);
 

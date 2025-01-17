@@ -187,6 +187,7 @@ typedef struct tnecs_entities {
 typedef struct tnecs_system {
     size_t num;
     size_t len;
+
     char           **names;         // [system_id]
     tnecs_phase     *phases;        // [system_id]
     size_t          *orders;        // [system_id]
@@ -199,13 +200,11 @@ typedef struct tnecs_archetype {
     size_t num;
     size_t len;
 
-    tnecs_component  *id;                   // [archetype_id]
-
-    size_t           *num_components;       // [archetype_id]
-    size_t           *len_entities;         // [archetype_id]
-    size_t           *num_entities;         // [archetype_id]
-    size_t           *num_archetype_ids;    // [archetype_id]
-
+    tnecs_component   *id;                  // [archetype_id]
+    size_t            *num_components;      // [archetype_id]
+    size_t            *len_entities;        // [archetype_id]
+    size_t            *num_entities;        // [archetype_id]
+    size_t            *num_archetype_ids;   // [archetype_id]
     size_t           **archetype_id;        // [archetype_id][archetype_id_order]
     tnecs_entity     **entities;            // [archetype_id][entity_order_bytype]
     size_t           **components_order;    // [archetype_id][component_id]
@@ -229,9 +228,8 @@ typedef struct tnecs_world {
     tnecs_entities      entities;
     tnecs_archetype     bytype;
     tnecs_components    components;
-
-    tnecs_array entities_open;
-    tnecs_array systems_torun;
+    tnecs_array         entities_open;
+    tnecs_array         systems_torun;
 
     b32 reuse_entities;
 } tnecs_world;
@@ -276,23 +274,19 @@ size_t tnecs_register_phase(tnecs_world *w, tnecs_phase phase);
 
 /************ ENTITY MANIPULATION *************/
 /* -- Public -- */
-tnecs_entity tnecs_entity_create(tnecs_world *w);
-tnecs_entity tnecs_entities_create(tnecs_world *w, size_t num);
+tnecs_entity tnecs_entity_create(            tnecs_world *w);
+tnecs_entity tnecs_entities_create(          tnecs_world *w, size_t num);
 tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *w, size_t argnum, ...);
 
 b32 tnecs_entities_open_reuse(tnecs_world *w);
 b32 tnecs_entities_open_flush(tnecs_world *w);
 
-b32 tnecs_entity_isOpen(tnecs_world *w, tnecs_entity ent);
-
-b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity entity);
+b32 tnecs_entity_isOpen( tnecs_world *w, tnecs_entity ent);
+b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity ent);
 
 #define TNECS_ENTITY_EXISTS(world, index) (world->entities[index] > TNECS_NULL)
-
-#define TNECS_ENTITY_CREATE(world) tnecs_entity_create(world)
-#define TNECS_ENTITIES_CREATE(world, num) tnecs_entities_create(world, num)
-
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_HASH, __VA_ARGS__))
+
 #define TNECS_ENTITY_ARCHETYPE(world, entity) world->entities.archetypes[entity]
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, component_id) ((world->entities.archetypes[entity] & tnecs_component_ids2archetype(1, cid)) > 0)
 
