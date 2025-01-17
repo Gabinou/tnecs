@@ -95,6 +95,8 @@ b32 _tnecs_world_breath_arrays(tnecs_world *world) {
 
 b32 _tnecs_world_breath_entities(tnecs_world *world) {
     /* Compute all bytesizes */
+    world->entities.len         = TNECS_INIT_ENTITY_LEN;
+    world->entities.num         = TNECS_NULLSHIFT;
     size_t bytesize_id          = world->entities.len * sizeof(tnecs_entity);
     size_t bytesize_order       = world->entities.len * sizeof(size_t);
     size_t bytesize_archetype   = world->entities.len * sizeof(tnecs_component);
@@ -103,22 +105,19 @@ b32 _tnecs_world_breath_entities(tnecs_world *world) {
 
     /* Alloc child arena in parent arena */
     tnecs_arena *world_arena    = tnecs_world_arena(*world);
-    world->entities.next        = TNECS_NULLSHIFT;
-    world->entities.len         = TNECS_INIT_ENTITY_LEN;
     world->entities.handle      = tnecs_arena_push(world_arena, bytesize_total);
     TNECS_CHECK_ALLOC(world->entities.handle);
 
     /* Alloc entities array into entity_arena */
     tnecs_arena *entity_arena   = tnecs_arena_ptr(world_arena, world->entities.handle);
-    entity->arena->fill         = TNECS_NULLSHIFT;
+    entity_arena->fill          = TNECS_NULLSHIFT;
 
     world->entities.id          = tnecs_arena_push(entity_arena, bytesize_id);
-    TNECS_CHECK_ALLOC(world->entities.entity);
-
-    world->entities.archetype   = tnecs_arena_push(entity_arena, bytesize_archetype);
-    TNECS_CHECK_ALLOC(world->entities.archetype);
-
     world->entities.order       = tnecs_arena_push(entity_arena, bytesize_order);
+    world->entities.archetype   = tnecs_arena_push(entity_arena, bytesize_archetype);
+
+    TNECS_CHECK_ALLOC(world->entities.entity);
+    TNECS_CHECK_ALLOC(world->entities.archetype);
     TNECS_CHECK_ALLOC(world->entities.order);
 
     return(1);
@@ -135,15 +134,93 @@ b32 _tnecs_world_breath_components(tnecs_world *world) {
 }
 
 b32 _tnecs_world_breath_systems(tnecs_world *world) {
-    /* Variables */
-    world->len_systems          = TNECS_INIT_SYSTEM_LEN;
-    world->len_systems_torun    = TNECS_INIT_SYSTEM_LEN;
-    world->num_systems          = TNECS_NULLSHIFT;
-    world->len_phases           = TNECS_INIT_PHASE_LEN;
-    world->num_phases           = TNECS_NULLSHIFT;
+    /* Compute all bytesizes */
+    world->systems.len          = TNECS_INIT_SYSTEM_LEN;
+    world->systems.num          = TNECS_NULLSHIFT;
+    size_t bytesize_archetype   = world->systems.len * sizeof(tnecs_component);
+    size_t bytesize_order       = world->systems.len * sizeof(size_t);
+    size_t bytesize_name        = world->systems.len * sizeof(i64);
+    size_t bytesize_hash        = world->systems.len * sizeof(tnecs_hash);
+    size_t bytesize_phase       = world->systems.len * sizeof(tnecs_phase);
+    size_t bytesize_exclusive   = world->systems.len * sizeof(b32);
+    size_t bytesize_total       = bytesize_archetype + bytesize_order + bytesize_name + bytesize_hash + bytesize_phase + bytesize_exclusive + TNECS_NULLSHIFT;
+    bytesize_total              = tnecs_round_up(bytesize_total);
 
-    /* Set name of first system */
-    strncpy(world->system_names[TNECS_NULL], "NULL\0", namelen);
+    /* Alloc child arena in parent arena */
+    tnecs_arena *world_arena   = tnecs_world_arena(*world);
+    world->systems.handle      = tnecs_arena_push(world_arena, bytesize_total);
+    TNECS_CHECK_ALLOC(world->systems.handle);
+
+    tnecs_arean *systems_arena  = tnecs_arena_ptr(world_arena, world->systems.handle);
+    systems_arena.fill          = TNECS_NULLSHIFT;
+
+    world->systems.hash         = tnecs_arena_push(systems_arena, bytesize_hash);
+    world->systems.name         = tnecs_arena_push(systems_arena, bytesize_name);
+    world->systems.order        = tnecs_arena_push(systems_arena, bytesize_order);
+    world->systems.phase        = tnecs_arena_push(systems_arena, bytesize_phase);
+    world->systems.archetype    = tnecs_arena_push(systems_arena, bytesize_archetype);
+    world->systems.exclusive    = tnecs_arena_push(systems_arena, bytesize_exclusive);
+    TNECS_CHECK_ALLOC(world->systems.archetype);
+    TNECS_CHECK_ALLOC(world->systems.order);
+    TNECS_CHECK_ALLOC(world->systems.name);
+    TNECS_CHECK_ALLOC(world->systems.hash);
+    TNECS_CHECK_ALLOC(world->systems.phase);
+    TNECS_CHECK_ALLOC(world->systems.exclusive);
+
+
+    /* Set name of NULL system */
+    i64 *system_names_array = tnecs_arena_ptr(systems_arena, world->systems.name);
+    // TODO: name adding utility
+    system_names_array[0]   = tnecs_arena_push(systems_arena, 5);
+    char *null_system_name  = tnecs_arena_ptr(systems_arena, system_names_array[0]);
+    strncpy(world->system.names[TNECS_NULL], "NULL\0", namelen);
+
+    return(1);
+}
+
+b32 _tnecs_world_breath_phases(tnecs_world *world) {
+    world->phases.len   = TNECS_INIT_PHASE_LEN;
+    world->phases.num   = TNECS_NULLSHIFT;
+
+    size_t bytesize_byphase     = world->phases.len * sizeof(i64);
+    size_t bytesize_idbyphase   = world->phases.len * sizeof(i64);
+    size_t bytesize_numbyphase  = world->phases.len * sizeof(i64);
+    size_t bytesize_lenbyphase  = world->phases.len * sizeof(i64);
+    size_t bytesize_total       = bytesize_byphase + bytesize_idbyphase + bytesize_numbyphase + bytesize_lenbyphase + TNECS_NULLSHIFT;              
+    bytesize_total= tnecs_round_up(bytesize_total);
+
+    /* Alloc child arena in parent arena */
+    tnecs_arena *world_arena    = tnecs_world_arena(*world);
+    world->phases.handle        = tnecs_arena_push(world_arena, bytesize_total);
+    TNECS_CHECK_ALLOC(world->phases.handle);
+
+    tnecs_arena *phases_arena       = tnecs_arena_ptr(world_arena, world->phases.handle);
+    phases_arena.fill               = TNECS_NULLSHIFT;
+
+    world->phases.num_byphase       = tnecs_arena_push(systems_arena, bytesize_numbyphase);
+    world->phases.len_byphase       = tnecs_arena_push(systems_arena, bytesize_byphase);
+    world->phases.system_byphase    = tnecs_arena_push(systems_arena, bytesize_byphase);
+    world->phases.system_idbyphase  = tnecs_arena_push(systems_arena, bytesize_idbyphase);
+    TNECS_CHECK_ALLOC(world->phases.system_byphase);
+    TNECS_CHECK_ALLOC(world->phases.system_idbyphase);
+
+
+    /* Alloc & check for entities_byphase elements */
+    i64 *system_byphase     = tnecs_arena_ptr(phases_arena, world->phases.system_byphase);
+    i64 *system_idbyphase   = tnecs_arena_ptr(phases_arena, world->phases.system_idbyphase);
+    size_t *len_byphase     = tnecs_arena_ptr(phases_arena, world->phases.len_byphase);
+    size_t bytesize_byphase_elem    = world->phases.len * sizeof(tnecs_system_ptr);
+    size_t bytesize_idbyphase_elem  = world->phases.len * sizeof(size_t);
+    for (size_t i = 0; i < world->phases.len; i++) {
+        len_byphase[i] = world->phases.len;
+
+        system_byphase[i]   = tnecs_arena_push(phases_arena, bytesize_byphase_elem);
+        system_idbyphase[i] = tnecs_arena_push(phases_arena, bytesize_idbyphase_elem);
+
+        TNECS_CHECK_ALLOC(system_byphase[i]);
+        TNECS_CHECK_ALLOC(system_idbyphase[i]);
+    }
+
     return(1);
 }
 
@@ -225,7 +302,7 @@ b32 tnecs_system_run(tnecs_world *world, size_t in_system_id,
             TNECS_CHECK_CALL(tnecs_growArray_torun(world));
         }
         tnecs_system_ptr system             = world->systems_byphase[phase][sorder];
-        size_t system_num                      = world->num_systems_torun++;
+        size_t system_num                   = world->num_systems_torun++;
         world->systems_torun[system_num]    = system;
         system(&input);
     }
@@ -1295,7 +1372,7 @@ void *tnecs_arena_ptr(tnecs_arena *arena, i64 handle) {
     if (!tnecs_arena_valid(arena))
         return(NULL);
     
-    if ((handle < 0ull) || (handle >= arena->fill))
+    if ((handle <= 0ull) || (handle >= arena->fill))
         return(NULL);
         
     return(arena->mem + handle);

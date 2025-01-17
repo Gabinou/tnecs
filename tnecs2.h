@@ -65,12 +65,8 @@ typedef uint64_t                tnecs_ns;
 typedef int32_t                 b32;
 typedef unsigned char           tnecs_byte;
 
-
-
-
 /*** Forward declarations ***/
 typedef struct tnecs_system_input     tnecs_system_input;
-typedef struct tnecs_component_array  tnecs_component_array;
 
 /*** Function pointer ***/
 typedef void (*tnecs_system_ptr)(struct tnecs_system_input *);
@@ -81,6 +77,7 @@ enum TNECS {
     TNECS_NULLSHIFT             =         1,
     TNECS_INIT_ENTITY_LEN       =       128,
     TNECS_INIT_PHASE_LEN        =         8,
+    TNECS_INIT_SYSTEM_LEN       =        16,
     TNECS_INIT_COMPONENT_LEN    =         8,
     TNECS_INIT_ARCHETYPE_LEN    =        16,
     TNECS_ROUNDING_MULTIPLE     =        16,
@@ -150,17 +147,6 @@ typedef struct tnecs_system_input {
     void            *data;
 } tnecs_system_input;
 
-// 1D array of 1 component.
-typedef struct tnecs_component_array {
-    tnecs_component  type;
-    size_t           num_components;
-    size_t           len_components;
-    // problems: 
-    //      - components array is not in structure
-    //      - need 2 allocs: for struct, and then array
-    void            *components;      /* [entity_order_bytype] */
-} tnecs_component_array;
-
 typedef struct tnecs_arena_array {
     i64 handle;
     size_t num;
@@ -171,18 +157,25 @@ typedef struct tnecs_phase_arena {
     i64 arena;
     size_t num;
     size_t len;
-    // All handles
-    i64 system_byphase;
-    i64 system_idbyphase;
+    // All handles -> [phase_id] access
+    i64 num_byphase;         // *size_t
+    i64 len_byphase;         // *size_t
+
+    i64 system_byphase;     // *i64 -> *tnecs_system_ptr
+    i64 system_idbyphase;   // *i64 -> *size_t
 } tnecs_phase_arena;
 
 typedef struct tnecs_entities_arena {
     i64 arena;
+    // entities.num has slightly different meaning:
+    // - Some entities might get deleted, but entities.num won't change.
+    // - If reuse_entities is true, they are added to entities_open, and reused.
+    // - If reuse_entities is false, these entities are unusable. 
+    //      - TODO: Unless user calls tnecs_open_entities_queue.
     size_t num;
     size_t len;
-    tnecs_entity next;
 
-    // All handles
+    // All handles -> [entity_id] access
     i64 id;         // *tnecs_entity
     i64 order;      // *size_t
     i64 archetype;  // *tnecs_component
@@ -192,7 +185,7 @@ typedef struct tnecs_system_arena {
     i64 arena;
     size_t num;
     size_t len;
-    // All handles
+    // All handles -> [system_id] access
     i64 archetype;  // *tnecs_component
     i64 order;      // *size_t
     i64 name;       // *i64
@@ -206,7 +199,11 @@ typedef struct tnecs_archetype_arena {
     size_t num;
     size_t len;
     
+    // All handles -> [archetype_id] access
     i64 id;                         // *tnecs_component
+    i64 num_bytype;                 // *size_t
+    i64 len_bytype;                 // *size_t
+
     // len/num of bytype arrays is archetype_id.num/len
     i64 id_bytype;                  // *i64 -> *tnecs_component
     i64 components_idbytype;        // *i64 -> *tnecs_component
@@ -216,6 +213,7 @@ typedef struct tnecs_archetype_arena {
 } tnecs_archetype_arena;
 
 typedef struct tnecs_components_arena {
+    // All handles -> [component_id] access
     size_t      component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
     tnecs_hash  component_hashes[TNECS_COMPONENT_CAP];     // [component_id]
     i64         component_names[TNECS_COMPONENT_CAP];      // [component_id]
@@ -244,9 +242,9 @@ typedef struct tnecs_world {
 // - Entity order determines if chunk is full
 #define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t) - sizeof(tnecs_component))
 typedef struct tnecs_chunk {
-    tnecs_component  archetype;
-    size_t           components_num;
+    size_t           components_num; 
     size_t           entities_len; 
+
     // Raw memory chunk:
     //  - Header: cumulative bytesizes: components_num * size_t.
     //  - Body:   components arrays, each: entities_len * component_bytesize.
