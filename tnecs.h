@@ -36,8 +36,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdarg.h>
-#include <math.h>
-
+#include <math.h>ss
 #ifndef log2 // tcc SUCKS and DOES NOT define log2
     #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
 #endif
@@ -65,7 +64,7 @@ extern "C" {
         if (!call) { \
             printf("tnecs: failed function call " #call "\n"); \
             return(0); \
-        } \
+        } \s
     } while (0)
 
 /******************* TYPE DEFINITIONS *******************/
