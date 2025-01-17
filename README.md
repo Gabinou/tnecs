@@ -48,11 +48,10 @@ For more in-depth discussion about tnecs' design, see the [On Design](https://gi
 ## Running tests
 
 ```bash
-CC=gcc
 rm tnecs.o test.o test
-CC -c -g tnecs.c -o tnecs.o
-CC -c -g test.c -o test.o
-CC -g -o test test.o tnecs.o -lm
+tcc -c -g tnecs.c -o tnecs.o
+tcc -c -g test.c -o test.o
+tcc -g -o test test.o tnecs.o -lm
 ./test
 ```
 
