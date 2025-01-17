@@ -59,6 +59,12 @@ gcc -c -g tnecs.c -o tnecs.o
 gcc -c -g test.c -o test.o
 gcc -g -o test test.o tnecs.o -lm
 ./test
+
+rm tnecs.o test.o
+tcc -c -g tnecs.c -o tnecs.o
+tcc -c -g test.c -o test.o
+tcc -g -o test test.o tnecs.o -lm
+./test
 ```
 
 ## Credits
