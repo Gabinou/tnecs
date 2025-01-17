@@ -56,14 +56,14 @@ extern "C" {
 #endif
 
 /******************* TYPE DEFINITIONS *******************/
-typedef unsigned long long int       tnecs_entity;     // simple 64 bit integer
-typedef tnecs_entity tnecs_component;  // 64 bit flags -> MAX 63 components
-typedef long long int i64;  // 64 bit flags -> MAX 63 components
-typedef uint64_t        tnecs_hash;
-typedef uint32_t        tnecs_phase;
-typedef uint64_t        tnecs_ns;
-typedef int32_t         b32;
-typedef unsigned char   tnecs_byte;
+typedef unsigned long long int  tnecs_entity;       // simple 64 bit integer
+typedef tnecs_entity            tnecs_component;    // 64 bit flags -> MAX 63 components
+typedef long long int           i64;                // 64 bit flags -> MAX 63 components
+typedef uint64_t                tnecs_hash;
+typedef uint32_t                tnecs_phase;
+typedef uint64_t                tnecs_ns;
+typedef int32_t                 b32;
+typedef unsigned char           tnecs_byte;
 
 /*** Forward declarations ***/
 typedef struct tnecs_system_input     tnecs_system_input;
@@ -136,6 +136,8 @@ enum TNECS {
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 /************ STRUCTS DEFINITIONS ***************/
+/*** tnecs_worlds ***/
+
 typedef struct tnecs_world {
     // (entities[entity_id] == entity_id) unless deleted
     tnecs_entity    *entities;                                  // [entity_id]
@@ -159,7 +161,7 @@ typedef struct tnecs_world {
     ,,
     tnecs_entity     **entities_bytype;         // [typeflag_id][entity_order_bytype]
     tnecs_component  **components_idbytype;     // [typeflag_id][component_order_bytype]
-    tnecs_component  **components_flagbytype;   // [typeflag_id][component_order_bytype]
+    tnecs_component  **components_flagbytype;   // [typeflag_id][component_order_bytype] *unused
     size_t           **components_orderbytype;  // [typeflag_id][component_id]
     size_t           **systems_idbyphase;       // [phase][system_order]
     tnecs_system_ptr **systems_byphase;         // [phase][system_id]
@@ -211,6 +213,9 @@ typedef struct tnecs_component_array {
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
 
+/***************** TNECS v2.0 *****************/
+/*** tnecs_worlds ***/
+
 typedef struct tnecs_arena_array {
     i64 handle;
     size_t num;
@@ -231,9 +236,9 @@ typedef struct tnecs_entities_arena {
     size_t num;
     size_t len;
     // All handles
-    i64 entities; /* *tnecs_entity */
-    i64 archetype; /* *tnecs_component */
-    i64 orders; /* *size_t */
+    i64 entities;   // *tnecs_entity
+    i64 archetype;  // *tnecs_component
+    i64 orders;     // *size_t
 } tnecs_entities_arena;
 
 typedef struct tnecs_system_arena {
@@ -241,12 +246,12 @@ typedef struct tnecs_system_arena {
     size_t num;
     size_t len;
     // All handles
-    i64 archetype; /* *tnecs_componentv*/
-    i64 order; /* *size_t */
-    i64 names; /* *i64 */
-    i64 hashes; /* *tnecs_hash */
-    i64 phases; /* *tnecs_phase */
-    i64 exclusive; /* *b32 */
+    i64 archetype;  // *tnecs_component
+    i64 order;      // *size_t
+    i64 names;      // *i64
+    i64 hashes;     // *tnecs_hash
+    i64 phases;     // *tnecs_phase
+    i64 exclusive;  // *b32
 } tnecs_system_arena;
     
 typedef struct tnecs_archetype_arena {
@@ -254,21 +259,19 @@ typedef struct tnecs_archetype_arena {
     size_t num;
     size_t len;
     
-    i64 archetype_id;  /* */
-    // len/num of bytype arrays is archetype_id.num/lene
-    i64 archetype_id_bytype;  /* */
-    i64 components_id_bytype; /* */
-    i64 components_flags_bytype; /* */
-    i64 components_order_bytype; /* */
-    i64 entities_bytype;  /* */
-    i64 chunks_bytype;  /* */
+    i64 id;                         // *tnecs_component
+    // len/num of bytype arrays is archetype_id.num/len
+    i64 id_bytype;                  // *i64 -> *tnecs_component
+    i64 components_id_bytype;       // *i64 -> *tnecs_component
+    i64 components_flags_bytype;    // *i64 -> *tnecs_component
+    i64 components_order_bytype;    // *i64 -> *size_t
+    i64 entities_bytype;            // *i64 -> *tnecs_entity
+    i64 chunks_bytype;              // *i64 -> *tnecs_chunk
 } tnecs_typeflag_arena;
 
 typedef struct tnecs_components_arena {
     size_t           component_bytesizes[TNECS_COMPONENT_CAP];  // [component_id]
-
     tnecs_hash       component_hashes[TNECS_COMPONENT_CAP];     // [component_id]
-
     i64 component_names[TNECS_COMPONENT_CAP];      // [component_id]
 } tnecs_components_arena;
   
