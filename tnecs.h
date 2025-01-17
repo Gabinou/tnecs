@@ -274,7 +274,7 @@ typedef struct tnecs_system_input {
 } tnecs_system_input;
 
 /******************** CHUNK **********************/
-tnecs_chunk tnecs_chunk_Init(       tnecs_world *world, const tnecs_component archetype);
+b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype);
 size_t  *tnecs_chunk_BytesizeArr(   const tnecs_chunk *chunk);
 size_t   tnecs_chunk_TotalBytesize( const tnecs_chunk *chunk);
 void    *tnecs_chunk_ComponentArr(tnecs_chunk *chunk, const size_t corder);

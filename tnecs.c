@@ -1262,10 +1262,10 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
 }
 
 /********************** CHUNKS *********************/
-tnecs_chunk tnecs_chunk_Init(tnecs_world *world, const tnecs_component archetype) {
+b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype) {
     // Chunk init
-    tnecs_chunk chunk = {0};
-    size_t *mem_header  = tnecs_chunk_BytesizeArr(&chunk);
+    memset(chunk, 0, TNECS_CHUNK_BYTESIZE);
+    size_t *mem_header  = tnecs_chunk_BytesizeArr(chunk);
     size_t tID = tnecs_archetypeid(world, archetype);
 
     // Adding all component bytesizes in archetype to chunk
@@ -1284,14 +1284,24 @@ tnecs_chunk tnecs_chunk_Init(tnecs_world *world, const tnecs_component archetype
         
         // Adding component bytesize to chunk header
         cumul_bytesize += world->components.bytesizes[component_id];
-        mem_header[chunk.num_components++] = cumul_bytesize; 
+        mem_header[chunk->num_components++] = cumul_bytesize; 
     }
 
-    TNECS_DEBUG_ASSERT(cumul_bytesize > 0);
-    TNECS_DEBUG_ASSERT(chunk.num_components == world->bytype.num_components[tID]);
+    if (tID == TNECS_NULL) {
+        TNECS_CHECK_CALL(_tnecs_register_archetype(world, chunk->num_components, archetype));
+        tID = tnecs_archetypeid(world, archetype);
+    }
 
-    chunk.len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
-    return(chunk);
+    TNECS_DEBUG_ASSERT(tID > TNECS_NULL);
+    TNECS_DEBUG_ASSERT(cumul_bytesize > 0);
+    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
+    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
+    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
+    printf("%lu %lu \n", chunk->num_components, world->bytype.num_components[tID]);
+    TNECS_DEBUG_ASSERT(chunk->num_components == world->bytype.num_components[tID]);
+
+    chunk->len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
+    return(1);
 }
 
 // Order of entity in entities_bytype -> index of chunk components are stored in
