@@ -296,8 +296,8 @@ b32 tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
                             tnecs_component ar, tnecs_ns deltat, void *data);
 
 /************* REGISTRATION *********************/
-tnecs_component tnecs_register_component(tnecs_world *w,
-                                         const char *name, size_t b);
+tnecs_component tnecs_register_component(tnecs_world *w, const char *name,
+                                         const size_t b);
 
 size_t tnecs_register_system(tnecs_world *w, const char *name,
                              tnecs_system_ptr system, tnecs_phase run_phase,
@@ -423,14 +423,15 @@ void *tnecs_arrdel(         void *arr, size_t elem,     size_t len,     size_t b
 void *tnecs_realloc(        void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
 void *tnecs_arrdel_scramble(void *arr, size_t elem,     size_t len,     size_t bytesize);
 
-b32 tnecs_grow_phase(          tnecs_world *w);
-b32 tnecs_grow_torun(          tnecs_world *w);
-b32 tnecs_grow_bytype(         tnecs_world *w, size_t archetype_id);
-b32 tnecs_grow_entity(         tnecs_world *w);
-b32 tnecs_grow_system(         tnecs_world *w);
-b32 tnecs_grow_archetype(      tnecs_world *w);
-b32 tnecs_grow_entities_open(  tnecs_world *w);
-b32 tnecs_grow_system_byphase(const tnecs_world *w, const tnecs_phase phase);
+b32 tnecs_grow_phase(           tnecs_world *w);
+b32 tnecs_grow_torun(           tnecs_world *w);
+b32 tnecs_grow_bytype(          tnecs_world *w, const size_t archetype_id);
+b32 tnecs_grow_entity(          tnecs_world *w);
+b32 tnecs_grow_system(          tnecs_world *w);
+b32 tnecs_grow_archetype(       tnecs_world *w);
+b32 tnecs_grow_entities_open(   tnecs_world *w);
+b32 tnecs_grow_system_byphase(  tnecs_world *w, const tnecs_phase phase);
+b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr, const size_t tID, const size_t corder);
 
 /****************** STRING HASHING ****************/
 uint64_t tnecs_hash_djb2(const char *str);  // slightly faster

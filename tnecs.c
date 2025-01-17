@@ -370,9 +370,9 @@ size_t tnecs_register_system(tnecs_world *world, const char *name,
     return (system_id);
 }
 
-tnecs_component tnecs_register_component(tnecs_world *world,
-                                         const char *name,
-                                         size_t bytesize) {
+tnecs_component tnecs_register_component(tnecs_world    *world,
+                                         const char     *name,
+                                         const size_t    bytesize) {
     /* Checks */
     if (bytesize <= 0) {
         printf("tnecs: Component should have >0 bytesize.\n");
@@ -798,23 +798,27 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
         // check if it need to grow after adding new component
         TNECS_DEBUG_ASSERT(new_order == comp_arr->num_components);
 
-        // TODO: make into a GROW function 
-        if (++comp_arr->num_components >= comp_arr->len_components) {
-            size_t old_len      = comp_arr->len_components;
-            size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-            size_t new_comp_num = world->bytype.num_components[tID];
-            comp_arr->len_components = new_len;
-
-            size_t cID = world->bytype.components_id[tID][corder];
-
-            size_t bytesize         = world->components.bytesizes[cID];
-            comp_arr->components    = tnecs_realloc(comp_arr->components, old_len, new_len, bytesize);
-            TNECS_CHECK_ALLOC(comp_arr->components);
-        }
+        if (++comp_arr->num_components >= comp_arr->len_components)
+            tnecs_grow_component_array(world, comp_arr, tID, corder);
     }
 
     return(1);
 }
+
+b32 tnecs_grow_component_array(tnecs_world *world, tnecs_component_array *comp_arr, const size_t tID, const size_t corder) {
+    size_t old_len      = comp_arr->len_components;
+    size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t new_comp_num = world->bytype.num_components[tID];
+    comp_arr->len_components = new_len;
+
+    size_t cID = world->bytype.components_id[tID][corder];
+
+    size_t bytesize         = world->components.bytesizes[cID];
+    comp_arr->components    = tnecs_realloc(comp_arr->components, old_len, new_len, bytesize);
+    TNECS_CHECK_ALLOC(comp_arr->components);
+    return(1);
+}
+
 
 b32 tnecs_component_copy(tnecs_world *world, const tnecs_entity entity,
                         const tnecs_component old_archetype, const tnecs_component new_archetype) {
@@ -1227,7 +1231,7 @@ b32 tnecs_grow_phase(tnecs_world *world) {
     return(1);
 }
 
-b32 tnecs_grow_system_byphase(const tnecs_world *world, const tnecs_phase phase) {
+b32 tnecs_grow_system_byphase(tnecs_world *world, const tnecs_phase phase) {
     size_t olen                         = world->byphase.len_systems[phase];
     size_t nlen                         = olen * TNECS_ARRAY_GROWTH_FACTOR;
     world->byphase.len_systems[phase]   = nlen;

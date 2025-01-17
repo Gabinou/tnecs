@@ -1223,7 +1223,6 @@ void tnecs_test_chunk() {
     lok(bytesizes[3] == sizeof(Velocity) + sizeof(Position) +sizeof(Sprite) + sizeof(Unit));
 }
 
-
 void tnecs_benchmarks() {
     printf("world size: %ld bytes\n", sizeof(struct tnecs_world));
     dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
