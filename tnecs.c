@@ -1295,7 +1295,6 @@ tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component arc
     size_t *mem_header  = tnecs_chunk_BytesizeArr(&chunk);
 
     // Adding all component bytesizes in archetype to chunk
-    tnecs_component type            = 0;
     tnecs_component component_id    = 0;
     size_t cumul_bytesize           = 0;
 
@@ -1307,12 +1306,14 @@ tnecs_chunk tnecs_chunk_Init(const tnecs_world *world, const tnecs_component arc
 
         component_type_toadd    = (archetype_reduced + archetype_added) ^ archetype;
         archetype_added        += component_type_toadd;
-        component_id            = TNECS_COMPONENT_TYPE2ID(type);
+        component_id            = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
         
         // Adding component bytesize to chunk header
         cumul_bytesize += world->components.bytesizes[component_id];
         mem_header[chunk.num_components++] = cumul_bytesize; 
     }
+
+    TNECS_DEBUG_ASSERT(cumul_bytesize > 0);
 
     chunk.len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
     return(chunk);
