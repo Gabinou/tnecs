@@ -185,19 +185,26 @@ typedef struct Sprite {
 struct Unit Unit_default = {.hp = 0, .str = 0 };
 
 typedef struct Position2 {
-    uint32_t x;
-    uint32_t y;
+    uint64_t x;
+    uint64_t y;
+    uint64_t a;
+    uint64_t b;
+    uint64_t c;
+    uint64_t d;
 } Position2;
 
 typedef struct Unit2 {
-    uint32_t hp;
-    uint32_t str;
+    uint64_t hp;
+    uint64_t str;
+    uint64_t mag;
+    uint64_t def;
+    uint64_t res;
 } Unit2;
 
 void SystemMove2(struct tnecs_system_input *in_input) {
     // printf("SystemMove2\n");
-    struct Position2 *p = TNECS_COMPONENTS_LIST(in_input, Position2);
-    struct Unit2 *v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    struct Position2    *p = TNECS_COMPONENTS_LIST(in_input, Position2);
+    struct Unit2        *v = TNECS_COMPONENTS_LIST(in_input, Unit2);
     for (int i = 0; i < in_input->num_entities; i++) {
         // printf("i %d \n", i);
         p[i].x += v[i].hp;
