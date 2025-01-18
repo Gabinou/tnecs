@@ -257,7 +257,7 @@ size_t tnecs_register_system(tnecs_world *w, tnecs_system_ptr system,
                              size_t component_num, tnecs_component component_archetype);
 size_t tnecs_register_phase(tnecs_world *w, tnecs_phase phase);
 
-#define TNECS_REGISTER_SYSTEM(pfunc, phase, excl, ...) tnecs_register_system(world, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
+#define TNECS_REGISTER_SYSTEM(world, pfunc, phase, excl, ...) tnecs_register_system(world, &pfunc, phase, excl, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
 
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, sizeof(name))
 
@@ -275,7 +275,7 @@ b32 tnecs_entity_destroy(tnecs_world *w, tnecs_entity ent);
 
 #define TNECS_ENTITY_EXISTS(world, index) (world->entities[index] > TNECS_NULL)
 #define TNECS_ENTITY_ARCHETYPE(world, entity) world->entities.archetypes[entity]
-#define TNECS_ENTITY_HASCOMPONENT(world, entity, cID) ((world->entities.archetypes[entity] & tnecs_component_ids2archetype(1, cid)) > 0)
+#define TNECS_ENTITY_HASCOMPONENT(world, entity, cID) ((world->entities.archetypes[entity] & tnecs_component_ids2archetype(1, cID)) > 0)
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_SCOMMA(TNECS_DONOTHING, __VA_ARGS__))
 
@@ -330,6 +330,9 @@ size_t tnecs_archetypeid(tnecs_world *w, tnecs_component archetype);
 #define TNECS_COMPONENT_TYPE2ID(type) (type >= 1 ? (tnecs_component)(log2(type) + 1.1f) : 0) // casting to int floors
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__))
+
+#define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+
 #define TNECS_COMPONENTS_LIST(input, cID) (input->world->bytype.components[input->entity_archetype_id][input->world->bytype.components_order[input->entity_archetype_id][cID]].components)
 
 #define TNECS_SYSTEM_ID2ARCHETYPE(world, id) world->systems.archetypes[id]
