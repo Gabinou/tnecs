@@ -363,21 +363,18 @@ tnecs_component tnecs_register_component(tnecs_world    *world,
 size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
                                  tnecs_component archetype_new) {
     // 0- Check if archetype exists, return
-    size_t tID = 0;
     for (size_t i = 0 ; i < world->bytype.num; i++) {
         if (archetype_new == world->bytype.id[i]) {
-            tID = i;
+            return(i);
             break;
         }
     }
-    if (tID)
-        return (tID);
 
     // 1- Add new bytype.components at [tID]
     if ((world->bytype.num + 1) >= world->bytype.len)
         tnecs_grow_archetype(world);
     world->bytype.id[world->bytype.num++] = archetype_new;
-    tID = tnecs_archetypeid(world, archetype_new);
+    size_t tID = tnecs_archetypeid(world, archetype_new);
     TNECS_DEBUG_ASSERT(tID == (world->bytype.num - 1));
     world->bytype.num_components[tID] = num_components;
 
@@ -639,8 +636,7 @@ b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity,
 }
 
 
-void *tnecs_get_component(tnecs_world *world, tnecs_entity eID,
-                                 tnecs_component cID) {
+void *tnecs_get_component(tnecs_world *world, tnecs_entity eID,　tnecs_component cID) {
 
     tnecs_component component_flag      = TNECS_COMPONENT_ID2TYPE(cID);
     tnecs_component entity_archetype    = TNECS_ENTITY_ARCHETYPE(world, eID);
