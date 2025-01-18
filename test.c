@@ -356,15 +356,12 @@ void tnecs_test_component_registration() {
     size_t temp_comp_order      = 0;
     size_t temp_archetype_id    = 1;
     size_t temp_archetype       = 1;
-    lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
     lok(test_world->bytype.components_id[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->bytype.id[0] == 0);
     lok(test_world->bytype.id[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->bytype.id[1] == temp_comp_flag);
     lok(test_world->components.num == 2);
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Position) == (TNECS_NULLSHIFT << 0));
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Position) == test_world->bytype.id[temp_archetype_id]);
 
     TNECS_REGISTER_COMPONENT(test_world, Unit);
     temp_comp_flag = 2;
@@ -372,7 +369,6 @@ void tnecs_test_component_registration() {
     temp_comp_order = 0;
     temp_archetype_id = 2;
     temp_archetype = 2;
-    lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
     lok(test_world->bytype.components_id[temp_comp_id][temp_comp_order] == temp_comp_id);
     lok(test_world->bytype.id[0] == 0);
@@ -380,8 +376,6 @@ void tnecs_test_component_registration() {
     lok(test_world->bytype.id[2] == (TNECS_NULLSHIFT << 1));
     lok(test_world->bytype.id[2] == temp_comp_flag);
     lok(test_world->components.num == 3);
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Unit) == (TNECS_NULLSHIFT << 1));
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Unit) == test_world->bytype.id[temp_archetype_id]);
 
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     temp_comp_flag = 4;
@@ -413,8 +407,6 @@ void tnecs_test_component_registration() {
     lok(test_world->bytype.id[4] == (TNECS_NULLSHIFT << 3));
     lok(test_world->bytype.id[4] == temp_comp_flag);
     lok(test_world->components.num == 5);
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Velocity) == (TNECS_NULLSHIFT << 3));
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Velocity) == test_world->bytype.id[temp_archetype_id]);
 
     lok(TNECS_COMPONENT_IDS2ARCHETYPE(1, 2, 3) == (1 + 2 + 4));
     lok(TNECS_COMPONENT_NAMES2ARCHETYPE(test_world, Position, Unit, Velocity) == (1 + 2 + 8));
@@ -427,19 +419,8 @@ void tnecs_test_system_registration() {
     size_t temp_archetype_id = 5;
     size_t temp_archetype = 1 + 8;
 
-    lok(TNECS_SYSTEM_NAME2ID(test_world, SystemMove) == temp_comp_id);
-    lok(TNECS_SYSTEM_NAME2ARCHETYPE(test_world, SystemMove) == temp_archetype);
-    lok(TNECS_SYSTEM_NAME2ID(test_world, SystemMove) == 1);
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(test_world, TNECS_SYSTEM_NAME2ID(test_world,
-                                 SystemMove)) == temp_archetype);
-    lok(TNECS_SYSTEM_NAME2ARCHETYPE(test_world, SystemMove) == temp_archetype);
-    lok(TNECS_SYSTEM_NAME2ARCHETYPE(test_world, SystemMove) == temp_archetype);
-
-
-    lok(test_world->bytype.components_id[temp_archetype_id][0] == TNECS_COMPONENT_NAME2ID(test_world,
-            Position));
-    lok(test_world->bytype.components_id[temp_archetype_id][1] == TNECS_COMPONENT_NAME2ID(test_world,
-            Velocity));
+    lok(test_world->bytype.components_id[temp_archetype_id][0] == Position_ID);
+    lok(test_world->bytype.components_id[temp_archetype_id][1] == Velocity_ID);
 }
 
 void tnecs_test_entity_creation() {
@@ -464,12 +445,7 @@ void tnecs_test_entity_creation() {
         temp_position->y = 6;
     }
 
-    lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == 1);
-    lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == 2);
-    lok((TNECS_COMPONENT_NAME2ID(test_world, Unit) + TNECS_COMPONENT_NAME2ID(test_world,
-            Position)) == 3);
-    lok(test_world->entities.archetypes[Perignon] == (TNECS_COMPONENT_NAME2ID(test_world,
-                                                   Position) + TNECS_COMPONENT_NAME2ID(test_world, Unit)));
+    lok(test_world->entities.archetypes[Perignon] == TNECS_COMPONENT_ID2TYPE(Position_ID) + TNECS_COMPONENT_ID2TYPE(Unit_ID));
 
     temp_position = TNECS_GET_COMPONENT(test_world, Perignon, Sprite);
     lok(temp_position == NULL);
@@ -530,26 +506,26 @@ void tnecs_test_entity_creation() {
 void tnecs_test_component_add() {
     tnecs_entity Silou = tnecs_entity_create(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position);
-    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_NAME2TYPE(test_world, Unit)) == 0);
+    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_ID2TYPE(Unit_ID)) == 0);
     TNECS_ADD_COMPONENT(test_world, Silou, Unit);
-    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_NAME2TYPE(test_world, Position)) > 0);
-    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_NAME2TYPE(test_world, Unit)) > 0);
-    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_NAME2TYPE(test_world, Sprite)) == 0);
+    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_ID2TYPE(Position_ID)) > 0);
+    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_ID2TYPE(Unit_ID)) > 0);
+    lok((test_world->entities.archetypes[Silou] & TNECS_COMPONENT_ID2TYPE(Sprite_ID)) == 0);
 
     tnecs_entity Pirou = tnecs_entity_create(test_world);
     TNECS_ADD_COMPONENT(test_world, Pirou, Position);
-    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_NAME2TYPE(test_world, Position)) > 0);
-    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_NAME2TYPE(test_world, Unit)) == 0);
+    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_ID2TYPE(Position_ID)) > 0);
+    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_ID2TYPE(Unit_ID)) == 0);
     TNECS_ADD_COMPONENT(test_world, Pirou, Unit);
-    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_NAME2TYPE(test_world, Unit)) > 0);
-    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_NAME2TYPE(test_world, Position)) > 0);
-    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_NAME2TYPE(test_world, Sprite)) == 0);
+    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_ID2TYPE(Unit_ID)) > 0);
+    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_ID2TYPE(Position_ID)) > 0);
+    lok((test_world->entities.archetypes[Pirou] & TNECS_COMPONENT_ID2TYPE(Sprite_ID)) == 0);
 
     tnecs_entity Chasse = tnecs_entity_create(test_world);
     TNECS_ADD_COMPONENTS(test_world, Chasse, 1, Sprite, Position);
-    lok((test_world->entities.archetypes[Chasse] & TNECS_COMPONENT_NAME2TYPE(test_world, Unit)) == 0);
-    lok((test_world->entities.archetypes[Chasse] & TNECS_COMPONENT_NAME2TYPE(test_world, Sprite)) > 0);
-    lok((test_world->entities.archetypes[Chasse] & TNECS_COMPONENT_NAME2TYPE(test_world, Position)) > 0);
+    lok((test_world->entities.archetypes[Chasse] & TNECS_COMPONENT_ID2TYPE(Unit_ID)) == 0);
+    lok((test_world->entities.archetypes[Chasse] & TNECS_COMPONENT_ID2TYPE(Sprite_ID)) > 0);
+    lok((test_world->entities.archetypes[Chasse] & TNECS_COMPONENT_ID2TYPE(Position_ID)) > 0);
 
     temp_position = TNECS_GET_COMPONENT(test_world, Silou, Position);
     lok(temp_position != NULL);
