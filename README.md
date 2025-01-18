@@ -49,9 +49,9 @@ For more in-depth discussion about tnecs' design, see the [On Design](https://gi
 
 ```bash
 rm tnecs.o test.o test
-tcc --std=c99 -c -g tnecs.c -o tnecs.o
-tcc --std=c99 -c -g test.c -o test.o
-tcc --std=c99 -g -o test test.o tnecs.o -lm
+gcc --std=c99 -c -g tnecs.c -o tnecs.o
+gcc --std=c99 -c -g test.c -o test.o
+gcc --std=c99 -g -o test test.o tnecs.o -lm
 ./test
 ```
 

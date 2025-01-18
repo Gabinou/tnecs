@@ -4,21 +4,17 @@
 My motivation for tnecs is to make the _simplest possible_ C99 ECS library only with the _minimum necessary features_.
 I also use the ```tcc``` compiler sometimes, so compiler-specific instructions are out of the question.
 
-During the development of my game, I used several free and open source ECS libraries.
-They are quite feature-full and robust, but rather complex.
-I also found the usefulness of some of their features questionable.
-Ultimately, I wished to know if it really is impossible for randos to outperform established software libraries.
-
-Anyhow, as was mentionned in the the [Readme](https://gitlab.com/Gabinou/tnecs/-/blob/master/README.md), in tnecs:
+In tnecs:
 - an entity is an ```uint64_t``` index, 
 - a component is user-defined ```struct```, 
 - a system is a user-defined ```function```,
 - everything lives inside the world.
 
 For perfomance reasons, everything inside the world is an array.
-Whenever entities are created, components and systems are registered, an associated index is created.
-Their names are recorded as strings for convenience.
+Whenever entities are created, components or systems are registered, an associated index is created.
+The indices always start at 1 and increase monotonically.
 Index 0 is always reserved for NULL.
+I encourage the use of X macros to have access to the indices at compile time.
 
 The most notable design feature is the use of a ```uint64_t``` as a bitflag to denote the component type.
 For example, the first registered component has only its first bit set  ```0b0001```, the next one its second bit set ```0b0010```, etc.
