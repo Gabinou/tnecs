@@ -203,8 +203,10 @@ typedef struct Unit2 {
 
 void SystemMove2(struct tnecs_system_input *in_input) {
     // printf("SystemMove2\n");
-    struct Position2    *p = TNECS_COMPONENTS_LIST(in_input, Position2);
-    struct Unit2        *v = TNECS_COMPONENTS_LIST(in_input, Unit2);
+    int Position2_ID    = 1;
+    int Unit2_ID        = 2;
+    struct Position2    *p = TNECS_COMPONENTS_LIST(in_input, Position2_ID);
+    struct Unit2        *v = TNECS_COMPONENTS_LIST(in_input, Unit2_ID);
     for (int i = 0; i < in_input->num_entities; i++) {
         // printf("i %d \n", i);
         p[i].x += v[i].hp;
@@ -278,8 +280,10 @@ struct tnecs_world  *test_world;
 
 void SystemMove(struct tnecs_system_input *in_input) {
     // printf("SystemMove\n");
-    struct Position *p = TNECS_COMPONENTS_LIST(in_input, Position);
-    struct Velocity *v = TNECS_COMPONENTS_LIST(in_input, Velocity);
+    int Position_ID = 1;
+    int Velocity_ID = 2;
+    struct Position *p = TNECS_COMPONENTS_LIST(in_input, Position_ID);
+    struct Velocity *v = TNECS_COMPONENTS_LIST(in_input, Velocity_ID);
     for (int ent = 0; ent < in_input->num_entities; ent++) {
         tnecs_entity current_ent = in_input->world->bytype.entities[in_input->entity_archetype_id][ent];
         lok(current_ent);
@@ -408,13 +412,20 @@ void tnecs_test_component_registration() {
     lok(test_world->bytype.id[4] == temp_comp_flag);
     lok(test_world->components.num == 5);
 
+    int Position_ID = 1;
+    int Velocity_ID = 2;
+    int Unit_ID     = 3;
+
     lok(TNECS_COMPONENT_IDS2ARCHETYPE(1, 2, 3) == (1 + 2 + 4));
-    lok(TNECS_COMPONENT_NAMES2ARCHETYPE(test_world, Position, Unit, Velocity) == (1 + 2 + 8));
+    lok(TNECS_COMPONENT_IDS2ARCHETYPE(test_world, Position_ID, Unit_ID, Velocity_ID) == (1 + 2 + 8));
 
 }
 
 void tnecs_test_system_registration() {
-    TNECS_REGISTER_SYSTEM_wEXCL(test_world, SystemMove, 1, Position, Velocity);
+    int Position_ID = 1;
+    int Velocity_ID = 2;
+
+    TNECS_REGISTER_SYSTEM_wEXCL(test_world, SystemMove, 1, Position_ID, Velocity_ID);
     size_t temp_comp_id = 1;
     size_t temp_archetype_id = 5;
     size_t temp_archetype = 1 + 8;
@@ -613,8 +624,8 @@ void tnecs_test_component_array() {
     tnecs_world *arr_world = NULL;
     tnecs_world_genesis(&arr_world);
     
-    lok(TNECS_REGISTER_COMPONENT(arr_world, Velocity));
     lok(TNECS_REGISTER_COMPONENT(arr_world, Position));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Velocity));
     lok(TNECS_REGISTER_COMPONENT(arr_world, Sprite));
     lok(TNECS_REGISTER_COMPONENT(arr_world, Unit));
     TNECS_REGISTER_SYSTEM_wEXCL(arr_world, SystemMove, 0, Unit); // 4X
@@ -791,8 +802,8 @@ void tnecs_test_world_progress() {
     tnecs_world_genesis(&inclusive_world);
     lok(inclusive_world != NULL);
 
-    TNECS_REGISTER_COMPONENT(inclusive_world, Velocity);
     TNECS_REGISTER_COMPONENT(inclusive_world, Position);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Velocity);
     TNECS_REGISTER_COMPONENT(inclusive_world, Sprite);
     TNECS_REGISTER_COMPONENT(inclusive_world, Unit);
     TNECS_REGISTER_SYSTEM_wEXCL(inclusive_world, SystemMove, 0, Unit); // 4X
