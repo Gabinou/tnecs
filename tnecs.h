@@ -143,11 +143,10 @@ enum TNECS {
 #define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 /************ STRUCTS DEFINITIONS ***************/
-typedef struct tnecs_component_array {
-    // 1D array of 1 component.
+typedef struct tnecs_component_array { /* 1D array of components */
     tnecs_component  type;
-    size_t           num_components;
-    size_t           len_components;
+    size_t           num;
+    size_t           len;
     void            *components;      /* [entity_order_bytype] */
 } tnecs_component_array;
 
@@ -335,7 +334,7 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 
 size_t tnecs_archetypeid(tnecs_world *w, tnecs_component archetype);
 
-#define TNECS_COMPONENT_TYPE2ID(type) (type >=1 ? (tnecs_component)(log2(type) + 1.1f): 0) // casting to int floors
+#define TNECS_COMPONENT_TYPE2ID(type) (type >= 1 ? (tnecs_component)(log2(type) + 1.1f) : 0) // casting to int floors
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__))
 #define TNECS_COMPONENTS_LIST(input, component_id) (input->world->bytype.components[input->entity_archetype_id][input->world->bytype.components_order[input->entity_archetype_id][component_id]].components)

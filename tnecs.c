@@ -745,9 +745,9 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
         // Take component array of current archetype_id
         tnecs_component_array *comp_arr = &world->bytype.components[tID][corder];
         // check if it need to grow after adding new component
-        TNECS_DEBUG_ASSERT(new_order == comp_arr->num_components);
+        TNECS_DEBUG_ASSERT(new_order == comp_arr->num);
 
-        if (++comp_arr->num_components >= comp_arr->len_components)
+        if (++comp_arr->num >= comp_arr->len)
             tnecs_grow_component_array(world, comp_arr, tID, corder);
     }
 
@@ -771,7 +771,7 @@ b32 tnecs_component_copy(tnecs_world *world, const tnecs_entity entity,
 #ifdef TNECS_DEBUG_A
     // Sanity check: entity order is the same in new components array
     for (int i = 0; i < num_comp_new; ++i) {
-        size_t num = world->bytype.components[new_tID][i].num_components;
+        size_t num = world->bytype.components[new_tID][i].num;
         TNECS_DEBUG_ASSERT((num - 1) == new_entity_order);
     }
 #endif /* TNECS_DEBUG_A */
@@ -835,7 +835,7 @@ b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
         tnecs_byte *scramble = tnecs_arrdel(comp_ptr, order_old, new_comp_num, comp_by);
         TNECS_CHECK_ALLOC(scramble);
 
-        old_array->num_components--;
+        old_array->num--;
     }
     return (1);
 }
@@ -887,9 +887,9 @@ b32 tnecs_component_array_init(tnecs_world *world, tnecs_component_array *in_arr
     size_t bytesize = world->components.bytesizes[cID];
     TNECS_DEBUG_ASSERT(bytesize > 0);
 
-    in_array->type = in_type;
-    in_array->num_components    = 0;
-    in_array->len_components    = TNECS_INIT_COMPONENT_LEN;
+    in_array->type          = in_type;
+    in_array->num           = 0;
+    in_array->len           = TNECS_INIT_COMPONENT_LEN;
     in_array->components        = calloc(TNECS_INIT_COMPONENT_LEN, bytesize);
     TNECS_CHECK_ALLOC(in_array->components);
     return (1);
@@ -1007,10 +1007,10 @@ b32 tnecs_grow_entities_open(tnecs_world *world) {
 
 b32 tnecs_grow_component_array(tnecs_world *world, tnecs_component_array *comp_arr,
                                const size_t tID, const size_t corder) {
-    size_t old_len      = comp_arr->len_components;
+    size_t old_len      = comp_arr->len;
     size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
     size_t new_comp_num = world->bytype.num_components[tID];
-    comp_arr->len_components = new_len;
+    comp_arr->len       = new_len;
 
     size_t cID = world->bytype.components_id[tID][corder];
 
