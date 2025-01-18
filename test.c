@@ -1193,8 +1193,8 @@ void tnecs_benchmarks() {
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        tnecs_get_component(bench_world, test_entities[i], Position2);
-        tnecs_get_component(bench_world, test_entities[i], Unit2);
+        tnecs_get_component(bench_world, test_entities[i], Position2_ID);
+        tnecs_get_component(bench_world, test_entities[i], Unit2_ID);
     }
     t_1 = tnecs_get_us();
     dupprintf(globalf, "tnecs: Component Get time: %d iterations \n", ITERATIONS);
@@ -1246,7 +1246,6 @@ int main() {
     lrun("progress",   tnecs_test_world_progress);
     lresults();
 
-    tnecs_other_benchmarks();
     tnecs_benchmarks();
     tnecs_world_destroy(&test_world);
     dupprintf(globalf, "tnecs Test End \n \n");
