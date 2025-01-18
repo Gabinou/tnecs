@@ -361,12 +361,9 @@ void tnecs_test_component_registration() {
     size_t temp_comp_order      = 0;
     size_t temp_archetype_id    = 1;
     size_t temp_archetype       = 1;
-    lok(tnecs_component_hash2type(test_world, TNECS_HASH("Position")) == temp_archetype);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Position) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
     lok(test_world->bytype.components_id[temp_comp_id][temp_comp_order] == temp_comp_id);
-    lok(test_world->components.hashes[TNECS_COMPONENT_NAME2ID(test_world,
-                                                             Position)] == TNECS_HASH("Position"));
     lok(test_world->bytype.id[0] == 0);
     lok(test_world->bytype.id[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->bytype.id[1] == temp_comp_flag);
@@ -380,11 +377,9 @@ void tnecs_test_component_registration() {
     temp_comp_order = 0;
     temp_archetype_id = 2;
     temp_archetype = 2;
-    lok(tnecs_component_hash2type(test_world, TNECS_HASH("Unit")) == temp_archetype);
     lok(TNECS_COMPONENT_NAME2ID(test_world, Unit) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
     lok(test_world->bytype.components_id[temp_comp_id][temp_comp_order] == temp_comp_id);
-    lok(test_world->components.hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH("Unit"));
     lok(test_world->bytype.id[0] == 0);
     lok(test_world->bytype.id[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->bytype.id[2] == (TNECS_NULLSHIFT << 1));
@@ -392,7 +387,6 @@ void tnecs_test_component_registration() {
     lok(test_world->components.num == 3);
     lok(TNECS_COMPONENT_NAME2TYPE(test_world, Unit) == (TNECS_NULLSHIFT << 1));
     lok(TNECS_COMPONENT_NAME2TYPE(test_world, Unit) == test_world->bytype.id[temp_archetype_id]);
-    lok(test_world->components.hashes[TNECS_COMPONENT_NAME2ID(test_world, Unit)] == TNECS_HASH("Unit"));
 
     TNECS_REGISTER_COMPONENT(test_world, Sprite);
     temp_comp_flag = 4;
@@ -400,22 +394,13 @@ void tnecs_test_component_registration() {
     temp_comp_order = 0;
     temp_archetype_id = 3;
     temp_archetype = 4;
-    lok(tnecs_component_hash2type(test_world, TNECS_HASH("Sprite")) == temp_archetype);
-    lok(TNECS_COMPONENT_NAME2ID(test_world, Sprite) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
-    lok(test_world->bytype.components_id[temp_comp_id][temp_comp_order] == temp_comp_id);
-    lok(test_world->components.hashes[TNECS_COMPONENT_NAME2ID(test_world,
-                                                             Sprite)] == TNECS_HASH("Sprite"));
     lok(test_world->bytype.id[0] == 0);
     lok(test_world->bytype.id[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->bytype.id[2] == (TNECS_NULLSHIFT << 1));
     lok(test_world->bytype.id[3] == (TNECS_NULLSHIFT << 2));
     lok(test_world->bytype.id[3] == temp_comp_flag);
     lok(test_world->components.num == 4);
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Sprite) == (TNECS_NULLSHIFT << 2));
-    lok(TNECS_COMPONENT_NAME2TYPE(test_world, Sprite) == test_world->bytype.id[temp_archetype_id]);
-    lok(test_world->components.hashes[TNECS_COMPONENT_NAME2ID(test_world,
-                                                             Sprite)] == TNECS_HASH("Sprite"));
 
     TNECS_REGISTER_COMPONENT(test_world, Velocity);
     temp_comp_flag = 8;
@@ -423,12 +408,9 @@ void tnecs_test_component_registration() {
     temp_comp_order = 0;
     temp_archetype_id = 4;
     temp_archetype = 8;
-    lok(TNECS_COMPONENT_NAME2ID(test_world, Velocity) == temp_comp_id);
-    lok(TNECS_COMPONENT_HASH2ID(test_world, TNECS_HASH("Velocity")) == temp_comp_id);
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
     lok(test_world->bytype.components_id[temp_comp_id][temp_comp_order] == temp_comp_id);
-    lok(test_world->components.hashes[TNECS_COMPONENT_NAME2ID(test_world,
-                                                             Velocity)] == TNECS_HASH("Velocity"));
+
     lok(test_world->bytype.id[0] == 0);
     lok(test_world->bytype.id[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->bytype.id[2] == (TNECS_NULLSHIFT << 1));
@@ -438,8 +420,6 @@ void tnecs_test_component_registration() {
     lok(test_world->components.num == 5);
     lok(TNECS_COMPONENT_NAME2TYPE(test_world, Velocity) == (TNECS_NULLSHIFT << 3));
     lok(TNECS_COMPONENT_NAME2TYPE(test_world, Velocity) == test_world->bytype.id[temp_archetype_id]);
-    lok(test_world->components.hashes[TNECS_COMPONENT_NAME2ID(test_world,
-                                                             Velocity)] == TNECS_HASH("Velocity"));
 
     lok(TNECS_COMPONENT_IDS2ARCHETYPE(1, 2, 3) == (1 + 2 + 4));
     lok(TNECS_COMPONENT_NAMES2ARCHETYPE(test_world, Position, Unit, Velocity) == (1 + 2 + 8));
@@ -455,9 +435,6 @@ void tnecs_test_system_registration() {
     lok(TNECS_SYSTEM_NAME2ID(test_world, SystemMove) == temp_comp_id);
     lok(TNECS_SYSTEM_NAME2ARCHETYPE(test_world, SystemMove) == temp_archetype);
     lok(TNECS_SYSTEM_NAME2ID(test_world, SystemMove) == 1);
-    lok(TNECS_HASH("SystemMove") == tnecs_hash_djb2("SystemMove"));
-    lok(test_world->systems.hashes[TNECS_SYSTEM_NAME2ID(test_world,
-                                                       SystemMove)] == TNECS_HASH("SystemMove"));
     lok(TNECS_SYSTEM_ID2ARCHETYPE(test_world, TNECS_SYSTEM_NAME2ID(test_world,
                                  SystemMove)) == temp_archetype);
     lok(TNECS_SYSTEM_NAME2ARCHETYPE(test_world, SystemMove) == temp_archetype);
@@ -1024,53 +1001,6 @@ void tnecs_test_world_progress() {
     lok(torun_arr[15] == NULL);
     tnecs_world_destroy(&inclusive_world2);
     tnecs_world_destroy(&inclusive_world);
-}
-
-uint64_t tnecs_hash_sdbm(const char *str) {
-    /* sdbm hashing algorithm by Dan Bernstein.
-    * Description: This algorithm was created for sdbm (a public-domain
-    * reimplementation of ndbm) database library. It was found to do
-    * well in scrambling bits, causing better distribution of the
-    * keys and fewer splits. It also happens to be a good general hashing
-    * function with good distribution. The actual function is
-    *hash(i) = hash(i - 1) * 65599 + str[i]; what is included below
-    * is the faster version used in gawk. [* there is even a faster,
-    * duff-device version] the magic constant 65599 was picked out of
-    * thin air while experimenting with different constants, and turns
-    * out to be a prime. this is one of the algorithms used in
-    * berkeley db (see sleepycat) and elsewhere.
-    * [1] https://stackoverflow.com/questions/7666509/hash-function-for-string
-    * [2] http://www.cse.yorku.ca/~oz/hash.html */
-
-    uint64_t hash = 0;
-    uint32_t str_char;
-    while ((str_char = *str++)) {
-        hash = str_char + (hash << 6) + (hash << 16) - hash;
-    }
-    return (hash);
-}
-
-void tnecs_other_benchmarks() {
-    dupprintf(globalf, "\nOther tnecs benchmarks\n");
-    double t_0, t_1;
-
-    t_0 = tnecs_get_us();
-    for (size_t i = 0; i < ITERATIONS; i++) {
-        TNECS_HASH("Position");
-        TNECS_HASH("Unit");
-    }
-    t_1 = tnecs_get_us();
-    dupprintf(globalf, "tnecs_hash_djb2: %d iterations \n", ITERATIONS);
-    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
-
-    t_0 = tnecs_get_us();
-    for (size_t i = 0; i < ITERATIONS; i++) {
-        tnecs_hash_sdbm("Unit");
-        tnecs_hash_sdbm("Position");
-    }
-    t_1 = tnecs_get_us();
-    dupprintf(globalf, "tnecs_hash_sdbm: %d iterations \n", ITERATIONS);
-    dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 }
 
 void tnecs_test_grow() {

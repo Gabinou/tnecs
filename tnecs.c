@@ -635,9 +635,7 @@ b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity,
     return (1);
 }
 
-
-void *tnecs_get_component(tnecs_world *world, tnecs_entity eID,　tnecs_component cID) {
-
+void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component cID) {
     tnecs_component component_flag      = TNECS_COMPONENT_ID2TYPE(cID);
     tnecs_component entity_archetype    = TNECS_ENTITY_ARCHETYPE(world, eID);
     void *out = NULL;

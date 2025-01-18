@@ -196,16 +196,16 @@ typedef struct tnecs_archetype {
     size_t num;
     size_t len;
 
-    tnecs_component   *id;                  // [aID]
-    size_t            *num_components;      // [aID]
-    size_t            *len_entities;        // [aID]
-    size_t            *num_entities;        // [aID]
-    size_t            *num_archetype_ids;   // [aID]
-    size_t           **aID;        // [aID][archetype_id_order]
-    tnecs_entity     **entities;            // [aID][entity_order_bytype]
-    size_t           **components_order;    // [aID][cID]
-    tnecs_component  **components_id;       // [aID][component_order_bytype]
-    tnecs_component_array **components;     // [aID][component_order_bytype]
+    tnecs_component   *id;                  // [archetype_id]
+    size_t            *num_components;      // [archetype_id]
+    size_t            *len_entities;        // [archetype_id]
+    size_t            *num_entities;        // [archetype_id]
+    size_t            *num_archetype_ids;   // [archetype_id]
+    size_t           **archetype_id;        // [archetype_id][archetype_id_order]
+    tnecs_entity     **entities;            // [archetype_id][entity_order_bytype]
+    size_t           **components_order;    // [archetype_id][component_id]
+    tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
+    tnecs_component_array **components;     // [archetype_id][component_order_bytype]
 
 } tnecs_archetype;
 
@@ -295,7 +295,7 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *w, tnecs_entity entity,
                                          size_t num_components, tnecs_component archetype, b32 isNew);
 b32  tnecs_entity_remove_components(tnecs_world *w, tnecs_entity eID,
                                     size_t num_components, tnecs_component archetype);
-void *tnecs_get_component(tnecs_world *w, tnecs_entity eID,　tnecs_component cID);
+void *tnecs_get_component(tnecs_world *w, tnecs_entity eID, tnecs_component cID);
 
 b32 tnecs_entitiesbytype_add(tnecs_world *w, tnecs_entity entity,
                              tnecs_component new_type);
