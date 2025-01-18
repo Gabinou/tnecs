@@ -228,14 +228,14 @@ typedef struct tnecs_world {
     b32 reuse_entities;
 } tnecs_world;
 
-typedef struct tnecs_system_input {
+struct tnecs_system_input {
     tnecs_world     *world;
     tnecs_ns         deltat;
     tnecs_component  system_archetype;
     size_t           num_entities;
     size_t           entity_archetype_id;
     void            *data;
-} tnecs_system_input;
+};
 
 /******************** WORLD FUNCTIONS **********************/
 b32 tnecs_world_genesis(tnecs_world **w);
