@@ -420,8 +420,7 @@ void tnecs_test_component_registration() {
     int Unit_ID     = 3;
 
     lok(TNECS_COMPONENT_IDS2ARCHETYPE(1, 2, 3) == (1 + 2 + 4));
-    lok(TNECS_COMPONENT_IDS2ARCHETYPE(test_world, Position_ID, Unit_ID, Velocity_ID) == (1 + 2 + 8));
-
+    lok(TNECS_COMPONENT_IDS2ARCHETYPE(Position_ID, Unit_ID, Velocity_ID) == (1 + 2 + 4));
 }
 
 void tnecs_test_system_registration() {
@@ -694,10 +693,10 @@ void tnecs_test_component_array() {
 
     size_t old_entity_order = arr_world->entities.orders[temp_ent];
     lok(old_entity_order == 0);
-    lok(arr_world->entities.archetypes[temp_ent] == TNECS_COMPONENT_IDS2ARCHETYPE(arr_world, Unit_ID));
+    lok(arr_world->entities.archetypes[temp_ent] == TNECS_COMPONENT_IDS2ARCHETYPE(Unit_ID));
     size_t old_archetypeid = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID);
     lok(arr_world->bytype.num_entities[old_archetypeid] == 1);
-    lok(old_archetypeid == 4);
+    lok(old_archetypeid == 3);
     size_t old_component_order = tnecs_component_order_bytypeid(arr_world, Unit_ID, old_archetypeid);
 
     lok(old_component_order < TNECS_COMPONENT_CAP);
@@ -724,7 +723,7 @@ void tnecs_test_component_array() {
     lok(arr_world->bytype.num_entities[new_archetypeid] == 4);
     TNECS_ADD_COMPONENT(arr_world, temp_ent, Position_ID);
     lok(arr_world->bytype.num_entities[old_archetypeid] == 0);
-    lok(arr_world->entities.archetypes[temp_ent] == TNECS_COMPONENT_IDS2ARCHETYPE(arr_world, Unit_ID,
+    lok(arr_world->entities.archetypes[temp_ent] == TNECS_COMPONENT_IDS2ARCHETYPE(Unit_ID,
             Position_ID));
     lok(arr_world->bytype.num_entities[new_archetypeid] == 5);
     temp_unit = tnecs_get_component(arr_world, temp_ent, Unit_ID);
@@ -757,8 +756,8 @@ void tnecs_test_world_progress() {
     lok(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity_ID));
     lok(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit_ID));
 
-    lok(test_world->entities.archetypes[Perignon] == (1 + 8));
-    lok(test_world->bytype.num_entities[tnecs_archetypeid(test_world, 1 + 8)] == 1);
+    lok(test_world->entities.archetypes[Perignon] == (1 + 2));
+    lok(test_world->bytype.num_entities[tnecs_archetypeid(test_world, 1 + 2)] == 1);
 
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
@@ -825,8 +824,8 @@ void tnecs_test_world_progress() {
     lok(temp_velocity->vy == 2);
     tnecs_world_step(test_world, 0, NULL);
 
-    lok(test_world->entities.archetypes[Perignon] == (1 + 8));
-    lok(test_world->bytype.num_entities[tnecs_archetypeid(test_world, 1 + 8)] == 1);
+    lok(test_world->entities.archetypes[Perignon] == (1 + 2));
+    lok(test_world->bytype.num_entities[tnecs_archetypeid(test_world, 1 + 2)] == 1);
     tnecs_entity_destroy(test_world, Perignon);
 
     tnecs_grow_phase(test_world);
@@ -851,10 +850,10 @@ void tnecs_test_world_progress() {
     int SystemMovePhase2_ID = 3;
     int SystemMovePhase4_ID = 4;
 
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 8);
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 8 + 1);
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID) == 8 + 2);
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID) == 8 + 2 + 1);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
 
     lok(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world,
                                                             TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID))] == 3);
@@ -958,10 +957,10 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2, 0, 4, Unit_ID, Position_ID); // 2X
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase4, 0, 3, Unit_ID, Position_ID, Velocity_ID); // 1X
 
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMove_ID) == 8);
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMovePhase1_ID) == 8 + 1);
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMovePhase2_ID) == 8 + 2);
-    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMovePhase4_ID) == 8 + 2 + 1);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
+    lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
 
     lok(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world2,
                                                             TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMove_ID))] == 3);
