@@ -657,15 +657,15 @@ void tnecs_test_component_array() {
     TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase4, 0, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
 
     tnecs_entity temp_ent = TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit, Position_ID, Velocity_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Velocity_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Velocity_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Velocity_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
 
     size_t temp_archetypeid = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID, Position_ID);
     size_t temp_component_order = tnecs_component_order_bytypeid(arr_world, Position_ID, temp_archetypeid);
@@ -889,7 +889,7 @@ void tnecs_test_world_progress() {
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Velocity_ID);
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
-    tnecs_entity temp_todestroy = TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit, Position);
+    tnecs_entity temp_todestroy = TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
     tnecs_entity_destroy(inclusive_world, temp_todestroy);
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
     TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
@@ -1176,7 +1176,7 @@ void tnecs_benchmarks() {
     tnecs_entity tnecs_entities2[ITERATIONS];
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        tnecs_entities2[i] = TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2, Unit2);
+        tnecs_entities2[i] = TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID, Unit2_ID);
         TNECS_DEBUG_ASSERT(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
     }
     TNECS_DEBUG_ASSERT(bench_world->bytype.len_entities[3] == 32768);
