@@ -768,7 +768,7 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 2, 1, Velocity_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase1, 1, 1, Position_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 1, 1, Unit_ID);
-    lok(test_world->byphase.num== 5);
+    lok(test_world->byphase.num == 5);
     lok(test_world->byphase.systems[1][0] == &SystemMovePhase1);
     lok(test_world->byphase.systems[1][1] == &SystemMovePhase2);
     lok(test_world->byphase.systems[2][0] == &SystemMovePhase2);
@@ -952,10 +952,10 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_COMPONENT(inclusive_world2, Unit);
     TNECS_REGISTER_COMPONENT(inclusive_world2, Sprite);
 
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMove, 0, 2, Unit_ID); // 4X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase1, 0, 1, Unit_ID, Velocity_ID);  // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2, 0, 4, Unit_ID, Position_ID); // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase4, 0, 3, Unit_ID, Position_ID, Velocity_ID); // 1X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMove, 2, 0, Unit_ID); // 4X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase1, 1, 0, Unit_ID, Velocity_ID);  // 2X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2, 4, 0, Unit_ID, Position_ID); // 2X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase4, 3, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
 
     lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
     lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
@@ -981,16 +981,16 @@ void tnecs_test_world_progress() {
 
     lok(inclusive_world2->systems_torun.num == 9);
     torun_arr = inclusive_world2->systems_torun.arr; 
-    lok(torun_arr[0] == &SystemMovePhase1);
-    lok(torun_arr[1] == &SystemMovePhase1);
-    lok(torun_arr[2] == &SystemMove);
-    lok(torun_arr[3] == &SystemMove);
-    lok(torun_arr[4] == &SystemMove);
-    lok(torun_arr[5] == &SystemMove);
-    lok(torun_arr[6] == &SystemMovePhase4);
-    lok(torun_arr[7] == &SystemMovePhase2);
-    lok(torun_arr[8] == &SystemMovePhase2);
-    lok(torun_arr[9] == NULL);
+    lok(torun_arr[0]  == &SystemMovePhase1);
+    lok(torun_arr[1]  == &SystemMovePhase1);
+    lok(torun_arr[2]  == &SystemMove);
+    lok(torun_arr[3]  == &SystemMove);
+    lok(torun_arr[4]  == &SystemMove);
+    lok(torun_arr[5]  == &SystemMove);
+    lok(torun_arr[6]  == &SystemMovePhase4);
+    lok(torun_arr[7]  == &SystemMovePhase2);
+    lok(torun_arr[8]  == &SystemMovePhase2);
+    lok(torun_arr[9]  == NULL);
     lok(torun_arr[10] == NULL);
     lok(torun_arr[11] == NULL);
     lok(torun_arr[12] == NULL);
