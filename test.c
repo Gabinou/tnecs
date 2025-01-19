@@ -696,7 +696,7 @@ void tnecs_test_component_array() {
     lok(arr_world->entities.archetypes[temp_ent] == TNECS_COMPONENT_IDS2ARCHETYPE(Unit_ID));
     size_t old_archetypeid = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID);
     lok(arr_world->bytype.num_entities[old_archetypeid] == 1);
-    lok(old_archetypeid == 3);
+    lok(old_archetypeid == Unit_ID);
     size_t old_component_order = tnecs_component_order_bytypeid(arr_world, Unit_ID, old_archetypeid);
 
     lok(old_component_order < TNECS_COMPONENT_CAP);
@@ -1095,7 +1095,7 @@ void tnecs_test_grow() {
     tnecs_grow_phase(grow_world);
     lok(grow_world->byphase.len == TNECS_INIT_PHASE_LEN * TNECS_ARRAY_GROWTH_FACTOR);
 
-    lok(grow_world->byphase.num== 1);
+    lok(grow_world->byphase.num == 1);
     for (size_t i = TNECS_INIT_PHASE_LEN; i < grow_world->byphase.len; i++) {
         lok(grow_world->byphase.num_systems[i] == 0);
         lok(grow_world->byphase.len_systems[i] == TNECS_INIT_PHASE_LEN);
