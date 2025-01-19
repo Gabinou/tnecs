@@ -331,7 +331,7 @@ size_t tnecs_archetypeid(tnecs_world *w, tnecs_component archetype);
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__))
 
-#define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_STRINGIFY, __VA_ARGS__)))
+#define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_FOREACH_COMMA(TNECS_DONOTHING, __VA_ARGS__)))
 
 #define TNECS_COMPONENTS_LIST(input, cID) (input->world->bytype.components[input->entity_archetype_id][input->world->bytype.components_order[input->entity_archetype_id][cID]].components)
 

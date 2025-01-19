@@ -667,8 +667,13 @@ void tnecs_test_component_array() {
     TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
     TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
 
-    size_t temp_archetypeid = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID, Position_ID);
+    size_t temp_archetypeid     = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID, Position_ID);
+
     size_t temp_component_order = tnecs_component_order_bytypeid(arr_world, Position_ID, temp_archetypeid);
+    assert(temp_archetypeid > TNECS_NULL);
+    assert(arr_world->bytype.components != NULL);
+    assert(arr_world->bytype.components[temp_archetypeid] != NULL);
+
     lok(arr_world->bytype.components[temp_archetypeid][temp_component_order].num == 4);
     temp_component_order = tnecs_component_order_bytypeid(arr_world, Unit_ID, temp_archetypeid);
     lok(arr_world->bytype.components[temp_archetypeid][temp_component_order].num == 4);
