@@ -354,6 +354,7 @@ void tnecs_test_utilities() {
 void tnecs_test_component_registration() {
     tnecs_world_genesis(&test_world);
     lok(test_world != NULL);
+    assert(sizeof(Position) > 0);
     TNECS_REGISTER_COMPONENT(test_world, Position);
     size_t temp_comp_flag       = 1;
     size_t temp_comp_id         = 1;
@@ -361,7 +362,9 @@ void tnecs_test_component_registration() {
     size_t temp_archetype_id    = 1;
     size_t temp_archetype       = 1;
     lok(TNECS_COMPONENT_ID2TYPE(temp_comp_id) == temp_archetype);
-    lok(test_world->bytype.components_id[temp_comp_id][temp_comp_order] == temp_comp_id);
+    assert(test_world->bytype.components_id != NULL);
+    assert(test_world->bytype.components_id[temp_comp_id] != NULL);
+    lok(test_world->bytype.components_id[temp_archetype_id][temp_comp_order] == temp_comp_id);
     lok(test_world->bytype.id[0] == 0);
     lok(test_world->bytype.id[1] == (TNECS_NULLSHIFT << 0));
     lok(test_world->bytype.id[1] == temp_comp_flag);
