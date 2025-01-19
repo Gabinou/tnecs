@@ -3,7 +3,7 @@
 /* Tiny C99 Entity-Component-System (ECS) library.
 * tnecs.h
 *
-* Copyright (C) Gabriel Taillon, 2023
+* Copyright (C) Gabriel Taillon, 2023-2025
 *
 * ECSs are an alternative way to organize data and functions to
 * Object-Oriented programming (OOP).
@@ -76,7 +76,7 @@ typedef int32_t                 b32;
 typedef unsigned char           tnecs_byte;
 
 /*** Forward declarations ***/
-typedef struct tnecs_system_input     tnecs_system_input;
+typedef struct tnecs_system_input tnecs_system_input;
 
 /*** Function pointer ***/
 typedef void (*tnecs_system_ptr)(struct tnecs_system_input *);
@@ -96,8 +96,7 @@ enum TNECS {
     TNECS_ARRAY_GROWTH_FACTOR   =         2
 };
 
-/********************* UTILITY MACROS***********************/
-#define TNECS_STRINGIFY(x) #x
+/********************* UTILITY MACROS ***********************/
 #define TNECS_DONOTHING(x) x
 #define TNECS_CONCATENATE( arg1, arg2) TNECS_CONCATENATE1(arg1, arg2)
 #define TNECS_CONCATENATE1(arg1, arg2) TNECS_CONCATENATE2(arg1, arg2)
@@ -116,7 +115,6 @@ enum TNECS {
 #define TNECS_VAR_VARG_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
 
 // TNECS_VARMACRO_FOREACH_XXXX(foo, __VA_ARGS__) applies foo to each __VA_ARGS__, PLUS
-//      -> _SCOMMA variant stringifies and puts commas around each (except last)
 //      -> _COMMA puts commas around each (except last)
 //      up to 63 args if all TNECS_FOREACH_XXXX_N exist
 #define TNECS_FOREACH_COMMA_1(macro,  x)      macro(x)
@@ -127,20 +125,9 @@ enum TNECS {
 #define TNECS_FOREACH_COMMA_6(macro,  x, ...) macro(x),  TNECS_FOREACH_COMMA_5(macro,  __VA_ARGS__)
 #define TNECS_FOREACH_COMMA_7(macro,  x, ...) macro(x),  TNECS_FOREACH_COMMA_6(macro,  __VA_ARGS__)
 #define TNECS_FOREACH_COMMA_8(macro,  x, ...) macro(x),  TNECS_FOREACH_COMMA_7(macro,  __VA_ARGS__)
-#define TNECS_FOREACH_SCOMMA_1(macro, x)      macro(#x)
-#define TNECS_FOREACH_SCOMMA_2(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_1(macro, __VA_ARGS__)
-#define TNECS_FOREACH_SCOMMA_3(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_2(macro, __VA_ARGS__)
-#define TNECS_FOREACH_SCOMMA_4(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_3(macro,  __VA_ARGS__)
-#define TNECS_FOREACH_SCOMMA_5(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_4(macro,  __VA_ARGS__)
-#define TNECS_FOREACH_SCOMMA_6(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_5(macro,  __VA_ARGS__)
-#define TNECS_FOREACH_SCOMMA_7(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_6(macro,  __VA_ARGS__)
-#define TNECS_FOREACH_SCOMMA_8(macro, x, ...) macro(#x), TNECS_FOREACH_SCOMMA_7(macro,  __VA_ARGS__)
 
 #define TNECS_VARMACRO_FOREACH_COMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_COMMA_, N)(macro, __VA_ARGS__)
 #define TNECS_VARMACRO_FOREACH_COMMA(macro, ...) TNECS_VARMACRO_FOREACH_COMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
-
-#define TNECS_VARMACRO_FOREACH_SCOMMA_(N, macro, ...) TNECS_CONCATENATE(TNECS_FOREACH_SCOMMA_, N)(macro, __VA_ARGS__)
-#define TNECS_VARMACRO_FOREACH_SCOMMA(macro, ...) TNECS_VARMACRO_FOREACH_SCOMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), macro, __VA_ARGS__)
 
 /************ STRUCTS DEFINITIONS ***************/
 typedef struct tnecs_component_array { /* 1D array of components */
@@ -241,7 +228,7 @@ struct tnecs_system_input {
 b32 tnecs_world_genesis(tnecs_world **w);
 b32 tnecs_world_destroy(tnecs_world **w);
 
-b32 tnecs_world_step(      tnecs_world *w, tnecs_ns     deltat, void *data);
+b32 tnecs_world_step(      tnecs_world *w,                     tnecs_ns deltat, void *data);
 b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, void *data);
 
 /******************* SYSTEM FUNCTIONS ********************/
