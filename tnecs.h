@@ -107,15 +107,14 @@ enum TNECS {
 // Distribution as in algebra: a(x+b) -> ax + ab
 
 // TNECS_VAR_EACH_ARGN(__VA_ARGS__) counts the number of args
-//      -> up to 63, if elements in TNECS_VAR_ARGN and TNECS_VAR_VARG_SEQ exist
+//  - up to 63, if TNECS_VAR_ARGN and TNECS_VAR_VARG_SEQ exist
 #define TNECS_VAR_EACH_ARGN(...) TNECS_VAR_EACH_ARGN_(__VA_ARGS__, TNECS_VAR_VARG_SEQ())
 #define TNECS_VAR_EACH_ARGN_(...) TNECS_VAR_ARGN(__VA_ARGS__)
 #define TNECS_VAR_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
 #define TNECS_VAR_VARG_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
 
-// TNECS_VARMACRO_XXXX(foo, __VA_ARGS__) applies foo to each __VA_ARGS__, PLUS
-//      -> _COMMA puts commas around each (except last)
-//      up to 63 args if all TNECS_FOREACH_XXXX_N exist
+// TNECS_VARMACRO_COMMA(__VA_ARGS__) puts commas around each arg, except last.
+//  - up to 63 args if all TNECS_COMMA_N exist
 #define TNECS_COMMA_1(x)      x
 #define TNECS_COMMA_2(x, ...) x,  TNECS_COMMA_1(__VA_ARGS__)
 #define TNECS_COMMA_3(x, ...) x,  TNECS_COMMA_2(__VA_ARGS__)
@@ -200,8 +199,6 @@ typedef struct tnecs_components {
     size_t           bytesizes[TNECS_COMPONENT_CAP];  // [cID]
 } tnecs_components;
 
-
-/*** tnecs_worlds ***/
 typedef struct tnecs_world {
     tnecs_phases        byphase;
     tnecs_system        systems;
