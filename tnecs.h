@@ -41,10 +41,6 @@
     #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /********************* DEBUGGING *********************/
 #define TNECS_DEBUG_A // TNECS_DEBUG_ASSERT are ignored if undefined
 #ifdef TNECS_DEBUG_A
@@ -228,7 +224,7 @@ b32 tnecs_world_step(      tnecs_world *w,                     tnecs_ns deltat, 
 b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, void *data);
 
 /******************* SYSTEM FUNCTIONS ********************/
-b32 tnecs_system_run(tnecs_world *w, size_t id, tnecs_ns deltat, void *data);
+b32 tnecs_system_run(       tnecs_world *w, size_t id, tnecs_ns deltat, void *data);
 b32 tnecs_custom_system_run(tnecs_world *w, tnecs_system_ptr c,
                             tnecs_component ar, tnecs_ns deltat, void *data);
 
@@ -280,23 +276,19 @@ b32  tnecs_entity_remove_components(tnecs_world *w, tnecs_entity eID,
                                     size_t num_components, tnecs_component archetype);
 void *tnecs_get_component(tnecs_world *w, tnecs_entity eID, tnecs_component cID);
 
-b32 tnecs_entitiesbytype_add(tnecs_world *w, tnecs_entity entity,
-                             tnecs_component new_type);
-b32 tnecs_entitiesbytype_del(tnecs_world *w, tnecs_entity entity,
-                             tnecs_component old_type);
-b32 tnecs_entitiesbytype_migrate(tnecs_world *w, tnecs_entity entity,
-                                 tnecs_component old_type, tnecs_component new_type);
+b32 tnecs_entitiesbytype_add(    tnecs_world *w, tnecs_entity e, tnecs_component nt);
+b32 tnecs_entitiesbytype_del(    tnecs_world *w, tnecs_entity e, tnecs_component ot);
+b32 tnecs_entitiesbytype_migrate(tnecs_world *w, tnecs_entity e, tnecs_component ot, tnecs_component nt);
 
-b32 tnecs_component_add(tnecs_world *w, tnecs_component flag);
-b32 tnecs_component_copy(tnecs_world *w, const tnecs_entity entity,
-                         const tnecs_component old_flag, const tnecs_component new_flag);
-b32 tnecs_component_del(tnecs_world *w, tnecs_entity entity,
-                        tnecs_component old_flag);
+b32 tnecs_component_add(    tnecs_world *w, tnecs_component flag);
+b32 tnecs_component_del(    tnecs_world *w, tnecs_entity entity,
+                            tnecs_component old_flag);
+b32 tnecs_component_copy(   tnecs_world *w, const tnecs_entity entity,
+                            const tnecs_component old_flag, const tnecs_component new_flag);
 b32 tnecs_component_migrate(tnecs_world *w, tnecs_entity entity,
                             tnecs_component old_flag, tnecs_component new_flag);
 
-b32 tnecs_component_array_new(tnecs_world *w, size_t num_components,
-                              tnecs_component archetype);
+b32 tnecs_component_array_new( tnecs_world *w, size_t num_, tnecs_component a);
 b32 tnecs_component_array_init(tnecs_world *w, tnecs_component_array *array,
                                size_t cID);
 
@@ -338,7 +330,4 @@ b32 tnecs_grow_component_array( tnecs_world *w, tnecs_component_array *comp_arr,
 /****************** SET BIT COUNTING *****************/
 size_t setBits_KnR_uint64_t(uint64_t flags);
 
-#ifdef __cplusplus
-}
-#endif
-#endif // __TNECS_H__
+#endif /* __TNECS_H__ */
