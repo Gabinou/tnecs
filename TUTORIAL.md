@@ -28,7 +28,7 @@ A component is a user-defined struct:
     TNECS_REGISTER_COMPONENT(world, Position);
 ```
 The components IDs start at 1, and increment for every new component.
-Use X macros to create compile-time component IDs 
+Use X macros to create compile-time component IDs. 
 ```tnecs_component_t``` is an ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. 
 Component index 0 is reserved for the NULL component, so a maximal number of 63 components can be registered.
 
@@ -36,7 +36,7 @@ The component's type can be obtained with:
 ```c
     tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(world, Position); 
 ```
-NOTE: A component type ahas one bit set, an archertype can have any number of bits set.
+NOTE: A component type ahas one bit set, an archetype can have any number of bits set.
 
 The relation between component indices and types is:
 ```c
@@ -83,7 +83,7 @@ Entities can be created with any number of components directly with this variadi
 ```TNECS_ENTITY_CREATE_wCOMPONENTS``` wraps around the variadic function ```tnecs_new_entity_wcomponents``` by counting the number of input components. So you can also write, if you wish:
 
 ```c
-    tnecs_entity_t Perignon = tnecs_new_entity_wcomponents(world, 2, TNECS_HASH("Position"), TNECS_HASH("Unit"));
+    tnecs_entity_t Perignon = tnecs_entity_create_wcomponents(world, 2, Position_ID, Unit_ID);
 ```
 
 ## Register System to the world
@@ -102,11 +102,12 @@ A system is a user-defined function, with a ```struct *tnecs_system_input``` poi
 ```
 System index 0 is reserved for NULL. 
 
+Systems are run by phases.
+For each phase, the systems are run first come first served.
+
 Phases are greater than zero ```uint32_t``` integers.
 Default phase is 0, the NULL phase, which always runs first.
 Other phases run in order of their phase id. 
-
-Inside each phase, each system is run first come first served.
 This order can be changed with ```tnecs_system_order_switch```.
 
 By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 

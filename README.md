@@ -20,15 +20,15 @@ Add ```tnecs.c``` and ```tnecs.h``` to your source code.
 ## Detailed Introduction
 Tiny C99 Entity-Component-System (ECS) library. [Read the Tutorial](https://gitlab.com/Gabinou/tnecs/-/blob/master/TUTORIAL.md).
 
-Originally created for use in a game I am developping using C99: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker). Title pending. 
-
 ECSs are an alternative way to organize data and functions to Object-Oriented programming (OOP).
 * OOP: Objects/Classes contain data and methods. 
 Methods act on objects. 
 Children classes inherit methods and data structure from parents. 
 * ECS: Components are purely data.
 Any number of components can be attached to an entity.
-Entities are acted upon by systems. 
+Entities are acted upon by systems.
+
+Originally created for use in a game I am developping: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker).
 
 Videogame Example:
 - Enemy Entity: AIControlled component, Sprite Component, Physics Component

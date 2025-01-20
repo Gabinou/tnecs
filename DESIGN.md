@@ -1,7 +1,7 @@
 
 ## Ｏn tnecs' Design
 
-My motivation for tnecs is to make the _simplest possible_ C99 ECS library only with the _minimum necessary features_.
+Make the _simplest possible_ C99 ECS library only with the _minimum necessary features_.
 I also use the ```tcc``` compiler sometimes, so compiler-specific instructions are out of the question.
 
 In tnecs:
