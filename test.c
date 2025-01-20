@@ -428,9 +428,7 @@ void tnecs_test_system_registration() {
     int Velocity_ID = 2;
 
     TNECS_REGISTER_SYSTEM(test_world, SystemMove, 0, 1, Position_ID, Velocity_ID);
-    size_t temp_comp_id         = 1;
     size_t temp_archetype_id    = 5;
-    size_t temp_archetype       = 1 + 8;
 
     lok(test_world->bytype.components_id[temp_archetype_id][0] == Position_ID);
     lok(test_world->bytype.components_id[temp_archetype_id][1] == Velocity_ID);
@@ -608,7 +606,6 @@ void tnecs_test_component_remove() {
     int Position_ID = 1;
     int Velocity_ID = 2;
     int Unit_ID     = 3;
-    int Sprite_ID   = 4;
 
     tnecs_entity Silou = tnecs_entity_create(test_world);
     TNECS_ADD_COMPONENT(test_world, Silou, Position_ID);
@@ -748,7 +745,6 @@ void tnecs_test_world_progress() {
     int Position_ID = 1;
     int Velocity_ID = 2;
     int Unit_ID     = 3;
-    int Sprite_ID   = 4;
 
     struct Velocity *temp_velocity;
     tnecs_entity Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Velocity_ID);
