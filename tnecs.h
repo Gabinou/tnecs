@@ -37,7 +37,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <math.h>
-#ifndef log2 // tcc SUCKS and DOES NOT define log2
+#ifndef log2 /* for tcc */
     #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
 #endif
 
