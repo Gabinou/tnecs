@@ -27,7 +27,7 @@
     #define log2(x) (log(x) * 1.44269504088896340736)
 #endif
 
-/********************* DEBUGGING *********************/
+/************************ DEBUGGING *************************/
 #define TNECS_DEBUG_A // TNECS_DEBUG_ASSERT are ignored if undefined
 #ifdef TNECS_DEBUG_A
 #define TNECS_DEBUG_ASSERT(in) do {assert(in);}while(0)
@@ -49,7 +49,7 @@
         } \
     } while (0)
 
-/******************* TYPE DEFINITIONS *******************/
+/********************* TYPE DEFINITIONS *********************/
 typedef unsigned long long int  u64;                // 64 bit int
 typedef unsigned long long int  tnecs_entity;       // 64 bit int
 typedef unsigned long long int  tnecs_component;    // 64 bit flag
@@ -86,7 +86,7 @@ enum TNECS {
 #define TNECS_ARCHETYPE_HAS_TYPE(archetype, type) ((archetype & type) > 0)
 #define TNECS_ARCHETYPE_IS_SUBTYPE(archetype1, archetype2) ((archetype1 & archetype2) == archetype1)
 
-/*********** HACKY DISTRIBUTION FOR VARIADIC MACROS *********/
+/********** HACKY DISTRIBUTION FOR VARIADIC MACROS **********/
 // Distribution as in algebra: a(x+b) -> ax + ab
 
 // TNECS_VAR_EACH_ARGN(__VA_ARGS__) counts the number of args
@@ -110,7 +110,7 @@ enum TNECS {
 #define TNECS_COMMA_7(x, ...) x,  TNECS_COMMA_6(__VA_ARGS__)
 #define TNECS_COMMA_8(x, ...) x,  TNECS_COMMA_7(__VA_ARGS__)
 
-/************ STRUCTS DEFINITIONS ***************/
+/********************* STRUCTS DEFINITIONS ******************/
 typedef struct tnecs_chunk { /* 1D array of components */
     tnecs_component  type;
     size_t           num;
@@ -203,19 +203,19 @@ struct tnecs_system_input {
     void            *data;
 };
 
-/******************** WORLD FUNCTIONS **********************/
+/******************** WORLD FUNCTIONS ***********************/
 b32 tnecs_world_genesis(tnecs_world **w);
 b32 tnecs_world_destroy(tnecs_world **w);
 
 b32 tnecs_world_step(      tnecs_world *w,                     tnecs_ns deltat, void *data);
 b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, void *data);
 
-/******************* SYSTEM FUNCTIONS ********************/
+/********************* SYSTEM FUNCTIONS ********************/
 b32 tnecs_system_run(       tnecs_world *w,     size_t           id, tnecs_ns deltat, void *data);
 b32 tnecs_custom_system_run(tnecs_world *w,     tnecs_system_ptr c,
                             tnecs_component ar, tnecs_ns         dt, void *data);
 
-/******************* REGISTRATION *******************/
+/*********************** REGISTRATION ***********************/
 size_t          tnecs_register_phase(    tnecs_world    *w,    tnecs_phase         phase);
 size_t          tnecs_register_system(   tnecs_world    *w,    tnecs_system_ptr    system, 
                                          tnecs_phase     p,    b32                 isExclusive,
@@ -226,8 +226,7 @@ tnecs_component tnecs_register_component(tnecs_world    *w,    size_t           
 
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, sizeof(name))
 
-/************ ENTITY MANIPULATION *************/
-/* -- Public -- */
+/******************* ENTITY MANIPULATION ********************/
 b32             tnecs_entity_isOpen(    tnecs_world *w, tnecs_entity ent);
 tnecs_entity    tnecs_entity_create(    tnecs_world *w);
 b32             tnecs_entity_destroy(   tnecs_world *w, tnecs_entity ent);
@@ -251,9 +250,9 @@ b32             tnecs_entities_open_flush(tnecs_world *w);
 
 #define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) tnecs_entity_remove_components(world, entity_id, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
 
-/********************************************************/
-/****************** TNECS INTERNALS *********************/
-/********************************************************/
+/************************************************************/
+/********************** TNECS INTERNALS *********************/
+/************************************************************/
 void *tnecs_get_component(tnecs_world *w, tnecs_entity eID, tnecs_component cID);
 
 tnecs_entity    tnecs_entity_add_components(   tnecs_world *w, tnecs_entity eID, tnecs_component archetype, b32 isNew);
@@ -277,7 +276,7 @@ b32 tnecs_chunk_init(tnecs_world *w, tnecs_chunk   *array,  size_t          cID)
 b32 tnecs_system_order_switch(tnecs_world   *w, tnecs_phase phase,
                               size_t        o1, size_t      o2);
 
-/************* UTILITY FUNCTIONS/MACROS *************/
+/************************** UTILITIES ***********************/
 size_t tnecs_archetypeid(               tnecs_world *w, tnecs_component arch);
 size_t tnecs_component_order_bytype(    tnecs_world *w, size_t          cID, tnecs_component arch);
 size_t tnecs_component_order_bytypeid(  tnecs_world *w, size_t          cID, size_t          aID);
@@ -293,7 +292,7 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 
 #define TNECS_SYSTEM_ID2ARCHETYPE(world, id) world->systems.archetypes[id]
 
-/******************** "DYNAMIC" ARRAYS *********************/
+/********************** "DYNAMIC" ARRAYS ********************/
 void *tnecs_arrdel( void *arr, size_t elem,     size_t len,     size_t bytesize);
 void *tnecs_realloc(void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
 
@@ -308,7 +307,7 @@ b32 tnecs_grow_system_byphase(  tnecs_world *w,     tnecs_phase  phase);
 b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_chunk *comp_arr, 
                                 size_t      tID,    size_t       corder);
 
-/****************** SET BIT COUNTING *****************/
+/********************* SET BIT COUNTING *********************/
 size_t setBits_KnR_u64(u64 flags);
 
 #endif /* __TNECS_H__ */
