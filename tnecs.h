@@ -128,7 +128,6 @@ typedef struct tnecs_chunk { /* 1D array of components */
     tnecs_component  type;
     size_t           num;
     size_t           len;
-    // TODO Try Flexible array member
     void            *components;      /* [entity_order_bytype] */
 } tnecs_chunk;
 
