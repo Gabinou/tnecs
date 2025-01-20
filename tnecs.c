@@ -998,7 +998,6 @@ b32 tnecs_grow_component_array(tnecs_world *world, tnecs_chunk *comp_arr,
                                const size_t tID, const size_t corder) {
     size_t old_len      = comp_arr->len;
     size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-    size_t new_comp_num = world->bytype.num_components[tID];
     comp_arr->len       = new_len;
 
     size_t cID = world->bytype.components_id[tID][corder];
