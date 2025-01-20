@@ -495,7 +495,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
         printf("tnecs: could not create new entity\n");
         return (TNECS_NULL);
     }
-    TNECS_CHECK_CALL(tnecs_entity_add_components(world, new_entity, argnum, archetype, 1));
+    TNECS_CHECK_CALL(tnecs_entity_add_components(world, new_entity, archetype, 1));
 
     /* Check */
     size_t tID      = tnecs_archetypeid(world, archetype);
@@ -587,11 +587,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 /*****************************************************************************/
 /***************************** TNECS INTERNALS *******************************/
 /*****************************************************************************/
-tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity,
-                                         size_t num_components_toadd, tnecs_component archetype_toadd, b32 isNew) {
-    if (num_components_toadd <= 0) {
-        return (TNECS_NULL);
-    }
+tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity, tnecs_component archetype_toadd, b32 isNew) {
     if (archetype_toadd <= 0) {
         return (TNECS_NULL);
     }
@@ -615,8 +611,7 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
     return (world->entities.id[entity]);
 }
 
-b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity,
-                                   size_t num_components, tnecs_component archetype) {
+b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity, tnecs_component archetype) {
     /* Get new archetype. Since it is a archetype, just need to substract. */
     tnecs_component archetype_old = world->entities.archetypes[entity];
     tnecs_component archetype_new = archetype_old - archetype;

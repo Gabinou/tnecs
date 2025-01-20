@@ -111,6 +111,9 @@ enum TNECS {
 
 // TNECS_VARMACRO_COMMA(__VA_ARGS__) puts commas around each arg, except last.
 //  - up to 63 args if all TNECS_COMMA_N exist
+#define TNECS_VARMACRO_COMMA(...) TNECS_VARMACRO_COMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), __VA_ARGS__)
+#define TNECS_VARMACRO_COMMA_(N, ...) TNECS_CONCATENATE(TNECS_COMMA_, N)(__VA_ARGS__)
+
 #define TNECS_COMMA_1(x)      x
 #define TNECS_COMMA_2(x, ...) x,  TNECS_COMMA_1(__VA_ARGS__)
 #define TNECS_COMMA_3(x, ...) x,  TNECS_COMMA_2(__VA_ARGS__)
@@ -119,9 +122,6 @@ enum TNECS {
 #define TNECS_COMMA_6(x, ...) x,  TNECS_COMMA_5(__VA_ARGS__)
 #define TNECS_COMMA_7(x, ...) x,  TNECS_COMMA_6(__VA_ARGS__)
 #define TNECS_COMMA_8(x, ...) x,  TNECS_COMMA_7(__VA_ARGS__)
-
-#define TNECS_VARMACRO_COMMA_(N, ...) TNECS_CONCATENATE(TNECS_COMMA_, N)(__VA_ARGS__)
-#define TNECS_VARMACRO_COMMA(...) TNECS_VARMACRO_COMMA_(TNECS_VAR_EACH_ARGN(__VA_ARGS__), __VA_ARGS__)
 
 /************ STRUCTS DEFINITIONS ***************/
 typedef struct tnecs_chunk { /* 1D array of components */
@@ -257,20 +257,18 @@ b32             tnecs_entities_open_flush(tnecs_world *w);
 
 #define TNECS_ADD_COMPONENT(...) TNECS_CHOOSE_ADD_COMPONENT(__VA_ARGS__, TNECS_ADD_COMPONENT4, TNECS_ADD_COMPONENT3)(__VA_ARGS__)
 #define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) NAME
-#define TNECS_ADD_COMPONENT3(world, entity_id, cID) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_ids2archetype(1, cID), true)
-#define TNECS_ADD_COMPONENT4(world, entity_id, cID, isnewtype) tnecs_entity_add_components(world, entity_id, 1, tnecs_component_ids2archetype(1, cID), isnewtype)
+#define TNECS_ADD_COMPONENT3(world, entity_id, cID) tnecs_entity_add_components(world, entity_id, tnecs_component_ids2archetype(1, cID), true)
+#define TNECS_ADD_COMPONENT4(world, entity_id, cID, isnewtype) tnecs_entity_add_components(world, entity_id, tnecs_component_ids2archetype(1, cID), isnewtype)
 
-#define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)), isnewtype)
+#define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)), isnewtype)
 
-#define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) tnecs_entity_remove_components(world, entity_id, TNECS_VAR_EACH_ARGN(__VA_ARGS__), tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
+#define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) tnecs_entity_remove_components(world, entity_id, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
 
 /********************************************************/
 /****************** TNECS INTERNALS *********************/
 /********************************************************/
-tnecs_entity tnecs_entity_add_components(tnecs_world *w, tnecs_entity entity,
-                                         size_t num_components, tnecs_component archetype, b32 isNew);
-b32  tnecs_entity_remove_components(tnecs_world *w, tnecs_entity eID,
-                                    size_t num_components, tnecs_component archetype);
+tnecs_entity tnecs_entity_add_components(tnecs_world *w, tnecs_entity entity, tnecs_component archetype, b32 isNew);
+b32  tnecs_entity_remove_components(tnecs_world *w, tnecs_entity eID, tnecs_component archetype);
 void *tnecs_get_component(tnecs_world *w, tnecs_entity eID, tnecs_component cID);
 
 b32 tnecs_entitiesbytype_add(    tnecs_world *w, tnecs_entity e, tnecs_component nt);
