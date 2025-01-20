@@ -19,11 +19,9 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdlib.h>
-#include <assert.h>
 #include <stdarg.h>
+#include <assert.h>
 #include <math.h>
 #ifndef log2 /* for tcc */
     #define log2(x) (log(x) * 1.44269504088896340736)
@@ -52,6 +50,7 @@
     } while (0)
 
 /******************* TYPE DEFINITIONS *******************/
+typedef unsigned long long int  u64;                // 64 bit int
 typedef unsigned long long int  tnecs_entity;       // 64 bit int
 typedef unsigned long long int  tnecs_component;    // 64 bit flag
 typedef unsigned long int       tnecs_phase;
@@ -309,6 +308,6 @@ b32 tnecs_grow_component_array( tnecs_world *w, tnecs_chunk *comp_arr,
                                 const size_t tID, const size_t corder);
 
 /****************** SET BIT COUNTING *****************/
-size_t setBits_KnR_uint64_t(uint64_t flags);
+size_t setBits_KnR_u64(u64 flags);
 
 #endif /* __TNECS_H__ */

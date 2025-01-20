@@ -35,16 +35,16 @@
 #  include <windows.h>
 #endif
 
-/********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
-uint64_t tnecs_get_ns() {
-    static uint64_t is_init = 0;
+/** ******************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
+u64 tnecs_get_ns() {
+    static u64 is_init = 0;
     #if defined(__APPLE__)
     static mach_timebase_info_data_t info;
     if (0 == is_init) {
         mach_timebase_info(&info);
         is_init = 1;
     }
-    uint64_t now;
+    u64 now;
     now = mach_absolute_time();
     now *= info.numer;
     now /= info.denom;
@@ -55,7 +55,7 @@ uint64_t tnecs_get_ns() {
         clock_getres(CLOCKID, &linux_rate);
         is_init = 1;
     }
-    uint64_t now;
+    u64 now;
     struct timespec spec;
     clock_gettime(CLOCKID, &spec);
     now = spec.tv_sec * 1.0e9 + spec.tv_nsec;
@@ -68,7 +68,7 @@ uint64_t tnecs_get_ns() {
     }
     LARGE_INTEGER now;
     QueryPerformanceCounter(&now);
-    return (uint64_t)((1e9 * now.QuadPart) / win_frequency.QuadPart);
+    return (u64)((1e9 * now.QuadPart) / win_frequency.QuadPart);
     #endif
 }
 #ifdef MICROSECOND_CLOCK
@@ -170,10 +170,10 @@ typedef struct Unit {
 } Unit;
 
 typedef struct Velocity {
-    uint64_t vx;
-    uint64_t vy;
-    uint64_t vz;
-    uint64_t vw;
+    u64 vx;
+    u64 vy;
+    u64 vz;
+    u64 vw;
 } Velocity;
 
 
@@ -185,20 +185,20 @@ typedef struct Sprite {
 struct Unit Unit_default = {.hp = 0, .str = 0 };
 
 typedef struct Position2 {
-    uint64_t x;
-    uint64_t y;
-    uint64_t a;
-    uint64_t b;
-    uint64_t c;
-    uint64_t d;
+    u64 x;
+    u64 y;
+    u64 a;
+    u64 b;
+    u64 c;
+    u64 d;
 } Position2;
 
 typedef struct Unit2 {
-    uint64_t hp;
-    uint64_t str;
-    uint64_t mag;
-    uint64_t def;
-    uint64_t res;
+    u64 hp;
+    u64 str;
+    u64 mag;
+    u64 def;
+    u64 res;
 } Unit2;
 
 void SystemMove2(struct tnecs_system_input *in_input) {
@@ -342,13 +342,13 @@ void tnecs_test_utilities() {
     lok(TNECS_ARCHETYPE_IS_SUBTYPE(4, (4 + 8 + 16)));
     lok(!TNECS_ARCHETYPE_IS_SUBTYPE(2, (4 + 8 + 16)));
 
-    lok(setBits_KnR_uint64_t(1) == 1);
-    lok(setBits_KnR_uint64_t(2) == 1);
-    lok(setBits_KnR_uint64_t(3) == 2);
-    lok(setBits_KnR_uint64_t(4) == 1);
-    lok(setBits_KnR_uint64_t(5) == 2);
-    lok(setBits_KnR_uint64_t(6) == 2);
-    lok(setBits_KnR_uint64_t(7) == 3);
+    lok(setBits_KnR_u64(1) == 1);
+    lok(setBits_KnR_u64(2) == 1);
+    lok(setBits_KnR_u64(3) == 2);
+    lok(setBits_KnR_u64(4) == 1);
+    lok(setBits_KnR_u64(5) == 2);
+    lok(setBits_KnR_u64(6) == 2);
+    lok(setBits_KnR_u64(7) == 3);
 }
 
 void tnecs_test_component_registration() {

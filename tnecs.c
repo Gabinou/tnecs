@@ -597,7 +597,7 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
     tnecs_component archetype_new = archetype_toadd + archetype_old;
     TNECS_DEBUG_ASSERT(archetype_new != archetype_old);
     if (isNew)
-        TNECS_CHECK_CALL(_tnecs_register_archetype(world, setBits_KnR_uint64_t(archetype_new),
+        TNECS_CHECK_CALL(_tnecs_register_archetype(world, setBits_KnR_u64(archetype_new),
                                                    archetype_new));
 
     size_t tID_new = tnecs_archetypeid(world, archetype_new);
@@ -619,7 +619,7 @@ b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity, tnec
 
     if (archetype_new != TNECS_NULL) {
         /* Migrate remaining components to new archetype array. */
-        TNECS_CHECK_CALL(_tnecs_register_archetype(world, setBits_KnR_uint64_t(archetype_new),
+        TNECS_CHECK_CALL(_tnecs_register_archetype(world, setBits_KnR_u64(archetype_new),
                                                    archetype_new));
         TNECS_CHECK_CALL(tnecs_component_migrate(world, entity, archetype_old, archetype_new));
     } else {
@@ -1175,7 +1175,7 @@ b32 tnecs_grow_bytype(tnecs_world *world, const size_t tID) {
 }
 
 /*************** SET BIT COUNTING *******************/
-size_t setBits_KnR_uint64_t(uint64_t in_flags) {
+size_t setBits_KnR_u64(u64 in_flags) {
     // Credits to Kernighan and Ritchie in 'C Programming Language'
     size_t count = 0;
     while (in_flags) {
