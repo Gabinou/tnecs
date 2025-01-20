@@ -35,13 +35,13 @@ Videogame Example:
 - Bullet Entity: Sprite Component, Physics Component, DamageonHit Component
 - Main Character Entity: UserControlled Component, Sprite Component, Physics Component
 
-In tnecs, an entity is an ```uint64_t``` index. 
+In tnecs, an entity is an ```ull``` index. 
 A component is user-defined ```struct```. 
 A system is a user-defined ```function```.
 All live inside the ```world```. 
 
 The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
-Phases are user-defined ```uint32_t```. 
+Phases are user-defined ```ul```. 
 System execution order is first-come first-served by default.
 For more in-depth discussion about tnecs' design, see the [On Design](https://gitlab.com/Gabinou/tnecs/-/blob/master/DESIGN.md).
 

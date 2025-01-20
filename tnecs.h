@@ -5,17 +5,6 @@
 *
 * Copyright (C) Gabriel Taillon, 2023-2025
 *
-* ECSs are an alternative way to organize data and functions to
-* Object-Oriented programming (OOP).
-* OOP:
-* - Objects/Classes contain data and methods.
-* - Methods act on objects.
-* - Children classes inherit methods and data structure from parents.
-* ECS:
-* - Components are purely data.
-* - Any number of components can be attached to an entity.
-* - Entities are acted upon by systems.
-*
 * In tnecs, an entity is an ```ull``` index.
 * A component is user-defined ```struct```.
 * A system is a user-defined ```function```.
@@ -24,9 +13,8 @@
 * The systems iterate over the entities that have a user-defined set of components,
 * inclusively or exclusively, in phases.
 * Phases are user-defined ```uint8_t```.
-* System execution order is first-come first-served by default.
-* Systems are inclusive by default, meaning that they run over entities with
-* additional components to the system's.
+* System execution order in a phases is first-come first-served by default.
+* Systems are inclusive by default, they run for all compatible archetypes.
 */
 
 #include <stdio.h>
@@ -65,10 +53,10 @@
 
 /******************* TYPE DEFINITIONS *******************/
 typedef unsigned long long int  tnecs_entity;       // 64 bit int
-typedef tnecs_entity            tnecs_component;    // 64 bit flag
-typedef uint32_t                tnecs_phase;
-typedef uint64_t                tnecs_ns;
-typedef int32_t                 b32;
+typedef unsigned long long int  tnecs_component;    // 64 bit flag
+typedef unsigned long int       tnecs_phase;
+typedef unsigned long long int  tnecs_ns;
+typedef int                     b32;
 typedef unsigned char           tnecs_byte;
 
 /*** Forward declarations ***/

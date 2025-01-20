@@ -98,7 +98,7 @@ b32 tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
 b32 tnecs_world_step_phase(tnecs_world *world,  tnecs_phase  phase,
                            tnecs_ns     deltat, void        *data) {
     if (phase != world->byphase.id[phase]) {
-        printf("tnecs: Invalid phase '%d' \n", phase);
+        printf("tnecs: Invalid phase '%lu' \n", phase);
         return (0);
     }
 
