@@ -342,7 +342,7 @@ size_t tnecs_register_system(tnecs_world *world,
 }
 
 tnecs_component tnecs_register_component(tnecs_world    *world,
-                                         const size_t    bytesize) {
+                                         size_t    bytesize) {
     /* Checks */
     if (bytesize <= 0) {
         printf("tnecs: Component should have >0 bytesize.\n");
@@ -745,8 +745,8 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
     return (1);
 }
 
-b32 tnecs_component_copy(tnecs_world *world, const tnecs_entity entity,
-                         const tnecs_component old_archetype, const tnecs_component new_archetype) {
+b32 tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
+                         tnecs_component old_archetype, tnecs_component new_archetype) {
     /* Copy components from old order unto top of new type component array */
     if (old_archetype == new_archetype) {
         return (1);
@@ -997,7 +997,7 @@ b32 tnecs_grow_entities_open(tnecs_world *world) {
 }
 
 b32 tnecs_grow_component_array(tnecs_world *world, tnecs_chunk *comp_arr,
-                               const size_t tID, const size_t corder) {
+                               size_t tID, size_t corder) {
     size_t old_len      = comp_arr->len;
     size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
     comp_arr->len       = new_len;
@@ -1144,7 +1144,7 @@ b32 tnecs_grow_phase(tnecs_world *world) {
     return (1);
 }
 
-b32 tnecs_grow_system_byphase(tnecs_world *world, const tnecs_phase phase) {
+b32 tnecs_grow_system_byphase(tnecs_world *world, tnecs_phase phase) {
     size_t olen                         = world->byphase.len_systems[phase];
     size_t nlen                         = olen * TNECS_ARRAY_GROWTH_FACTOR;
     world->byphase.len_systems[phase]   = nlen;
@@ -1160,7 +1160,7 @@ b32 tnecs_grow_system_byphase(tnecs_world *world, const tnecs_phase phase) {
     return (1);
 }
 
-b32 tnecs_grow_bytype(tnecs_world *world, const size_t tID) {
+b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
     size_t olen = world->bytype.len_entities[tID];
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
     TNECS_DEBUG_ASSERT(olen > 0);
