@@ -38,7 +38,7 @@
 #include <stdarg.h>
 #include <math.h>
 #ifndef log2 /* for tcc */
-    #define log2(x)  (x > 0 ? (log(x)/log(2.0f)) : -INFINITY)
+    #define log2(x) (log(x) * 1.44269504088896340736)
 #endif
 
 /********************* DEBUGGING *********************/

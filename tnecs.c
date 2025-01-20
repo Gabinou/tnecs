@@ -398,6 +398,7 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
 
         component_type_toadd = (archetype_reduced + archetype_added) ^ archetype_new;
         archetype_added      += component_type_toadd;
+        TNECS_DEBUG_ASSERT(component_type_toadd > 0);
         component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
         world->bytype.components_id[tID][i]      = component_id_toadd;
@@ -856,6 +857,7 @@ b32 tnecs_chunk_new(tnecs_world *world, size_t num_components,
     while (archetype_reduced) {
         archetype_reduced &= (archetype_reduced - 1);
         type_toadd = (archetype_reduced + archetype_added) ^ archetype;
+        TNECS_DEBUG_ASSERT(type_toadd > 0);
         id_toadd = TNECS_COMPONENT_TYPE2ID(type_toadd);
         TNECS_DEBUG_ASSERT(id_toadd > 0);
         TNECS_DEBUG_ASSERT(id_toadd < world->components.num);
