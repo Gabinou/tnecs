@@ -557,13 +557,14 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 
     /* Preliminaries */
     tnecs_component archetype   = world->entities.archetypes[entity];
-    assert(world->bytype.num_entities[tID] > TNECS_NULL);
+
     /* Delete components */
     tnecs_component_del(world, entity, archetype);
 
     #ifndef NDEBUG     
     size_t entity_order         = world->entities.orders[entity];
     size_t tID                  = tnecs_archetypeid(world, archetype);
+    assert(world->bytype.num_entities[tID] > TNECS_NULL);
     assert(world->bytype.len_entities[tID] >= entity_order);
     assert(world->bytype.num_entities[tID] > TNECS_NULL);
     #endif /* NDEBUG */ 
@@ -573,8 +574,6 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 
     /* Delete entity */
     world->entities.id[entity]         = TNECS_NULL;
-    world->entities.orders[entity]     = TNECS_NULL;
-    world->entities.archetypes[entity] = TNECS_NULL;
 
     // Note: reuse_entities used to add to entities_open, so that
     // user can call tnecs_entities_open_reuse to reuse entities manually.
@@ -585,8 +584,8 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
         arr[world->entities_open.num++] = entity;
     }
     assert(world->entities.id[entity]           == TNECS_NULL);
-    assert(world->entities.archetypes[entity]   == TNECS_NULL);
     assert(world->entities.orders[entity]       == TNECS_NULL);
+    assert(world->entities.archetypes[entity]   == TNECS_NULL);
     assert(world->entities.orders[entity_order] != entity);
     return (1);
 }
@@ -641,15 +640,14 @@ b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity, tnec
 }
 
 void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component cID) {
-    if (!TNECS_ENTITY_EXISTS(world, eID)) {
+    if (!TNECS_ENTITY_EXISTS(world, eID))
         return(NULL);
-    }
+
     tnecs_component component_flag      = TNECS_COMPONENT_ID2TYPE(cID);
     tnecs_component entity_archetype    = TNECS_ENTITY_ARCHETYPE(world, eID);
-    void *out = NULL;
     // If entity has component, get output it. If not output NULL.
     if ((component_flag & entity_archetype) == 0)
-        return (out);
+        return (NULL);
 
     size_t tID = tnecs_archetypeid(world, entity_archetype);
     assert(tID > 0);
@@ -661,8 +659,7 @@ void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component 
     comp_array = &world->bytype.components[tID][component_order];
     assert(comp_array != NULL);
     tnecs_byte *temp_component_bytesptr = (tnecs_byte *)(comp_array->components);
-    out = (temp_component_bytesptr + (bytesize * entity_order));
-    return (out);
+    return (temp_component_bytesptr + (bytesize * entity_order));
 }
 
 b32 tnecs_entitiesbytype_add(tnecs_world *world, tnecs_entity entity,
@@ -681,11 +678,7 @@ b32 tnecs_entitiesbytype_add(tnecs_world *world, tnecs_entity entity,
 b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
                              tnecs_component archetype_old) {
 
-    if (entity <= TNECS_NULL) {
-        return (1);
-    }
-
-    if (world->entities.id[entity] != entity) {
+    if (!TNECS_ENTITY_EXISTS(world, entity)) {
         return (1);
     }
 
@@ -700,6 +693,7 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
     }
 
     size_t entity_order_old = world->entities.orders[entity];
+    assert(archetype_old == world->entities.archetypes[entity]);
 
     assert(entity_order_old < world->bytype.len_entities[archetype_old_id]);
     assert(world->bytype.entities[archetype_old_id][entity_order_old] == entity);

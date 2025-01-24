@@ -53,6 +53,14 @@ gcc --std=iso9899:1999 -O1 -DNDEBUG -fno-strict-aliasing -fwrapv -fno-delete-nul
 gcc --std=iso9899:1999 -O1 -DNDEBUG -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g test.c -o test.o
 gcc --std=iso9899:1999 -O1 -DNDEBUG -fno-strict-overflow -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g -o test test.o tnecs.o -lm
 ./test
+
+
+rm tnecs.o test.o test
+gcc --std=iso9899:1999 -O0 -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g tnecs.c -o tnecs.o
+gcc --std=iso9899:1999 -O0 -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g test.c -o test.o
+gcc --std=iso9899:1999 -O0 -fno-strict-overflow -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g -o test test.o tnecs.o -lm
+./test
+
 ```
 
 ## Credits
