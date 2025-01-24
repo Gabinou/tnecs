@@ -597,6 +597,11 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
     if (archetype_toadd <= 0) {
         return (TNECS_NULL);
     }
+
+    if (!TNECS_ENTITY_EXISTS(world, entity)) {
+        return (TNECS_NULL);
+    }
+
     tnecs_component archetype_old = world->entities.archetypes[entity];
     assert(!(archetype_toadd & archetype_old));
     tnecs_component archetype_new = archetype_toadd + archetype_old;
@@ -604,7 +609,6 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
     if (isNew)
         TNECS_CHECK_CALL(_tnecs_register_archetype(world, setBits_KnR_u64(archetype_new),
                                                    archetype_new));
-
 
     TNECS_CHECK_CALL(tnecs_component_migrate(world,      entity, archetype_old, archetype_new));
     TNECS_CHECK_CALL(tnecs_entitiesbytype_migrate(world, entity, archetype_old, archetype_new));
