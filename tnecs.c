@@ -641,6 +641,9 @@ b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity, tnec
 }
 
 void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component cID) {
+    if (!TNECS_ENTITY_EXISTS(world, eID)) {
+        return(NULL);
+    }
     tnecs_component component_flag      = TNECS_COMPONENT_ID2TYPE(cID);
     tnecs_component entity_archetype    = TNECS_ENTITY_ARCHETYPE(world, eID);
     void *out = NULL;
@@ -649,12 +652,14 @@ void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component 
         return (out);
 
     size_t tID = tnecs_archetypeid(world, entity_archetype);
+    assert(tID > 0);
     size_t component_order = tnecs_component_order_bytype(world, cID, entity_archetype);
     assert(component_order <= world->bytype.num_components[tID]);
     size_t entity_order = world->entities.orders[eID];
     size_t bytesize = world->components.bytesizes[cID];
     tnecs_chunk *comp_array;
     comp_array = &world->bytype.components[tID][component_order];
+    assert(comp_array != NULL);
     tnecs_byte *temp_component_bytesptr = (tnecs_byte *)(comp_array->components);
     out = (temp_component_bytesptr + (bytesize * entity_order));
     return (out);
