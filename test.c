@@ -266,12 +266,10 @@ void SystemMovePhase2(struct tnecs_system_input *in_input) {
 
 /*****************************TEST CONSTANTS***************************/
 #define ITERATIONS 10000
-#define ARRAY_LEN 100
 size_t fps_iterations = 10;
 
 /*******************************TEST SYSTEMS***************************/
 tnecs_entity test_entities[ITERATIONS];
-struct Unit unit_array[ARRAY_LEN];
 tnecs_entity        *components_list;
 struct Position     *temp_position;
 struct Unit         *temp_unit;
@@ -1177,10 +1175,10 @@ void tnecs_benchmarks() {
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
         tnecs_entities2[i] = TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID, Unit2_ID);
-        TNECS_DEBUG_ASSERT(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
+        assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
     }
-    TNECS_DEBUG_ASSERT(bench_world->bytype.len_entities[3] == 32768);
-    TNECS_DEBUG_ASSERT(bench_world->bytype.num_entities[3] == 19999);
+    assert(bench_world->bytype.len_entities[3] == 32768);
+    assert(bench_world->bytype.num_entities[3] == 19999);
 
 
     t_1 = tnecs_get_us();
@@ -1188,9 +1186,9 @@ void tnecs_benchmarks() {
     dupprintf(globalf, "%.1f [us] \n", t_1 - t_0);
 
     for (size_t i = 0; i < ITERATIONS; i++) {
-        TNECS_DEBUG_ASSERT(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
+        assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
         tnecs_entity_destroy(bench_world, tnecs_entities2[i]);
-        TNECS_DEBUG_ASSERT(bench_world->bytype.num_entities[3] == (19999 - i - 1));
+        assert(bench_world->bytype.num_entities[3] == (19999 - i - 1));
 
     }
 

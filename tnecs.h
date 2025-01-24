@@ -28,13 +28,6 @@
 #endif
 
 /************************ DEBUGGING *************************/
-#define TNECS_DEBUG_A // TNECS_DEBUG_ASSERT are ignored if undefined
-#ifdef TNECS_DEBUG_A
-#define TNECS_DEBUG_ASSERT(in) do {assert(in);}while(0)
-#else
-#define TNECS_DEBUG_ASSERT(...) (void)0
-#endif
-
 #define TNECS_CHECK_ALLOC(name) do {\
         if (name == NULL) { \
             printf("tnecs: failed allocation " #name "\n"); \

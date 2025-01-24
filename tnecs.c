@@ -376,7 +376,7 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
         tnecs_grow_archetype(world);
     world->bytype.id[world->bytype.num++] = archetype_new;
     size_t tID = tnecs_archetypeid(world, archetype_new);
-    TNECS_DEBUG_ASSERT(tID == (world->bytype.num - 1));
+    assert(tID == (world->bytype.num - 1));
     world->bytype.num_components[tID] = num_components;
 
     // 2- Add arrays to bytype.components[tID] for each component
@@ -398,7 +398,7 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
 
         component_type_toadd = (archetype_reduced + archetype_added) ^ archetype_new;
         archetype_added      += component_type_toadd;
-        TNECS_DEBUG_ASSERT(component_type_toadd > 0);
+        assert(component_type_toadd > 0);
         component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
         world->bytype.components_id[tID][i]      = component_id_toadd;
@@ -459,13 +459,13 @@ tnecs_entity tnecs_entity_create(tnecs_world *world) {
             }
         } while (world->entities.id[out = world->entities.num++] != TNECS_NULL);
     }
-    TNECS_DEBUG_ASSERT(out != TNECS_NULL);
+    assert(out != TNECS_NULL);
 
     /* Set entity and checks  */
     world->entities.id[out] = out;
     tnecs_entitiesbytype_add(world, out, TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities.id[out]                                          == out);
-    TNECS_DEBUG_ASSERT(world->bytype.entities[TNECS_NULL][world->entities.orders[out]]  == out);
+    assert(world->entities.id[out]                                          == out);
+    assert(world->bytype.entities[TNECS_NULL][world->entities.orders[out]]  == out);
     return (out);
 }
 
@@ -498,11 +498,13 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
     }
     TNECS_CHECK_CALL(tnecs_entity_add_components(world, new_entity, archetype, 1));
 
-    /* Check */
+    #ifndef NDEBUG 
     size_t tID      = tnecs_archetypeid(world, archetype);
     size_t order    = world->entities.orders[new_entity];
-    TNECS_DEBUG_ASSERT(world->bytype.entities[tID][order]   == new_entity);
-    TNECS_DEBUG_ASSERT(world->entities.id[new_entity]       == new_entity);
+    assert(world->bytype.entities[tID][order]   == new_entity);
+    assert(world->entities.id[new_entity]       == new_entity);
+    #endif /* NDEBUG */ 
+
     return (new_entity);
 }
 
@@ -555,13 +557,17 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 
     /* Preliminaries */
     tnecs_component archetype   = world->entities.archetypes[entity];
-    size_t tID                  = tnecs_archetypeid(world, archetype);
-    size_t entity_order         = world->entities.orders[entity];
-    TNECS_DEBUG_ASSERT(world->bytype.num_entities[tID] > TNECS_NULL);
+    assert(world->bytype.num_entities[tID] > TNECS_NULL);
     /* Delete components */
     tnecs_component_del(world, entity, archetype);
-    TNECS_DEBUG_ASSERT(world->bytype.len_entities[tID] >= entity_order);
-    TNECS_DEBUG_ASSERT(world->bytype.num_entities[tID] > TNECS_NULL);
+
+    #ifndef NDEBUG     
+    size_t entity_order         = world->entities.orders[entity];
+    size_t tID                  = tnecs_archetypeid(world, archetype);
+    assert(world->bytype.len_entities[tID] >= entity_order);
+    assert(world->bytype.num_entities[tID] > TNECS_NULL);
+    #endif /* NDEBUG */ 
+
     /* Delete entitiesbytype */
     tnecs_entitiesbytype_del(world, entity, archetype);
 
@@ -578,10 +584,10 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
         tnecs_entity *arr = world->entities_open.arr;
         arr[world->entities_open.num++] = entity;
     }
-    TNECS_DEBUG_ASSERT(world->entities.id[entity]           == TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]   == TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities.orders[entity]       == TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities.orders[entity_order] != entity);
+    assert(world->entities.id[entity]           == TNECS_NULL);
+    assert(world->entities.archetypes[entity]   == TNECS_NULL);
+    assert(world->entities.orders[entity]       == TNECS_NULL);
+    assert(world->entities.orders[entity_order] != entity);
     return (1);
 }
 
@@ -593,22 +599,24 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
         return (TNECS_NULL);
     }
     tnecs_component archetype_old = world->entities.archetypes[entity];
-    TNECS_DEBUG_ASSERT(!(archetype_toadd & archetype_old));
+    assert(!(archetype_toadd & archetype_old));
     tnecs_component archetype_new = archetype_toadd + archetype_old;
-    TNECS_DEBUG_ASSERT(archetype_new != archetype_old);
+    assert(archetype_new != archetype_old);
     if (isNew)
         TNECS_CHECK_CALL(_tnecs_register_archetype(world, setBits_KnR_u64(archetype_new),
                                                    archetype_new));
 
-    size_t tID_new = tnecs_archetypeid(world, archetype_new);
 
     TNECS_CHECK_CALL(tnecs_component_migrate(world,      entity, archetype_old, archetype_new));
     TNECS_CHECK_CALL(tnecs_entitiesbytype_migrate(world, entity, archetype_old, archetype_new));
 
+    #ifndef NDEBUG 
+    size_t tID_new = tnecs_archetypeid(world, archetype_new);
     size_t new_order = world->bytype.num_entities[tID_new] - 1;
-    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]           == archetype_new);
-    TNECS_DEBUG_ASSERT(world->bytype.entities[tID_new][new_order]   == entity);
-    TNECS_DEBUG_ASSERT(world->entities.orders[entity]               == new_order);
+    assert(world->entities.archetypes[entity]           == archetype_new);
+    assert(world->bytype.entities[tID_new][new_order]   == entity);
+    assert(world->entities.orders[entity]               == new_order);
+    #endif /* NDEBUG */ 
     return (world->entities.id[entity]);
 }
 
@@ -628,7 +636,7 @@ b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity, tnec
     }
     /* Migrate entity to new bytype array. */
     TNECS_CHECK_CALL(tnecs_entitiesbytype_migrate(world, entity, archetype_old, archetype_new));
-    TNECS_DEBUG_ASSERT(archetype_new == world->entities.archetypes[entity]);
+    assert(archetype_new == world->entities.archetypes[entity]);
     return (1);
 }
 
@@ -642,7 +650,7 @@ void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component 
 
     size_t tID = tnecs_archetypeid(world, entity_archetype);
     size_t component_order = tnecs_component_order_bytype(world, cID, entity_archetype);
-    TNECS_DEBUG_ASSERT(component_order <= world->bytype.num_components[tID]);
+    assert(component_order <= world->bytype.num_components[tID]);
     size_t entity_order = world->entities.orders[eID];
     size_t bytesize = world->components.bytesizes[cID];
     tnecs_chunk *comp_array;
@@ -688,8 +696,8 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
 
     size_t entity_order_old = world->entities.orders[entity];
 
-    TNECS_DEBUG_ASSERT(entity_order_old < world->bytype.len_entities[archetype_old_id]);
-    TNECS_DEBUG_ASSERT(world->bytype.entities[archetype_old_id][entity_order_old] == entity);
+    assert(entity_order_old < world->bytype.len_entities[archetype_old_id]);
+    assert(world->bytype.entities[archetype_old_id][entity_order_old] == entity);
 
     tnecs_entity top_entity = world->bytype.entities[archetype_old_id][old_num - 1];
 
@@ -699,7 +707,7 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
 
     if (top_entity != entity) {
         world->entities.orders[top_entity] = entity_order_old;
-        TNECS_DEBUG_ASSERT(world->bytype.entities[archetype_old_id][entity_order_old] == top_entity);
+        assert(world->bytype.entities[archetype_old_id][entity_order_old] == top_entity);
     }
 
     world->entities.orders[entity]      = TNECS_NULL;
@@ -713,16 +721,17 @@ b32 tnecs_entitiesbytype_migrate(tnecs_world *world, tnecs_entity entity,
                                  tnecs_component archetype_old, tnecs_component archetype_new) {
     /* Migrate entities into correct bytype array */
     TNECS_CHECK_CALL(tnecs_entitiesbytype_del(world, entity, archetype_old));
-    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]   == TNECS_NULL);
-    TNECS_DEBUG_ASSERT(world->entities.orders[entity]       == TNECS_NULL);
+    assert(world->entities.archetypes[entity]   == TNECS_NULL);
+    assert(world->entities.orders[entity]       == TNECS_NULL);
     TNECS_CHECK_CALL(tnecs_entitiesbytype_add(world, entity, archetype_new));
 
-    /* Checks */
+    #ifndef NDEBUG 
     size_t tID_new      = tnecs_archetypeid(world, archetype_new);
     size_t order_new    = world->entities.orders[entity];
-    TNECS_DEBUG_ASSERT(world->entities.archetypes[entity]         == archetype_new);
-    TNECS_DEBUG_ASSERT(world->bytype.num_entities[tID_new] - 1    == order_new);
-    TNECS_DEBUG_ASSERT(world->bytype.entities[tID_new][order_new] == entity);
+    assert(world->entities.archetypes[entity]         == archetype_new);
+    assert(world->bytype.num_entities[tID_new] - 1    == order_new);
+    assert(world->bytype.entities[tID_new][order_new] == entity);
+    #endif /* NDEBUG */ 
     return (1);
 }
 
@@ -730,13 +739,15 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
     /* Check if need to grow component array after adding new component */
     size_t tID          = tnecs_archetypeid(world, archetype);
     size_t new_comp_num = world->bytype.num_components[tID];
+    #ifndef NDEBUG 
     size_t new_order    = world->bytype.num_entities[tID];
+    #endif /* NDEBUG */ 
 
     for (size_t corder = 0; corder < new_comp_num; corder++) {
         // Take component array of current archetype_id
         tnecs_chunk *comp_arr = &world->bytype.components[tID][corder];
         // check if it need to grow after adding new component
-        TNECS_DEBUG_ASSERT(new_order == comp_arr->num);
+        assert(new_order == comp_arr->num);
 
         if (++comp_arr->num >= comp_arr->len)
             tnecs_grow_component_array(world, comp_arr, tID, corder);
@@ -763,7 +774,7 @@ b32 tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
     // Sanity check: entity order is the same in new components array
     for (int i = 0; i < num_comp_new; ++i) {
         size_t num = world->bytype.components[new_tID][i].num;
-        TNECS_DEBUG_ASSERT((num - 1) == new_entity_order);
+        assert((num - 1) == new_entity_order);
     }
 #endif /* TNECS_DEBUG_A */
 
@@ -781,27 +792,31 @@ b32 tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
 
             new_array = &world->bytype.components[new_tID][new_corder];
             old_array = &world->bytype.components[old_tID][old_corder];
-            TNECS_DEBUG_ASSERT(old_array->type == new_array->type);
-            TNECS_DEBUG_ASSERT(old_array != new_array);
+            assert(old_array->type == new_array->type);
+            assert(old_array != new_array);
 
             component_bytesize = world->components.bytesizes[old_component_id];
-            TNECS_DEBUG_ASSERT(component_bytesize > 0);
+            assert(component_bytesize > 0);
 
             old_component_bytesptr = (tnecs_byte *)(old_array->components);
-            TNECS_DEBUG_ASSERT(old_component_bytesptr != NULL);
+            assert(old_component_bytesptr != NULL);
 
             old_component_ptr = (old_component_bytesptr + (component_bytesize * old_entity_order));
-            TNECS_DEBUG_ASSERT(old_component_ptr != NULL);
+            assert(old_component_ptr != NULL);
 
             new_component_bytesptr = (tnecs_byte *)(new_array->components);
-            TNECS_DEBUG_ASSERT(new_component_bytesptr != NULL);
+            assert(new_component_bytesptr != NULL);
 
             new_component_ptr = (new_component_bytesptr + (component_bytesize * new_entity_order));
-            TNECS_DEBUG_ASSERT(new_component_ptr != NULL);
-            TNECS_DEBUG_ASSERT(new_component_ptr != old_component_ptr);
+            assert(new_component_ptr != NULL);
+            assert(new_component_ptr != old_component_ptr);
 
-            void *out =  memcpy(new_component_ptr, old_component_ptr, component_bytesize);
-            TNECS_DEBUG_ASSERT(out == new_component_ptr);
+            #ifndef NDEBUG 
+            void *out = memcpy(new_component_ptr, old_component_ptr, component_bytesize);
+            assert(out == new_component_ptr);
+            #else
+            memcpy(new_component_ptr, old_component_ptr, component_bytesize);
+            #endif /* NDEBUG */ 
             break;
         }
     }
@@ -818,7 +833,7 @@ b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
         size_t current_component_id = world->bytype.components_id[old_tID][corder];
         tnecs_chunk   *old_array  = &world->bytype.components[old_tID][corder];
         tnecs_byte              *comp_ptr   = old_array->components;
-        TNECS_DEBUG_ASSERT(comp_ptr != NULL);
+        assert(comp_ptr != NULL);
 
         /* Scramble components too */
         size_t comp_by       = world->components.bytesizes[current_component_id];
@@ -857,26 +872,26 @@ b32 tnecs_chunk_new(tnecs_world *world, size_t num_components,
     while (archetype_reduced) {
         archetype_reduced &= (archetype_reduced - 1);
         type_toadd = (archetype_reduced + archetype_added) ^ archetype;
-        TNECS_DEBUG_ASSERT(type_toadd > 0);
+        assert(type_toadd > 0);
         id_toadd = TNECS_COMPONENT_TYPE2ID(type_toadd);
-        TNECS_DEBUG_ASSERT(id_toadd > 0);
-        TNECS_DEBUG_ASSERT(id_toadd < world->components.num);
+        assert(id_toadd > 0);
+        assert(id_toadd < world->components.num);
         tnecs_chunk_init(world, &temp_comparray[num_flags], id_toadd);
         num_flags++;
         archetype_added += type_toadd;
     }
     world->bytype.components[tID] = temp_comparray;
-    TNECS_DEBUG_ASSERT(id_toadd < world->components.num);
+    assert(id_toadd < world->components.num);
     return ((archetype_added == archetype) && (num_flags == num_components));
 }
 
 b32 tnecs_chunk_init(tnecs_world *world, tnecs_chunk *in_array, size_t cID) {
-    TNECS_DEBUG_ASSERT(cID > 0);
-    TNECS_DEBUG_ASSERT(cID < world->components.num);
+    assert(cID > 0);
+    assert(cID < world->components.num);
     tnecs_component in_type = TNECS_COMPONENT_ID2TYPE(cID);
-    TNECS_DEBUG_ASSERT(in_type <= (1 << world->components.num));
+    assert(in_type <= (1 << world->components.num));
     size_t bytesize = world->components.bytesizes[cID];
-    TNECS_DEBUG_ASSERT(bytesize > 0);
+    assert(bytesize > 0);
 
     in_array->type          = in_type;
     in_array->num           = 0;
@@ -898,9 +913,9 @@ b32 tnecs_system_order_switch(tnecs_world *world, tnecs_phase phase,
         return (0);
     }
 
-    TNECS_DEBUG_ASSERT(world->byphase.num > phase);
-    TNECS_DEBUG_ASSERT(world->byphase.num_systems[phase] > order1);
-    TNECS_DEBUG_ASSERT(world->byphase.num_systems[phase] > order2);
+    assert(world->byphase.num > phase);
+    assert(world->byphase.num_systems[phase] > order1);
+    assert(world->byphase.num_systems[phase] > order2);
 
     tnecs_system_ptr systems_temp           = world->byphase.systems[phase][order1];
     world->byphase.systems[phase][order1]   = world->byphase.systems[phase][order2];
@@ -1036,7 +1051,7 @@ b32 tnecs_grow_entity(tnecs_world *world) {
 b32 tnecs_grow_system(tnecs_world *world) {
     size_t olen = world->systems.len;
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
-    TNECS_DEBUG_ASSERT(olen > 0);
+    assert(olen > 0);
     world->systems.len          = nlen;
 
     world->systems.phases       = tnecs_realloc(world->systems.phases,    olen, nlen,
@@ -1163,7 +1178,8 @@ b32 tnecs_grow_system_byphase(tnecs_world *world, tnecs_phase phase) {
 b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
     size_t olen = world->bytype.len_entities[tID];
     size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
-    TNECS_DEBUG_ASSERT(olen > 0);
+
+    assert(olen > 0);
     world->bytype.len_entities[tID] = nlen;
 
     size_t bytesize             = sizeof(*world->bytype.entities[tID]);
