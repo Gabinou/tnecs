@@ -203,7 +203,6 @@ b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
     /* Allocs */
     world->bytype.id                    = calloc(world->bytype.len, sizeof(*world->bytype.id));
     world->bytype.entities              = calloc(world->bytype.len, sizeof(*world->bytype.entities));
-    world->bytype.components            = calloc(world->bytype.len, sizeof(*world->bytype.components));
     world->bytype.len_entities          = calloc(world->bytype.len,
                                                  sizeof(*world->bytype.len_entities));
     world->bytype.num_entities          = calloc(world->bytype.len,
@@ -221,7 +220,6 @@ b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
 
     TNECS_CHECK_ALLOC(world->bytype.id);
     TNECS_CHECK_ALLOC(world->bytype.entities);
-    TNECS_CHECK_ALLOC(world->bytype.components);
     TNECS_CHECK_ALLOC(world->bytype.archetype_id);
     TNECS_CHECK_ALLOC(world->bytype.len_entities);
     TNECS_CHECK_ALLOC(world->bytype.num_entities);
@@ -229,6 +227,17 @@ b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
     TNECS_CHECK_ALLOC(world->bytype.num_components);
     TNECS_CHECK_ALLOC(world->bytype.components_order);
     TNECS_CHECK_ALLOC(world->bytype.num_archetype_ids);
+
+
+
+    world->bytype.len_chunks            = calloc(world->bytype.len,
+                                                 sizeof(*world->bytype.len_chunks));
+    TNECS_CHECK_ALLOC(world->bytype.len_chunks);
+    world->bytype.chunks                = calloc(world->bytype.len, sizeof(*world->bytype.chunks));
+    TNECS_CHECK_ALLOC(world->bytype.chunks);
+    
+    world->bytype.components            = calloc(world->bytype.len, sizeof(*world->bytype.components));
+    TNECS_CHECK_ALLOC(world->bytype.components);
 
     /* Alloc & check for id_bytype elements */
     for (size_t i = 0; i < world->bytype.len; i++) {
@@ -382,7 +391,7 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
 
     // 2- Add arrays to bytype.components[tID] for each component
     tnecs_carr_new( world, num_components, archetype_new);
-    tnecs_chunk_new(world, archetype_new);
+    // tnecs_chunk_new(world, archetype_new);
 
     // 3- Add all components to bytype.components_id
     tnecs_component component_id_toadd, component_type_toadd;
