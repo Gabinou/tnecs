@@ -105,12 +105,12 @@ enum TNECS {
 #define TNECS_COMMA_8(x, ...) x,  TNECS_COMMA_7(__VA_ARGS__)
 
 /********************* STRUCTS DEFINITIONS ******************/
-typedef struct tnecs_chunk { /* 1D array of components */
+typedef struct tnecs_carr { /* 1D array of components */
     tnecs_component  type;
     size_t           num;
     size_t           len;
     void            *components;      /* [entity_order_bytype] */
-} tnecs_chunk;
+} tnecs_carr;
 
 // tnecs_Chunk: memory reserved for all components of archetype
 // - Each component has an array inside the chunk.
@@ -184,7 +184,7 @@ typedef struct tnecs_archetype {
     tnecs_entity     **entities;            // [archetype_id][entity_order_bytype]
     size_t           **components_order;    // [archetype_id][component_id]
     tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
-    tnecs_chunk      **components;          // [archetype_id][component_order_bytype]
+    tnecs_carr       **components;          // [archetype_id][component_order_bytype]
 
     size_t            *len_chunks;          // [archetype_id]
     tnecs_chunk2     **chunks;              // [chunk_order_bytype][component_order_bytype]
@@ -300,8 +300,8 @@ b32 tnecs_component_copy(   tnecs_world     *w,     tnecs_entity    ent,
 b32 tnecs_component_migrate(tnecs_world     *w,     tnecs_entity    ent,
                             tnecs_component  of,    tnecs_component nf);
 
-b32 tnecs_chunk_new( tnecs_world *w, size_t         num_,   tnecs_component a);
-b32 tnecs_chunk_init(tnecs_world *w, tnecs_chunk   *array,  size_t          cID);
+b32 tnecs_carr_new( tnecs_world *w, size_t         num_,   tnecs_component a);
+b32 tnecs_carr_init(tnecs_world *w, tnecs_carr   *array,  size_t          cID);
 
 b32 tnecs_system_order_switch(tnecs_world   *w, tnecs_phase phase,
                               size_t        o1, size_t      o2);
@@ -334,7 +334,7 @@ b32 tnecs_grow_system(          tnecs_world *w);
 b32 tnecs_grow_archetype(       tnecs_world *w);
 b32 tnecs_grow_entities_open(   tnecs_world *w);
 b32 tnecs_grow_system_byphase(  tnecs_world *w,     tnecs_phase  phase);
-b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_chunk *comp_arr, 
+b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_carr *comp_arr, 
                                 size_t      tID,    size_t       corder);
 b32 tnecs_grow_chunks(          tnecs_world *w, const size_t tID, const size_t corder);
 
