@@ -1251,7 +1251,7 @@ int main() {
     dupprintf(globalf, "%.1f \n ", fps_iterations / 60.0f * 1e6);
 
     srand(time(NULL));   // Initialization, should only be called once.
-    dupprintf(globalf, "\nHomemade tnecs benchmarks\n");
+    dupprintf(globalf, "\ttnecs benchmarks: %d iterations\n", ITERATIONS);
     dupprintf(globalf, "Entities [num]\t");
     dupprintf(globalf, "Genesis\t");
     dupprintf(globalf, "cRegist\t");
@@ -1264,7 +1264,7 @@ int main() {
     dupprintf(globalf, "cGet\t");
     dupprintf(globalf, "wStep\t");
     dupprintf(globalf, "wDestroy [us]\n");
-    for (uint64_t num = 1; num < 1e6; num*=2){
+    for (uint64_t num = 1; num < 2e6; num*=2){
         tnecs_benchmarks(num);
     }
     tnecs_world_destroy(&test_world);
