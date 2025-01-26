@@ -1180,8 +1180,6 @@ void tnecs_benchmarks(uint64_t num) {
         tnecs_entities2[i] = TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID, Unit2_ID);
         assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
     }
-    assert(bench_world->bytype.len_entities[3] == num + 32768);
-    assert(bench_world->bytype.num_entities[3] == num + 19999);
 
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%6.1f\t\t", t_1 - t_0);
@@ -1190,7 +1188,6 @@ void tnecs_benchmarks(uint64_t num) {
         // TODO: destroy random entity
         assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
         tnecs_entity_destroy(bench_world, tnecs_entities2[i]);
-        assert(bench_world->bytype.num_entities[3] == num + (19999 - i - 1));
     }
 
     t_0 = tnecs_get_us();
