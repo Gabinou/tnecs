@@ -111,6 +111,23 @@ typedef struct tnecs_chunk { /* 1D array of components */
     void            *components;      /* [entity_order_bytype] */
 } tnecs_chunk;
 
+// tnecs_Chunk: memory reserved for all components of archetype
+// - Each component has an array inside the chunk.
+// - Each chunk is 16kB total.
+// - Entity order determines if chunk is full
+#define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t))
+
+typedef struct tnecs_chunk2 {
+    size_t           num_components; 
+    size_t           len_entities; 
+
+    // Raw memory chunk:
+    //  - Header: cumulative bytesizes: components_num * size_t.
+    //  - Body:   components arrays, each: entities_len * component_bytesize.
+    //            component order -> tnecs_component_order.
+    tnecs_byte       mem[TNECS_CHUNK_COMPONENTS_BYTESIZE];
+} tnecs_chunk2;
+
 typedef struct tnecs_array {
     void    *arr;
     size_t   num;
@@ -167,6 +184,7 @@ typedef struct tnecs_archetype {
     size_t           **components_order;    // [archetype_id][component_id]
     tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
     tnecs_chunk      **components;          // [archetype_id][component_order_bytype]
+    tnecs_chunk2     **components2;         // [chunk_order_bytype][component_order_bytype]
 
 } tnecs_archetype;
 
@@ -195,6 +213,21 @@ struct tnecs_system_input {
     size_t           entity_archetype_id;
     void            *data;
 };
+
+/******************** CHUNK **********************/
+b32 tnecs_chunk2_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype);
+b32 tnecs_chunk2_new(tnecs_world *world, tnecs_component archetype);
+
+size_t  *tnecs_chunk2_mem(   tnecs_chunk *chunk);
+size_t   tnecs_chunk2_cumul_bytesize( tnecs_chunk *chunk);
+void    *tnecs_chunk2_component_array(tnecs_chunk *chunk, const size_t corder);
+void    *tnecs_chunk2_component(tnecs_chunk *chunks, const size_t eorder, const size_t corder);
+
+#define TNECS_SYSTEM_COMPONENT(input, eorder, component_name) tnecs_chunk_component(input->world->bytype.chunks[input->entity_archetype_id], eorder, input->world->bytype.components_order[input->entity_archetype_id][tnecs_component_name2id(input->world, #component_name)])
+
+tnecs_chunk *tnecs_chunk2_top(   tnecs_world *world, const size_t eorder, const size_t tID);
+size_t tnecs_chunk2_order(       tnecs_chunk *chunk, const size_t entity_order);
+size_t tnecs_chunk2_component_order(tnecs_chunk *chunk, const size_t entity_order);
 
 /******************** WORLD FUNCTIONS ***********************/
 b32 tnecs_world_genesis(tnecs_world **w);
