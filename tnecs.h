@@ -67,6 +67,7 @@ enum TNECS {
     TNECS_INIT_SYSTEM_LEN       =        16,
     TNECS_INIT_ARCHETYPE_LEN    =        16,
     TNECS_COMPONENT_CAP         =        64,
+    TNECS_CHUNK_BYTESIZE        =     16384,
     TNECS_ENTITIES_CAP          = 100000000,
     TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 8 + 1,
     TNECS_ARRAY_GROWTH_FACTOR   =         2

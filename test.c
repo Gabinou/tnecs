@@ -1156,7 +1156,7 @@ void tnecs_benchmarks(uint64_t num) {
         tnecs_entity_destroy(bench_world, ent);
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t\t", t_1 - t_0);
+    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
 
     for (size_t i = 0; i < ITERATIONS; i++) {
         // TODO: benchmark reuse or not
@@ -1172,14 +1172,14 @@ void tnecs_benchmarks(uint64_t num) {
         TNECS_ADD_COMPONENT(bench_world, ent, Unit2_ID, false);
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t\t", t_1 - t_0);
+    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
         TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID);
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t\t", t_1 - t_0);
+    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
 
     tnecs_entity tnecs_entities2[ITERATIONS];
     t_0 = tnecs_get_us();
@@ -1190,7 +1190,7 @@ void tnecs_benchmarks(uint64_t num) {
     }
 
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t\t", t_1 - t_0);
+    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
 
     for (size_t i = 0; i < ITERATIONS; i++) {
         // TODO: destroy random entity
@@ -1262,12 +1262,12 @@ int main() {
     dupprintf(globalf, "cRegist\t");
     dupprintf(globalf, "sRegist\t");
     dupprintf(globalf, "eCreate\t");
-    dupprintf(globalf, "eDestroy\t");
-    dupprintf(globalf, "eAddComp\t");
-    dupprintf(globalf, "eCreatewC\t");
-    dupprintf(globalf, "eCreatewCs\t");
-    dupprintf(globalf, "cGet\t");
-    dupprintf(globalf, "wStep\t");
+    dupprintf(globalf, "eDestro\t");
+    dupprintf(globalf, "eAddCom\t");
+    dupprintf(globalf, "eCreawC\t");
+    dupprintf(globalf, "eCrewCs\t");
+    dupprintf(globalf, "compGet\t");
+    dupprintf(globalf, "wrlStep\t");
     dupprintf(globalf, "wDestroy [us]\n");
     for (uint64_t num = 1; num < 2e6; num*=2){
         tnecs_benchmarks(num);
