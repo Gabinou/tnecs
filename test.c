@@ -771,10 +771,11 @@ void tnecs_test_world_progress() {
     temp_position->x = 100;
     temp_position->y = 200;
 
-    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase4, 4, 1, Velocity_ID);
-    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 2, 1, Velocity_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase1, 1, 1, Position_ID);
+    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 2, 1, Velocity_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 1, 1, Unit_ID);
+    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase4, 4, 1, Velocity_ID);
+
     lok(test_world->byphase.num == 5);
     lok(test_world->byphase.systems[1][0] == &SystemMovePhase1);
     lok(test_world->byphase.systems[1][1] == &SystemMovePhase2);
@@ -1237,7 +1238,7 @@ void test_log2() {
 
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
-    dupprintf(globalf, "\nHello, World! I am testing tnecs.\n");
+    dupprintf(globalf, "\n --- tnecs test start ---\n\n");
     lrun("utilities",  tnecs_test_utilities);
     lrun("log2",       test_log2);
     lrun("c_regis",    tnecs_test_component_registration);
@@ -1250,12 +1251,13 @@ int main() {
     lrun("progress",   tnecs_test_world_progress);
     lresults();
 
-    dupprintf(globalf, "\nworld size: %ld bytes\n", sizeof(struct tnecs_world));
-    dupprintf(globalf, "\n%d frame %d fps, ", fps_iterations, 60);
-    dupprintf(globalf, "%.1f \n ", fps_iterations / 60.0f * 1e6);
+    dupprintf(globalf, "\n --- Notes ---\n");
+    dupprintf(globalf, "world size: %ld bytes\n", sizeof(struct tnecs_world));
+    dupprintf(globalf, "%d frame %d fps, ", fps_iterations, 60);
+    dupprintf(globalf, "%.1f [us] \n\n", fps_iterations / 60.0f * 1e6);
 
     srand(time(NULL));   // Initialization, should only be called once.
-    dupprintf(globalf, "\ttnecs benchmarks: %d iterations\n", ITERATIONS);
+    dupprintf(globalf, " --- tnecs benchmarks: %d iterations ---\n", ITERATIONS);
     dupprintf(globalf, "Entities [num]\t");
     dupprintf(globalf, "Genesis\t"); 
     dupprintf(globalf, "cRegist\t");
@@ -1272,7 +1274,7 @@ int main() {
         tnecs_benchmarks(num);
     }
     tnecs_world_destroy(&test_world);
-    dupprintf(globalf, "tnecs Test End \n \n");
+    dupprintf(globalf, "\n --- tnecs test end ---\n\n");
     fclose(globalf);
     return (0);
 }
