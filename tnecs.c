@@ -779,13 +779,13 @@ b32 tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
     size_t num_comp_new     = world->bytype.num_components[new_tID];
     size_t num_comp_old     = world->bytype.num_components[old_tID];
 
-#ifdef TNECS_DEBUG_A
+#ifndef NDEBUG
     // Sanity check: entity order is the same in new components array
     for (int i = 0; i < num_comp_new; ++i) {
         size_t num = world->bytype.components[new_tID][i].num;
         assert((num - 1) == new_entity_order);
     }
-#endif /* TNECS_DEBUG_A */
+#endif /* NDEBUG */
 
     size_t old_component_id, new_component_id, component_bytesize;
     tnecs_carr   *old_array,                 *new_array;
