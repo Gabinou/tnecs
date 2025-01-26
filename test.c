@@ -1263,7 +1263,7 @@ int main() {
     dupprintf(globalf, "cGet\t");
     dupprintf(globalf, "wStep\t");
     dupprintf(globalf, "wDestroy [us]\n");
-    for (uint64_t num = 1; num < 1e6; num*=10){
+    for (uint64_t num = 1; num < 1e6; num*=2){
         tnecs_benchmarks(num);
     }
     tnecs_world_destroy(&test_world);
