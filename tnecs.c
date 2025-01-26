@@ -382,7 +382,7 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
 
     // 2- Add arrays to bytype.components[tID] for each component
     tnecs_carr_new(world, num_components, archetype_new);
-    tnecs_chunk_new(world, num_components, archetype_new);
+    // tnecs_chunk_new(world, archetype_new);
 
     // 3- Add all components to bytype.components_id
     tnecs_component component_id_toadd, component_type_toadd;
@@ -1227,6 +1227,21 @@ size_t setBits_KnR_u64(u64 in_flags) {
 }
 
 /********************** CHUNKS *********************/
+b32 tnecs_chunk_new(tnecs_world *world, tnecs_component archetype) {
+    tnecs_chunk *new_chunk = calloc(1, sizeof(*new_chunk));
+    TNECS_CHECK_ALLOC(new_chunk);
+    TNECS_CHECK_CALL(tnecs_chunk_init(new_chunk, world, archetype));
+
+    tnecs_component tID             = tnecs_archetypeid(world, archetype);
+    assert(tID > TNECS_NULL);
+    assert(world->bytype.chunks);
+    assert(world->bytype.len_chunks);
+    assert(tID < world->bytype.len);
+    world->bytype.chunks[tID]       = new_chunk;
+    world->bytype.len_chunks[tID]   = 1;
+    return(1);
+}
+
 b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype) {
     // Chunk init
     memset(chunk, 0, TNECS_CHUNK_BYTESIZE);
