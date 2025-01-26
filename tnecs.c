@@ -381,8 +381,8 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
     world->bytype.num_components[tID] = num_components;
 
     // 2- Add arrays to bytype.components[tID] for each component
-    tnecs_carr_new(world, num_components, archetype_new);
-    // tnecs_chunk_new(world, archetype_new);
+    tnecs_carr_new( world, num_components, archetype_new);
+    tnecs_chunk_new(world, archetype_new);
 
     // 3- Add all components to bytype.components_id
     tnecs_component component_id_toadd, component_type_toadd;
