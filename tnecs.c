@@ -1198,6 +1198,22 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
     return (1);
 }
 
+b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder) {
+    // TODO: implement chunk growth
+    size_t old_len                  = world->bytype.len_chunks[tID];
+    size_t new_len                  = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+    world->bytype.len_chunks[tID]   = new_len;
+    size_t bytesize                 = sizeof(tnecs_chunk);
+    
+    world->bytype.chunks[tID]       = tnecs_realloc(world->bytype.chunks[tID], old_len, new_len, bytesize);
+    TNECS_CHECK_ALLOC(world->bytype.chunks[tID]);
+    for (size_t corder = old_len; corder < new_len; corder++) {
+        tnecs_chunk2_init(&world->bytype.chunks[tID][corder], world, world->bytype.id[tID]);
+    }
+
+    return(1);
+}
+
 /*************** SET BIT COUNTING *******************/
 size_t setBits_KnR_u64(u64 in_flags) {
     // Credits to Kernighan and Ritchie in 'C Programming Language'
