@@ -1208,3 +1208,110 @@ size_t setBits_KnR_u64(u64 in_flags) {
     }
     return (count);
 }
+
+/********************** CHUNKS *********************/
+b32 tnecs_chunk2_init(tnecs_chunk2 *chunk, tnecs_world *world, const tnecs_component archetype) {
+    // Chunk init
+    memset(chunk, 0, TNECS_CHUNK_BYTESIZE);
+    size_t *mem_header  = tnecs_chunk2_mem(chunk);
+    size_t tID = tnecs_archetypeid(world, archetype);
+
+    // Adding all component bytesizes in archetype to chunk
+    tnecs_component component_id    = 0;
+    size_t cumul_bytesize           = 0;
+
+    // Compute component order the same ways _tnecs_register_archetype
+    //  component order is -> tnecs_component_order()
+    tnecs_component component_type_toadd = 0, archetype_reduced = archetype, archetype_added = 0;
+    while (archetype_reduced) {
+        archetype_reduced &= (archetype_reduced - 1);
+
+        component_type_toadd    = (archetype_reduced + archetype_added) ^ archetype;
+        archetype_added        += component_type_toadd;
+        component_id            = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+        
+        // Adding component bytesize to chunk header
+        cumul_bytesize += world->components.bytesizes[component_id];
+        mem_header[chunk->num_components++] = cumul_bytesize; 
+    }
+
+    if (tID == TNECS_NULL) {
+        TNECS_CHECK_CALL(_tnecs_register_archetype(world, chunk->num_components, archetype));
+        tID = tnecs_archetypeid(world, archetype);
+    }
+
+    assert(tID > TNECS_NULL);
+    assert(cumul_bytesize > 0);
+    assert(chunk->num_components == world->bytype.num_components[tID]);
+
+    chunk->len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
+    return(1);
+}
+
+size_t tnecs_chunk2_len(tnecs_chunk2 *chunk, tnecs_world *world, const size_t tID) {
+    assert(chunk != NULL);
+    return((world->bytype.num_entities[tID] / chunk->len_entities) + 1);
+}
+
+// Order of entity in entities_bytype -> index of chunk the components are stored in
+size_t tnecs_chunk2_order(tnecs_chunk2 *chunk, const size_t entity_order) {
+    assert(chunk != NULL);
+    return(entity_order / chunk->len_entities);
+}
+
+// Order of entity in entities_bytype -> order of components in current ArchetypeChunk
+size_t tnecs_chunk2_component_order(tnecs_chunk2 *chunk, const size_t entity_order) {
+    assert(chunk != NULL);
+    assert(chunk->len_entities > 0);
+    return(entity_order % chunk->len_entities);
+}
+
+// Get component from entity_order, corder
+void *tnecs_chunk2_component(tnecs_chunk2 *chunks, const size_t entity_order, const size_t component_order) {
+    // Note: chunks is an array, all chunks have the same entities_len 
+    // -> can all use the chunk_order functions
+    size_t chunk_order              = tnecs_chunk2_order(chunks, entity_order);
+    size_t chunk_component_order    = tnecs_chunk2_component_order(chunks, entity_order);
+    tnecs_byte  *byte_arr           = tnecs_chunk2_component_array(&chunks[chunk_order], component_order);
+    size_t      *cumul_bytesize     = tnecs_chunk2_mem(chunks);
+
+    size_t component_bytesize = component_order == 0 ? cumul_bytesize[0] : cumul_bytesize[component_order] - cumul_bytesize[component_order - 1]; 
+
+    return(byte_arr + (component_bytesize * chunk_component_order));
+}
+
+
+size_t *tnecs_chunk2_mem(tnecs_chunk2 *chunk) {
+    return((size_t*)chunk->mem);
+}
+
+size_t  tnecs_chunk2_cumul_bytesize(tnecs_chunk2 *chunk) {
+    size_t *header = tnecs_chunk2_mem(chunk);
+    if (chunk->num_components <= 0) {
+        return(0);
+    }
+    return(header[chunk->num_components - 1]);
+}
+
+tnecs_chunk2 *tnecs_chunk2_top(tnecs_world *world, size_t entity_order, size_t tID) {
+    size_t chunk_order = tnecs_chunk2_order(world->bytype.chunks[tID], entity_order);
+    if (chunk_order >= world->bytype.len_chunks[tID]) {
+        TNECS_CHECK_CALL(tnecs_grow_chunks(world, tID, chunk_order));
+    }
+
+    return(&world->bytype.chunks[tID][chunk_order]);
+}
+
+void *tnecs_chunk2_component_array(tnecs_chunk2 *chunk, const size_t corder) {
+    // Note: Array is valid from entity_order =
+    // [entities_len * chunk_order, (entities_len + 1) * chunk_order,]
+    // Array index is tnecs_chunk2_component_order(entity_order)
+
+    size_t *header              = tnecs_chunk2_mem(chunk);
+    size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
+    size_t header_offset        = chunk->num_components * sizeof(size_t);
+    size_t components_offset    = corder * cumul_bytesize * chunk->len_entities;
+
+    tnecs_byte *bytemem = chunk->mem;
+    return(bytemem + header_offset + components_offset);
+}
