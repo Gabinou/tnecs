@@ -449,9 +449,12 @@ void tnecs_test_entity_creation() {
     lok(test_world->entities.num == (TNECS_NULLSHIFT + 2));
     lok(Silou != Pirou);
     tnecs_entity Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    lok(Perignon != TNECS_NULL);
+
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
-    lok(temp_position != NULL);
-    if (temp_position != NULL) {
+    if (temp_position == NULL) {
+        lok(false);
+    } else {
         lok(temp_position->x == 0);
         lok(temp_position->y == 0);
         temp_position->x = 3;
@@ -463,8 +466,9 @@ void tnecs_test_entity_creation() {
     temp_position = tnecs_get_component(test_world, Perignon, Sprite_ID);
     lok(temp_position == NULL);
     temp_unit = tnecs_get_component(test_world, Perignon, Unit_ID);
-    lok(temp_unit != NULL);
-    if (temp_unit != NULL) {
+    if (temp_unit == NULL) {
+        lok(false);
+    } else {
         lok(temp_unit->hp  == 0);
         lok(temp_unit->str == 0);
     }

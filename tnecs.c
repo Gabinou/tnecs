@@ -603,7 +603,11 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
     }
 
     tnecs_component archetype_old = world->entities.archetypes[entity];
-    assert(!(archetype_toadd & archetype_old));
+    
+    if (TNECS_ARCHETYPE_HAS_TYPE(archetype_toadd, archetype_old)) {
+        return (entity);
+    }
+
     tnecs_component archetype_new = archetype_toadd + archetype_old;
     assert(archetype_new != archetype_old);
     if (isNew)
@@ -650,7 +654,7 @@ void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component 
     tnecs_component component_flag      = TNECS_COMPONENT_ID2TYPE(cID);
     tnecs_component entity_archetype    = TNECS_ENTITY_ARCHETYPE(world, eID);
     // If entity has component, get output it. If not output NULL.
-    if ((component_flag & entity_archetype) == 0)
+    if (!TNECS_ARCHETYPE_HAS_TYPE(component_flag, entity_archetype))
         return (NULL);
 
     size_t tID = tnecs_archetypeid(world, entity_archetype);
