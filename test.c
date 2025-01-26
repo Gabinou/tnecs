@@ -1117,7 +1117,6 @@ void tnecs_benchmarks(uint64_t num) {
     uint32_t rand1 = rand() % 100;
     uint32_t rand2 = rand() % 100;
 
-
     dupprintf(globalf, " %8llu\t", num);
     t_0 = tnecs_get_us();
     tnecs_world *bench_world = NULL;
