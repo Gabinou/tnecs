@@ -229,6 +229,7 @@ tnecs_entity    tnecs_entities_create(    tnecs_world *w, size_t num);
 b32             tnecs_entities_open_reuse(tnecs_world *w);
 b32             tnecs_entities_open_flush(tnecs_world *w);
 
+#define TNECS_PHASE_VALID(      world, index) ((index != TNECS_NULL) && (world->byphase.id[index] == index))
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__))
 #define TNECS_ENTITY_EXISTS(      world, index) ((index != TNECS_NULL) && (world->entities.id[index] == index))
 #define TNECS_ENTITY_ARCHETYPE(   world, entity) world->entities.archetypes[entity]

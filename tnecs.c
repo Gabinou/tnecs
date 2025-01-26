@@ -88,9 +88,10 @@ b32 tnecs_world_destroy(tnecs_world **world) {
 b32 tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
     world->systems_torun.num = 0;
     for (size_t phase = 0; phase < world->byphase.num; phase++) {
-        if (!tnecs_world_step_phase(world, phase, deltat, data)) {
-            printf("tnecs: Could not run phase %zu \n", phase);
-        }
+        if (!TNECS_PHASE_VALID(world, phase))
+            continue;
+
+        TNECS_CHECK_CALL(tnecs_world_step_phase(world, phase, deltat, data));
     }
     return (1);
 }
