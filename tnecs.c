@@ -695,12 +695,13 @@ void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component 
     tnecs_chunk *chunk  = tnecs_chunk_top(world, entity_order, tID);
     void *comp_array    = tnecs_chunk_component_array(chunk, component_order);
     assert(comp_array != NULL);
+    tnecs_byte *temp_component_bytesptr = (tnecs_byte *)(comp_array);
 #else
     tnecs_carr *comp_array = &world->bytype.components[tID][component_order];
     assert(comp_array != NULL);
+    tnecs_byte *temp_component_bytesptr = (tnecs_byte *)(comp_array->components);
 #endif /* TNECS_CHUNK */
 
-    tnecs_byte *temp_component_bytesptr = (tnecs_byte *)(comp_array->components);
     return (temp_component_bytesptr + (bytesize * entity_order));
 }
 

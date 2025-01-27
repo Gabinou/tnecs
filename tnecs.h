@@ -27,7 +27,7 @@
     #define log2(x) (log(x) * 1.44269504088896340736)
 #endif
 
-// #define TNECS_CHUNK
+#define TNECS_CHUNK
 
 /************************ DEBUGGING *************************/
 #define TNECS_CHECK_ALLOC(name) do {\
