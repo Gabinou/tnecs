@@ -882,7 +882,6 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
             chunk_order--;
         }
         tnecs_chunk *top_chunk          = &chunks[chunk_order];
-        size_t chunk_component_order    = tnecs_chunk_component_order(top_chunk, entity_order_old);
         tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(top_chunk, corder);
         assert(comp_ptr != NULL);
 
