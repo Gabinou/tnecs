@@ -48,10 +48,8 @@ b32 tnecs_world_destroy(tnecs_world **world) {
             free((*world)->bytype.components_order[i]);
         if ((*world)->bytype.archetype_id != NULL)
             free((*world)->bytype.archetype_id[i]);
-        // if ((*world)->bytype.chunks[i] != NULL) {
-            // free((*world)->bytype.chunks[i]);
-            // (*world)->bytype.chunks[i] = NULL;
-        // }
+        if ((*world)->bytype.chunks != NULL)
+            free((*world)->bytype.chunks[i]);
         if ((*world)->bytype.components != NULL) {
             for (size_t j = 0; j < (*world)->bytype.num_components[i]; j++) {
                 free((*world)->bytype.components[i][j].components);
@@ -239,7 +237,7 @@ b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
     TNECS_CHECK_ALLOC(world->bytype.len_chunks);
     world->bytype.chunks                = calloc(world->bytype.len, sizeof(*world->bytype.chunks));
     TNECS_CHECK_ALLOC(world->bytype.chunks);
-    
+
     world->bytype.components            = calloc(world->bytype.len, sizeof(*world->bytype.components));
     TNECS_CHECK_ALLOC(world->bytype.components);
 
@@ -1101,8 +1099,6 @@ b32 tnecs_grow_archetype(tnecs_world *world) {
                                                     sizeof(*world->bytype.id));
     world->bytype.entities          = tnecs_realloc(world->bytype.entities,             olen, nlen,
                                                     sizeof(*world->bytype.entities));
-    world->bytype.components        = tnecs_realloc(world->bytype.components,           olen, nlen,
-                                                    sizeof(*world->bytype.components));
     world->bytype.num_entities      = tnecs_realloc(world->bytype.num_entities,         olen, nlen,
                                                     sizeof(*world->bytype.num_entities));
     world->bytype.len_entities      = tnecs_realloc(world->bytype.len_entities,         olen, nlen,
@@ -1120,7 +1116,6 @@ b32 tnecs_grow_archetype(tnecs_world *world) {
 
     TNECS_CHECK_ALLOC(world->bytype.id);
     TNECS_CHECK_ALLOC(world->bytype.entities);
-    TNECS_CHECK_ALLOC(world->bytype.components);
     TNECS_CHECK_ALLOC(world->bytype.num_entities);
     TNECS_CHECK_ALLOC(world->bytype.archetype_id);
     TNECS_CHECK_ALLOC(world->bytype.len_entities);
@@ -1128,6 +1123,17 @@ b32 tnecs_grow_archetype(tnecs_world *world) {
     TNECS_CHECK_ALLOC(world->bytype.num_components);
     TNECS_CHECK_ALLOC(world->bytype.components_order);
     TNECS_CHECK_ALLOC(world->bytype.num_archetype_ids);
+
+    world->bytype.chunks            = tnecs_realloc(world->bytype.chunks,               olen, nlen,
+                                                    sizeof(*world->bytype.chunks));
+    TNECS_CHECK_ALLOC(world->bytype.chunks);
+    world->bytype.len_chunks        = tnecs_realloc(world->bytype.len_chunks,           olen, nlen,
+                                                    sizeof(*world->bytype.len_chunks));
+    TNECS_CHECK_ALLOC(world->bytype.len_chunks);
+
+    world->bytype.components        = tnecs_realloc(world->bytype.components,           olen, nlen,
+                                                    sizeof(*world->bytype.components));
+    TNECS_CHECK_ALLOC(world->bytype.components);
 
     for (size_t i = olen; i < world->bytype.len; i++) {
         world->bytype.entities[i]       = calloc(TNECS_INIT_ENTITY_LEN, sizeof(**world->bytype.entities));
