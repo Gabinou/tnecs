@@ -909,19 +909,28 @@ b32 tnecs_component_chunk_migrate(tnecs_world *world, tnecs_entity entity,
 
 b32 tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
                          tnecs_component old_archetype, tnecs_component new_archetype) {
+#ifdef TNECS_CHUNK
+    return(tnecs_component_chunk_copy(world, entity, old_archetype, new_archetype));
+#else
     return(tnecs_component_carr_copy(world, entity, old_archetype, new_archetype));
-    // return(tnecs_component_chunk_copy(world, entity, old_archetype, new_archetype));
+#endif /* TNECS_CHUNK */
 }
 b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
                         tnecs_component old_archetype) {
+#ifdef TNECS_CHUNK
+    return(tnecs_component_chunk_del(world, entity, old_archetype));
+#else
     return(tnecs_component_carr_del(world, entity, old_archetype));
-    // return(tnecs_component_chunk_del(world, entity, old_archetype));
+#endif /* TNECS_CHUNK */
 }
 
 b32 tnecs_component_migrate(tnecs_world *world, tnecs_entity entity,
                             tnecs_component old_archetype, tnecs_component new_archetype) {
-       return(tnecs_component_carr_migrate(world, entity, old_archetype, new_archetype));
-    // return(tnecs_component_chunk_migrate(world, entity, old_archetype, new_archetype));
+#ifdef TNECS_CHUNK
+    return(tnecs_component_chunk_migrate(world, entity, old_archetype, new_archetype));
+#else
+    return(tnecs_component_carr_migrate(world, entity, old_archetype, new_archetype));
+#endif /* TNECS_CHUNK */
 }
 
 b32 tnecs_component_carr_copy(tnecs_world *world, tnecs_entity entity,
