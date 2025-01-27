@@ -400,15 +400,15 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
 
     // 2- Add arrays to bytype.components[tID] for each component
     /* --- COMPONENT ARRAY --- */
-    tnecs_carr_new( world, num_components, archetype_new);
+    tnecs_carr_new(world, num_components, archetype_new);
     /* --- CHUNKS --- */
-    tnecs_chunk_new(world, archetype_new);
+    // tnecs_chunk_new(world, archetype_new);
 
     // 3- Add all components to bytype.components_id
     tnecs_component component_id_toadd, component_type_toadd;
     tnecs_component archetype_reduced = archetype_new, archetype_added = 0;
-    size_t bytesize1 =  sizeof(**world->bytype.components_id);
-    size_t bytesize2 =  sizeof(**world->bytype.components_order);
+    size_t bytesize1 = sizeof(**world->bytype.components_id);
+    size_t bytesize2 = sizeof(**world->bytype.components_order);
     world->bytype.components_id[tID]     = calloc(num_components,      bytesize1);
     TNECS_CHECK_ALLOC(world->bytype.components_id[tID]);
     world->bytype.components_order[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize2);
@@ -684,10 +684,17 @@ void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component 
     size_t component_order = tnecs_component_order_bytype(world, cID, entity_archetype);
     assert(component_order <= world->bytype.num_components[tID]);
     size_t entity_order = world->entities.orders[eID];
-    size_t bytesize = world->components.bytesizes[cID];
-    tnecs_carr *comp_array;
-    comp_array = &world->bytype.components[tID][component_order];
+    size_t bytesize     = world->components.bytesizes[cID];
+
+    /* --- CHUNKS --- */
+    // tnecs_chunk *chunk  = tnecs_chunk_top(world, entity_order, tID);
+    // void *comp_array    = tnecs_chunk_component_array(chunk, component_order);
+    // assert(comp_array != NULL);
+
+    /* --- COMPONENT ARRAY --- */
+    tnecs_carr *comp_array = &world->bytype.components[tID][component_order];
     assert(comp_array != NULL);
+ 
     tnecs_byte *temp_component_bytesptr = (tnecs_byte *)(comp_array->components);
     return (temp_component_bytesptr + (bytesize * entity_order));
 }
