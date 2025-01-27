@@ -790,9 +790,13 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
             tnecs_grow_component_array(world, comp_arr, tID, corder);
 
         /* --- CHUNK --- */
+        // Take component array of current archetype_id
+        // tnecs_chunk *chunks = world->bytype.chunks[tID];
+        // size_t chunk_order  = tnecs_chunk_order(chunks, entity_order);
 
-        if (++ >= )
-            tnecs_grow_chunks(world, tID, corder);
+        // if (chunk_order >= world->bytype.len_chunks[tID]) {
+        //     TNECS_CHECK_CALL(tnecs_grow_chunks(world, tID, corder));
+        // }
     }
 
     return (1);
