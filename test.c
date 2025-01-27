@@ -496,23 +496,12 @@ void tnecs_test_entity_creation() {
     // MORE TESTS FOR COVERAGE
     tnecs_world *test_world2 = NULL;
     tnecs_world_genesis(&test_world2);
-    for (int i = 0; i < test_world2->bytype.len; ++i) {
-        assert(test_world2->bytype.chunks[i] == NULL);
-    }
-
 
     test_world2->bytype.num = TNECS_INIT_SYSTEM_LEN;
     TNECS_REGISTER_COMPONENT(test_world2, Position2);
-    for (int i = 0; i < test_world2->bytype.len; ++i) {
-        assert(test_world2->bytype.chunks[i] == NULL);
-    }
-
     lok(test_world2->components.num == 2);
 
     // Coverage for if in tnecs_register_system
-    for (int i = 0; i < test_world2->bytype.len; ++i) {
-        assert(test_world2->bytype.chunks[i] == NULL);
-    }
     tnecs_world_destroy(&test_world2);
     lok(test_world2 == NULL);
     tnecs_world_genesis(&test_world2);
