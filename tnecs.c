@@ -48,6 +48,10 @@ b32 tnecs_world_destroy(tnecs_world **world) {
             free((*world)->bytype.components_order[i]);
         if ((*world)->bytype.archetype_id != NULL)
             free((*world)->bytype.archetype_id[i]);
+        // if ((*world)->bytype.chunks[i] != NULL) {
+            // free((*world)->bytype.chunks[i]);
+            // (*world)->bytype.chunks[i] = NULL;
+        // }
         if ((*world)->bytype.components != NULL) {
             for (size_t j = 0; j < (*world)->bytype.num_components[i]; j++) {
                 free((*world)->bytype.components[i][j].components);
@@ -59,6 +63,8 @@ b32 tnecs_world_destroy(tnecs_world **world) {
     free((*world)->bytype.components_id);
     free((*world)->bytype.components_order);
     free((*world)->bytype.entities);
+    free((*world)->bytype.chunks);
+    free((*world)->bytype.len_chunks);
     free((*world)->entities.orders);
     free((*world)->entities.id);
     free((*world)->entities_open.arr);
@@ -227,8 +233,6 @@ b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
     TNECS_CHECK_ALLOC(world->bytype.num_components);
     TNECS_CHECK_ALLOC(world->bytype.components_order);
     TNECS_CHECK_ALLOC(world->bytype.num_archetype_ids);
-
-
 
     world->bytype.len_chunks            = calloc(world->bytype.len,
                                                  sizeof(*world->bytype.len_chunks));
@@ -1209,7 +1213,6 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
 }
 
 b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder) {
-    // TODO: implement chunk growth
     size_t old_len                  = world->bytype.len_chunks[tID];
     size_t new_len                  = old_len * TNECS_ARRAY_GROWTH_FACTOR;
     world->bytype.len_chunks[tID]   = new_len;
