@@ -187,12 +187,9 @@ typedef struct tnecs_archetype {
     size_t           **components_order;    // [archetype_id][component_id]
     tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
 
-#ifdef TNECS_CHUNK
     size_t            *len_chunks;          // [archetype_id]
     tnecs_chunk     **chunks;               // [chunk_order_bytype][component_order_bytype]
-#else
     tnecs_carr       **components;          // [archetype_id][component_order_bytype]
-#endif /* TNECS_CHUNK */
 } tnecs_archetype;
 
 typedef struct tnecs_components {
