@@ -264,7 +264,6 @@ b32             tnecs_entities_open_flush(tnecs_world *w);
 #define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)), isnewtype)
 
 #define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) tnecs_entity_remove_components(world, entity_id, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
-
 /************************************************************/
 /********************** TNECS INTERNALS *********************/
 /************************************************************/
@@ -278,12 +277,27 @@ b32 tnecs_entitiesbytype_del(    tnecs_world *w, tnecs_entity e, tnecs_component
 b32 tnecs_entitiesbytype_migrate(tnecs_world *w, tnecs_entity e, tnecs_component ot, tnecs_component nt);
 
 b32 tnecs_component_add(    tnecs_world     *w,     tnecs_component flag);
+
 b32 tnecs_component_del(    tnecs_world     *w,     tnecs_entity    ent,
                             tnecs_component  of);
 b32 tnecs_component_copy(   tnecs_world     *w,     tnecs_entity    ent,
                             tnecs_component  of,    tnecs_component nf);
 b32 tnecs_component_migrate(tnecs_world     *w,     tnecs_entity    ent,
                             tnecs_component  of,    tnecs_component nf);
+
+b32 tnecs_component_carr_del(       tnecs_world     *w,     tnecs_entity    ent,
+                                    tnecs_component  of);
+b32 tnecs_component_carr_copy(      tnecs_world     *w,     tnecs_entity    ent,
+                                    tnecs_component  of,    tnecs_component nf);
+b32 tnecs_component_carr_migrate(   tnecs_world     *w,     tnecs_entity    ent,
+                                    tnecs_component  of,    tnecs_component nf);
+
+b32 tnecs_component_chunk_del(      tnecs_world     *w,     tnecs_entity    ent,
+                                    tnecs_component  of);
+b32 tnecs_component_chunk_copy(     tnecs_world     *w,     tnecs_entity    ent,
+                                    tnecs_component  of,    tnecs_component nf);
+b32 tnecs_component_chunk_migrate(  tnecs_world     *w,     tnecs_entity    ent,
+                                    tnecs_component  of,    tnecs_component nf);
 
 b32 tnecs_carr_new( tnecs_world *w, size_t         num_,   tnecs_component a);
 b32 tnecs_carr_init(tnecs_world *w, tnecs_carr   *array,  size_t          cID);

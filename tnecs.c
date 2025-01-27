@@ -802,7 +802,130 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
     return (1);
 }
 
+
+b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
+                        const tnecs_component old_archetype, const tnecs_component new_archetype) {
+    /* Copy components from old order unto top of new type chunk */
+    if (old_archetype == new_archetype) {
+        return(1);
+    }
+
+    size_t old_tID          = tnecs_archetypeid(world, old_archetype);
+    size_t new_tID          = tnecs_archetypeid(world, new_archetype);
+    size_t old_entity_order = world->entities.orders[entity];
+    size_t new_entity_order = world->bytype.num_entities[new_tID];
+    size_t num_comp_new     = world->bytype.num_components[new_tID];
+    size_t num_comp_old     = world->bytype.num_components[old_tID];
+
+    size_t old_chunk_component_order, new_chunk_component_order;
+    size_t old_component_id, new_component_id, component_bytesize;
+    tnecs_chunk             *old_top_chunk,             *new_top_chunk;
+    void                    *old_array,                 *new_array;
+    tnecs_byte              *old_component_ptr,         *new_component_ptr;
+    tnecs_byte              *old_component_bytesptr,    *new_component_bytesptr;
+    
+    for (size_t old_corder = 0; old_corder < num_comp_old; old_corder++) {
+        old_component_id = world->bytype.components_id[old_tID][old_corder];
+        for (size_t new_corder = 0; new_corder < num_comp_new; new_corder++) {
+            new_component_id = world->bytype.components_id[new_tID][new_corder];
+            if (old_component_id != new_component_id)
+                continue;
+
+            new_top_chunk = tnecs_chunk_top(world, new_entity_order, old_tID);
+            old_top_chunk = tnecs_chunk_top(world, old_entity_order, new_tID);
+
+            new_chunk_component_order = tnecs_chunk_component_order(new_top_chunk, new_entity_order);
+            old_chunk_component_order = tnecs_chunk_component_order(old_top_chunk, old_entity_order);
+
+            new_array = tnecs_chunk_component_array(new_top_chunk, new_corder);
+            old_array = tnecs_chunk_component_array(old_top_chunk, old_corder);
+
+            component_bytesize = world->components.bytesizes[old_component_id];
+            assert(component_bytesize > 0);
+
+            old_component_bytesptr = (tnecs_byte *)(old_array);
+            assert(old_component_bytesptr != NULL);
+            
+            old_component_ptr = (old_component_bytesptr + (component_bytesize * old_chunk_component_order));
+            assert(old_component_ptr != NULL);
+            
+            new_component_bytesptr = (tnecs_byte *)(new_array);
+            assert(new_component_bytesptr != NULL);
+            
+            new_component_ptr = (new_component_bytesptr + (component_bytesize * new_chunk_component_order));
+            assert(new_component_ptr != NULL);
+            assert(new_component_ptr != old_component_ptr);
+            
+            void *out = memcpy(new_component_ptr, old_component_ptr, component_bytesize);
+            assert(out == new_component_ptr);
+            break;
+        }
+    }
+    return(1);
+}
+
+b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
+                         tnecs_component old_archetype) {
+    /* Delete ALL components from componentsbytype at old entity order */
+    size_t old_tID          = tnecs_archetypeid(world, old_archetype);
+    size_t entity_order_old = world->entities.orders[entity];
+    size_t old_comp_num     = world->bytype.num_components[old_tID];
+    for (size_t corder = 0; corder < old_comp_num; corder++) {
+        size_t current_component_id = world->bytype.components_id[old_tID][corder];
+        tnecs_chunk *chunks = world->bytype.chunks[old_tID];
+        size_t chunk_order  = tnecs_chunk_order(chunks, entity_order_old);
+        if (chunks[chunk_order].len_entities == 0) {
+            if (chunk_order <= 0) {
+                // No component to delete in chunk
+                return(1); 
+            }
+            chunk_order--;
+        }
+        tnecs_chunk *top_chunk          = &chunks[chunk_order];
+        size_t chunk_component_order    = tnecs_chunk_component_order(top_chunk, entity_order_old);
+        tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(top_chunk, corder);
+        assert(comp_ptr != NULL);
+
+        /* Scramble components too */
+        size_t bytesize         = world->components.bytesizes[current_component_id];
+        tnecs_byte *scramble    = tnecs_arrdel(comp_ptr, entity_order_old, old_comp_num, bytesize);
+        TNECS_CHECK_ALLOC(scramble);
+    }
+    return(1);
+}
+
+b32 tnecs_component_chunk_migrate(tnecs_world *world, tnecs_entity entity,
+                             tnecs_component old_archetype, tnecs_component new_archetype) {
+    if (old_archetype != world->entities.archetypes[entity]) {
+        return(0);
+    }
+    TNECS_CHECK_CALL(tnecs_component_add(world, new_archetype));
+    if (old_archetype > TNECS_NULL) {
+        TNECS_CHECK_CALL(tnecs_component_copy(world, entity, old_archetype, new_archetype));
+        TNECS_CHECK_CALL(tnecs_component_del( world, entity, old_archetype));
+    }
+    return(1);
+}
+
+
 b32 tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
+                         tnecs_component old_archetype, tnecs_component new_archetype) {
+    return(tnecs_component_carr_copy(world, entity, old_archetype, new_archetype));
+    // return(tnecs_component_chunk_copy(world, entity, old_archetype, new_archetype));
+}
+b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
+                        tnecs_component old_archetype) {
+    return(tnecs_component_carr_del(world, entity, old_archetype));
+    // return(tnecs_component_chunk_del(world, entity, old_archetype));
+}
+
+b32 tnecs_component_migrate(tnecs_world *world, tnecs_entity entity,
+                            tnecs_component old_archetype, tnecs_component new_archetype) {
+       return(tnecs_component_carr_migrate(world, entity, old_archetype, new_archetype));
+    // return(tnecs_component_chunk_migrate(world, entity, old_archetype, new_archetype));
+}
+
+b32 tnecs_component_carr_copy(tnecs_world *world, tnecs_entity entity,
                          tnecs_component old_archetype, tnecs_component new_archetype) {
     /* Copy components from old order unto top of new type component array */
     if (old_archetype == new_archetype) {
@@ -869,7 +992,7 @@ b32 tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
     return (1);
 }
 
-b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
+b32 tnecs_component_carr_del(tnecs_world *world, tnecs_entity entity,
                         tnecs_component old_archetype) {
     /* Delete ALL components from componentsbytype at old entity order */
     size_t old_tID      = tnecs_archetypeid(world, old_archetype);
@@ -892,7 +1015,7 @@ b32 tnecs_component_del(tnecs_world *world, tnecs_entity entity,
     return (1);
 }
 
-b32 tnecs_component_migrate(tnecs_world *world, tnecs_entity entity,
+b32 tnecs_component_carr_migrate(tnecs_world *world, tnecs_entity entity,
                             tnecs_component old_archetype, tnecs_component new_archetype) {
     if (old_archetype != world->entities.archetypes[entity]) {
         return (0);
