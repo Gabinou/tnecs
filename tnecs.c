@@ -780,6 +780,7 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
     #endif /* NDEBUG */ 
 
     for (size_t corder = 0; corder < new_comp_num; corder++) {
+        /* --- COMPONENT ARRAY --- */
         // Take component array of current archetype_id
         tnecs_carr *comp_arr = &world->bytype.components[tID][corder];
         // check if it need to grow after adding new component
@@ -787,6 +788,11 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
 
         if (++comp_arr->num >= comp_arr->len)
             tnecs_grow_component_array(world, comp_arr, tID, corder);
+
+        /* --- CHUNK --- */
+
+        if (++ >= )
+            tnecs_grow_chunks(world, tID, corder);
     }
 
     return (1);
