@@ -901,7 +901,10 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
 
         /* Scramble components too */
         size_t bytesize         = world->components.bytesizes[current_component_id];
-        tnecs_byte *scramble    = tnecs_arrdel(comp_ptr, entity_order_old, old_comp_num, bytesize);
+        size_t new_comp_num     = top_chunk->len_entities;
+        assert(entity_order_old < top_chunk->len_entities);
+        assert(new_comp_num * bytesize < TNECS_CHUNK_COMPONENTS_BYTESIZE);
+        tnecs_byte *scramble    = tnecs_arrdel(comp_ptr, entity_order_old, new_comp_num, bytesize);
         TNECS_CHECK_ALLOC(scramble);
     }
     return(1);
@@ -1485,7 +1488,14 @@ b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_compone
     assert(cumul_bytesize < TNECS_CHUNK_COMPONENTS_BYTESIZE);
     assert(chunk->num_components == world->bytype.num_components[tID]);
 
-    chunk->len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
+    size_t bytesize_header  = chunk->num_components * sizeof(size_t);
+    chunk->len_entities     = (TNECS_CHUNK_COMPONENTS_BYTESIZE - bytesize_header) / cumul_bytesize;
+    if (chunk->len_entities < 1) {
+        printf("Could not fit any entity in chunk. Components too big.");
+        return(0);
+    }
+
+    assert((chunk->len_entities * cumul_bytesize) <= (TNECS_CHUNK_COMPONENTS_BYTESIZE - bytesize_header));
     return(1);
 }
 
@@ -1563,6 +1573,7 @@ void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder) {
     size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
     size_t header_offset        = chunk->num_components * sizeof(size_t);
     size_t components_offset    = corder * cumul_bytesize * chunk->len_entities;
+    assert((header_offset + components_offset) < TNECS_CHUNK_COMPONENTS_BYTESIZE);
 
     tnecs_byte *bytemem = chunk->mem;
     return(bytemem + header_offset + components_offset);
