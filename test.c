@@ -665,6 +665,8 @@ void tnecs_test_component_array() {
     TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
     TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
 
+#ifdef TNECS_CHUNK
+#else
     size_t temp_archetypeid     = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID, Position_ID);
 
     size_t temp_component_order = tnecs_component_order_bytypeid(arr_world, Position_ID, temp_archetypeid);
@@ -689,6 +691,7 @@ void tnecs_test_component_array() {
     lok(arr_world->bytype.components[temp_archetypeid][temp_component_order].num == 2);
     temp_component_order = tnecs_component_order_bytypeid(arr_world, Velocity_ID, temp_archetypeid);
     lok(arr_world->bytype.components[temp_archetypeid][temp_component_order].num == 2);
+#endif /* TNECS_CHUNK */
 
     size_t old_entity_order = arr_world->entities.orders[temp_ent];
     lok(old_entity_order == 0);
@@ -701,7 +704,10 @@ void tnecs_test_component_array() {
     lok(old_component_order < TNECS_COMPONENT_CAP);
     lok(old_component_order == 0);
 
+#ifdef TNECS_CHUNK
+#else
     lok(arr_world->bytype.components[old_archetypeid][old_component_order].num == 1);
+#endif /* TNECS_CHUNK */
 
     struct Unit     *temp_unit  = tnecs_get_component(arr_world, temp_ent, Unit_ID);
     struct Position *temp_pos   = tnecs_get_component(arr_world, temp_ent, Position_ID);
