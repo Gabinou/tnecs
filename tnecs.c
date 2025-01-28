@@ -404,9 +404,9 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
 
     // 2- Add arrays to bytype.components[tID] for each component
 #ifdef TNECS_CHUNK
-    tnecs_chunk_new(world, archetype_new);
+    TNECS_CHECK_CALL(tnecs_chunk_new(world, archetype_new));
 #else
-    tnecs_carr_new(world, num_components, archetype_new);
+    TNECS_CHECK_CALL(tnecs_carr_new(world, num_components, archetype_new));
 #endif /* TNECS_CHUNK */
 
     // 3- Add all components to bytype.components_id
@@ -1393,6 +1393,7 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
 }
 
 b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder) {
+    assert(world != NULL);
     size_t old_len                  = world->bytype.len_chunks[tID];
     size_t new_len                  = old_len * TNECS_ARRAY_GROWTH_FACTOR;
     world->bytype.len_chunks[tID]   = new_len;
@@ -1401,8 +1402,22 @@ b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder)
     world->bytype.chunks[tID]       = tnecs_realloc(world->bytype.chunks[tID], old_len, new_len, bytesize);
     TNECS_CHECK_ALLOC(world->bytype.chunks[tID]);
     for (size_t corder = old_len; corder < new_len; corder++) {
-        tnecs_chunk_init(&world->bytype.chunks[tID][corder], world, world->bytype.id[tID]);
+        assert(world->bytype.chunks[tID][corder].len_entities == 0);
+        TNECS_CHECK_CALL(tnecs_chunk_init(&world->bytype.chunks[tID][corder], world, world->bytype.id[tID]));
+        assert(world->bytype.chunks[tID][corder].len_entities > 0);
     }
+
+#ifndef NDEBUG
+    if (tID == 3) {
+        printf("tID: %zu\n", tID);
+        printf("old_len new_len %zu %zu\n", old_len, new_len);
+        for (size_t corder = 0; corder < new_len; corder++) {
+            printf("corder %zu\n", corder);
+            assert(world->bytype.chunks[tID][corder].len_entities > 0);
+        }
+    }
+#endif /* NDEBUG */
+
 
     return(1);
 }
@@ -1420,7 +1435,8 @@ size_t setBits_KnR_u64(u64 in_flags) {
 
 /********************** CHUNKS *********************/
 b32 tnecs_chunk_new(tnecs_world *world, tnecs_component archetype) {
-    tnecs_chunk *new_chunk = calloc(1, sizeof(*new_chunk));
+    size_t start_len = 1;
+    tnecs_chunk *new_chunk = calloc(start_len, sizeof(*new_chunk));
     TNECS_CHECK_ALLOC(new_chunk);
     TNECS_CHECK_CALL(tnecs_chunk_init(new_chunk, world, archetype));
 
@@ -1430,7 +1446,7 @@ b32 tnecs_chunk_new(tnecs_world *world, tnecs_component archetype) {
     assert(world->bytype.len_chunks);
     assert(tID < world->bytype.len);
     world->bytype.chunks[tID]       = new_chunk;
-    world->bytype.len_chunks[tID]   = 1;
+    world->bytype.len_chunks[tID]   = start_len;
     return(1);
 }
 
@@ -1466,6 +1482,7 @@ b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_compone
 
     assert(tID > TNECS_NULL);
     assert(cumul_bytesize > 0);
+    assert(cumul_bytesize < TNECS_CHUNK_COMPONENTS_BYTESIZE);
     assert(chunk->num_components == world->bytype.num_components[tID]);
 
     chunk->len_entities = (TNECS_CHUNK_COMPONENTS_BYTESIZE) / cumul_bytesize;
