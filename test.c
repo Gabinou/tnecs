@@ -729,17 +729,16 @@ void tnecs_test_component_array() {
     struct Unit     *temp_unit  = tnecs_get_component(arr_world, temp_ent, Unit_ID);
     struct Position *temp_pos   = tnecs_get_component(arr_world, temp_ent, Position_ID);
     lok(temp_pos == NULL);
-    lok(temp_unit->hp == 0);
-    lok(temp_unit->str == 0);
+    lok(temp_unit->hp   == 0);
+    lok(temp_unit->str  == 0);
     temp_unit->hp   = 10;
     temp_unit->str  = 12;
     temp_unit = tnecs_get_component(arr_world, temp_ent + 1, Unit_ID);
     
-
     tnecs_entities_create(arr_world, 10);
     temp_unit = tnecs_get_component(arr_world, temp_ent, Unit_ID);
-    lok(temp_unit->hp == 10);
-    lok(temp_unit->str == 12);
+    lok(temp_unit->hp   == 10);
+    lok(temp_unit->str  == 12);
 
     size_t new_archetypeid = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID, Position_ID);
     lok(arr_world->bytype.num_entities[new_archetypeid] == 4);
@@ -754,12 +753,12 @@ void tnecs_test_component_array() {
     lok(new_entity_order != old_entity_order);
 
     temp_pos = tnecs_get_component(arr_world, temp_ent, Position_ID);
-    lok(temp_unit->hp == 10);
-    lok(temp_unit->str == 12);
+    lok(temp_unit->hp   == 10);
+    lok(temp_unit->str  == 12);
     temp_unit->hp++;
     temp_unit->str++;
-    lok(temp_unit->hp == 11);
-    lok(temp_unit->str == 13);
+    lok(temp_unit->hp   == 11);
+    lok(temp_unit->str  == 13);
     lok(temp_pos->x == 0);
     lok(temp_pos->y == 0);
 
