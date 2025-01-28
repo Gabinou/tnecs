@@ -201,66 +201,65 @@ typedef struct Unit2 {
     u64 res;
 } Unit2;
 
-void SystemMove2(struct tnecs_system_input *in_input) {
-    // printf("SystemMove2\n");
-    int Position2_ID    = 1;
-    int Unit2_ID        = 2;
-    struct Position2    *p = TNECS_COMPONENTS_LIST(in_input, Position2_ID);
-    struct Unit2        *v = TNECS_COMPONENTS_LIST(in_input, Unit2_ID);
-    for (int i = 0; i < in_input->num_entities; i++) {
-        // printf("i %d \n", i);
+void SystemMove2(struct tnecs_system_input *input) {
+    int     Position2_ID    = 1;
+    int     Unit2_ID        = 2;
+    struct  Position2   *p = NULL;
+    struct  Unit2       *v = NULL;
+    #ifndef TNECS_CHUNK
+    p  = TNECS_COMPONENTS_LIST(input, Position2_ID);
+    v  = TNECS_COMPONENTS_LIST(input, Unit2_ID);
+    #endif /* TNECS_CHUNK */
+
+    for (int i = 0; i < input->num_entities; i++) {
+    #ifdef TNECS_CHUNK
+        size_t modulo = tnecs_chunk_modulo(input->world, input->entity_archetype_id); 
+        if ((i % modulo) == 0) {
+            size_t chunk_order = tnecs_chunk_order(tnecs_chunk_arr(input->world, input->entity_archetype_id), i);
+            p  = TNECS_COMPONENTS_LIST(input, Position2_ID, chunk_order);
+            v  = TNECS_COMPONENTS_LIST(input, Unit2_ID, chunk_order);
+        }
+    #endif /* TNECS_CHUNK */
+
+    #ifdef TNECS_CHUNK
+        p[i % modulo].x += v[i % modulo].hp;
+        p[i % modulo].y += v[i % modulo].str;
+    #else
         p[i].x += v[i].hp;
         p[i].y += v[i].str;
+    #endif /* TNECS_CHUNK */
     }
 }
-void SystemMovePhase1(struct tnecs_system_input *in_input) {
-    // printf("SystemMovePhase1\n");
-    // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
-    // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
-    for (int ent = 0; ent < in_input->num_entities; ent++) {
-        // printf("in_input->world->bytype.entities[in_input->entity_archetype_id][ent] %d\n", in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        // printf("in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]] %d\n", in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]);
-        tnecs_entity current_ent = in_input->world->bytype.entities[in_input->entity_archetype_id][ent];
+void SystemMovePhase1(struct tnecs_system_input *input) {
+    for (int ent = 0; ent < input->num_entities; ent++) {
+        tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         lok(current_ent);
-        lok(in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]
-            == in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        lok(in_input->entity_archetype_id == tnecs_archetypeid(in_input->world,
-                                                             in_input->world->entities.archetypes[current_ent]));
+        lok(input->world->entities.id[input->world->bytype.entities[input->entity_archetype_id][ent]]
+            == input->world->bytype.entities[input->entity_archetype_id][ent]);
+        lok(input->entity_archetype_id == tnecs_archetypeid(input->world,
+                                                             input->world->entities.archetypes[current_ent]));
     }
-
-    //     // printf("i %d \n", i);
-    //     p[i].x += v[i].hp;
-    //     p[i].y += v[i].str;
 }
 
-void SystemMovePhase4(struct tnecs_system_input *in_input) {
-    // printf("SystemMovePhase4\n");
-    for (int ent = 0; ent < in_input->num_entities; ent++) {
-        tnecs_entity current_ent = in_input->world->bytype.entities[in_input->entity_archetype_id][ent];
+void SystemMovePhase4(struct tnecs_system_input *input) {
+    for (int ent = 0; ent < input->num_entities; ent++) {
+        tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         lok(current_ent);
-        lok(in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]
-            == in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        lok(in_input->entity_archetype_id == tnecs_archetypeid(in_input->world,
-                                                             in_input->world->entities.archetypes[current_ent]));
-        // printf("in_input->world->bytype.entities[in_input->entity_archetype_id][ent] %d\n", in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        // printf("in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]] %d\n", in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]);
+        lok(input->world->entities.id[input->world->bytype.entities[input->entity_archetype_id][ent]]
+            == input->world->bytype.entities[input->entity_archetype_id][ent]);
+        lok(input->entity_archetype_id == tnecs_archetypeid(input->world,
+                                                             input->world->entities.archetypes[current_ent]));
     }
-
 }
 
-void SystemMovePhase2(struct tnecs_system_input *in_input) {
-    // printf("SystemMovePhase2\n");
-    // struct Position2 * p = TNECS_COMPONENTS_LIST(in_input, Position2);
-    // struct Unit2 * v = TNECS_COMPONENTS_LIST(in_input, Unit2);
-    for (int ent = 0; ent < in_input->num_entities; ent++) {
-        tnecs_entity current_ent = in_input->world->bytype.entities[in_input->entity_archetype_id][ent];
+void SystemMovePhase2(struct tnecs_system_input *input) {
+    for (int ent = 0; ent < input->num_entities; ent++) {
+        tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         lok(current_ent);
-        lok(in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]
-            == in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        lok(in_input->entity_archetype_id == tnecs_archetypeid(in_input->world,
-                                                             in_input->world->entities.archetypes[current_ent]));        // printf("in_input->world->bytype.entities[in_input->entity_archetype_id][ent] %d\n", in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        // printf("in_inputf->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]] %d\n", in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]);
-        // in_input->world->bytype.entities[in_input->entity_archetype_id][ent]
+        lok(input->world->entities.id[input->world->bytype.entities[input->entity_archetype_id][ent]]
+            == input->world->bytype.entities[input->entity_archetype_id][ent]);
+        lok(input->entity_archetype_id == tnecs_archetypeid(input->world,
+                                                             input->world->entities.archetypes[current_ent]));
     }
 }
 
@@ -276,27 +275,45 @@ struct Unit         *temp_unit;
 struct Sprite       *temp_sprite;
 struct tnecs_world  *test_world;
 
-void SystemMove(struct tnecs_system_input *in_input) {
+void SystemMove(struct tnecs_system_input *input) {
     // printf("SystemMove\n");
     int Position_ID = 1;
     int Velocity_ID = 2;
-    struct Position *p = TNECS_COMPONENTS_LIST(in_input, Position_ID);
-    struct Velocity *v = TNECS_COMPONENTS_LIST(in_input, Velocity_ID);
-    for (int ent = 0; ent < in_input->num_entities; ent++) {
-        tnecs_entity current_ent = in_input->world->bytype.entities[in_input->entity_archetype_id][ent];
-        lok(current_ent);
-        lok(in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]
-            == in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        lok(in_input->entity_archetype_id == tnecs_archetypeid(in_input->world,
-                                                             in_input->world->entities.archetypes[current_ent]));        // printf("in_input->world->bytype.entities[in_input->entity_archetype_id][ent] %d\n", in_input->world->bytype.entities[in_input->entity_archetype_id][ent]);
-        // printf("in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]] %d\n", in_input->world->entities.id[in_input->world->bytype.entities[in_input->entity_archetype_id][ent]]);
+    struct Position *p = NULL;
+    struct Velocity *v = NULL;
+    #ifndef TNECS_CHUNK
+    p = TNECS_COMPONENTS_LIST(input, Position_ID);
+    v = TNECS_COMPONENTS_LIST(input, Velocity_ID);
+    #endif /* TNECS_CHUNK */
+    for (int ent = 0; ent < input->num_entities; ent++) {
 
-        // in_input->world->bytype.entities[in_input->entity_archetype_id][ent]
+        #ifdef TNECS_CHUNK
+        size_t modulo = tnecs_chunk_modulo(input->world, input->entity_archetype_id); 
+            if ((ent % modulo) == 0) {
+                size_t chunk_order = tnecs_chunk_order(tnecs_chunk_arr(input->world, input->entity_archetype_id), ent);
+                p  = TNECS_COMPONENTS_LIST(input, Position_ID, chunk_order);
+                v  = TNECS_COMPONENTS_LIST(input, Velocity_ID, chunk_order);
+            }
+        #endif /* TNECS_CHUNK */
+
+        tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
+        lok(current_ent);
+        lok(input->world->entities.id[input->world->bytype.entities[input->entity_archetype_id][ent]]
+            == input->world->bytype.entities[input->entity_archetype_id][ent]);
+        lok(input->entity_archetype_id == tnecs_archetypeid(input->world,
+                                                             input->world->entities.archetypes[current_ent]));
+
+
+    #ifdef TNECS_CHUNK
+        p[ent % modulo].x = p[ent % modulo].x + v[ent % modulo].vx;
+        p[ent % modulo].y = p[ent % modulo].y + v[ent % modulo].vy;
+    #else
         p[ent].x = p[ent].x + v[ent].vx;
         p[ent].y = p[ent].y + v[ent].vy;
+    #endif /* TNECS_CHUNK */
     }
 
-    // for (int i = 0; i < in_input->num_entities; i++) {
+    // for (int i = 0; i < input->num_entities; i++) {
 
     // }
 }

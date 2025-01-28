@@ -1477,6 +1477,17 @@ size_t tnecs_chunk_order(tnecs_chunk *chunk, const size_t entity_order) {
     assert(chunk != NULL);
     return(entity_order / chunk->len_entities);
 }
+#ifdef TNECS_CHUNK
+size_t tnecs_chunk_modulo(tnecs_world *world, const size_t tID) {
+    assert(world != NULL);
+    return(world->bytype.chunks[tID]->len_entities);
+}
+#endif /* TNECS_CHUNK */
+
+tnecs_chunk *tnecs_chunk_arr(tnecs_world *world, const size_t tID) {
+    assert(world != NULL);
+    return(world->bytype.chunks[tID]);
+}
 
 // Order of entity in entities_bytype -> order of components in current ArchetypeChunk
 size_t tnecs_chunk_component_order(tnecs_chunk *chunk, const size_t entity_order) {
