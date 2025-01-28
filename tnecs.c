@@ -847,6 +847,8 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
 
             new_top_chunk = tnecs_chunk_top(world, new_entity_order, old_tID);
             old_top_chunk = tnecs_chunk_top(world, old_entity_order, new_tID);
+            assert(new_top_chunk->num_components == num_comp_new);
+            assert(old_top_chunk->num_components == num_comp_old);
 
             new_chunk_component_order = tnecs_chunk_component_order(new_top_chunk, new_entity_order);
             old_chunk_component_order = tnecs_chunk_component_order(old_top_chunk, old_entity_order);
@@ -1569,10 +1571,14 @@ void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder) {
     // [entities_len * chunk_order, (entities_len + 1) * chunk_order,]
     // Array index is tnecs_chunk_component_order(entity_order)
 
+    // There is not component array at corder
+    if (corder == chunk->num_components)
+        return(NULL);
+
     size_t *header              = tnecs_chunk_mem(chunk);
     size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
     size_t header_offset        = chunk->num_components * sizeof(size_t);
-    size_t components_offset    = corder * cumul_bytesize * chunk->len_entities;
+    size_t components_offset    = cumul_bytesize * chunk->len_entities;
     assert((header_offset + components_offset) < TNECS_CHUNK_COMPONENTS_BYTESIZE);
 
     tnecs_byte *bytemem = chunk->mem;
