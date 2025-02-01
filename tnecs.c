@@ -975,7 +975,7 @@ size_t tnecs_archetypeid(tnecs_world *world, tnecs_component archetype) {
 void *tnecs_realloc(void *ptr, size_t old_len, size_t new_len, size_t elem_bytesize) {
     if (!ptr)
         return (0);
-    void *realloced = (void *)calloc(new_len, elem_bytesize);
+    void *realloced = calloc(new_len, elem_bytesize);
     TNECS_CHECK_ALLOC(realloced);
     memcpy(realloced, ptr, (new_len > old_len ? old_len : new_len) * elem_bytesize);
     free(ptr);
