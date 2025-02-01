@@ -853,8 +853,8 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
             new_chunk_component_order = tnecs_chunk_component_order(new_top_chunk, new_entity_order);
             old_chunk_component_order = tnecs_chunk_component_order(old_top_chunk, old_entity_order);
 
-            new_array = tnecs_chunk_component_array(new_top_chunk, new_corder);
-            old_array = tnecs_chunk_component_array(old_top_chunk, old_corder);
+            new_array = tnecs_chunk_component_array(world, new_component_id, new_tID, new_corder);
+            old_array = tnecs_chunk_component_array(world, old_component_id, old_tID, old_corder);
 
             component_bytesize = world->components.bytesizes[old_component_id];
             assert(component_bytesize > 0);
@@ -898,7 +898,9 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
             chunk_order--;
         }
         tnecs_chunk *top_chunk          = &chunks[chunk_order];
-        tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(top_chunk, corder);
+        tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(world, current_component_id, old_tID, chunk_order);
+
+
         assert(comp_ptr != NULL);
 
         /* Scramble components too */
@@ -1536,6 +1538,7 @@ void *tnecs_chunk_component(tnecs_chunk *chunks, const size_t entity_order, cons
     size_t chunk_order              = tnecs_chunk_order(chunks, entity_order);
     size_t chunk_component_order    = tnecs_chunk_component_order(chunks, entity_order);
     tnecs_byte  *byte_arr           = tnecs_chunk_component_array(&chunks[chunk_order], component_order);
+    
     size_t      *cumul_bytesize     = tnecs_chunk_mem(chunks);
 
     size_t component_bytesize = component_order == 0 ? cumul_bytesize[0] : cumul_bytesize[component_order] - cumul_bytesize[component_order - 1]; 
@@ -1566,7 +1569,6 @@ tnecs_chunk *tnecs_chunk_top(tnecs_world *world, size_t entity_order, size_t tID
 }
 
 void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const size_t tID) {
-
     if ((cID == TNECS_NULL) || (tID == TNECS_NULL)) 
         return(NULL);
 
@@ -1579,20 +1581,26 @@ void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const siz
     return(carr[corder].components);
 }
 
-void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder) {
+void *tnecs_chunk_component_array(tnecs_world *world, const size_t cID, const size_t tID, const size_t chunkOrder) {
     // Note: Array is valid from entity_order =
     // [entities_len * chunk_order, (entities_len + 1) * chunk_order,]
     // Array index is tnecs_chunk_component_order(entity_order)
 
-    // if (cID >= world->components.num) 
-    //     return(NULL);
+    if ((cID == TNECS_NULL) || (tID == TNECS_NULL)) 
+        return(NULL);
+
+    if (cID >= world->components.num) 
+        return(NULL);
 
     // There is not component array at corder
     if (corder >= chunk->num_components)
         return(NULL);
 
+    size_t       compOrder  = world->bytype.components_order[tID][cID];
+    tnecs_chunk *chunk      = world->bytype.chunks[tID][chunkOrder];
+
     size_t *header              = tnecs_chunk_mem(chunk);
-    size_t cumul_bytesize       = (corder == 0) ? 0 : header[corder - 1];
+    size_t cumul_bytesize       = (compOrder == 0) ? 0 : header[compOrder - 1];
     size_t header_offset        = chunk->num_components * sizeof(size_t);
     size_t components_offset    = cumul_bytesize * chunk->len_entities;
     assert((header_offset + components_offset) < TNECS_CHUNK_COMPONENTS_BYTESIZE);
