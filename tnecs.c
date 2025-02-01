@@ -896,22 +896,30 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
         size_t current_component_id = world->bytype.components_id[old_tID][corder];
         tnecs_chunk *chunks = world->bytype.chunks[old_tID];
         size_t chunk_order  = tnecs_chunk_order(chunks, entity_order_old);
-        if (chunks[chunk_order].len_entities == 0) {
-            if (chunk_order <= 0) {
-                // No component to delete in chunk
-                return(1); 
-            }
-            chunk_order--;
-        }
-        tnecs_chunk *top_chunk          = &chunks[chunk_order];
+        // if (chunks[chunk_order].len_entities == 0) {
+        //     if (chunk_order <= 0) {
+        //         // No component to delete in chunk
+        //         return(1); 
+        //     }
+        //     chunk_order--;
+        // }
+        assert(chunk_order < tnecs_chunk_len(chunks, world, old_tID));
+
+        // tnecs_chunk *top_chunk          = &chunks[chunk_order];
+
+        // tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
         tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
+                                    // tnecs_chunk_component_array(top_chunk, const size_t compOrder) {
 
         assert(comp_ptr != NULL);
 
+
         /* Scramble components too */
         size_t bytesize         = world->components.bytesizes[current_component_id];
-        size_t new_comp_num     = top_chunk->len_entities;
-        assert(entity_order_old < top_chunk->len_entities);
+        size_t new_comp_num     = chunks->len_entities;
+        assert(chunks->len_entities > 0);
+        printf("%zu %zu %zu \n", entity_order_old, chunks->len_entities, chunk_order);
+        assert(entity_order_old <= (chunks->len_entities * (chunk_order + 1)));
         assert(new_comp_num * bytesize < TNECS_CHUNK_COMPONENTS_BYTESIZE);
         tnecs_byte *scramble    = tnecs_arrdel(comp_ptr, entity_order_old, new_comp_num, bytesize);
         TNECS_CHECK_ALLOC(scramble);
@@ -1418,18 +1426,6 @@ b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder)
         assert(world->bytype.chunks[tID][corder].len_entities > 0);
     }
 
-#ifndef NDEBUG
-    if (tID == 3) {
-        printf("tID: %zu\n", tID);
-        printf("old_len new_len %zu %zu\n", old_len, new_len);
-        for (size_t corder = 0; corder < new_len; corder++) {
-            printf("corder %zu\n", corder);
-            assert(world->bytype.chunks[tID][corder].len_entities > 0);
-        }
-    }
-#endif /* NDEBUG */
-
-
     return(1);
 }
 
@@ -1509,6 +1505,7 @@ b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_compone
 
 size_t tnecs_chunk_len(tnecs_chunk *chunk, tnecs_world *world, const size_t tID) {
     assert(chunk != NULL);
+    assert(world != NULL);
     return((world->bytype.num_entities[tID] / chunk->len_entities) + 1);
 }
 

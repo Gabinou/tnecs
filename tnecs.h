@@ -351,6 +351,7 @@ b32 tnecs_chunk_new( tnecs_world *world, tnecs_component archetype);
 b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype);
 tnecs_chunk *tnecs_chunk_arr(tnecs_world *world, const size_t tID);
 
+size_t   tnecs_chunk_len(tnecs_chunk *chunk, tnecs_world *world, const size_t tID);
 size_t  *tnecs_chunk_mem(   tnecs_chunk *chunk);
 size_t   tnecs_chunk_cumul_bytesize(    tnecs_chunk *chunk);
 void    *tnecs_carr_component_array(    tnecs_world *world, const size_t cID, const size_t tID);
