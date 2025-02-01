@@ -1258,11 +1258,10 @@ void tnecs_benchmarks(uint64_t num) {
 
     size_t tID = TNECS_COMPONENT_IDS2ARCHETYPEID(bench_world, Position2_ID, Unit2_ID);
     assert(bench_world->bytype.len_chunks[tID] > (ITERATIONS / 185));
-    printf("%zu \n", bench_world->bytype.len_chunks[tID]);
-    printf("%zu \n", bench_world->bytype.len_chunks[tID]);
-    printf("%zu \n", bench_world->bytype.len_chunks[tID]);
-    printf("%zu \n", bench_world->bytype.len_chunks[tID]);
-    getchar(); 
+
+    for (int corder = 0; corder < bench_world->bytype.len_chunks[tID]; ++corder) {
+        assert(bench_world->bytype.chunks[tID][corder].num_components > 0);
+    }
 
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%6.1f\t", t_1 - t_0);
@@ -1271,6 +1270,11 @@ void tnecs_benchmarks(uint64_t num) {
         // TODO: destroy random entity
         assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
         tnecs_entity_destroy(bench_world, tnecs_entities2[i]);
+        printf("%zu \n", i);
+        for (int corder = 0; corder < bench_world->bytype.len_chunks[tID]; ++corder) {
+            printf("corder %d \n", corder);
+            assert(bench_world->bytype.chunks[tID][corder].num_components > 0);
+        }
     }
 
     t_0 = tnecs_get_us();

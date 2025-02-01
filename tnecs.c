@@ -588,6 +588,10 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     /* Delete components */
     TNECS_CHECK_CALL(tnecs_component_del(world, entity, archetype));
 
+    for (int corder = 0; corder < world->bytype.len_chunks[3]; ++corder) {
+        assert(world->bytype.chunks[3][corder].num_components > 0);
+    }
+
     #ifndef NDEBUG     
     size_t entity_order         = world->entities.orders[entity];
     size_t tID                  = tnecs_archetypeid(world, archetype);
@@ -598,6 +602,10 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
 
     /* Delete entitiesbytype */
     tnecs_entitiesbytype_del(world, entity, archetype);
+
+    for (int corder = 0; corder < world->bytype.len_chunks[3]; ++corder) {
+        assert(world->bytype.chunks[3][corder].num_components > 0);
+    }
 
     /* Delete entity */
     world->entities.id[entity]         = TNECS_NULL;
@@ -910,7 +918,9 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
         // }
 
         // tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
-        // printf();
+
+        // if (old_tID == 3)
+        // printf("%zu %zu %zu \n", chunk_order, chunks->num_components, chunks[chunk_order].num_components);
         assert(chunks->num_components == chunks[chunk_order].num_components);
 
         tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(&chunks[chunk_order], corder);
@@ -921,11 +931,14 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
         size_t bytesize         = world->components.bytesizes[current_component_id];
         size_t new_comp_num     = chunks->len_entities;
         assert(chunks->len_entities > 0);
-        printf("%zu %zu %zu \n", entity_order_old, chunks->len_entities, chunk_order);
+        // printf("%zu %zu %zu \n", entity_order_old, chunks->len_entities, chunk_order);
         assert(entity_order_old <= (chunks->len_entities * (chunk_order + 1)));
         assert(new_comp_num * bytesize < TNECS_CHUNK_COMPONENTS_BYTESIZE);
+        
         tnecs_byte *scramble    = tnecs_arrdel(comp_ptr, entity_order_old, new_comp_num, bytesize);
         TNECS_CHECK_ALLOC(scramble);
+        // Somehow this arrdel makes num_components 0? 
+        assert(chunks->num_components == chunks[chunk_order].num_components);
     }
     return(1);
 }
@@ -1415,6 +1428,7 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
 }
 
 b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder) {
+    printf("tnecs_grow_chunks \n");
     assert(world != NULL);
     size_t old_len                  = world->bytype.len_chunks[tID];
     size_t new_len                  = old_len * TNECS_ARRAY_GROWTH_FACTOR;
@@ -1424,12 +1438,16 @@ b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder)
     world->bytype.chunks[tID]       = tnecs_realloc(world->bytype.chunks[tID], old_len, new_len, bytesize);
     TNECS_CHECK_ALLOC(world->bytype.chunks[tID]);
     for (size_t corder = old_len; corder < new_len; corder++) {
-        assert(world->bytype.chunks[tID][corder].len_entities == 0);
+        // if (tID == 3)
+            // printf("%zu \n", corder);
+        assert(world->bytype.chunks[tID][corder].len_entities   == 0);
+        assert(world->bytype.chunks[tID][corder].num_components == 0);
         TNECS_CHECK_CALL(tnecs_chunk_init(&world->bytype.chunks[tID][corder], world, world->bytype.id[tID]));
         assert(world->bytype.chunks[tID][corder].len_entities == world->bytype.chunks[tID]->len_entities);
+        assert(world->bytype.chunks[tID][corder].len_entities > 0);
         assert(world->bytype.chunks[tID][corder].num_components == world->bytype.chunks[tID]->num_components);
+        assert(world->bytype.chunks[tID][corder].num_components > 0);
     }
-
     return(1);
 }
 
