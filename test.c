@@ -315,8 +315,13 @@ void SystemMove(struct tnecs_system_input *input) {
     }
 }
 
-void SystemMoveDoNothing(struct tnecs_system_input *in_input) {
-
+void SystemMoveDoNothing(struct tnecs_system_input *input) {
+    int doesnotexist_ID = 8;
+    void *ptr = NULL;
+    #ifndef TNECS_CHUNK
+    ptr = TNECS_COMPONENTS_LIST(input, doesnotexist_ID);
+    lok(ptr == NULL);
+    #endif /* TNECS_CHUNK */
 }
 
 /*******************************ACTUAL TESTS***************************/

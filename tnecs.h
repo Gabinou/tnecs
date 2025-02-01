@@ -27,7 +27,7 @@
     #define log2(x) (log(x) * 1.44269504088896340736)
 #endif
 
-#define TNECS_CHUNK
+// #define TNECS_CHUNK
 
 /************************ DEBUGGING *************************/
 #define TNECS_CHECK_ALLOC(name) do {\
@@ -322,6 +322,7 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 #define TNECS_COMPONENTS_LIST(input, compID, chunkOrder) tnecs_chunk_component_array(&input->world->bytype.chunks[input->entity_archetype_id][chunkOrder], \
                     input->world->bytype.components_order[input->entity_archetype_id][compID]);
 #else
+if cID >= world->components.num return(NULL);
 #define TNECS_COMPONENTS_LIST(input, cID) (input->world->bytype.components[input->entity_archetype_id][input->world->bytype.components_order[input->entity_archetype_id][cID]].components)
 #endif /* TNECS_CHUNK */
 
