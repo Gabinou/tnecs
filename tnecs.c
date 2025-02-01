@@ -853,8 +853,8 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
             new_chunk_component_order = tnecs_chunk_component_order(new_top_chunk, new_entity_order);
             old_chunk_component_order = tnecs_chunk_component_order(old_top_chunk, old_entity_order);
 
-            new_array = tnecs_chunk_component_array(world, new_component_id, new_tID, new_corder);
-            old_array = tnecs_chunk_component_array(world, old_component_id, old_tID, old_corder);
+            new_array = tnecs_world_component_array(world, new_component_id, new_tID, new_corder);
+            old_array = tnecs_world_component_array(world, old_component_id, old_tID, old_corder);
 
             component_bytesize = world->components.bytesizes[old_component_id];
             assert(component_bytesize > 0);
@@ -898,8 +898,7 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
             chunk_order--;
         }
         tnecs_chunk *top_chunk          = &chunks[chunk_order];
-        tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(world, current_component_id, old_tID, chunk_order);
-
+        tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
 
         assert(comp_ptr != NULL);
 
@@ -1581,7 +1580,7 @@ void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const siz
     return(carr[corder].components);
 }
 
-void *tnecs_chunk_component_array(tnecs_world *world, const size_t cID, const size_t tID, const size_t chunkOrder) {
+void *tnecs_world_component_array(tnecs_world *world, const size_t cID, const size_t tID, const size_t chunkOrder) {
     // Note: Array is valid from entity_order =
     // [entities_len * chunk_order, (entities_len + 1) * chunk_order,]
     // Array index is tnecs_chunk_component_order(entity_order)
@@ -1592,12 +1591,17 @@ void *tnecs_chunk_component_array(tnecs_world *world, const size_t cID, const si
     if (cID >= world->components.num) 
         return(NULL);
 
-    // There is not component array at corder
-    if (corder >= chunk->num_components)
-        return(NULL);
-
     size_t       compOrder  = world->bytype.components_order[tID][cID];
-    tnecs_chunk *chunk      = world->bytype.chunks[tID][chunkOrder];
+    tnecs_chunk *chunk      = &world->bytype.chunks[tID][chunkOrder];
+
+    return(tnecs_chunk_component_array(chunk, compOrder));
+
+}
+
+void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t compOrder) {
+    // There is not component array at corder
+    if (compOrder >= chunk->num_components)
+        return(NULL);
 
     size_t *header              = tnecs_chunk_mem(chunk);
     size_t cumul_bytesize       = (compOrder == 0) ? 0 : header[compOrder - 1];
