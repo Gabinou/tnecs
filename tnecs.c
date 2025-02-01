@@ -1565,13 +1565,30 @@ tnecs_chunk *tnecs_chunk_top(tnecs_world *world, size_t entity_order, size_t tID
     return(&world->bytype.chunks[tID][chunk_order]);
 }
 
+void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const size_t tID) {
+
+    if ((cID == TNECS_NULL) && (tID == TNECS_NULL)) 
+        return(NULL);
+
+    if (cID >= world->components.num) 
+        return(NULL);
+
+    tnecs_carr *carr    = world->bytype.components[tID];
+    size_t      corder  = world->bytype.components_order[tID][cID];
+
+    return(carr[corder].components);
+}
+
 void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t corder) {
     // Note: Array is valid from entity_order =
     // [entities_len * chunk_order, (entities_len + 1) * chunk_order,]
     // Array index is tnecs_chunk_component_order(entity_order)
 
+    // if (cID >= world->components.num) 
+    //     return(NULL);
+
     // There is not component array at corder
-    if (corder == chunk->num_components)
+    if (corder >= chunk->num_components)
         return(NULL);
 
     size_t *header              = tnecs_chunk_mem(chunk);
