@@ -896,10 +896,11 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
     size_t old_comp_num     = world->bytype.num_components[old_tID];
     tnecs_chunk *chunks     = world->bytype.chunks[old_tID];
     assert(old_comp_num == chunks->num_components);
+    size_t chunk_order  = tnecs_chunk_order(chunks, entity_order_old);
+    assert(chunk_order < tnecs_chunk_len(chunks, world, old_tID));
 
     for (size_t corder = 0; corder < old_comp_num; corder++) {
         size_t current_component_id = world->bytype.components_id[old_tID][corder];
-        size_t chunk_order  = tnecs_chunk_order(chunks, entity_order_old);
         // if (chunks[chunk_order].len_entities == 0) {
         //     if (chunk_order <= 0) {
         //         // No component to delete in chunk
@@ -907,9 +908,11 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
         //     }
         //     chunk_order--;
         // }
-        assert(chunk_order < tnecs_chunk_len(chunks, world, old_tID));
 
         // tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
+        // printf();
+        assert(chunks->num_components == chunks[chunk_order].num_components);
+
         tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(&chunks[chunk_order], corder);
         assert(comp_ptr != NULL);
 
@@ -1423,7 +1426,8 @@ b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder)
     for (size_t corder = old_len; corder < new_len; corder++) {
         assert(world->bytype.chunks[tID][corder].len_entities == 0);
         TNECS_CHECK_CALL(tnecs_chunk_init(&world->bytype.chunks[tID][corder], world, world->bytype.id[tID]));
-        assert(world->bytype.chunks[tID][corder].len_entities > 0);
+        assert(world->bytype.chunks[tID][corder].len_entities == world->bytype.chunks[tID]->len_entities);
+        assert(world->bytype.chunks[tID][corder].num_components == world->bytype.chunks[tID]->num_components);
     }
 
     return(1);
@@ -1606,14 +1610,19 @@ void *tnecs_world_component_array(tnecs_world *world, const size_t cID, const si
 }
 
 void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t compOrder) {
-    if (chunk == NULL)
+    if (chunk == NULL) {
+        printf("NULL CHUNK \n");
         return(NULL);
+    } 
 
     // There is not component array at corder
-    if (compOrder >= chunk->num_components)
+    if (compOrder >= chunk->num_components) {
+        printf("COMP ORDER \n");
         return(NULL);
+    }
 
     size_t *header              = tnecs_chunk_mem(chunk);
+    assert(header != NULL);
     size_t cumul_bytesize       = (compOrder == 0) ? 0 : header[compOrder - 1];
     size_t header_offset        = chunk->num_components * sizeof(size_t);
     size_t components_offset    = cumul_bytesize * chunk->len_entities;
