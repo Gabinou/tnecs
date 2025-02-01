@@ -320,8 +320,10 @@ void SystemMoveDoNothing(struct tnecs_system_input *input) {
     void *ptr = NULL;
     #ifndef TNECS_CHUNK
     ptr = TNECS_COMPONENTS_LIST(input, doesnotexist_ID);
-    lok(ptr == NULL);
+    #else
+    ptr = TNECS_COMPONENTS_LIST(input, doesnotexist_ID, 0);
     #endif /* TNECS_CHUNK */
+    lok(ptr == NULL);
 }
 
 /*******************************ACTUAL TESTS***************************/

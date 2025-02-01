@@ -27,7 +27,7 @@
     #define log2(x) (log(x) * 1.44269504088896340736)
 #endif
 
-// #define TNECS_CHUNK
+#define TNECS_CHUNK
 
 /************************ DEBUGGING *************************/
 #define TNECS_CHECK_ALLOC(name) do {\
@@ -188,7 +188,7 @@ typedef struct tnecs_archetype {
     tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
 
     size_t            *len_chunks;          // [archetype_id]
-    tnecs_chunk     **chunks;               // [chunk_order_bytype][component_order_bytype]
+    tnecs_chunk      **chunks;              // [chunk_order_bytype][component_order_bytype]
     tnecs_carr       **components;          // [archetype_id][component_order_bytype]
 } tnecs_archetype;
 
@@ -319,7 +319,7 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 #define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
 
 #ifdef TNECS_CHUNK
-#define TNECS_COMPONENTS_LIST(input, compID, chunkOrder) tnecs_world_component_array(input->world, cID, input->entity_archetype_id, chunkOrder)
+#define TNECS_COMPONENTS_LIST(input, cID, chunkOrder) tnecs_world_component_array(input->world, cID, input->entity_archetype_id, chunkOrder)
 #else
 #define TNECS_COMPONENTS_LIST(input, cID)  tnecs_carr_component_array(input->world, cID, input->entity_archetype_id)
 #endif /* TNECS_CHUNK */
