@@ -845,8 +845,8 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
             if (old_component_id != new_component_id)
                 continue;
 
-            new_top_chunk = tnecs_chunk_top(world, new_entity_order, old_tID);
-            old_top_chunk = tnecs_chunk_top(world, old_entity_order, new_tID);
+            new_top_chunk = tnecs_chunk_top(world, new_entity_order, new_tID);
+            old_top_chunk = tnecs_chunk_top(world, old_entity_order, old_tID);
             assert(new_top_chunk->num_components == num_comp_new);
             assert(old_top_chunk->num_components == num_comp_old);
 
