@@ -629,6 +629,41 @@ void tnecs_test_component_add() {
     lok(temp_unit->str == 8);
 }
 
+void tnecs_test_entity_destroy() {
+    /* Check that deleting an entity does NOT change other entity data. */
+    int Position_ID = 1;
+    int Unit_ID     = 3;
+
+    int Silou_x     = 10;
+    int Pirou_x     = 20;
+    int Chasse_x    = 30;
+
+    tnecs_entity Silou  = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_entity Pirou  = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_entity Chasse = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+
+    struct Position *position = tnecs_get_component(test_world, Silou, Position_ID);
+    position->x = Silou_x;
+    position = tnecs_get_component(test_world, Pirou, Position_ID);
+    position->x = Pirou_x;
+    position = tnecs_get_component(test_world, Chasse, Position_ID);
+    position->x = Chasse_x;
+
+    tnecs_entity_destroy(test_world, Silou);
+
+    position = tnecs_get_component(test_world, Pirou, Position_ID);
+    lok(position->x == Pirou_x);
+    position = tnecs_get_component(test_world, Chasse, Position_ID);
+    lok(position->x == Chasse_x);
+
+    tnecs_entity_destroy(test_world, Pirou);
+
+    position = tnecs_get_component(test_world, Chasse, Position_ID);
+    lok(position->x == Chasse_x);
+
+}
+
+
 void tnecs_test_component_remove() {
     int Position_ID = 1;
     int Velocity_ID = 2;
@@ -874,7 +909,6 @@ void tnecs_test_world_progress() {
     tnecs_grow_phase(test_world);
     tnecs_grow_system(test_world);
     tnecs_grow_archetype(test_world);
-
 
     TNECS_REGISTER_COMPONENT(inclusive_world, Position);
     TNECS_REGISTER_COMPONENT(inclusive_world, Velocity);
@@ -1278,6 +1312,7 @@ int main() {
     lrun("c_regis",    tnecs_test_component_registration);
     lrun("s_regis",    tnecs_test_system_registration);
     lrun("e_create",   tnecs_test_entity_creation);
+    lrun("e_destroy",  tnecs_test_entity_destroy);
     lrun("c_add",      tnecs_test_component_add);
     lrun("c_remove",   tnecs_test_component_remove);
     lrun("c_array",    tnecs_test_component_array);

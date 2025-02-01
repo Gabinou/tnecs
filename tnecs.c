@@ -886,8 +886,7 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
     return(1);
 }
 
-b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
-                         tnecs_component old_archetype) {
+b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_component old_archetype) {
     /* Delete ALL components from componentsbytype at old entity order */
     size_t old_tID          = tnecs_archetypeid(world, old_archetype);
     size_t entity_order_old = world->entities.orders[entity];
@@ -905,12 +904,7 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity,
         // }
         assert(chunk_order < tnecs_chunk_len(chunks, world, old_tID));
 
-        // tnecs_chunk *top_chunk          = &chunks[chunk_order];
-
-        // tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
         tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
-                                    // tnecs_chunk_component_array(top_chunk, const size_t compOrder) {
-
         assert(comp_ptr != NULL);
 
 
