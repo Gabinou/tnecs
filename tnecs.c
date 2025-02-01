@@ -869,9 +869,8 @@ b32 tnecs_component_migrate(tnecs_world *world, tnecs_entity entity,
 
 b32 tnecs_chunk_new(tnecs_world *world, size_t num_components,
                               tnecs_component archetype) {
-    tnecs_chunk *temp_comparray;
-    temp_comparray = calloc(num_components, sizeof(tnecs_chunk));
-    TNECS_CHECK_ALLOC(temp_comparray);
+    tnecs_chunk *comp_arr = calloc(num_components, sizeof(tnecs_chunk));
+    TNECS_CHECK_ALLOC(comp_arr);
 
     tnecs_component archetype_reduced = archetype, archetype_added = 0, type_toadd;
     tnecs_component tID = tnecs_archetypeid(world, archetype);
@@ -884,16 +883,16 @@ b32 tnecs_chunk_new(tnecs_world *world, size_t num_components,
         id_toadd = TNECS_COMPONENT_TYPE2ID(type_toadd);
         assert(id_toadd > 0);
         assert(id_toadd < world->components.num);
-        tnecs_chunk_init(world, &temp_comparray[num_flags], id_toadd);
+        tnecs_chunk_init(world, &comp_arr[num_flags], id_toadd);
         num_flags++;
         archetype_added += type_toadd;
     }
-    world->bytype.components[tID] = temp_comparray;
+    world->bytype.components[tID] = comp_arr;
     assert(id_toadd < world->components.num);
     return ((archetype_added == archetype) && (num_flags == num_components));
 }
 
-b32 tnecs_chunk_init(tnecs_world *world, tnecs_chunk *in_array, size_t cID) {
+b32 tnecs_chunk_init(tnecs_world *world, tnecs_chunk *comp_arr, size_t cID) {
     assert(cID > 0);
     assert(cID < world->components.num);
     tnecs_component in_type = TNECS_COMPONENT_ID2TYPE(cID);
@@ -901,11 +900,11 @@ b32 tnecs_chunk_init(tnecs_world *world, tnecs_chunk *in_array, size_t cID) {
     size_t bytesize = world->components.bytesizes[cID];
     assert(bytesize > 0);
 
-    in_array->type          = in_type;
-    in_array->num           = 0;
-    in_array->len           = TNECS_INIT_COMPONENT_LEN;
-    in_array->components    = calloc(TNECS_INIT_COMPONENT_LEN, bytesize);
-    TNECS_CHECK_ALLOC(in_array->components);
+    comp_arr->type          = in_type;
+    comp_arr->num           = 0;
+    comp_arr->len           = TNECS_INIT_COMPONENT_LEN;
+    comp_arr->components    = calloc(TNECS_INIT_COMPONENT_LEN, bytesize);
+    TNECS_CHECK_ALLOC(comp_arr->components);
     return (1);
 }
 
