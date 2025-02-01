@@ -703,7 +703,7 @@ void *tnecs_get_component(tnecs_world *world, tnecs_entity eID, tnecs_component 
     tnecs_carr *comp_array = &world->bytype.components[tID][component_order];
     assert(comp_array != NULL);
     tnecs_byte *temp_component_bytesptr = (tnecs_byte *)(comp_array->components);
-    out = temp_component_bytesptr + (bytesize * entity_order)
+    out = temp_component_bytesptr + (bytesize * entity_order);
 #endif /* TNECS_CHUNK */
 
     return (out);
