@@ -230,6 +230,7 @@ void SystemMove2(struct tnecs_system_input *input) {
     #endif /* TNECS_CHUNK */
     }
 }
+
 void SystemMovePhase1(struct tnecs_system_input *input) {
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
@@ -312,10 +313,10 @@ void SystemMove(struct tnecs_system_input *input) {
         p[ent].y = p[ent].y + v[ent].vy;
     #endif /* TNECS_CHUNK */
     }
+}
 
-    // for (int i = 0; i < input->num_entities; i++) {
+void SystemMoveDoNothing(struct tnecs_system_input *in_input) {
 
-    // }
 }
 
 /*******************************ACTUAL TESTS***************************/
@@ -666,7 +667,7 @@ void tnecs_test_component_array() {
     lok(TNECS_REGISTER_COMPONENT(arr_world, Velocity_ID));
     lok(TNECS_REGISTER_COMPONENT(arr_world, Sprite_ID));
     lok(TNECS_REGISTER_COMPONENT(arr_world, Unit_ID));
-    TNECS_REGISTER_SYSTEM(arr_world, SystemMove, 0, 0, Unit_ID); // 4X
+    TNECS_REGISTER_SYSTEM(arr_world, SystemMoveDoNothing, 0, 0, Unit_ID); // 4X
     TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase1, 0, 0, Unit_ID, Velocity_ID);  // 2X
     TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase2, 0, 0, Unit_ID, Position_ID); // 2X
     TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase4, 0, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
@@ -823,7 +824,7 @@ void tnecs_test_world_progress() {
 
     lok(test_world->systems_torun.num == 5);
     tnecs_system_ptr *torun_arr = test_world->systems_torun.arr;
-    lok(torun_arr[0] == &SystemMove);
+    lok(torun_arr[0] == &SystemMoveDoNothing);
     lok(torun_arr[1] == &SystemMovePhase1);
     lok(torun_arr[2] == &SystemMovePhase2);
     lok(torun_arr[3] == &SystemMovePhase2);
@@ -843,7 +844,7 @@ void tnecs_test_world_progress() {
     lok(test_world->systems_torun.num == 5);
     torun_arr = test_world->systems_torun.arr;
 
-    lok(torun_arr[0] == &SystemMove);
+    lok(torun_arr[0] == &SystemMoveDoNothing);
     lok(torun_arr[1] == &SystemMovePhase1);
     lok(torun_arr[2] == &SystemMovePhase2);
     lok(torun_arr[3] == &SystemMovePhase2);
@@ -872,7 +873,7 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_COMPONENT(inclusive_world, Velocity);
     TNECS_REGISTER_COMPONENT(inclusive_world, Sprite);
     TNECS_REGISTER_COMPONENT(inclusive_world, Unit);
-    TNECS_REGISTER_SYSTEM(inclusive_world, SystemMove, 0, 0, Unit_ID); // 4X
+    TNECS_REGISTER_SYSTEM(inclusive_world, SystemMoveDoNothing, 0, 0, Unit_ID); // 4X
     TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase1, 0, 0, Unit_ID, Velocity_ID);  // 2X
     TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase2, 0, 0, Unit_ID, Position_ID); // 2X
     TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase4, 0, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
@@ -958,10 +959,10 @@ void tnecs_test_world_progress() {
 
     lok(inclusive_world->systems_torun.num == 9);
     torun_arr = inclusive_world->systems_torun.arr;
-    lok(torun_arr[0] == &SystemMove);
-    lok(torun_arr[1] == &SystemMove);
-    lok(torun_arr[2] == &SystemMove);
-    lok(torun_arr[3] == &SystemMove);
+    lok(torun_arr[0] == &SystemMoveDoNothing);
+    lok(torun_arr[1] == &SystemMoveDoNothing);
+    lok(torun_arr[2] == &SystemMoveDoNothing);
+    lok(torun_arr[3] == &SystemMoveDoNothing);
     lok(torun_arr[4] == &SystemMovePhase1);
     lok(torun_arr[5] == &SystemMovePhase1);
     lok(torun_arr[6] == &SystemMovePhase2);
@@ -980,7 +981,7 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_COMPONENT(inclusive_world2, Unit);
     TNECS_REGISTER_COMPONENT(inclusive_world2, Sprite);
 
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMove, 2, 0, Unit_ID); // 4X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMoveDoNothing, 2, 0, Unit_ID); // 4X
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase1, 1, 0, Unit_ID, Velocity_ID);  // 2X
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2, 4, 0, Unit_ID, Position_ID); // 2X
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase4, 3, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
@@ -1011,10 +1012,10 @@ void tnecs_test_world_progress() {
     torun_arr = inclusive_world2->systems_torun.arr; 
     lok(torun_arr[0]  == &SystemMovePhase1);
     lok(torun_arr[1]  == &SystemMovePhase1);
-    lok(torun_arr[2]  == &SystemMove);
-    lok(torun_arr[3]  == &SystemMove);
-    lok(torun_arr[4]  == &SystemMove);
-    lok(torun_arr[5]  == &SystemMove);
+    lok(torun_arr[2]  == &SystemMoveDoNothing);
+    lok(torun_arr[3]  == &SystemMoveDoNothing);
+    lok(torun_arr[4]  == &SystemMoveDoNothing);
+    lok(torun_arr[5]  == &SystemMoveDoNothing);
     lok(torun_arr[6]  == &SystemMovePhase4);
     lok(torun_arr[7]  == &SystemMovePhase2);
     lok(torun_arr[8]  == &SystemMovePhase2);
