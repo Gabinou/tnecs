@@ -540,7 +540,7 @@ b32 tnecs_entities_open_reuse(tnecs_world *world) {
 
     for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities.num; i++) {
         if ((world->entities.id[i] == TNECS_NULL) && !tnecs_entity_isOpen(world, i)) {
-            tnecs_grow_entities_open(world);
+            TNECS_CHECK_CALL(tnecs_grow_entities_open(world));
             tnecs_entity *arr = world->entities_open.arr;
             arr[world->entities_open.num++] = i;
         }
@@ -586,7 +586,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     tnecs_component archetype   = world->entities.archetypes[entity];
 
     /* Delete components */
-    tnecs_component_del(world, entity, archetype);
+    TNECS_CHECK_CALL(tnecs_component_del(world, entity, archetype));
 
     #ifndef NDEBUG     
     size_t entity_order         = world->entities.orders[entity];
@@ -606,7 +606,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     // user can call tnecs_entities_open_reuse to reuse entities manually.
     if (world->reuse_entities) {
         /* Add deleted entity to open entities */
-        tnecs_grow_entities_open(world);
+        TNECS_CHECK_CALL(tnecs_grow_entities_open(world));
         tnecs_entity *arr = world->entities_open.arr;
         arr[world->entities_open.num++] = entity;
     }
@@ -889,11 +889,16 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
 b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_component old_archetype) {
     /* Delete ALL components from componentsbytype at old entity order */
     size_t old_tID          = tnecs_archetypeid(world, old_archetype);
+    if (old_tID == TNECS_NULL) 
+        return(0);
+
     size_t entity_order_old = world->entities.orders[entity];
     size_t old_comp_num     = world->bytype.num_components[old_tID];
+    tnecs_chunk *chunks     = world->bytype.chunks[old_tID];
+    assert(old_comp_num == chunks->num_components);
+
     for (size_t corder = 0; corder < old_comp_num; corder++) {
         size_t current_component_id = world->bytype.components_id[old_tID][corder];
-        tnecs_chunk *chunks = world->bytype.chunks[old_tID];
         size_t chunk_order  = tnecs_chunk_order(chunks, entity_order_old);
         // if (chunks[chunk_order].len_entities == 0) {
         //     if (chunk_order <= 0) {
@@ -904,7 +909,8 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
         // }
         assert(chunk_order < tnecs_chunk_len(chunks, world, old_tID));
 
-        tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
+        // tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
+        tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(&chunks[chunk_order], corder);
         assert(comp_ptr != NULL);
 
 

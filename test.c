@@ -660,9 +660,7 @@ void tnecs_test_entity_destroy() {
 
     position = tnecs_get_component(test_world, Chasse, Position_ID);
     lok(position->x == Chasse_x);
-
 }
-
 
 void tnecs_test_component_remove() {
     int Position_ID = 1;
