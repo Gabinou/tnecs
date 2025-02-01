@@ -853,8 +853,11 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
             new_chunk_component_order = tnecs_chunk_component_order(new_top_chunk, new_entity_order);
             old_chunk_component_order = tnecs_chunk_component_order(old_top_chunk, old_entity_order);
 
-            new_array = tnecs_world_component_array(world, new_component_id, new_tID, new_chunk_component_order);
-            old_array = tnecs_world_component_array(world, old_component_id, old_tID, old_chunk_component_order);
+            assert(old_chunk_component_order < old_top_chunk->num_components);
+            assert(new_chunk_component_order < new_top_chunk->num_components);
+
+            new_array = tnecs_chunk_component_array(new_top_chunk, new_chunk_component_order);
+            old_array = tnecs_chunk_component_array(old_top_chunk, old_chunk_component_order);
 
             component_bytesize = world->components.bytesizes[old_component_id];
             assert(component_bytesize > 0);
@@ -1603,11 +1606,10 @@ void *tnecs_world_component_array(tnecs_world *world, const size_t cID, const si
 }
 
 void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t compOrder) {
-    // There is not component array at corder
-
     if (chunk == NULL)
         return(NULL);
 
+    // There is not component array at corder
     if (compOrder >= chunk->num_components)
         return(NULL);
 
