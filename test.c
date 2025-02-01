@@ -829,7 +829,7 @@ void tnecs_test_world_progress() {
 
     lok(test_world->systems_torun.num == 5);
     tnecs_system_ptr *torun_arr = test_world->systems_torun.arr;
-    lok(torun_arr[0] == &SystemMoveDoNothing);
+    lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
     lok(torun_arr[2] == &SystemMovePhase2);
     lok(torun_arr[3] == &SystemMovePhase2);
@@ -849,7 +849,7 @@ void tnecs_test_world_progress() {
     lok(test_world->systems_torun.num == 5);
     torun_arr = test_world->systems_torun.arr;
 
-    lok(torun_arr[0] == &SystemMoveDoNothing);
+    lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
     lok(torun_arr[2] == &SystemMovePhase2);
     lok(torun_arr[3] == &SystemMovePhase2);
