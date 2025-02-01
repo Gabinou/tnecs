@@ -856,8 +856,8 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
             assert(old_chunk_component_order < old_top_chunk->num_components);
             assert(new_chunk_component_order < new_top_chunk->num_components);
 
-            new_array = tnecs_chunk_component_array(new_top_chunk, new_chunk_component_order);
-            old_array = tnecs_chunk_component_array(old_top_chunk, old_chunk_component_order);
+            new_array = tnecs_chunk_component_array(new_top_chunk, );
+            old_array = tnecs_chunk_component_array(old_top_chunk, );
 
             component_bytesize = world->components.bytesizes[old_component_id];
             assert(component_bytesize > 0);
