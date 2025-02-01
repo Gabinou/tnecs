@@ -1567,7 +1567,7 @@ tnecs_chunk *tnecs_chunk_top(tnecs_world *world, size_t entity_order, size_t tID
 
 void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const size_t tID) {
 
-    if ((cID == TNECS_NULL) && (tID == TNECS_NULL)) 
+    if ((cID == TNECS_NULL) || (tID == TNECS_NULL)) 
         return(NULL);
 
     if (cID >= world->components.num) 
