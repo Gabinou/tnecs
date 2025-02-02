@@ -875,7 +875,7 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
             assert(new_component_ptr != NULL);
             assert(new_component_ptr != old_component_ptr);
             
-            void *out = memcpy(new_component_ptr, old_component_ptr, component_bytesize);
+            void *out = memmove(new_component_ptr, old_component_ptr, component_bytesize);
             assert(out == new_component_ptr);
             break;
         }
@@ -890,7 +890,7 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
         return(1);
 
     size_t entity_order_del = world->entities.orders[entity];
-    size_t entity_order_top = world->bytype.num_entities[tID];
+    size_t entity_order_top = world->bytype.num_entities[tID] - 1;
     assert(entity_order_top >= entity_order_del);
 
     size_t old_comp_num     = world->bytype.num_components[tID];
@@ -916,16 +916,14 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
         size_t current_component_id = world->bytype.components_id[tID][carrorder];
         size_t bytesize             = world->components.bytesizes[current_component_id];
 
-        tnecs_byte  *comp_del = tnecs_chunk_component_array(chunk_del, carrorder);
-        tnecs_byte  *comp_top = tnecs_chunk_component_array(chunk_top, carrorder);
+        tnecs_byte *comp_del = tnecs_chunk_component_array(chunk_del, carrorder);
+        tnecs_byte *comp_top = tnecs_chunk_component_array(chunk_top, carrorder);
 
         // Custom tnecs_chunk scrambler. Needed elsewhere? 
         if ((comp_del != comp_top) || (component_order_del != component_order_top))
             memmove(comp_del + (component_order_del * bytesize), comp_top + (component_order_top * bytesize), bytesize);
-            // memmove(comp_top + (component_order_top * bytesize), comp_del + (component_order_del * bytesize), bytesize);
 
-        // memset(comp_top + (component_order_top * bytesize), TNECS_NULL, bytesize);
-
+        memset(comp_top + (component_order_top * bytesize), TNECS_NULL, bytesize);
     }
     return(1);
 }
@@ -1026,10 +1024,10 @@ b32 tnecs_component_carr_copy(tnecs_world *world, tnecs_entity entity,
             assert(new_component_ptr != old_component_ptr);
 
             #ifndef NDEBUG 
-            void *out = memcpy(new_component_ptr, old_component_ptr, component_bytesize);
+            void *out = memmove(new_component_ptr, old_component_ptr, component_bytesize);
             assert(out == new_component_ptr);
             #else
-            memcpy(new_component_ptr, old_component_ptr, component_bytesize);
+            memmove(new_component_ptr, old_component_ptr, component_bytesize);
             #endif /* NDEBUG */ 
             break;
         }
