@@ -748,6 +748,9 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
     tnecs_arrdel(world->bytype.entities[archetype_old_id], entity_order_old, old_num,
                  sizeof(**world->bytype.entities));
 
+    /* This is carr scrambling */
+    // What should chunk scrambling be?
+    //  - Leaves no holes.
     if (top_entity != entity) {
         world->entities.orders[top_entity] = entity_order_old;
         assert(world->bytype.entities[archetype_old_id][entity_order_old] == top_entity);
