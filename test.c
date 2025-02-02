@@ -672,6 +672,9 @@ void tnecs_test_entity_destroy() {
     lok(position->x == Chasse_x);
     position = tnecs_get_component(test_world, Michael, Position_ID);
     lok(position->x == Michael_x);
+    printf("%d %d \n", position->x, Michael_x);
+    printf("%d %d \n", position->x, Michael_x);
+    printf("%d %d \n", position->x, Michael_x);
 
     tnecs_entity_destroy(test_world, Michael);
 
@@ -686,6 +689,10 @@ void tnecs_test_entity_destroy() {
     lok(position->x == Silou_x);
     position = tnecs_get_component(test_world, Chasse, Position_ID);
     lok(position->x == Chasse_x);
+    printf("%d %d \n", position->x, Chasse_x);
+    printf("%d %d \n", position->x, Chasse_x);
+    printf("%d %d \n", position->x, Chasse_x);
+
 }
 
 void tnecs_test_component_remove() {

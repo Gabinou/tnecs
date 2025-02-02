@@ -283,7 +283,7 @@ b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
 
     /* Running the non-exclusive/inclusive custom system */
     for (size_t tsub = 0; tsub < world->bytype.num_archetype_ids[tID]; tsub++) {
-        input.entity_archetype_id    = world->bytype.archetype_id[tID][tsub];
+        input.entity_archetype_id   = world->bytype.archetype_id[tID][tsub];
         input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
         custom_system(&input);
     }
@@ -317,7 +317,7 @@ b32 tnecs_system_run(tnecs_world *world, size_t in_system_id,
 
     /* Running the inclusive systems in current phase */
     for (size_t tsub = 0; tsub < world->bytype.num_archetype_ids[system_archetype_id]; tsub++) {
-        input.entity_archetype_id    = world->bytype.archetype_id[system_archetype_id][tsub];
+        input.entity_archetype_id   = world->bytype.archetype_id[system_archetype_id][tsub];
         input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
         while (world->systems_torun.num >= (world->systems_torun.len - 1)) {
             TNECS_CHECK_CALL(tnecs_grow_torun(world));
@@ -891,6 +891,7 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
 
     size_t entity_order_del = world->entities.orders[entity];
     size_t entity_order_top = world->bytype.num_entities[tID];
+    assert(entity_order_top >= entity_order_del);
 
     size_t old_comp_num     = world->bytype.num_components[tID];
     tnecs_chunk *chunks     = world->bytype.chunks[tID];
@@ -913,16 +914,17 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
         // Overwrite component at del with component at top
 
         size_t current_component_id = world->bytype.components_id[tID][carrorder];
-        size_t bytesize         = world->components.bytesizes[current_component_id];
+        size_t bytesize             = world->components.bytesizes[current_component_id];
 
-        tnecs_byte  *comp_del           = tnecs_chunk_component_array(chunk_del, carrorder);
-        tnecs_byte  *comp_top           = tnecs_chunk_component_array(chunk_top, carrorder);
+        tnecs_byte  *comp_del = tnecs_chunk_component_array(chunk_del, carrorder);
+        tnecs_byte  *comp_top = tnecs_chunk_component_array(chunk_top, carrorder);
 
         // Custom tnecs_chunk scrambler. Needed elsewhere? 
         if ((comp_del != comp_top) || (component_order_del != component_order_top))
             memmove(comp_del + (component_order_del * bytesize), comp_top + (component_order_top * bytesize), bytesize);
+            // memmove(comp_top + (component_order_top * bytesize), comp_del + (component_order_del * bytesize), bytesize);
 
-        memset(comp_top + (component_order_top * bytesize), TNECS_NULL, bytesize);
+        // memset(comp_top + (component_order_top * bytesize), TNECS_NULL, bytesize);
 
     }
     return(1);
