@@ -133,7 +133,7 @@ static int lfails = 0;
         const clock_t start = clock();\
         dupprintf(globalf,"\t%-14s", name);\
         test();\
-        dupprintf(globalf,"pass:%2d   fail:%2d   %4dms\n",\
+        dupprintf(globalf,"pass:%6d\tfail:%6d\t%4dms\n",\
                   (ltests-ts)-(lfails-fs), lfails-fs,\
                   (int)((clock() - start) * 1000 / CLOCKS_PER_SEC));\
     } while (0)
@@ -1346,7 +1346,7 @@ void test_log2() {
 
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
-    dupprintf(globalf, "\n --- tnecs test start ---\n\n");
+    dupprintf(globalf, "\n --- tnecs test start ---\n");
     lrun("utilities",  tnecs_test_utilities);
     lrun("log2",       test_log2);
     lrun("c_regis",    tnecs_test_component_registration);
