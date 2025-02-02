@@ -28,7 +28,10 @@
 #endif
 
 // #define TNECS_CHUNK
-// Chunks
+// Chunks makes stepping 3x slower, but world destroy 2/3 faster.
+// Only at VERY HIGH ENTITY COUNT > 1M.
+// Everything else is the same.
+
 
 /************************ DEBUGGING *************************/
 #define TNECS_CHECK_ALLOC(name) do {\
