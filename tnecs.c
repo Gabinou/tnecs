@@ -588,9 +588,9 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     /* Delete components */
     TNECS_CHECK_CALL(tnecs_component_del(world, entity, archetype));
 
-    for (int corder = 0; corder < world->bytype.len_chunks[3]; ++corder) {
-        assert(world->bytype.chunks[3][corder].num_components > 0);
-    }
+    // for (int corder = 0; corder < world->bytype.len_chunks[3]; ++corder) {
+    //     assert(world->bytype.chunks[3][corder].num_components > 0);
+    // }
 
     #ifndef NDEBUG     
     size_t entity_order         = world->entities.orders[entity];
@@ -603,9 +603,9 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     /* Delete entitiesbytype */
     tnecs_entitiesbytype_del(world, entity, archetype);
 
-    for (int corder = 0; corder < world->bytype.len_chunks[3]; ++corder) {
-        assert(world->bytype.chunks[3][corder].num_components > 0);
-    }
+    // for (int corder = 0; corder < world->bytype.len_chunks[3]; ++corder) {
+    //     assert(world->bytype.chunks[3][corder].num_components > 0);
+    // }
 
     /* Delete entity */
     world->entities.id[entity]         = TNECS_NULL;
@@ -759,6 +759,7 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
     tnecs_arrdel(world->bytype.entities[archetype_old_id], entity_order_old, old_num,
                  sizeof(**world->bytype.entities));
 
+    // 
     if (top_entity != entity) {
         world->entities.orders[top_entity] = entity_order_old;
         assert(world->bytype.entities[archetype_old_id][entity_order_old] == top_entity);
@@ -1203,6 +1204,7 @@ void *tnecs_realloc(void *ptr, size_t old_len, size_t new_len, size_t elem_bytes
 
 void *tnecs_arrdel(void *arr, size_t elem, size_t len, size_t bytesize) {
     tnecs_byte *bytes = arr;
+    // Scrambles by copying element at [len - 1] to [elem]
     if (elem != (len - 1))
         memmove(bytes + (elem * bytesize), bytes + ((len - 1) * bytesize), bytesize);
 

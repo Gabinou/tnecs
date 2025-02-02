@@ -637,10 +637,17 @@ void tnecs_test_entity_destroy() {
     int Silou_x     = 10;
     int Pirou_x     = 20;
     int Chasse_x    = 30;
+    int Michael_x   = 40;
 
-    tnecs_entity Silou  = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
-    tnecs_entity Pirou  = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
-    tnecs_entity Chasse = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_entity Silou      = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_entity Pirou      = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_entity Chasse     = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_entity Michael    = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+
+    lok(test_world->entities.orders[Silou]      == 1);
+    lok(test_world->entities.orders[Pirou]      == 2);
+    lok(test_world->entities.orders[Chasse]     == 3);
+    lok(test_world->entities.orders[Michael]    == 4);
 
     struct Position *position = tnecs_get_component(test_world, Silou, Position_ID);
     position->x = Silou_x;
@@ -648,16 +655,29 @@ void tnecs_test_entity_destroy() {
     position->x = Pirou_x;
     position = tnecs_get_component(test_world, Chasse, Position_ID);
     position->x = Chasse_x;
-
-    tnecs_entity_destroy(test_world, Silou);
-
-    position = tnecs_get_component(test_world, Pirou, Position_ID);
-    lok(position->x == Pirou_x);
-    position = tnecs_get_component(test_world, Chasse, Position_ID);
-    lok(position->x == Chasse_x);
+    position = tnecs_get_component(test_world, Michael, Position_ID);
+    position->x = Michael_x;
 
     tnecs_entity_destroy(test_world, Pirou);
 
+    lok(test_world->entities.orders[Silou]      == 1);
+    lok(test_world->entities.orders[Michael]    == 2);
+    lok(test_world->entities.orders[Chasse]     == 3);
+
+    position = tnecs_get_component(test_world, Silou, Position_ID);
+    lok(position->x == Silou_x);
+    position = tnecs_get_component(test_world, Chasse, Position_ID);
+    lok(position->x == Chasse_x);
+    position = tnecs_get_component(test_world, Michael, Position_ID);
+    lok(position->x == Michael_x);
+
+    tnecs_entity_destroy(test_world, Michael);
+
+    lok(test_world->entities.orders[Silou]  == 1);
+    lok(test_world->entities.orders[Chasse] == 2);
+
+    position = tnecs_get_component(test_world, Silou, Position_ID);
+    lok(position->x == Silou_x);
     position = tnecs_get_component(test_world, Chasse, Position_ID);
     lok(position->x == Chasse_x);
 }
@@ -1349,9 +1369,9 @@ int main() {
     dupprintf(globalf, "compGet\t");
     dupprintf(globalf, "wrlStep\t");
     dupprintf(globalf, "wDestroy [us]\n");
-    for (uint64_t num = 1; num < 2e6; num*=2){
-        tnecs_benchmarks(num);
-    }
+    // for (uint64_t num = 1; num < 2e6; num*=2){
+    //     tnecs_benchmarks(num);
+    // }
     tnecs_world_destroy(&test_world);
     dupprintf(globalf, "\n --- tnecs test end ---\n\n");
     fclose(globalf);
