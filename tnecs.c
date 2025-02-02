@@ -597,7 +597,7 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     #endif /* NDEBUG */ 
 
     /* Delete entitiesbytype */
-    tnecs_entitiesbytype_del(world, entity, archetype);
+    TNECS_CHECK_CALL(tnecs_entitiesbytype_del(world, entity, archetype));
 
     /* Delete entity */
     world->entities.id[entity]         = TNECS_NULL;
@@ -898,18 +898,7 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
 
     for (size_t corder = 0; corder < old_comp_num; corder++) {
         size_t current_component_id = world->bytype.components_id[old_tID][corder];
-        // if (chunks[chunk_order].len_entities == 0) {
-        //     if (chunk_order <= 0) {
-        //         // No component to delete in chunk
-        //         return(1); 
-        //     }
-        //     chunk_order--;
-        // }
 
-        // tnecs_byte  *comp_ptr           = tnecs_world_component_array(world, current_component_id, old_tID, chunk_order);
-
-        // if (old_tID == 3)
-        // printf("%zu %zu %zu \n", chunk_order, chunks->num_components, chunks[chunk_order].num_components);
         assert(chunks->num_components == chunks[chunk_order].num_components);
 
         tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(&chunks[chunk_order], corder);

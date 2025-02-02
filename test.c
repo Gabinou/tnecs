@@ -1285,7 +1285,7 @@ void tnecs_benchmarks(uint64_t num) {
     #ifdef TNECS_CHUNK
     size_t tID = TNECS_COMPONENT_IDS2ARCHETYPEID(bench_world, Position2_ID, Unit2_ID);
     assert(bench_world->bytype.len_chunks[tID] > (ITERATIONS / 185));
-    
+
     for (int corder = 0; corder < bench_world->bytype.len_chunks[tID]; ++corder) {
         assert(bench_world->bytype.chunks[tID][corder].num_components > 0);
     }
@@ -1379,9 +1379,9 @@ int main() {
     dupprintf(globalf, "compGet\t");
     dupprintf(globalf, "wrlStep\t");
     dupprintf(globalf, "wDestroy [us]\n");
-    for (uint64_t num = 1; num < 2e6; num*=2) {
-        tnecs_benchmarks(num);
-    }
+    // for (uint64_t num = 1; num < 2e6; num *= 2)
+    //     tnecs_benchmarks(num);
+
     tnecs_world_destroy(&test_world);
     dupprintf(globalf, "\n --- tnecs test end ---\n\n");
     fclose(globalf);
