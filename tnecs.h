@@ -24,14 +24,8 @@
 #include <assert.h>
 #include <math.h>
 #ifndef log2 /* for tcc */
-    #define log2(x) (log(x) * 1.44269504088896340736)
+    #define log2(x) (log(x) * 1.44269504088896340736) /* log(x) / log(2) */
 #endif
-
-// #define TNECS_CHUNK
-// Chunks makes stepping 3x slower, but world destroy 2/3 faster.
-// Only at VERY HIGH ENTITY COUNT > 1M.
-// Everything else is the same.
-
 
 /************************ DEBUGGING *************************/
 #define TNECS_CHECK_ALLOC(name) do {\
@@ -73,7 +67,6 @@ enum TNECS {
     TNECS_INIT_SYSTEM_LEN       =        16,
     TNECS_INIT_ARCHETYPE_LEN    =        16,
     TNECS_COMPONENT_CAP         =        64,
-    TNECS_CHUNK_BYTESIZE        =     16384,
     TNECS_ENTITIES_CAP          = 100000000,
     TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 8 + 1,
     TNECS_ARRAY_GROWTH_FACTOR   =         2
@@ -117,23 +110,6 @@ typedef struct tnecs_carr { /* 1D array of components */
     size_t           len;
     void            *components;      /* [entity_order_bytype] */
 } tnecs_carr;
-
-// tnecs_Chunk: memory reserved for all components of archetype
-// - Each component has an array inside the chunk.
-// - Each chunk is 16kB total.
-// - Entity order determines if chunk is full
-#define TNECS_CHUNK_COMPONENTS_BYTESIZE (TNECS_CHUNK_BYTESIZE - 2 * sizeof(size_t))
-
-typedef struct tnecs_chunk {
-    size_t           num_components; 
-    size_t           len_entities; 
-
-    // Raw memory chunk:
-    //  - Header: cumulative bytesizes: components_num * size_t.
-    //  - Body:   components arrays, each: entities_len * component_bytesize.
-    //            component order -> tnecs_component_order.
-    tnecs_byte       mem[TNECS_CHUNK_COMPONENTS_BYTESIZE];
-} tnecs_chunk;
 
 typedef struct tnecs_array {
     void    *arr;
@@ -191,8 +167,6 @@ typedef struct tnecs_archetype {
     size_t           **components_order;    // [archetype_id][component_id]
     tnecs_component  **components_id;       // [archetype_id][component_order_bytype]
 
-    size_t            *len_chunks;          // [archetype_id]
-    tnecs_chunk      **chunks;              // [chunk_order_bytype][component_order_bytype]
     tnecs_carr       **components;          // [archetype_id][component_order_bytype]
 } tnecs_archetype;
 
@@ -290,19 +264,12 @@ b32 tnecs_component_copy(   tnecs_world     *w,     tnecs_entity    ent,
 b32 tnecs_component_migrate(tnecs_world     *w,     tnecs_entity    ent,
                             tnecs_component  of,    tnecs_component nf);
 
-b32 tnecs_component_carr_del(       tnecs_world     *w,     tnecs_entity    ent,
-                                    tnecs_component  of);
-b32 tnecs_component_carr_copy(      tnecs_world     *w,     tnecs_entity    ent,
-                                    tnecs_component  of,    tnecs_component nf);
-b32 tnecs_component_carr_migrate(   tnecs_world     *w,     tnecs_entity    ent,
-                                    tnecs_component  of,    tnecs_component nf);
-
-b32 tnecs_component_chunk_del(      tnecs_world     *w,     tnecs_entity    ent,
-                                    tnecs_component  of);
-b32 tnecs_component_chunk_copy(     tnecs_world     *w,     tnecs_entity    ent,
-                                    tnecs_component  of,    tnecs_component nf);
-b32 tnecs_component_chunk_migrate(  tnecs_world     *w,     tnecs_entity    ent,
-                                    tnecs_component  of,    tnecs_component nf);
+b32 tnecs_component_del(    tnecs_world     *w,     tnecs_entity    ent,
+                            tnecs_component  of);
+b32 tnecs_component_copy(   tnecs_world     *w,     tnecs_entity    ent,
+                            tnecs_component  of,    tnecs_component nf);
+b32 tnecs_component_migrate(tnecs_world     *w,     tnecs_entity    ent,
+                            tnecs_component  of,    tnecs_component nf);
 
 b32 tnecs_carr_new( tnecs_world *w, size_t         num_,   tnecs_component a);
 b32 tnecs_carr_init(tnecs_world *w, tnecs_carr   *array,  size_t          cID);
@@ -322,14 +289,10 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__))
 #define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
 
-#ifdef TNECS_CHUNK
-#define TNECS_COMPONENTS_LIST(input, cID, chunkOrder) tnecs_world_component_array(input->world, cID, input->entity_archetype_id, chunkOrder)
-#else
-#define TNECS_COMPONENTS_LIST(input, cID)  tnecs_carr_component_array(input->world, cID, input->entity_archetype_id)
-#endif /* TNECS_CHUNK */
-
-
 #define TNECS_SYSTEM_ID2ARCHETYPE(world, id) world->systems.archetypes[id]
+
+#define TNECS_COMPONENTS_LIST(input, cID)  tnecs_carr_component_array(input->world, cID, input->entity_archetype_id)
+void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const size_t tID);
 
 /********************** "DYNAMIC" ARRAYS ********************/
 void *tnecs_arrdel( void *arr, size_t elem,     size_t len,     size_t bytesize);
@@ -345,30 +308,8 @@ b32 tnecs_grow_entities_open(   tnecs_world *w);
 b32 tnecs_grow_system_byphase(  tnecs_world *w,     tnecs_phase  phase);
 b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_carr *comp_arr, 
                                 size_t      tID,    size_t       corder);
-b32 tnecs_grow_chunks(          tnecs_world *w, const size_t tID, const size_t corder);
 
 /********************* SET BIT COUNTING *********************/
 size_t setBits_KnR_u64(u64 flags);
-
-/******************** CHUNK **********************/
-b32 tnecs_chunk_new( tnecs_world *world, tnecs_component archetype);
-b32 tnecs_chunk_init(tnecs_chunk *chunk, tnecs_world *world, const tnecs_component archetype);
-tnecs_chunk *tnecs_chunk_arr(tnecs_world *world, const size_t tID);
-
-size_t   tnecs_chunk_len(tnecs_chunk *chunk, tnecs_world *world, const size_t tID);
-size_t  *tnecs_chunk_mem(   tnecs_chunk *chunk);
-size_t   tnecs_chunk_cumul_bytesize(    tnecs_chunk *chunk);
-void    *tnecs_carr_component_array(    tnecs_world *world, const size_t cID, const size_t tID);
-void    *tnecs_world_component_array(   tnecs_world *world, const size_t cID, const size_t tID, const size_t chunkOrder);
-void    *tnecs_chunk_component_array(   tnecs_chunk *chunk, const size_t compOrder);
-
-void    *tnecs_chunk_component(tnecs_chunk *chunks, const size_t eorder, const size_t corder);
-
-#define TNECS_SYSTEM_COMPONENT(input, eorder, component_name) tnecs_chunk_component(input->world->bytype.chunks[input->entity_archetype_id], eorder, input->world->bytype.components_order[input->entity_archetype_id][tnecs_component_name2id(input->world, #component_name)])
-
-tnecs_chunk *tnecs_chunk_top(            tnecs_world *world, const size_t eorder, const size_t tID);
-size_t       tnecs_chunk_order(          tnecs_chunk *chunk, const size_t eorder);
-size_t       tnecs_chunk_modulo(         tnecs_world *world, const size_t tID);
-size_t       tnecs_chunk_component_order(tnecs_chunk *chunk, const size_t eorder);
 
 #endif /* __TNECS_H__ */

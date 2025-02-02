@@ -206,28 +206,14 @@ void SystemMove2(struct tnecs_system_input *input) {
     int     Unit2_ID        = 2;
     struct  Position2   *p = NULL;
     struct  Unit2       *v = NULL;
-    #ifndef TNECS_CHUNK
-    p  = TNECS_COMPONENTS_LIST(input, Position2_ID);
-    v  = TNECS_COMPONENTS_LIST(input, Unit2_ID);
-    #endif /* TNECS_CHUNK */
+
+    p = TNECS_COMPONENTS_LIST(input, Position2_ID);
+    v = TNECS_COMPONENTS_LIST(input, Unit2_ID);
+
 
     for (int i = 0; i < input->num_entities; i++) {
-    #ifdef TNECS_CHUNK
-        size_t modulo = tnecs_chunk_modulo(input->world, input->entity_archetype_id); 
-        if ((i % modulo) == 0) {
-            size_t chunk_order = tnecs_chunk_order(tnecs_chunk_arr(input->world, input->entity_archetype_id), i);
-            p  = TNECS_COMPONENTS_LIST(input, Position2_ID, chunk_order);
-            v  = TNECS_COMPONENTS_LIST(input, Unit2_ID, chunk_order);
-        }
-    #endif /* TNECS_CHUNK */
-
-    #ifdef TNECS_CHUNK
-        p[i % modulo].x += v[i % modulo].hp;
-        p[i % modulo].y += v[i % modulo].str;
-    #else
         p[i].x += v[i].hp;
         p[i].y += v[i].str;
-    #endif /* TNECS_CHUNK */
     }
 }
 
@@ -282,21 +268,10 @@ void SystemMove(struct tnecs_system_input *input) {
     int Velocity_ID = 2;
     struct Position *p = NULL;
     struct Velocity *v = NULL;
-    #ifndef TNECS_CHUNK
     p = TNECS_COMPONENTS_LIST(input, Position_ID);
     v = TNECS_COMPONENTS_LIST(input, Velocity_ID);
-    #endif /* TNECS_CHUNK */
+
     for (int ent = 0; ent < input->num_entities; ent++) {
-
-        #ifdef TNECS_CHUNK
-        size_t modulo = tnecs_chunk_modulo(input->world, input->entity_archetype_id); 
-            if ((ent % modulo) == 0) {
-                size_t chunk_order = tnecs_chunk_order(tnecs_chunk_arr(input->world, input->entity_archetype_id), ent);
-                p  = TNECS_COMPONENTS_LIST(input, Position_ID, chunk_order);
-                v  = TNECS_COMPONENTS_LIST(input, Velocity_ID, chunk_order);
-            }
-        #endif /* TNECS_CHUNK */
-
         tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         lok(current_ent);
         lok(input->world->entities.id[input->world->bytype.entities[input->entity_archetype_id][ent]]
@@ -304,25 +279,15 @@ void SystemMove(struct tnecs_system_input *input) {
         lok(input->entity_archetype_id == tnecs_archetypeid(input->world,
                                                              input->world->entities.archetypes[current_ent]));
 
-
-    #ifdef TNECS_CHUNK
-        p[ent % modulo].x = p[ent % modulo].x + v[ent % modulo].vx;
-        p[ent % modulo].y = p[ent % modulo].y + v[ent % modulo].vy;
-    #else
         p[ent].x = p[ent].x + v[ent].vx;
         p[ent].y = p[ent].y + v[ent].vy;
-    #endif /* TNECS_CHUNK */
     }
 }
 
 void SystemMoveDoNothing(struct tnecs_system_input *input) {
     int doesnotexist_ID = 8;
     void *ptr = NULL;
-    #ifndef TNECS_CHUNK
     ptr = TNECS_COMPONENTS_LIST(input, doesnotexist_ID);
-    #else
-    ptr = TNECS_COMPONENTS_LIST(input, doesnotexist_ID, 0);
-    #endif /* TNECS_CHUNK */
     lok(ptr == NULL);
 }
 
@@ -750,8 +715,6 @@ void tnecs_test_component_array() {
     TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
     TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
 
-#ifdef TNECS_CHUNK
-#else
     size_t temp_archetypeid     = TNECS_COMPONENT_IDS2ARCHETYPEID(arr_world, Unit_ID, Position_ID);
 
     size_t temp_component_order = tnecs_component_order_bytypeid(arr_world, Position_ID, temp_archetypeid);
@@ -776,7 +739,6 @@ void tnecs_test_component_array() {
     lok(arr_world->bytype.components[temp_archetypeid][temp_component_order].num == 2);
     temp_component_order = tnecs_component_order_bytypeid(arr_world, Velocity_ID, temp_archetypeid);
     lok(arr_world->bytype.components[temp_archetypeid][temp_component_order].num == 2);
-#endif /* TNECS_CHUNK */
 
     size_t old_entity_order = arr_world->entities.orders[temp_ent];
     lok(old_entity_order == 0);
@@ -789,10 +751,7 @@ void tnecs_test_component_array() {
     lok(old_component_order < TNECS_COMPONENT_CAP);
     lok(old_component_order == 0);
 
-#ifdef TNECS_CHUNK
-#else
     lok(arr_world->bytype.components[old_archetypeid][old_component_order].num == 1);
-#endif /* TNECS_CHUNK */
 
     struct Unit     *temp_unit  = tnecs_get_component(arr_world, temp_ent, Unit_ID);
     struct Position *temp_pos   = tnecs_get_component(arr_world, temp_ent, Position_ID);
@@ -1283,14 +1242,6 @@ void tnecs_benchmarks(uint64_t num) {
         assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
     }
 
-    #ifdef TNECS_CHUNK
-    size_t tID = TNECS_COMPONENT_IDS2ARCHETYPEID(bench_world, Position2_ID, Unit2_ID);
-    assert(bench_world->bytype.len_chunks[tID] > (ITERATIONS / 185));
-
-    for (int corder = 0; corder < bench_world->bytype.len_chunks[tID]; ++corder) {
-        assert(bench_world->bytype.chunks[tID][corder].num_components > 0);
-    }
-    #endif
 
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
@@ -1299,13 +1250,6 @@ void tnecs_benchmarks(uint64_t num) {
         // TODO: destroy random entity
         assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
         tnecs_entity_destroy(bench_world, tnecs_entities2[i]);
-    #ifdef TNECS_CHUNK
-        // printf("%zu \n", i);
-        for (int corder = 0; corder < bench_world->bytype.len_chunks[tID]; ++corder) {
-            // printf("corder %d \n", corder);
-            assert(bench_world->bytype.chunks[tID][corder].num_components > 0);
-        }
-    #endif
     }
 
     t_0 = tnecs_get_us();
