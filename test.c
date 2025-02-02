@@ -664,6 +664,8 @@ void tnecs_test_entity_destroy() {
     lok(test_world->entities.orders[Michael]    == 2);
     lok(test_world->entities.orders[Chasse]     == 3);
 
+    position = tnecs_get_component(test_world, Pirou, Position_ID);
+    lok(position == NULL);
     position = tnecs_get_component(test_world, Silou, Position_ID);
     lok(position->x == Silou_x);
     position = tnecs_get_component(test_world, Chasse, Position_ID);
@@ -676,6 +678,10 @@ void tnecs_test_entity_destroy() {
     lok(test_world->entities.orders[Silou]  == 1);
     lok(test_world->entities.orders[Chasse] == 2);
 
+    position = tnecs_get_component(test_world, Pirou, Position_ID);
+    lok(position == NULL);
+    position = tnecs_get_component(test_world, Michael, Position_ID);
+    lok(position == NULL);
     position = tnecs_get_component(test_world, Silou, Position_ID);
     lok(position->x == Silou_x);
     position = tnecs_get_component(test_world, Chasse, Position_ID);
