@@ -72,13 +72,13 @@ u64 tnecs_get_ns() {
     #endif
 }
 #ifdef MICROSECOND_CLOCK
-double tnecs_get_us() {
+u64 tnecs_get_us() {
     return (tnecs_get_ns() / 1e3);
 }
 #else
 #  define FAILSAFE_CLOCK
-#  define tnecs_get_us() (((double)clock())/CLOCKS_PER_SEC*1e6) // [us]
-#  define tnecs_get_ns() (((double)clock())/CLOCKS_PER_SEC*1e9) // [ns]
+#  define tnecs_get_us() ((clock())/CLOCKS_PER_SEC*1e6) // [us]
+#  define tnecs_get_ns() ((clock())/CLOCKS_PER_SEC*1e9) // [ns]
 #endif
 
 
@@ -1203,9 +1203,9 @@ void tnecs_test_grow() {
 }
 
 void tnecs_benchmarks(uint64_t num) {
-    printf("tnecs_benchmarks \n");
-    double t_0;
-    double t_1;
+    // printf("tnecs_benchmarks \n");
+    u64 t_0;
+    u64 t_1;
 
     uint32_t rand1 = rand() % 100;
     uint32_t rand2 = rand() % 100;
@@ -1215,13 +1215,13 @@ void tnecs_benchmarks(uint64_t num) {
     tnecs_world *bench_world = NULL;
     tnecs_world_genesis(&bench_world);
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
     TNECS_REGISTER_COMPONENT(bench_world, Position2);
     TNECS_REGISTER_COMPONENT(bench_world, Unit2);
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     int Position2_ID    = 1;
     int Unit2_ID        = 2;
@@ -1233,7 +1233,7 @@ void tnecs_benchmarks(uint64_t num) {
     TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, 0, 0, Position2_ID, Unit2_ID);
     t_1 = tnecs_get_us();
 
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
@@ -1241,7 +1241,7 @@ void tnecs_benchmarks(uint64_t num) {
     }
 
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
@@ -1249,7 +1249,7 @@ void tnecs_benchmarks(uint64_t num) {
         tnecs_entity_destroy(bench_world, ent);
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     for (size_t i = 0; i < ITERATIONS; i++) {
         // TODO: benchmark reuse or not
@@ -1265,14 +1265,14 @@ void tnecs_benchmarks(uint64_t num) {
         TNECS_ADD_COMPONENT(bench_world, ent, Unit2_ID, false);
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
         TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID);
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     tnecs_entity tnecs_entities2[ITERATIONS];
     t_0 = tnecs_get_us();
@@ -1292,7 +1292,7 @@ void tnecs_benchmarks(uint64_t num) {
     #endif
 
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     for (size_t i = 0; i < ITERATIONS; i++) {
         // TODO: destroy random entity
@@ -1317,19 +1317,19 @@ void tnecs_benchmarks(uint64_t num) {
         }
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
         tnecs_world_step(bench_world, 1, NULL);
     }
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\t", t_1 - t_0);
+    dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
     tnecs_world_destroy(&bench_world);
     t_1 = tnecs_get_us();
-    dupprintf(globalf, "%6.1f\n", t_1 - t_0);
+    dupprintf(globalf, "%7llu\n", t_1 - t_0);
 }
 
 
