@@ -749,13 +749,11 @@ b32 tnecs_component_add(tnecs_world *world, tnecs_component archetype) {
     /* Check if need to grow component array after adding new component */
     size_t tID          = tnecs_archetypeid(world, archetype);
     size_t new_comp_num = world->bytype.num_components[tID];
+    #ifndef NDEBUG 
     size_t entity_order = world->bytype.num_entities[tID];
-
-    for (size_t corder = 0; corder < new_comp_num; corder++) {
-    #ifdef NDEBUG 
-        size_t new_order    = world->bytype.num_entities[tID];
     #endif /* NDEBUG */ 
 
+    for (size_t corder = 0; corder < new_comp_num; corder++) {
         // Take component array of current archetype_id
         tnecs_carr *comp_arr = &world->bytype.components[tID][corder];
         // check if it need to grow after adding new component
