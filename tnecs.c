@@ -748,9 +748,6 @@ b32 tnecs_entitiesbytype_del(tnecs_world *world, tnecs_entity entity,
     tnecs_arrdel(world->bytype.entities[archetype_old_id], entity_order_old, old_num,
                  sizeof(**world->bytype.entities));
 
-    /* This is carr scrambling */
-    // What should chunk scrambling be?
-    //  - Leaves no holes.
     if (top_entity != entity) {
         world->entities.orders[top_entity] = entity_order_old;
         assert(world->bytype.entities[archetype_old_id][entity_order_old] == top_entity);
@@ -888,37 +885,42 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
 
 b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_component old_archetype) {
     /* Delete ALL components from componentsbytype at old entity order */
-    size_t old_tID          = tnecs_archetypeid(world, old_archetype);
-    if (old_tID == TNECS_NULL) 
+    size_t tID          = tnecs_archetypeid(world, old_archetype);
+    if (tID == TNECS_NULL) 
         return(0);
 
-    size_t entity_order_old = world->entities.orders[entity];
-    size_t old_comp_num     = world->bytype.num_components[old_tID];
-    tnecs_chunk *chunks     = world->bytype.chunks[old_tID];
+    size_t entity_order_del = world->entities.orders[entity];
+    size_t entity_order_top = world->bytype.num_entities[tID];
+
+    size_t old_comp_num     = world->bytype.num_components[tID];
+    tnecs_chunk *chunks     = world->bytype.chunks[tID];
+    size_t chunk_order_del  = tnecs_chunk_order(chunks, entity_order_del);
+    size_t chunk_order_top  = tnecs_chunk_order(chunks, entity_order_top);
+
+    tnecs_chunk *chunk_del  = chunks[chunk_order_del];
+    tnecs_chunk *chunk_top  = chunks[chunk_order_top];
+
+    size_t component_order_del  = tnecs_chunk_component_order(chunks, entity_order_del);
+    size_t component_order_top  = tnecs_chunk_component_order(chunks, entity_order_top);
+
     assert(old_comp_num == chunks->num_components);
-    size_t chunk_order  = tnecs_chunk_order(chunks, entity_order_old);
-    assert(chunk_order < tnecs_chunk_len(chunks, world, old_tID));
+    assert(chunk_order < tnecs_chunk_len(chunks, world, tID));
 
-    for (size_t corder = 0; corder < old_comp_num; corder++) {
-        size_t current_component_id = world->bytype.components_id[old_tID][corder];
+    for (size_t carrorder = 0; carrorder < old_comp_num; carrorder++) {
+        // Overwrite component at del with component at top
 
-        assert(chunks->num_components == chunks[chunk_order].num_components);
-
-        tnecs_byte  *comp_ptr           = tnecs_chunk_component_array(&chunks[chunk_order], corder);
-        assert(comp_ptr != NULL);
-
-
-        /* Scramble components too */
+        size_t current_component_id = world->bytype.components_id[tID][corder];
         size_t bytesize         = world->components.bytesizes[current_component_id];
-        size_t new_comp_num     = chunks->len_entities;
-        assert(chunks->len_entities > 0);
-        // printf("%zu %zu %zu \n", entity_order_old, chunks->len_entities, chunk_order);
-        assert(entity_order_old <= (chunks->len_entities * (chunk_order + 1)));
-        assert(new_comp_num * bytesize < TNECS_CHUNK_COMPONENTS_BYTESIZE);
-        
-        tnecs_byte *scramble    = tnecs_arrdel(comp_ptr, entity_order_old, new_comp_num, bytesize);
-        TNECS_CHECK_ALLOC(scramble);
-        // Somehow this arrdel makes num_components 0? 
+
+        tnecs_byte  *comp_del           = tnecs_chunk_component_array(&chunks[chunk_order_def], carrorder);
+        tnecs_byte  *comp_top           = tnecs_chunk_component_array(&chunks[chunk_order_top], carrorder);
+
+        // Custome tnecs_chunk scrambler. Needed elsewhere? 
+        if (elem != (len - 1))
+            memmove(comp_del + (component_order_del * bytesize), comp_top + (component_order_top * bytesize), bytesize);
+
+        memset(comp_top + (component_order_top * bytesize), TNECS_NULL, bytesize);
+
         assert(chunks->num_components == chunks[chunk_order].num_components);
     }
     return(1);
@@ -1609,6 +1611,11 @@ void *tnecs_world_component_array(tnecs_world *world, const size_t cID, const si
 }
 
 void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t compOrder) {
+    // TODO: CompOrder needs a new name to differentiate from chunk_component_order
+    //  -> carrOrder
+    // - order of comoponent array in chunk     -> THIS
+    // - order of componennt in component array -> NOT THIS
+
     if (chunk == NULL) {
         printf("NULL CHUNK \n");
         return(NULL);
