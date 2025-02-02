@@ -498,7 +498,7 @@ void tnecs_test_entity_creation() {
         lok(temp_unit->str == 0);
     }
 
-    tnecs_entity_destroy(test_world, Silou);
+    assert(tnecs_entity_destroy(test_world, Silou));
     tnecs_entity *open_arr = test_world->entities_open.arr;
     lok(test_world->entities_open.num == 0);
     lok(!test_world->entities.id[Silou]);
@@ -1379,8 +1379,8 @@ int main() {
     dupprintf(globalf, "compGet\t");
     dupprintf(globalf, "wrlStep\t");
     dupprintf(globalf, "wDestroy [us]\n");
-    for (uint64_t num = 1; num < 2e6; num *= 2)
-        tnecs_benchmarks(num);
+    // for (uint64_t num = 1; num < 2e6; num *= 2)
+        // tnecs_benchmarks(num);
 
     tnecs_world_destroy(&test_world);
     dupprintf(globalf, "\n --- tnecs test end ---\n\n");

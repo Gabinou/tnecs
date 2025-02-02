@@ -886,8 +886,6 @@ b32 tnecs_component_chunk_copy(tnecs_world *world, const tnecs_entity entity,
 b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_component old_archetype) {
     /* Delete ALL components from componentsbytype at old entity order */
     size_t tID          = tnecs_archetypeid(world, old_archetype);
-    if (tID == TNECS_NULL) 
-        return(0);
 
     size_t entity_order_del = world->entities.orders[entity];
     size_t entity_order_top = world->bytype.num_entities[tID];
