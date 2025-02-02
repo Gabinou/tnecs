@@ -49,16 +49,17 @@ For more in-depth discussion about tnecs' design, see the [On Design](https://gi
 
 ```bash
 rm tnecs.o test.o test
-gcc --std=iso9899:1999 -O1 -DNDEBUG -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g tnecs.c -o tnecs.o
-gcc --std=iso9899:1999 -O1 -DNDEBUG -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g test.c -o test.o
-gcc --std=iso9899:1999 -O1 -DNDEBUG -fno-strict-overflow -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g -o test test.o tnecs.o -lm
+gcc --std=iso9899:1999 -O1 -DNDEBUG -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g tnecs.c -o tnecs.o
+gcc --std=iso9899:1999 -O1 -DNDEBUG -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g test.c -o test.o
+gcc --std=iso9899:1999 -O1 -DNDEBUG -fsanitize=undefined,address -fno-strict-overflow -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g -o test test.o tnecs.o -lm
 ./test
 
 rm tnecs.o test.o test
-gcc --std=iso9899:1999 -O0 -fsanitize=undefined -fsanitize=address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g tnecs.c -o tnecs.o
-gcc --std=iso9899:1999 -O0 -fsanitize=undefined -fsanitize=address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g test.c -o test.o
-gcc --std=iso9899:1999 -O0 -fsanitize=undefined -fsanitize=address -fno-strict-overflow -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g -o test test.o tnecs.o -lm
+gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g tnecs.c -o tnecs.o
+gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -c -g test.c -o test.o
+gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-overflow -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g -o test test.o tnecs.o -lm
 ./test
+# TODO add leak to -fsanitize when back on linux
 ```
 
 ## Credits
