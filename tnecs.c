@@ -896,32 +896,34 @@ b32 tnecs_component_chunk_del(tnecs_world *world, tnecs_entity entity, tnecs_com
     tnecs_chunk *chunks     = world->bytype.chunks[tID];
     size_t chunk_order_del  = tnecs_chunk_order(chunks, entity_order_del);
     size_t chunk_order_top  = tnecs_chunk_order(chunks, entity_order_top);
+    assert(chunk_order_del < tnecs_chunk_len(chunks, world, tID));
+    assert(chunk_order_top < tnecs_chunk_len(chunks, world, tID));
+    assert(chunks->num_components == chunks[chunk_order_del].num_components);
+    assert(chunks->num_components == chunks[chunk_order_top].num_components);
 
-    tnecs_chunk *chunk_del  = chunks[chunk_order_del];
-    tnecs_chunk *chunk_top  = chunks[chunk_order_top];
+    tnecs_chunk *chunk_del  = &chunks[chunk_order_del];
+    tnecs_chunk *chunk_top  = &chunks[chunk_order_top];
 
     size_t component_order_del  = tnecs_chunk_component_order(chunks, entity_order_del);
     size_t component_order_top  = tnecs_chunk_component_order(chunks, entity_order_top);
 
     assert(old_comp_num == chunks->num_components);
-    assert(chunk_order < tnecs_chunk_len(chunks, world, tID));
 
     for (size_t carrorder = 0; carrorder < old_comp_num; carrorder++) {
         // Overwrite component at del with component at top
 
-        size_t current_component_id = world->bytype.components_id[tID][corder];
+        size_t current_component_id = world->bytype.components_id[tID][carrorder];
         size_t bytesize         = world->components.bytesizes[current_component_id];
 
-        tnecs_byte  *comp_del           = tnecs_chunk_component_array(&chunks[chunk_order_def], carrorder);
-        tnecs_byte  *comp_top           = tnecs_chunk_component_array(&chunks[chunk_order_top], carrorder);
+        tnecs_byte  *comp_del           = tnecs_chunk_component_array(chunk_del, carrorder);
+        tnecs_byte  *comp_top           = tnecs_chunk_component_array(chunk_top, carrorder);
 
-        // Custome tnecs_chunk scrambler. Needed elsewhere? 
-        if (elem != (len - 1))
+        // Custom tnecs_chunk scrambler. Needed elsewhere? 
+        if ((comp_del != comp_top) || (component_order_del != component_order_top))
             memmove(comp_del + (component_order_del * bytesize), comp_top + (component_order_top * bytesize), bytesize);
 
         memset(comp_top + (component_order_top * bytesize), TNECS_NULL, bytesize);
 
-        assert(chunks->num_components == chunks[chunk_order].num_components);
     }
     return(1);
 }
@@ -1411,7 +1413,6 @@ b32 tnecs_grow_bytype(tnecs_world *world, size_t tID) {
 }
 
 b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder) {
-    printf("tnecs_grow_chunks \n");
     assert(world != NULL);
     size_t old_len                  = world->bytype.len_chunks[tID];
     size_t new_len                  = old_len * TNECS_ARRAY_GROWTH_FACTOR;
@@ -1421,8 +1422,6 @@ b32 tnecs_grow_chunks(tnecs_world *world, const size_t tID, const size_t corder)
     world->bytype.chunks[tID]       = tnecs_realloc(world->bytype.chunks[tID], old_len, new_len, bytesize);
     TNECS_CHECK_ALLOC(world->bytype.chunks[tID]);
     for (size_t corder = old_len; corder < new_len; corder++) {
-        // if (tID == 3)
-            // printf("%zu \n", corder);
         assert(world->bytype.chunks[tID][corder].len_entities   == 0);
         assert(world->bytype.chunks[tID][corder].num_components == 0);
         TNECS_CHECK_CALL(tnecs_chunk_init(&world->bytype.chunks[tID][corder], world, world->bytype.id[tID]));
@@ -1610,26 +1609,22 @@ void *tnecs_world_component_array(tnecs_world *world, const size_t cID, const si
 
 }
 
-void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t compOrder) {
-    // TODO: CompOrder needs a new name to differentiate from chunk_component_order
-    //  -> carrOrder
-    // - order of comoponent array in chunk     -> THIS
-    // - order of componennt in component array -> NOT THIS
+void *tnecs_chunk_component_array(tnecs_chunk *chunk, const size_t carrOrder) {
 
     if (chunk == NULL) {
         printf("NULL CHUNK \n");
         return(NULL);
     } 
 
-    // There is not component array at corder
-    if (compOrder >= chunk->num_components) {
-        printf("COMP ORDER \n");
+    // There is not component array at carrorder
+    if (carrOrder >= chunk->num_components) {
+        printf("COMPARR ORDER \n");
         return(NULL);
     }
 
     size_t *header              = tnecs_chunk_mem(chunk);
     assert(header != NULL);
-    size_t cumul_bytesize       = (compOrder == 0) ? 0 : header[compOrder - 1];
+    size_t cumul_bytesize       = (carrOrder == 0) ? 0 : header[carrOrder - 1];
     size_t header_offset        = chunk->num_components * sizeof(size_t);
     size_t components_offset    = cumul_bytesize * chunk->len_entities;
     assert((header_offset + components_offset) < TNECS_CHUNK_COMPONENTS_BYTESIZE);

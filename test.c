@@ -1299,9 +1299,9 @@ void tnecs_benchmarks(uint64_t num) {
         assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
         tnecs_entity_destroy(bench_world, tnecs_entities2[i]);
     #ifdef TNECS_CHUNK
-        printf("%zu \n", i);
+        // printf("%zu \n", i);
         for (int corder = 0; corder < bench_world->bytype.len_chunks[tID]; ++corder) {
-            printf("corder %d \n", corder);
+            // printf("corder %d \n", corder);
             assert(bench_world->bytype.chunks[tID][corder].num_components > 0);
         }
     #endif
