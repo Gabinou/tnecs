@@ -52,10 +52,10 @@ typedef int                     b32;
 typedef unsigned char           tnecs_byte;
 
 /*** Forward declarations ***/
-typedef struct tnecs_system_input tnecs_system_input;
+typedef struct tnecs_input tnecs_input;
 
 /*** Function pointer ***/
-typedef void (*tnecs_system_ptr)(struct tnecs_system_input *);
+typedef void (*tnecs_system_ptr)(struct tnecs_input *);
 
 /******************* CONSTANT DEFINITIONS *******************/
 enum TNECS {
@@ -196,7 +196,7 @@ typedef struct tnecs_world {
     b32 reuse_entities;
 } tnecs_world;
 
-struct tnecs_system_input {
+struct tnecs_input {
     tnecs_world     *world;
     tnecs_ns         deltat;
     tnecs_component  system_archetype;
@@ -262,9 +262,6 @@ tnecs_entity tnecs_entity_add_components(
 tnecs_entity tnecs_entity_remove_components(
     tnecs_world *w, tnecs_entity eID, tnecs_component archetype);
 
-void *tnecs_get_component(
-    tnecs_world *w, tnecs_entity eID, tnecs_component cID);
-
 b32 tnecs_entities_open_reuse(tnecs_world *w);
 b32 tnecs_entities_open_flush(tnecs_world *w);
 
@@ -278,6 +275,11 @@ b32 tnecs_entities_open_flush(tnecs_world *w);
     ((index != TNECS_NULL) && (world->entities.id[index] == index))
 #define TNECS_ENTITY_ARCHETYPE(world, entity) \
     world->entities.archetypes[entity]
+
+/********************** COMPONENT ***********************/
+void *tnecs_get_component(
+    tnecs_world *w, tnecs_entity eID, tnecs_component cID);
+
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, cID) \
     (\
         (\

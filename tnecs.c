@@ -298,7 +298,7 @@ b32 _tnecs_world_breath_archetypes(tnecs_world *world) {
 b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
                             tnecs_component archetype, tnecs_ns deltat, void *data) {
     /* Building the systems input */
-    tnecs_system_input input = {.world = world, .deltat = deltat, .data = data};
+    tnecs_input input = {.world = world, .deltat = deltat, .data = data};
     size_t tID = tnecs_archetypeid(world, archetype);
     if (tID == TNECS_NULL) {
         printf("tnecs: Input archetype is unknown.\n");
@@ -322,7 +322,7 @@ b32 tnecs_custom_system_run(tnecs_world *world, tnecs_system_ptr custom_system,
 b32 tnecs_system_run(tnecs_world *world, size_t in_system_id,
                      tnecs_ns     deltat, void *data) {
     /* Building the systems input */
-    tnecs_system_input input = {.world = world, .deltat = deltat, .data = data};
+    tnecs_input input = {.world = world, .deltat = deltat, .data = data};
     size_t sorder               = world->systems.orders[in_system_id];
     tnecs_phase phase           = world->systems.phases[in_system_id];
     size_t system_archetype_id   = tnecs_archetypeid(world, world->systems.archetypes[in_system_id]);

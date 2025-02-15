@@ -201,7 +201,7 @@ typedef struct Unit2 {
     u64 res;
 } Unit2;
 
-void SystemMove2(struct tnecs_system_input *input) {
+void SystemMove2(struct tnecs_input *input) {
     int     Position2_ID    = 1;
     int     Unit2_ID        = 2;
     struct  Position2   *p = NULL;
@@ -217,7 +217,7 @@ void SystemMove2(struct tnecs_system_input *input) {
     }
 }
 
-void SystemMovePhase1(struct tnecs_system_input *input) {
+void SystemMovePhase1(struct tnecs_input *input) {
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         lok(current_ent);
@@ -228,7 +228,7 @@ void SystemMovePhase1(struct tnecs_system_input *input) {
     }
 }
 
-void SystemMovePhase4(struct tnecs_system_input *input) {
+void SystemMovePhase4(struct tnecs_input *input) {
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         lok(current_ent);
@@ -239,7 +239,7 @@ void SystemMovePhase4(struct tnecs_system_input *input) {
     }
 }
 
-void SystemMovePhase2(struct tnecs_system_input *input) {
+void SystemMovePhase2(struct tnecs_input *input) {
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         lok(current_ent);
@@ -262,7 +262,7 @@ struct Unit         *temp_unit;
 struct Sprite       *temp_sprite;
 struct tnecs_world  *test_world;
 
-void SystemMove(struct tnecs_system_input *input) {
+void SystemMove(struct tnecs_input *input) {
     // printf("SystemMove\n");
     int Position_ID = 1;
     int Velocity_ID = 2;
@@ -284,7 +284,7 @@ void SystemMove(struct tnecs_system_input *input) {
     }
 }
 
-void SystemMoveDoNothing(struct tnecs_system_input *input) {
+void SystemMoveDoNothing(struct tnecs_input *input) {
     int doesnotexist_ID = 8;
     void *ptr = NULL;
     ptr = TNECS_COMPONENT_ARRAY(input, doesnotexist_ID);
