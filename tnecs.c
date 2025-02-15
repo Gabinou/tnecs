@@ -37,6 +37,29 @@ static b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_carr *comp_arr,
 static size_t tnecs_component_order_bytype(    tnecs_world *w, size_t          cID, tnecs_component arch);
 static size_t tnecs_component_order_bytypeid(  tnecs_world *w, size_t          cID, size_t          aID);
 
+/* --- COMPONENT ARRAY --- */
+static b32 tnecs_carr_new(
+    tnecs_world *w, size_t num, tnecs_component a
+);
+static b32 tnecs_carr_init(
+    tnecs_world *w, tnecs_carr *array, size_t cID
+);
+
+/* --- BYTYPE --- */
+static b32 tnecs_entitiesbytype_add(    tnecs_world *w, tnecs_entity e, tnecs_component nt);
+static b32 tnecs_entitiesbytype_del(    tnecs_world *w, tnecs_entity e, tnecs_component ot);
+static b32 tnecs_entitiesbytype_migrate(tnecs_world *w, tnecs_entity e, tnecs_component ot, tnecs_component nt);
+
+/* --- COMPONENT --- */
+static b32 tnecs_component_add(    tnecs_world     *w,     tnecs_component flag);
+
+static b32 tnecs_component_del(    tnecs_world     *w,     tnecs_entity    ent,
+                            tnecs_component  of);
+static b32 tnecs_component_copy(   tnecs_world     *w,     tnecs_entity    ent,
+                            tnecs_component  of,    tnecs_component nf);
+static b32 tnecs_component_migrate(tnecs_world     *w,     tnecs_entity    ent,
+                            tnecs_component  of,    tnecs_component nf);
+
 /********************* WORLD FUNCTIONS ***********************/
 b32 tnecs_world_genesis(tnecs_world **world) {
     if (*world != NULL)
@@ -1241,7 +1264,7 @@ size_t setBits_KnR_u64(u64 in_flags) {
     return (count);
 }
 
-void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const size_t tID) {
+void *tnecs_component_array(tnecs_world *world, const size_t cID, const size_t tID) {
     if ((cID == TNECS_NULL) || (tID == TNECS_NULL)) 
         return(NULL);
 

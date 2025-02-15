@@ -207,8 +207,8 @@ void SystemMove2(struct tnecs_system_input *input) {
     struct  Position2   *p = NULL;
     struct  Unit2       *v = NULL;
 
-    p = TNECS_COMPONENTS_ARRAY(input, Position2_ID);
-    v = TNECS_COMPONENTS_ARRAY(input, Unit2_ID);
+    p = TNECS_COMPONENT_ARRAY(input, Position2_ID);
+    v = TNECS_COMPONENT_ARRAY(input, Unit2_ID);
 
 
     for (int i = 0; i < input->num_entities; i++) {
@@ -268,8 +268,8 @@ void SystemMove(struct tnecs_system_input *input) {
     int Velocity_ID = 2;
     struct Position *p = NULL;
     struct Velocity *v = NULL;
-    p = TNECS_COMPONENTS_ARRAY(input, Position_ID);
-    v = TNECS_COMPONENTS_ARRAY(input, Velocity_ID);
+    p = TNECS_COMPONENT_ARRAY(input, Position_ID);
+    v = TNECS_COMPONENT_ARRAY(input, Velocity_ID);
 
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_entity current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
@@ -287,7 +287,7 @@ void SystemMove(struct tnecs_system_input *input) {
 void SystemMoveDoNothing(struct tnecs_system_input *input) {
     int doesnotexist_ID = 8;
     void *ptr = NULL;
-    ptr = TNECS_COMPONENTS_ARRAY(input, doesnotexist_ID);
+    ptr = TNECS_COMPONENT_ARRAY(input, doesnotexist_ID);
     lok(ptr == NULL);
 }
 
