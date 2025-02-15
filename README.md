@@ -48,11 +48,11 @@ For more in-depth discussion about tnecs' design, see the [On Design](https://gi
 ## Running tests
 
 ```bash
-rm test
+rm -f test
 tcc -O0 -DNDEBUG -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g test.c -o test -lm
 ./test
 
-rm test
+rm -f test
 gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g test.c -o test -lm
 ./test
 ```

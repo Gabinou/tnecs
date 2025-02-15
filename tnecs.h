@@ -130,11 +130,10 @@ typedef struct tnecs_phases {
 
 typedef struct tnecs_entities {
     // About entities.num:
-    // - entities.num doesn't change even if entities get deleted.
-    // - If reuse_entities is true, they are added to entities_open, and reused.
-    // - If reuse_entities is false, entities do not get added to entities_open.
-    //      - Call tnecs_entities_open_reuse to add open entities to
-    //        entities_open and slate them for reuse.
+    // - entities.num doesn't change even if entities get deleted
+    // - reuse_entities is true: add deleted entities to entities_open
+    //      - Call tnecs_entities_open_reuse to add entities with 
+    //        id[ent] == false entities_open.
     size_t num;
     size_t len;
 
@@ -202,6 +201,7 @@ b32 tnecs_world_destroy(tnecs_world **w);
 
 b32 tnecs_world_step(      tnecs_world *w,                     tnecs_ns deltat, void *data);
 b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, void *data);
+void tnecs_world_toggle_reuse(tnecs_world *w, b32 toggle);
 
 /********************* SYSTEM FUNCTIONS ********************/
 b32 tnecs_system_run(       tnecs_world *w,     size_t           id, tnecs_ns deltat, void *data);

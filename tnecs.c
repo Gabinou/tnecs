@@ -616,6 +616,10 @@ b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     return (1);
 }
 
+void tnecs_world_toggle_reuse(tnecs_world *world, b32 toggle) {
+    world->reuse_entities = toggle;
+}
+
 /*****************************************************************************/
 /***************************** TNECS INTERNALS *******************************/
 /*****************************************************************************/
