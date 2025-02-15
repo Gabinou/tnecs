@@ -478,7 +478,13 @@ void tnecs_test_entity_creation() {
     tnecs_entity_create(test_world);
     lok(test_world->entities.id[Silou]);
 
-    tnecs_entities_create(test_world, 100);
+    for (int i = 0; i < 100; i++) {
+        if (tnecs_entity_create(test_world) <= TNECS_NULL) {
+            assert(false);
+            lok(false);
+        }
+    }
+
     lok(test_world->entities.num == 104);
     lok(tnecs_entity_create(test_world));
     lok(test_world->entities.num == 105);
@@ -766,7 +772,13 @@ void tnecs_test_component_array() {
     temp_unit->str  = 12;
     temp_unit = tnecs_get_component(arr_world, temp_ent + 1, Unit_ID);
     
-    tnecs_entities_create(arr_world, 10);
+    for (int i = 0; i < 10; i++) {
+        if (tnecs_entity_create(arr_world) <= TNECS_NULL) {
+            assert(false);
+            lok(false);
+        }
+    }
+
     temp_unit = tnecs_get_component(arr_world, temp_ent, Unit_ID);
     lok(temp_unit->hp   == 10);
     lok(temp_unit->str  == 12);

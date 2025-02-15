@@ -518,16 +518,6 @@ tnecs_entity tnecs_entity_create(tnecs_world *world) {
     return (out);
 }
 
-tnecs_entity tnecs_entities_create(tnecs_world *world, size_t num) {
-    for (int i = 0; i < num; i++) {
-        if (tnecs_entity_create(world) <= TNECS_NULL) {
-            printf("tnecs: Could not create another entity.\n");
-            return (TNECS_NULL);
-        }
-    }
-    return (num);
-}
-
 tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, ...) {
     /* Get archetype of all vararg components ids */
     va_list ap;
@@ -574,7 +564,7 @@ b32 tnecs_entities_open_reuse(tnecs_world *world) {
 };
 
 b32 tnecs_entities_open_flush(tnecs_world *world) {
-    // Get rid of all entities in entities_open.
+    /* Get rid of all entities in entities_open */
     world->entities_open.num = 0;
     return (1);
 }
@@ -1016,7 +1006,7 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...) {
     return (out);
 }
 
-size_t tnecs_archetypeid(tnecs_world *world, tnecs_component archetype) {
+tnecs_component tnecs_archetypeid(tnecs_world *world, tnecs_component archetype) {
     size_t id = 0;
     for (size_t i = 0; i < world->bytype.num; i++) {
         if (archetype == world->bytype.id[i]) {

@@ -225,11 +225,10 @@ tnecs_entity    tnecs_entity_create(    tnecs_world *w);
 b32             tnecs_entity_destroy(   tnecs_world *w, tnecs_entity ent);
 tnecs_entity    tnecs_entity_create_wcomponents(tnecs_world *w, size_t argnum, ...);
 
-tnecs_entity    tnecs_entities_create(    tnecs_world *w, size_t num);
 b32             tnecs_entities_open_reuse(tnecs_world *w);
 b32             tnecs_entities_open_flush(tnecs_world *w);
 
-#define TNECS_PHASE_VALID(      world, index) ((index == TNECS_NULL) || (world->byphase.id[index] == index))
+#define TNECS_PHASE_VALID(world, index) ((index == TNECS_NULL) || (world->byphase.id[index] == index))
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) tnecs_entity_create_wcomponents(world, TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__))
 #define TNECS_ENTITY_EXISTS(      world, index) ((index != TNECS_NULL) && (world->entities.id[index] == index))
 #define TNECS_ENTITY_ARCHETYPE(   world, entity) world->entities.archetypes[entity]
@@ -257,14 +256,12 @@ void *tnecs_component_array(tnecs_world *w, const size_t cID, const size_t tID);
 #define TNECS_COMPONENT_ARRAY(input, cID)  tnecs_component_array(input->world, cID, input->entity_archetype_id)
 
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
+tnecs_component tnecs_archetypeid(tnecs_world *w, tnecs_component arch);
 
 #define TNECS_COMPONENT_ID2TYPE(id) (1 << (id - TNECS_NULLSHIFT))
 #define TNECS_COMPONENT_TYPE2ID(type) (type >= 1 ? (tnecs_component)(log2(type) + 1.1f) : 0) /* casting floors */
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__))
-#define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) tnecs_archetypeid(world, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
-
-/************************** UTILITIES ***********************/
-size_t tnecs_archetypeid(tnecs_world *w, tnecs_component arch);
+#define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) tnecs_archetypeid(world, TNECS_COMPONENT_IDS2ARCHETYPE(__VA_ARGS__))
 
 /************************** SYSTEM ***********************/
 b32 tnecs_system_order_switch(tnecs_world   *w, tnecs_phase phase,
