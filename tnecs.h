@@ -129,8 +129,7 @@ typedef struct tnecs_phases {
 } tnecs_phases;
 
 typedef struct tnecs_entities {
-    // About entities.num:
-    // - entities.num doesn't change even if entities get deleted
+    // - .num doesn't change even if entities get deleted
     // - reuse_entities is true: add deleted entities to entities_open
     //      - Call tnecs_entities_open_reuse to add entities with 
     //        id[ent] == false entities_open.
@@ -199,8 +198,13 @@ struct tnecs_system_input {
 b32 tnecs_world_genesis(tnecs_world **w);
 b32 tnecs_world_destroy(tnecs_world **w);
 
-b32 tnecs_world_step(      tnecs_world *w,                     tnecs_ns deltat, void *data);
-b32 tnecs_world_step_phase(tnecs_world *w, tnecs_phase  phase, tnecs_ns deltat, void *data);
+b32 tnecs_world_step(
+    tnecs_world *w, tnecs_ns deltat, void *data
+);
+b32 tnecs_world_step_phase(
+    tnecs_world *w, tnecs_ns deltat, void *data, tnecs_phase phase
+);
+
 void tnecs_world_toggle_reuse(tnecs_world *w, b32 toggle);
 
 /********************* SYSTEM FUNCTIONS ********************/
@@ -219,7 +223,7 @@ tnecs_component tnecs_register_component(tnecs_world    *w,    size_t           
 
 #define TNECS_REGISTER_COMPONENT(world, name) tnecs_register_component(world, sizeof(name))
 
-/******************* ENTITY MANIPULATION ********************/
+/********************** ENTITY  ***********************/
 b32             tnecs_entity_isOpen(    tnecs_world *w, tnecs_entity ent);
 tnecs_entity    tnecs_entity_create(    tnecs_world *w);
 b32             tnecs_entity_destroy(   tnecs_world *w, tnecs_entity ent);
@@ -248,12 +252,12 @@ b32             tnecs_entity_remove_components(tnecs_world *w, tnecs_entity eID,
 
 void *tnecs_get_component(tnecs_world *w, tnecs_entity eID, tnecs_component cID);
 
-/************************************************************/
-/********************** TNECS INTERNALS *********************/
-/************************************************************/
-void *tnecs_component_array(tnecs_world *w, const size_t cID, const size_t tID);
+/******************* COMPONENT ARRAY ***********************/
+void *tnecs_component_array(
+    tnecs_world *w, const size_t cID, const size_t tID
+);
 
-#define TNECS_COMPONENT_ARRAY(input, cID)  tnecs_component_array(input->world, cID, input->entity_archetype_id)
+#define TNECS_COMPONENT_ARRAY(input, cID) tnecs_component_array(input->world, cID, input->entity_archetype_id)
 
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 tnecs_component tnecs_archetypeid(tnecs_world *w, tnecs_component arch);
