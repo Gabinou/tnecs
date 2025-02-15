@@ -12,7 +12,7 @@
 *
 * The systems iterate over the entities that have a user-defined set of components,
 * inclusively or exclusively, in phases.
-* Phases are user-defined ```uint8_t```.
+* Phases are user-defined ```ull```.
 * System execution order in a phases is first-come first-served by default.
 * Systems are inclusive by default, they run for all compatible archetypes.
 */
@@ -43,12 +43,10 @@
     } while (0)
 
 /********************* TYPE DEFINITIONS *********************/
-typedef unsigned long long int  u64;                /* 64 bit int  */
 typedef unsigned long long int  tnecs_entity;       /* 64 bit int  */
 typedef unsigned long long int  tnecs_component;    /* 64 bit flag */
-typedef unsigned long int       tnecs_phase;
+typedef unsigned long long int  tnecs_phase;
 typedef unsigned long long int  tnecs_ns;
-typedef int                     b32;
 typedef unsigned char           tnecs_byte;
 
 /*** Forward declarations ***/
@@ -158,7 +156,7 @@ typedef struct tnecs_system {
 
     tnecs_phase     *phases;        // [system_id]
     size_t          *orders;        // [system_id]
-    b32             *exclusive;     // [system_id]
+    int             *exclusive;     // [system_id]
     tnecs_component *archetypes;    // [system_id]
 } tnecs_system;
 
@@ -193,7 +191,7 @@ typedef struct tnecs_world {
     tnecs_array         entities_open;
     tnecs_array         systems_torun;
 
-    b32 reuse_entities;
+    int reuse_entities;
 } tnecs_world;
 
 struct tnecs_input {
@@ -206,20 +204,20 @@ struct tnecs_input {
 };
 
 /******************** WORLD ***********************/
-b32 tnecs_world_genesis(tnecs_world **w);
-b32 tnecs_world_destroy(tnecs_world **w);
+int tnecs_world_genesis(tnecs_world **w);
+int tnecs_world_destroy(tnecs_world **w);
 
-void tnecs_world_toggle_reuse(tnecs_world *w, b32 toggle);
+void tnecs_world_toggle_reuse(tnecs_world *w, int toggle);
 
-b32 tnecs_world_step(
+int tnecs_world_step(
     tnecs_world *w, tnecs_ns deltat, void *data);
-b32 tnecs_world_step_phase(
+int tnecs_world_step_phase(
     tnecs_world *w, tnecs_ns deltat, void *data, tnecs_phase phase);
 
 /********************* SYSTEM ********************/
-b32 tnecs_system_run(
+int tnecs_system_run(
     tnecs_world *w, size_t id, tnecs_ns deltat, void *data);
-b32 tnecs_custom_system_run(
+int tnecs_custom_system_run(
     tnecs_world *w,     tnecs_system_ptr c,    
     tnecs_component ar, tnecs_ns         dt,    void *data);
 
@@ -228,7 +226,7 @@ size_t tnecs_register_phase(
     tnecs_world    *w,    tnecs_phase         phase);
 size_t tnecs_register_system(
     tnecs_world    *w,    tnecs_system_ptr    system,
-    tnecs_phase     p,    b32                 isExclusive,
+    tnecs_phase     p,    int                 isExclusive,
     size_t          num,  tnecs_component     archetype);
 tnecs_component tnecs_register_component(
     tnecs_world    *w,    size_t b);
@@ -258,12 +256,12 @@ tnecs_entity tnecs_entity_create_wcomponents(
 
 tnecs_entity tnecs_entity_add_components(
     tnecs_world     *w,         tnecs_entity    eID,
-    tnecs_component  archetype, b32             isNew);
+    tnecs_component  archetype, int             isNew);
 tnecs_entity tnecs_entity_remove_components(
     tnecs_world *w, tnecs_entity eID, tnecs_component archetype);
 
-b32 tnecs_entities_open_reuse(tnecs_world *w);
-b32 tnecs_entities_open_flush(tnecs_world *w);
+int tnecs_entities_open_reuse(tnecs_world *w);
+int tnecs_entities_open_flush(tnecs_world *w);
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) \
     tnecs_entity_create_wcomponents(\
@@ -365,7 +363,7 @@ tnecs_component tnecs_archetypeid(
     )
 
 /************************** SYSTEM ***********************/
-b32 tnecs_system_order_switch(
+int tnecs_system_order_switch(
     tnecs_world *w, tnecs_phase phase, size_t o1, size_t o2);
 
 #define TNECS_SYSTEM_ID2ARCHETYPE(world, id) \

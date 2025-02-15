@@ -14,6 +14,8 @@
 #include "tnecs.h"
 #include "tnecs.c"
 
+typedef unsigned long long int u64;
+
 /********************** 0.1 MICROSECOND RESOLUTION CLOCK **********************/
 //  Modified from: https://gist.github.com/ForeverZer0/0a4f80fc02b96e19380ebb7a3debbee5
 #if defined(__linux)
@@ -330,13 +332,13 @@ void tnecs_test_utilities() {
     lok(TNECS_ARCHETYPE_IS_SUBTYPE(4, (4 + 8 + 16)));
     lok(!TNECS_ARCHETYPE_IS_SUBTYPE(2, (4 + 8 + 16)));
 
-    lok(setBits_KnR_u64(1) == 1);
-    lok(setBits_KnR_u64(2) == 1);
-    lok(setBits_KnR_u64(3) == 2);
-    lok(setBits_KnR_u64(4) == 1);
-    lok(setBits_KnR_u64(5) == 2);
-    lok(setBits_KnR_u64(6) == 2);
-    lok(setBits_KnR_u64(7) == 3);
+    lok(setBits_KnR(1) == 1);
+    lok(setBits_KnR(2) == 1);
+    lok(setBits_KnR(3) == 2);
+    lok(setBits_KnR(4) == 1);
+    lok(setBits_KnR(5) == 2);
+    lok(setBits_KnR(6) == 2);
+    lok(setBits_KnR(7) == 3);
 }
 
 void tnecs_test_component_registration() {

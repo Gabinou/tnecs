@@ -41,7 +41,7 @@ A system is a user-defined ```function```.
 All live inside the ```world```. 
 
 The systems iterate over the entities that have a user-defined set of components, inclusively or exclusively, in phases.
-Phases are user-defined ```ul```. 
+Phases are user-defined ```ull```. 
 System execution order is first-come first-served by default.
 For more in-depth discussion about tnecs' design, see the [On Design](https://gitlab.com/Gabinou/tnecs/-/blob/master/DESIGN.md).
 
