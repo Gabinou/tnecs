@@ -33,12 +33,15 @@ static b32 tnecs_grow_system_byphase(  tnecs_world *w,     tnecs_phase  phase);
 static b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_carr *comp_arr, 
                                 size_t      tID,    size_t       corder);
 
+/* --- UTILITIES --- */
+static size_t tnecs_component_order_bytype(    tnecs_world *w, size_t          cID, tnecs_component arch);
+static size_t tnecs_component_order_bytypeid(  tnecs_world *w, size_t          cID, size_t          aID);
+
 /********************* WORLD FUNCTIONS ***********************/
 b32 tnecs_world_genesis(tnecs_world **world) {
-    /* Allocate world itself */
-    if (*world != NULL) {
+    if (*world != NULL)
         TNECS_CHECK_CALL(tnecs_world_destroy(world));
-    }
+
     *world = calloc(1, sizeof(tnecs_world));
     TNECS_CHECK_ALLOC(*world);
 

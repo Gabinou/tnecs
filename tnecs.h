@@ -281,8 +281,6 @@ b32 tnecs_system_order_switch(tnecs_world   *w, tnecs_phase phase,
 
 /************************** UTILITIES ***********************/
 size_t tnecs_archetypeid(               tnecs_world *w, tnecs_component arch);
-size_t tnecs_component_order_bytype(    tnecs_world *w, size_t          cID, tnecs_component arch);
-size_t tnecs_component_order_bytypeid(  tnecs_world *w, size_t          cID, size_t          aID);
 
 tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 
@@ -293,7 +291,7 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 
 #define TNECS_SYSTEM_ID2ARCHETYPE(world, id) world->systems.archetypes[id]
 
-#define TNECS_COMPONENTS_LIST(input, cID)  tnecs_carr_component_array(input->world, cID, input->entity_archetype_id)
+#define TNECS_COMPONENTS_ARRAY(input, cID)  tnecs_carr_component_array(input->world, cID, input->entity_archetype_id)
 void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const size_t tID);
 
 #endif /* __TNECS_H__ */
