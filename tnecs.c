@@ -141,13 +141,13 @@ b32 tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
         if (!TNECS_PHASE_VALID(world, phase))
             continue;
 
-        TNECS_CHECK_CALL(tnecs_world_step_phase(world, phase, deltat, data));
+        TNECS_CHECK_CALL(tnecs_world_step_phase(world, deltat, data, phase));
     }
     return (1);
 }
 
-b32 tnecs_world_step_phase(tnecs_world *world,  tnecs_phase  phase,
-                           tnecs_ns     deltat, void        *data) {
+b32 tnecs_world_step_phase(tnecs_world *world, tnecs_ns     deltat,
+                           void        *data,  tnecs_phase  phase) {
     if (phase != world->byphase.id[phase]) {
         printf("tnecs: Invalid phase '%lu' \n", phase);
         return (0);
@@ -572,7 +572,7 @@ b32 tnecs_entities_open_flush(tnecs_world *world) {
     return (1);
 }
 
-b32 tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
+tnecs_entity tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
     if (entity <= TNECS_NULL) {
         return (0);
     }
@@ -588,7 +588,7 @@ b32 tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
 }
 
 
-b32 tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
+tnecs_entity tnecs_entity_destroy(tnecs_world *world, tnecs_entity entity) {
     if (entity <= TNECS_NULL) {
         return (1);
     }
@@ -677,7 +677,7 @@ tnecs_entity tnecs_entity_add_components(tnecs_world *world, tnecs_entity entity
     return (world->entities.id[entity]);
 }
 
-b32 tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity,
+tnecs_entity tnecs_entity_remove_components(tnecs_world *world, tnecs_entity entity,
                                    tnecs_component archetype) {
     /* Get new archetype. Since it is a archetype, just need to substract. */
     tnecs_component archetype_old = world->entities.archetypes[entity];
