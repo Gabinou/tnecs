@@ -2,6 +2,8 @@
 #include "tnecs.h"
 
 /****************** PRIVATE DECLARATIONS *******************/
+typedef unsigned char           tnecs_byte;
+
 /* --- WORLD FUNCTIONS --- */
 static int _tnecs_world_breath_phases(      tnecs_world *w);
 static int _tnecs_world_breath_systems(     tnecs_world *w);
@@ -149,7 +151,7 @@ int tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
 int tnecs_world_step_phase(tnecs_world *world, tnecs_ns     deltat,
                            void        *data,  tnecs_phase  phase) {
     if (phase != world->byphase.id[phase]) {
-        printf("tnecs: Invalid phase '%lu' \n", phase);
+        printf("tnecs: Invalid phase '%llu' \n", phase);
         return (0);
     }
 

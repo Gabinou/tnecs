@@ -47,7 +47,6 @@ typedef unsigned long long int  tnecs_entity;       /* 64 bit int  */
 typedef unsigned long long int  tnecs_component;    /* 64 bit flag */
 typedef unsigned long long int  tnecs_phase;
 typedef unsigned long long int  tnecs_ns;
-typedef unsigned char           tnecs_byte;
 
 /*** Forward declarations ***/
 typedef struct tnecs_input tnecs_input;

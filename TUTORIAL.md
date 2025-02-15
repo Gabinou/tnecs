@@ -1,4 +1,6 @@
 
+## Error Handling
+Upon error, functions/macros return 0 or ```NULL```.
 
 ## Initializing the world
 ```c
@@ -12,7 +14,7 @@ Use ```tnecs_world_destroy``` to free all memory.
 ```c
     tnecs_entity_t Silou = tnecs_entity_create(world);
 ```
-```tnecs_entity_t``` is a ```uint64_t``` index. 
+```tnecs_entity_t``` is a ```ull``` index. 
 
 Entity index 0 is reserved for ```TNECS_NULL```.
 Entities can be destroyed with ```tnecs_entity_destroy```, which frees all associated components.
@@ -29,14 +31,14 @@ A component is a user-defined struct:
 ```
 The components IDs start at 1, and increment for every new component.
 Use X macros to create compile-time component IDs. 
-```tnecs_component_t``` is an ```uint64_t``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. 
+```tnecs_component_t``` is an ```ull``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. 
 Component index 0 is reserved for the NULL component, so a maximal number of 63 components can be registered.
 
 The component's type can be obtained with:
 ```c
     tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(world, Position); 
 ```
-NOTE: A component type ahas one bit set, an archetype can have any number of bits set.
+NOTE: A component type has one bit set, an archetype can have any number of bits set.
 
 The relation between component indices and types is:
 ```c
@@ -90,8 +92,8 @@ Entities can be created with any number of components directly with this variadi
 A system is a user-defined function, with a ```struct *tnecs_system_input``` pointer as input and no output:
 ```c
     void SystemMove(tnecs_system_input_t * in_input) {
-        Position *p = TNECS_COMPONENTS_LIST(in_input, Position);
-        Velocity *v = TNECS_COMPONENTS_LIST(in_input, Velocity);
+        Position *p = TNECS_COMPONENT_ARRAY(in_input, Position);
+        Velocity *v = TNECS_COMPONENT_ARRAY(in_input, Velocity);
 
         for (int i = 0; i < in_input->entity_num; i++) {
             p[i].x += v[i].vx * in_input->deltat;
@@ -105,7 +107,7 @@ System index 0 is reserved for NULL.
 Systems are run by phases.
 For each phase, the systems are run first come first served.
 
-Phases are greater than zero ```uint32_t``` integers.
+Phases are greater than zero ```ull``` integers.
 Default phase is 0, the NULL phase, which always runs first.
 Other phases run in order of their phase id. 
 This order can be changed with ```tnecs_system_order_switch```.
@@ -135,6 +137,3 @@ tnecs_time_ns_t frame_deltat;
 tnecs_world_step(world, frame_deltat, NULL);
 ```
 The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
-
-## Error Handling
-Upon an error, functions/macros that fail return 0, or ```NULL``` if the output is a pointer.
