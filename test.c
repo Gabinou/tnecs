@@ -463,7 +463,11 @@ void tnecs_test_entity_creation() {
         lok(temp_unit->str == 0);
     }
 
+    #ifdef NDEBUG
+    tnecs_entity_destroy(test_world, Silou);
+    #else
     assert(tnecs_entity_destroy(test_world, Silou));
+    #endif
     tnecs_entity *open_arr = test_world->entities_open.arr;
     lok(test_world->entities_open.num == 0);
     lok(!test_world->entities.id[Silou]);

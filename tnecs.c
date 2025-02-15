@@ -512,14 +512,17 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world *world, size_t argnum, 
 }
 
 b32 tnecs_entities_open_reuse(tnecs_world *world) {
-    // Check for open entities. If not in entities_open, add them.
-
+    // Adds all null entities to open list
     for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities.num; i++) {
-        if ((world->entities.id[i] == TNECS_NULL) && !tnecs_entity_isOpen(world, i)) {
-            TNECS_CHECK_CALL(tnecs_grow_entities_open(world));
-            tnecs_entity *arr = world->entities_open.arr;
-            arr[world->entities_open.num++] = i;
-        }
+        if (world->entities.id[i] != TNECS_NULL)
+            continue; /* Skip if entity exists */
+
+        if (tnecs_entity_isOpen(world, i))
+            continue; /* Skip if already in open list */
+
+        TNECS_CHECK_CALL(tnecs_grow_entities_open(world));
+        tnecs_entity *arr = world->entities_open.arr;
+        arr[world->entities_open.num++] = i;
     }
     return (1);
 };
