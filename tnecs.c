@@ -13,6 +13,26 @@ static b32 _tnecs_world_breath_archetypes(  tnecs_world *w);
 static size_t _tnecs_register_archetype(tnecs_world *w, size_t num_components,
                                         tnecs_component archetype);
 
+/* --- SET BIT COUNTING --- */
+static size_t setBits_KnR_u64(u64 flags);
+
+/* --- "DYNAMIC" ARRAYS --- */
+static void *tnecs_arrdel(  void    *arr,   size_t elem,
+                            size_t   len,   size_t bytesize);
+static void *tnecs_realloc( void    *ptr,   size_t olen,      
+                            size_t   nlen,  size_t bytesize);
+
+static b32 tnecs_grow_phase(           tnecs_world *w);
+static b32 tnecs_grow_torun(           tnecs_world *w);
+static b32 tnecs_grow_bytype(          tnecs_world *w,     size_t aID);
+static b32 tnecs_grow_entity(          tnecs_world *w);
+static b32 tnecs_grow_system(          tnecs_world *w);
+static b32 tnecs_grow_archetype(       tnecs_world *w);
+static b32 tnecs_grow_entities_open(   tnecs_world *w);
+static b32 tnecs_grow_system_byphase(  tnecs_world *w,     tnecs_phase  phase);
+static b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_carr *comp_arr, 
+                                size_t      tID,    size_t       corder);
+
 /********************* WORLD FUNCTIONS ***********************/
 b32 tnecs_world_genesis(tnecs_world **world) {
     /* Allocate world itself */

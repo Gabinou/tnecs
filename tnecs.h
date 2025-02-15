@@ -129,8 +129,8 @@ typedef struct tnecs_phases {
 } tnecs_phases;
 
 typedef struct tnecs_entities {
-    // entities.num has slightly different meaning:
-    // - Some entities might get deleted, but entities.num won't change.
+    // About entities.num:
+    // - entities.num doesn't change even if entities get deleted.
     // - If reuse_entities is true, they are added to entities_open, and reused.
     // - If reuse_entities is false, entities do not get added to entities_open.
     //      - Call tnecs_entities_open_reuse to add open entities to
@@ -243,10 +243,12 @@ b32             tnecs_entities_open_flush(tnecs_world *w);
 #define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) tnecs_entity_add_components(world, entity_id, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)), isnewtype)
 
 #define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) tnecs_entity_remove_components(world, entity_id, tnecs_component_ids2archetype(TNECS_VAR_EACH_ARGN(__VA_ARGS__), TNECS_VARMACRO_COMMA(__VA_ARGS__)))
+
+void *tnecs_get_component(tnecs_world *w, tnecs_entity eID, tnecs_component cID);
+
 /************************************************************/
 /********************** TNECS INTERNALS *********************/
 /************************************************************/
-void *tnecs_get_component(tnecs_world *w, tnecs_entity eID, tnecs_component cID);
 
 tnecs_entity    tnecs_entity_add_components(   tnecs_world *w, tnecs_entity eID, tnecs_component archetype, b32 isNew);
 b32             tnecs_entity_remove_components(tnecs_world *w, tnecs_entity eID, tnecs_component archetype);
@@ -293,23 +295,5 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...);
 
 #define TNECS_COMPONENTS_LIST(input, cID)  tnecs_carr_component_array(input->world, cID, input->entity_archetype_id)
 void *tnecs_carr_component_array(tnecs_world *world, const size_t cID, const size_t tID);
-
-/********************** "DYNAMIC" ARRAYS ********************/
-void *tnecs_arrdel( void *arr, size_t elem,     size_t len,     size_t bytesize);
-void *tnecs_realloc(void *ptr, size_t old_len,  size_t new_len, size_t elem_bytesize);
-
-b32 tnecs_grow_phase(           tnecs_world *w);
-b32 tnecs_grow_torun(           tnecs_world *w);
-b32 tnecs_grow_bytype(          tnecs_world *w,     size_t aID);
-b32 tnecs_grow_entity(          tnecs_world *w);
-b32 tnecs_grow_system(          tnecs_world *w);
-b32 tnecs_grow_archetype(       tnecs_world *w);
-b32 tnecs_grow_entities_open(   tnecs_world *w);
-b32 tnecs_grow_system_byphase(  tnecs_world *w,     tnecs_phase  phase);
-b32 tnecs_grow_component_array( tnecs_world *w,     tnecs_carr *comp_arr, 
-                                size_t      tID,    size_t       corder);
-
-/********************* SET BIT COUNTING *********************/
-size_t setBits_KnR_u64(u64 flags);
 
 #endif /* __TNECS_H__ */
