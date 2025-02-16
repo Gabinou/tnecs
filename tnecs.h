@@ -43,15 +43,12 @@
     } while (0)
 
 /********************* TYPE DEFINITIONS *********************/
-typedef unsigned long long int  tnecs_entity;       /* 64 bit int  */
-typedef unsigned long long int  tnecs_component;    /* 64 bit flag */
+typedef unsigned long long int  tnecs_entity;
+typedef unsigned long long int  tnecs_component;
 typedef unsigned long long int  tnecs_phase;
 typedef unsigned long long int  tnecs_ns;
 
-/*** Forward declarations ***/
-typedef struct tnecs_input tnecs_input;
-
-/*** Function pointer ***/
+struct tnecs_input; /* Forward declaration */
 typedef void (*tnecs_system_ptr)(struct tnecs_input *);
 
 /******************* CONSTANT DEFINITIONS *******************/
@@ -92,7 +89,8 @@ enum TNECS {
 #define TNECS_VAR_VARG_SEQ() \
     8, 7, 6, 5, 4, 3, 2, 1, 0
 
-// TNECS_VARMACRO_COMMA(__VA_ARGS__) puts commas around each arg, except last.
+// TNECS_VARMACRO_COMMA(__VA_ARGS__) puts commas after each arg,
+// except the last.
 //  - up to 63 args if all TNECS_COMMA_N exist
 #define TNECS_VARMACRO_COMMA(...) \
     TNECS_VARMACRO_COMMA_(\
@@ -138,13 +136,13 @@ typedef struct tnecs_phases {
 
 typedef struct tnecs_entities {
     // - .num doesn't change even if entities get deleted
-    // - reuse_entities is true: add deleted entities to entities_open
+    // - if reuse_entities: add deleted entities to entities_open
     //      - Call tnecs_entities_open_reuse to add entities with
     //        id[ent] == false entities_open.
     size_t num;
     size_t len;
 
-    tnecs_entity    *id;            // [entity_id]
+    tnecs_entity    *id;            // [entity_id] -> eID
     size_t          *orders;        // [entity_id]
     tnecs_component *archetypes;    // [entity_id]
 } tnecs_entities;
@@ -163,17 +161,17 @@ typedef struct tnecs_archetype {
     size_t num;
     size_t len;
 
-    tnecs_component   *id;                  // [archetype_id]
+    tnecs_component   *id;                  // [archetype_id] -> aID
     size_t            *num_components;      // [archetype_id]
     size_t            *len_entities;        // [archetype_id]
     size_t            *num_entities;        // [archetype_id]
     size_t            *num_archetype_ids;   // [archetype_id]
 
-    size_t          **archetype_id;     // ["][archetype_id_order]
-    tnecs_entity    **entities;         // ["][entity_order_bytype]
-    size_t          **components_order; // ["][component_id]
-    tnecs_component **components_id;    // ["][component_order_bytype]
-    tnecs_carr      **components;       // ["][component_order_bytype]
+    size_t          **archetype_id;     // [aID][archetype_id_order]
+    tnecs_entity    **entities;         // [aID][entity_order_bytype]
+    size_t          **components_order; // [aID][component_id]
+    tnecs_component **components_id;    // [aID][component_order_bytype]
+    tnecs_carr      **components;       // [aID][component_order_bytype]
 } tnecs_archetype;
 
 typedef struct tnecs_components {
@@ -193,14 +191,14 @@ typedef struct tnecs_world {
     int reuse_entities;
 } tnecs_world;
 
-struct tnecs_input {
+typedef struct tnecs_input {
     tnecs_world     *world;
     tnecs_ns         deltat;
     tnecs_component  system_archetype;
     size_t           num_entities;
     size_t           entity_archetype_id;
     void            *data;
-};
+} tnecs_input;
 
 /******************** WORLD ***********************/
 int tnecs_world_genesis(tnecs_world **w);
@@ -239,7 +237,6 @@ tnecs_component tnecs_register_component(
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         )\
     )
-
 #define TNECS_REGISTER_COMPONENT(world, name) \
     tnecs_register_component(world, sizeof(name))
 
@@ -284,7 +281,6 @@ void *tnecs_get_component(
             tnecs_component_ids2archetype(1, cID)\
         ) > 0\
     )
-
 #define TNECS_ADD_COMPONENT(...) \
     TNECS_CHOOSE_ADD_COMPONENT(\
         __VA_ARGS__, \
@@ -307,7 +303,6 @@ void *tnecs_get_component(
         tnecs_component_ids2archetype(1, cID), \
         isnewtype\
     )
-
 #define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) \
     tnecs_entity_add_components(\
         world, \
@@ -318,7 +313,6 @@ void *tnecs_get_component(
         ), \
         isnewtype\
     )
-
 #define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) \
     tnecs_entity_remove_components(\
         world, \

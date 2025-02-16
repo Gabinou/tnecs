@@ -2,7 +2,7 @@
 #include "tnecs.h"
 
 /****************** PRIVATE DECLARATIONS *******************/
-typedef unsigned char           tnecs_byte;
+typedef unsigned char tnecs_byte;
 
 /* --- WORLD FUNCTIONS --- */
 static int _tnecs_world_breath_phases(      tnecs_world *w);
@@ -12,58 +12,63 @@ static int _tnecs_world_breath_components(  tnecs_world *w);
 static int _tnecs_world_breath_archetypes(  tnecs_world *w);
 
 /* --- REGISTRATION  --- */
-static size_t _tnecs_register_archetype(tnecs_world *w, size_t num_components,
-                                        tnecs_component archetype);
+static size_t _tnecs_register_archetype(
+    tnecs_world *w, size_t num_c, tnecs_component a);
 
 /* --- SET BIT COUNTING --- */
 static size_t setBits_KnR(tnecs_component flags);
 
 /* --- "DYNAMIC" ARRAYS --- */
-static void *tnecs_arrdel(  void    *arr,   size_t elem,
-                            size_t   len,   size_t bytesize);
-static void *tnecs_realloc( void    *ptr,   size_t olen,
-                            size_t   nlen,  size_t bytesize);
+static void *tnecs_arrdel(
+    void *arr, size_t elem, size_t len,  size_t bytesize);
+static void *tnecs_realloc(
+    void *ptr, size_t olen, size_t nlen, size_t bytesize);
 
-static int tnecs_grow_phase(           tnecs_world *w);
-static int tnecs_grow_torun(           tnecs_world *w);
-static int tnecs_grow_bytype(          tnecs_world *w,     size_t aID);
-static int tnecs_grow_entity(          tnecs_world *w);
-static int tnecs_grow_system(          tnecs_world *w);
-static int tnecs_grow_archetype(       tnecs_world *w);
-static int tnecs_grow_entities_open(   tnecs_world *w);
-static int tnecs_grow_system_byphase(  tnecs_world *w,     tnecs_phase  phase);
-static int tnecs_grow_component_array( tnecs_world *w,     tnecs_carr *comp_arr,
-                                       size_t      tID,    size_t       corder);
+static int tnecs_grow_phase(            tnecs_world *w);
+static int tnecs_grow_torun(            tnecs_world *w);
+static int tnecs_grow_bytype(           tnecs_world *w, size_t aID);
+static int tnecs_grow_entity(           tnecs_world *w);
+static int tnecs_grow_system(           tnecs_world *w);
+static int tnecs_grow_archetype(        tnecs_world *w);
+static int tnecs_grow_entities_open(    tnecs_world *w);
+
+static int tnecs_grow_system_byphase(
+    tnecs_world *w, tnecs_phase phase);
+static int tnecs_grow_component_array(
+    tnecs_world *w, tnecs_carr *comp_arr, size_t tID, size_t corder);
 
 /* --- UTILITIES --- */
-static size_t tnecs_component_order_bytype(    tnecs_world *w, size_t          cID,
-                                               tnecs_component arch);
-static size_t tnecs_component_order_bytypeid(  tnecs_world *w, size_t          cID,
-                                               size_t          aID);
+static size_t tnecs_component_order_bytype(
+    tnecs_world *w, size_t cID, tnecs_component arch);
+static size_t tnecs_component_order_bytypeid(
+    tnecs_world *w, size_t cID, size_t aID);
 
 /* --- COMPONENT ARRAY --- */
 static int tnecs_carr_new(
-        tnecs_world *w, size_t num, tnecs_component a
-);
+        tnecs_world *w, size_t num, tnecs_component a);
 static int tnecs_carr_init(
-        tnecs_world *w, tnecs_carr *array, size_t cID
-);
+        tnecs_world *w, tnecs_carr *array, size_t cID);
 
 /* --- BYTYPE --- */
-static int tnecs_entitiesbytype_add(    tnecs_world *w, tnecs_entity e, tnecs_component nt);
-static int tnecs_entitiesbytype_del(    tnecs_world *w, tnecs_entity e, tnecs_component ot);
-static int tnecs_entitiesbytype_migrate(tnecs_world *w, tnecs_entity e, tnecs_component ot,
-                                        tnecs_component nt);
+static int tnecs_entitiesbytype_add(
+    tnecs_world *w, tnecs_entity e, tnecs_component nt);
+static int tnecs_entitiesbytype_del(
+    tnecs_world *w, tnecs_entity e, tnecs_component ot);
+static int tnecs_entitiesbytype_migrate(
+    tnecs_world *w, tnecs_entity e, tnecs_component ot, 
+    tnecs_component nt);
 
 /* --- COMPONENT --- */
-static int tnecs_component_add(    tnecs_world     *w,     tnecs_component flag);
-
-static int tnecs_component_del(    tnecs_world     *w,     tnecs_entity    ent,
-                                   tnecs_component  of);
-static int tnecs_component_copy(   tnecs_world     *w,     tnecs_entity    ent,
-                                   tnecs_component  of,    tnecs_component nf);
-static int tnecs_component_migrate(tnecs_world     *w,     tnecs_entity    ent,
-                                   tnecs_component  of,    tnecs_component nf);
+static int tnecs_component_add(
+    tnecs_world *w, tnecs_component flag);
+static int tnecs_component_del(
+    tnecs_world *w, tnecs_entity ent, tnecs_component of);
+static int tnecs_component_copy(
+    tnecs_world     *w,     tnecs_entity ent, 
+    tnecs_component  of,    tnecs_component nf);
+static int tnecs_component_migrate(
+    tnecs_world     *w,     tnecs_entity ent,
+    tnecs_component  of,    tnecs_component nf);
 
 /********************* WORLD FUNCTIONS ***********************/
 int tnecs_world_genesis(tnecs_world **world) {
