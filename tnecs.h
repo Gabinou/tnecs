@@ -1,20 +1,11 @@
 #ifndef __TNECS_H__
 #define __TNECS_H__
-/* Tiny C99 Entity-Component-System (ECS) library.
-* tnecs.h
+/* tnecs: Tiny C99 Entity-Component-System (ECS) library.
+*
+* The simplest possible C99 ECS library, 
+* only with the minimum necessary features. 
 *
 * Copyright (C) Gabriel Taillon, 2023-2025
-*
-* In tnecs, an entity is an ```ull``` index.
-* A component is user-defined ```struct```.
-* A system is a user-defined ```function```.
-* All live inside the ```world```.
-*
-* The systems iterate over the entities that have a user-defined set of components,
-* inclusively or exclusively, in phases.
-* Phases are user-defined ```ull```.
-* System execution order in a phases is first-come first-served by default.
-* Systems are inclusive by default, they run for all compatible archetypes.
 */
 
 #include <stdio.h>
