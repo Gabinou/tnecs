@@ -359,11 +359,11 @@ int tnecs_system_run(tnecs_world *world, size_t in_system_id,
         while (world->systems_torun.num >= (world->systems_torun.len - 1)) {
             TNECS_CHECK_CALL(tnecs_grow_torun(world));
         }
-        tnecs_system_ptr system_ptr             = world->byphase.systems[phase][sorder];
-        system_num                              = world->systems_torun.num++;
-        system_ptr                              = world->systems_torun.arr;
-        system_ptr[system_num]                  = system_ptr;
-        system_ptr(&input);
+        system                                  = world->byphase.systems[phase][sorder];
+        size_t system_num                       = world->systems_torun.num++;
+        tnecs_system_ptr *system_ptr            = world->systems_torun.arr;
+        system_ptr[system_num]                  = system;
+        system(&input);
     }
     return (1);
 }
