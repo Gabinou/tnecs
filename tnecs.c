@@ -39,9 +39,9 @@ static int tnecs_grow_component_array(
 
 /* --- UTILITIES --- */
 static size_t tnecs_component_order_bytype(
-    tnecs_world *w, size_t cID, tnecs_component arch);
+    const tnecs_world *const w, size_t cID, tnecs_component arch);
 static size_t tnecs_component_order_bytypeid(
-    tnecs_world *w, size_t cID, size_t aID);
+    const tnecs_world *const w, size_t cID, size_t aID);
 
 /* --- COMPONENT ARRAY --- */
 static int tnecs_carr_new(
@@ -442,7 +442,6 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
     TNECS_CHECK_CALL(tnecs_carr_new(world, num_components, archetype_new));
 
     // 3- Add all components to bytype.components_id
-    tnecs_component component_id_toadd, component_type_toadd;
     tnecs_component archetype_reduced = archetype_new, archetype_added = 0;
     size_t bytesize1 = sizeof(**world->bytype.components_id);
     size_t bytesize2 = sizeof(**world->bytype.components_order);
@@ -455,10 +454,10 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
     while (archetype_reduced) {
         archetype_reduced &= (archetype_reduced - 1);
 
-        component_type_toadd = (archetype_reduced + archetype_added) ^ archetype_new;
+        tnecs_component component_type_toadd = (archetype_reduced + archetype_added) ^ archetype_new;
         archetype_added      += component_type_toadd;
         assert(component_type_toadd > 0);
-        component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
+        tnecs_component component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
         world->bytype.components_id[tID][k]      = component_id_toadd;
 
@@ -584,7 +583,7 @@ tnecs_entity tnecs_entity_isOpen(tnecs_world *world, tnecs_entity entity) {
         return (0);
     }
 
-    tnecs_entity *open_arr = world->entities_open.arr;
+    const tnecs_entity * const open_arr = world->entities_open.arr;
 
     for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities_open.num; i++) {
         if (open_arr[i] == entity) {
@@ -878,7 +877,7 @@ int tnecs_component_copy(tnecs_world *world, tnecs_entity entity,
             assert(new_component_ptr != old_component_ptr);
 
 #ifndef NDEBUG
-            void *out = memmove(new_component_ptr, old_component_ptr, component_bytesize);
+            const void *const out = memmove(new_component_ptr, old_component_ptr, component_bytesize);
             assert(out == new_component_ptr);
 #else
             memmove(new_component_ptr, old_component_ptr, component_bytesize);
@@ -904,7 +903,7 @@ int tnecs_component_del(tnecs_world *world, tnecs_entity entity,
         /* Scramble components too */
         size_t comp_by       = world->components.bytesizes[current_component_id];
         size_t new_comp_num  = world->bytype.num_entities[old_tID];
-        tnecs_byte *scramble = tnecs_arrdel(comp_ptr, order_old, new_comp_num, comp_by);
+        const tnecs_byte *const scramble = tnecs_arrdel(comp_ptr, order_old, new_comp_num, comp_by);
         TNECS_CHECK_ALLOC(scramble);
 
         old_array->num--;
@@ -930,13 +929,13 @@ int tnecs_carr_new(tnecs_world *world, size_t num_components,
     tnecs_carr *comp_arr = calloc(num_components, sizeof(tnecs_carr));
     TNECS_CHECK_ALLOC(comp_arr);
 
-    tnecs_component archetype_reduced = archetype, archetype_added = 0, type_toadd;
+    tnecs_component archetype_reduced = archetype, archetype_added = 0;
     tnecs_component tID = tnecs_archetypeid(world, archetype);
     size_t id_toadd = 0, num_flags = 0;
 
     while (archetype_reduced) {
         archetype_reduced &= (archetype_reduced - 1);
-        type_toadd = (archetype_reduced + archetype_added) ^ archetype;
+        tnecs_component type_toadd = (archetype_reduced + archetype_added) ^ archetype;
         assert(type_toadd > 0);
         id_toadd = TNECS_COMPONENT_TYPE2ID(type_toadd);
         assert(id_toadd > 0);
@@ -993,12 +992,12 @@ int tnecs_system_order_switch(tnecs_world *world, tnecs_phase phase,
 
 /************************ UTILITY FUNCTIONS/MACROS ***************************/
 
-size_t tnecs_component_order_bytype(tnecs_world *world, size_t cID, tnecs_component flag) {
+size_t tnecs_component_order_bytype(const tnecs_world *const world, size_t cID, tnecs_component flag) {
     tnecs_component tID = tnecs_archetypeid(world, flag);
     return (tnecs_component_order_bytypeid(world, cID, tID));
 }
 
-size_t tnecs_component_order_bytypeid(tnecs_world *world, size_t cID, size_t tID) {
+size_t tnecs_component_order_bytypeid(const tnecs_world *const world, size_t cID, size_t tID) {
     size_t order = TNECS_COMPONENT_CAP;
     for (size_t i = 0; i < world->bytype.num_components[tID]; i++) {
         if (world->bytype.components_id[tID][i] == cID) {
@@ -1021,7 +1020,7 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...) {
     return (out);
 }
 
-tnecs_component tnecs_archetypeid(tnecs_world *world, tnecs_component archetype) {
+tnecs_component tnecs_archetypeid(const tnecs_world *const world, tnecs_component archetype) {
     size_t id = 0;
     for (size_t i = 0; i < world->bytype.num; i++) {
         if (archetype == world->bytype.id[i]) {
