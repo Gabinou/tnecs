@@ -341,11 +341,12 @@ int tnecs_system_run(tnecs_world *world, size_t in_system_id,
     while (world->systems_torun.num >= (world->systems_torun.len - 1)) {
         TNECS_CHECK_CALL(tnecs_grow_torun(world));
     }
-
-    tnecs_system_ptr system                 = world->byphase.systems[phase][sorder];
-    size_t system_num                       = world->systems_torun.num++;
-    tnecs_system_ptr *system_ptr            = world->systems_torun.arr;
-    system_ptr[system_num]                  = world->byphase.systems[phase][sorder];
+    tnecs_system_ptr *system_ptr;
+    size_t system_num;
+    tnecs_system_ptr system             = world->byphase.systems[phase][sorder];
+    system_num                          = world->systems_torun.num++;
+    system_ptr            = world->systems_torun.arr;
+    system_ptr[system_num]              = world->byphase.systems[phase][sorder];
     system(&input);
 
     if (world->systems.exclusive[in_system_id])
@@ -358,11 +359,11 @@ int tnecs_system_run(tnecs_world *world, size_t in_system_id,
         while (world->systems_torun.num >= (world->systems_torun.len - 1)) {
             TNECS_CHECK_CALL(tnecs_grow_torun(world));
         }
-        tnecs_system_ptr system                 = world->byphase.systems[phase][sorder];
-        size_t system_num                       = world->systems_torun.num++;
-        tnecs_system_ptr *system_ptr            = world->systems_torun.arr;
-        system_ptr[system_num]                  = system;
-        system(&input);
+        tnecs_system_ptr system_ptr             = world->byphase.systems[phase][sorder];
+        system_num                              = world->systems_torun.num++;
+        system_ptr                              = world->systems_torun.arr;
+        system_ptr[system_num]                  = system_ptr;
+        system_ptr(&input);
     }
     return (1);
 }
@@ -450,7 +451,7 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
     world->bytype.components_order[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize2);
     TNECS_CHECK_ALLOC(world->bytype.components_order[tID]);
 
-    size_t i = 0;
+    size_t k = 0;
     while (archetype_reduced) {
         archetype_reduced &= (archetype_reduced - 1);
 
@@ -459,9 +460,9 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
         assert(component_type_toadd > 0);
         component_id_toadd   = TNECS_COMPONENT_TYPE2ID(component_type_toadd);
 
-        world->bytype.components_id[tID][i]      = component_id_toadd;
+        world->bytype.components_id[tID][k]      = component_id_toadd;
 
-        world->bytype.components_order[tID][component_id_toadd] = i++;
+        world->bytype.components_order[tID][component_id_toadd] = k++;
     }
 
     // 4- Check archetypes.
