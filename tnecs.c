@@ -1012,8 +1012,10 @@ tnecs_component tnecs_component_ids2archetype(size_t argnum, ...) {
     tnecs_component out = 0;
     va_list ap;
     va_start(ap, argnum);
-    for (size_t i = 0; i < argnum; i++)
-        out += TNECS_COMPONENT_ID2TYPE(va_arg(ap, size_t));
+    for (size_t i = 0; i < argnum; i++) {
+        size_t id = va_arg(ap, size_t);
+        out += TNECS_COMPONENT_ID2TYPE(id);
+    }
     va_end(ap);
     return (out);
 }

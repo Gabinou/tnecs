@@ -409,7 +409,14 @@ void tnecs_test_component_registration() {
     int Velocity_ID = 2;
     int Unit_ID     = 3;
 
+    printf("1- %lu\n", TNECS_COMPONENT_ID2TYPE(1));
+    printf("1- %lu\n", TNECS_COMPONENT_ID2TYPE(2));
+    printf("1- %lu\n", TNECS_COMPONENT_ID2TYPE(3));
+
+
+    printf("2- %lu\n", TNECS_COMPONENT_IDS2ARCHETYPE(1, 2, 3));
     lok(TNECS_COMPONENT_IDS2ARCHETYPE(1, 2, 3) == (1 + 2 + 4));
+    printf("3- %lu\n", TNECS_COMPONENT_IDS2ARCHETYPE(Position_ID, Unit_ID, Velocity_ID));
     lok(TNECS_COMPONENT_IDS2ARCHETYPE(Position_ID, Unit_ID, Velocity_ID) == (1 + 2 + 4));
 }
 
