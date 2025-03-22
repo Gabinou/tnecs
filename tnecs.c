@@ -360,8 +360,8 @@ int tnecs_system_run(tnecs_world *world, size_t in_system_id,
             TNECS_CHECK_CALL(tnecs_grow_torun(world));
         }
         system                                  = world->byphase.systems[phase][sorder];
-        size_t system_num                       = world->systems_torun.num++;
-        tnecs_system_ptr *system_ptr            = world->systems_torun.arr;
+        system_num                              = world->systems_torun.num++;
+        system_ptr                              = world->systems_torun.arr;
         system_ptr[system_num]                  = system;
         system(&input);
     }
@@ -975,7 +975,7 @@ int tnecs_system_order_switch(tnecs_world *world, tnecs_phase phase,
     if (!world->byphase.systems[phase][order1]) {
         return (0);
     }
-    if (!world->byphase.systems[phase][order1]) {
+    if (!world->byphase.systems[phase][order2]) {
         return (0);
     }
 
