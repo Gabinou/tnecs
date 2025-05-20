@@ -512,7 +512,7 @@ void tnecs_test_entity_creation() {
     int Unit2_ID     = 2;
 
     TNECS_REGISTER_COMPONENT(test_world2, Position2);
-    test_world2->byphase.num_systems[0] = TNECS_INIT_PHASE_LEN;
+    test_world2->pipelines.byphase[0].num_systems[0] = TNECS_INIT_PHASE_LEN;
     TNECS_REGISTER_SYSTEM(test_world2, SystemMovePhase1, 0, 0, Position2_ID);
     tnecs_world_destroy(&test_world2);
 
@@ -852,17 +852,17 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 1, 1, Unit_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase4, 4, 1, Velocity_ID);
 
-    lok(test_world->byphase.num == 5);
-    lok(test_world->byphase.systems[1][0] == &SystemMovePhase1);
-    lok(test_world->byphase.systems[1][1] == &SystemMovePhase2);
-    lok(test_world->byphase.systems[2][0] == &SystemMovePhase2);
-    lok(test_world->byphase.systems[4][0] == &SystemMovePhase4);
+    lok(test_world->pipelines.byphase[0].num == 5);
+    lok(test_world->pipelines.byphase[0].systems[1][0] == &SystemMovePhase1);
+    lok(test_world->pipelines.byphase[0].systems[1][1] == &SystemMovePhase2);
+    lok(test_world->pipelines.byphase[0].systems[2][0] == &SystemMovePhase2);
+    lok(test_world->pipelines.byphase[0].systems[4][0] == &SystemMovePhase4);
     tnecs_system_order_switch(test_world, 1, 0, 1);
-    lok(test_world->byphase.systems[1][0] == &SystemMovePhase2);
-    lok(test_world->byphase.systems[1][1] == &SystemMovePhase1);
+    lok(test_world->pipelines.byphase[0].systems[1][0] == &SystemMovePhase2);
+    lok(test_world->pipelines.byphase[0].systems[1][1] == &SystemMovePhase1);
     tnecs_system_order_switch(test_world, 1, 0, 1);
-    lok(test_world->byphase.systems[1][0] == &SystemMovePhase1);
-    lok(test_world->byphase.systems[1][1] == &SystemMovePhase2);
+    lok(test_world->pipelines.byphase[0].systems[1][0] == &SystemMovePhase1);
+    lok(test_world->pipelines.byphase[0].systems[1][1] == &SystemMovePhase2);
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
@@ -1094,8 +1094,8 @@ void tnecs_test_grow() {
     lok(grow_world->bytype.num      == 1);
     lok(grow_world->systems.len     == TNECS_INIT_SYSTEM_LEN);
     lok(grow_world->systems.num     == 1);
-    lok(grow_world->byphase.len     == TNECS_INIT_PHASE_LEN);
-    lok(grow_world->byphase.num     == 1);
+    lok(grow_world->pipelines.byphase[0].len     == TNECS_INIT_PHASE_LEN);
+    lok(grow_world->pipelines.byphase[0].num     == 1);
     lok(grow_world->entities.open.num == 0);
     lok(grow_world->entities.open.len == TNECS_INIT_ENTITY_LEN);
 
@@ -1114,11 +1114,11 @@ void tnecs_test_grow() {
         lok(grow_world->bytype.num_components[i] == 0);
     }
 
-    for (size_t i = 0; i < grow_world->byphase.len; i++) {
-        lok(grow_world->byphase.num_systems[i] == 0);
-        lok(grow_world->byphase.len_systems[i] == TNECS_INIT_PHASE_LEN);
-        for (size_t j = 0; j < grow_world->byphase.len_systems[i]; j++) {
-            lok(grow_world->byphase.systems[i][j] == 0);
+    for (size_t i = 0; i < grow_world->pipelines.byphase[0].len; i++) {
+        lok(grow_world->pipelines.byphase[0].num_systems[i] == 0);
+        lok(grow_world->pipelines.byphase[0].len_systems[i] == TNECS_INIT_PHASE_LEN);
+        for (size_t j = 0; j < grow_world->pipelines.byphase[0].len_systems[i]; j++) {
+            lok(grow_world->pipelines.byphase[0].systems[i][j] == 0);
         }
     }
 
@@ -1174,14 +1174,14 @@ void tnecs_test_grow() {
     }
 
     tnecs_grow_phase(grow_world);
-    lok(grow_world->byphase.len == TNECS_INIT_PHASE_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+    lok(grow_world->pipelines.byphase[0].len == TNECS_INIT_PHASE_LEN * TNECS_ARRAY_GROWTH_FACTOR);
 
-    lok(grow_world->byphase.num == 1);
-    for (size_t i = TNECS_INIT_PHASE_LEN; i < grow_world->byphase.len; i++) {
-        lok(grow_world->byphase.num_systems[i] == 0);
-        lok(grow_world->byphase.len_systems[i] == TNECS_INIT_PHASE_LEN);
-        for (size_t j = 0; j < grow_world->byphase.len_systems[i]; j++) {
-            lok(grow_world->byphase.systems[i][j] == 0);
+    lok(grow_world->pipelines.byphase[0].num == 1);
+    for (size_t i = TNECS_INIT_PHASE_LEN; i < grow_world->pipelines.byphase[0].len; i++) {
+        lok(grow_world->pipelines.byphase[0].num_systems[i] == 0);
+        lok(grow_world->pipelines.byphase[0].len_systems[i] == TNECS_INIT_PHASE_LEN);
+        for (size_t j = 0; j < grow_world->pipelines.byphase[0].len_systems[i]; j++) {
+            lok(grow_world->pipelines.byphase[0].systems[i][j] == 0);
         }
     }
 

@@ -42,7 +42,7 @@ tcc -O0 -DNDEBUG -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-
 ./test
 
 rm -f test
-gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g test.c -o test -lm
+gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g test.c -o test -lm -fmax-errors=5
 ./test
 ```
 
