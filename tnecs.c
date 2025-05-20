@@ -214,7 +214,6 @@ int tnecs_pipeline_step_phase(tnecs_world *world,
     return(1);
 }
 
-
 int tnecs_world_step(tnecs_world    *world,
                      tnecs_ns        deltat,
                      void           *data) {
@@ -449,6 +448,7 @@ size_t tnecs_register_system(tnecs_world *world, tnecs_system_ptr in_system,
     /* Realloc systems if too many */
     if (world->systems.num >= world->systems.len) {
         TNECS_CHECK_CALL(tnecs_grow_system(world));
+
     }
 
     /* Realloc systems_byphase if too many */
