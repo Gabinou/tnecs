@@ -5,9 +5,10 @@
 typedef unsigned char tnecs_byte;
 
 /* --- WORLD FUNCTIONS --- */
-static int _tnecs_world_breath_phases(      tnecs_world *w);
+static int _tnecs_world_breath_phases_new(  tnecs_phases *byphase);
 static int _tnecs_world_breath_systems(     tnecs_world *w);
 static int _tnecs_world_breath_entities(    tnecs_world *w);
+static int _tnecs_world_breath_pipelines(   tnecs_world *w);
 static int _tnecs_world_breath_components(  tnecs_world *w);
 static int _tnecs_world_breath_archetypes(  tnecs_world *w);
 
@@ -79,7 +80,7 @@ int tnecs_world_genesis(tnecs_world **world) {
     TNECS_CHECK_ALLOC(*world);
 
     /* Allocate world members */
-    TNECS_CHECK_CALL(_tnecs_world_breath_phases(    *world));
+    TNECS_CHECK_CALL(_tnecs_world_breath_phases_new(&((*world)->byphase)));
     TNECS_CHECK_CALL(_tnecs_world_breath_entities(  *world));
     TNECS_CHECK_CALL(_tnecs_world_breath_systems(   *world));
     TNECS_CHECK_CALL(_tnecs_world_breath_archetypes(*world));
@@ -126,7 +127,6 @@ int tnecs_world_destroy(tnecs_world **world) {
     free((*world)->byphase.num_systems);
     free((*world)->bytype.num_archetype_ids);
     free((*world)->bytype.num_components);
-    // free((*world)->byphase.id);
     free((*world)->bytype.archetype_id);
     free((*world)->byphase.systems);
     free((*world)->systems.orders);
@@ -197,33 +197,43 @@ int _tnecs_world_breath_entities(tnecs_world *world) {
     return (1);
 }
 
-int _tnecs_world_breath_phases(tnecs_world *world) {
-    world->byphase.len          = TNECS_INIT_PHASE_LEN;
-    world->byphase.num          = TNECS_NULLSHIFT;
+int _tnecs_world_breath_pipelines(tnecs_world *world) {
+    world->pipelines.len          = TNECS_INIT_PIPELINE_LEN;
+    world->pipelines.num          = TNECS_NULLSHIFT;
 
-    world->byphase.systems              = calloc(world->byphase.len,
-                                                 sizeof(*world->byphase.systems));
-    world->byphase.systems_id           = calloc(world->byphase.len,
-                                                 sizeof(*world->byphase.systems_id));
-    world->byphase.num_systems          = calloc(world->byphase.len,
-                                                 sizeof(*world->byphase.num_systems));
-    world->byphase.len_systems          = calloc(world->byphase.len,
-                                                 sizeof(*world->byphase.len_systems));
+    world->pipelines.byphase      = calloc(world->pipelines.len,
+                                            sizeof(*world->pipelines.byphase));
 
-    TNECS_CHECK_ALLOC(world->byphase.systems);
-    TNECS_CHECK_ALLOC(world->byphase.systems_id);
-    TNECS_CHECK_ALLOC(world->byphase.num_systems);
-    TNECS_CHECK_ALLOC(world->byphase.len_systems);
+    return (1);
+}
+
+int _tnecs_world_breath_phases_new(  tnecs_phases *byphase) {
+    byphase->len          = TNECS_INIT_PHASE_LEN;
+    byphase->num          = TNECS_NULLSHIFT;
+
+    byphase->systems        = calloc(byphase->len,
+                                        sizeof(*byphase->systems));
+    byphase->systems_id     = calloc(byphase->len,
+                                        sizeof(*byphase->systems_id));
+    byphase->num_systems    = calloc(byphase->len,
+                                        sizeof(*byphase->num_systems));
+    byphase->len_systems    = calloc(byphase->len,
+                                        sizeof(*byphase->len_systems));
+
+    TNECS_CHECK_ALLOC(byphase->systems);
+    TNECS_CHECK_ALLOC(byphase->systems_id);
+    TNECS_CHECK_ALLOC(byphase->num_systems);
+    TNECS_CHECK_ALLOC(byphase->len_systems);
 
     /* Alloc & check for entities_byphase elements */
-    for (size_t i = 0; i < world->byphase.len; i++) {
-        world->byphase.systems[i]   = calloc(world->byphase.len, sizeof(**world->byphase.systems));
-        TNECS_CHECK_ALLOC(world->byphase.systems[i]);
-        world->byphase.systems_id[i] = calloc(world->byphase.len, sizeof(**world->byphase.systems_id));
-        TNECS_CHECK_ALLOC(world->byphase.systems_id[i]);
+    for (size_t i = 0; i < byphase->len; i++) {
+        byphase->systems[i]     = calloc(byphase->len, sizeof(**byphase->systems));
+        TNECS_CHECK_ALLOC(byphase->systems[i]);
+        byphase->systems_id[i]  = calloc(byphase->len, sizeof(**byphase->systems_id));
+        TNECS_CHECK_ALLOC(byphase->systems_id[i]);
 
-        world->byphase.num_systems[i] = 0;
-        world->byphase.len_systems[i] = world->byphase.len;
+        byphase->num_systems[i] = 0;
+        byphase->len_systems[i] = byphase->len;
     }
     return (1);
 }

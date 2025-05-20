@@ -48,7 +48,8 @@ enum TNECS {
     TNECS_NULL                  =         0,
     TNECS_NULLSHIFT             =         1,
     TNECS_INIT_ENTITY_LEN       =       128,
-    TNECS_INIT_PHASE_LEN        =         8,
+    TNECS_INIT_PHASE_LEN        =         4,
+    TNECS_INIT_PIPELINE_LEN     =         4,
     TNECS_INIT_COMPONENT_LEN    =         8,
     TNECS_INIT_SYSTEM_LEN       =        16,
     TNECS_INIT_ARCHETYPE_LEN    =        16,
@@ -119,7 +120,6 @@ typedef struct tnecs_phases {
     size_t num;
     size_t len;
 
-    // tnecs_phase       *id;          // [phase_order]
     size_t            *len_systems; // [phase_id]
     size_t            *num_systems; // [phase_id]
     size_t           **systems_id;  // [phase_id][system_order]
@@ -130,7 +130,6 @@ typedef struct tnecs_pipelines {
     size_t num;
     size_t len;
 
-    // tnecs_pipeline  *id;        // [pipeline_order]
     tnecs_phases    *byphase;   // [pipeline_id]
 } tnecs_pipelines;
 
