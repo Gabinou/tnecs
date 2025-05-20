@@ -843,6 +843,10 @@ void tnecs_test_world_progress() {
     temp_position->x = 100;
     temp_position->y = 200;
 
+    tnecs_new_phase(test_world);
+    tnecs_new_phase(test_world);
+    tnecs_new_phase(test_world);
+    tnecs_new_phase(test_world);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase1, 1, 1, Position_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 2, 1, Velocity_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 1, 1, Unit_ID);
@@ -1024,10 +1028,14 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_COMPONENT(inclusive_world2, Unit);
     TNECS_REGISTER_COMPONENT(inclusive_world2, Sprite);
 
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMoveDoNothing, 2, 0, Unit_ID); // 4X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase1, 1, 0, Unit_ID, Velocity_ID);  // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2, 4, 0, Unit_ID, Position_ID); // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase4, 3, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
+    tnecs_new_phase(inclusive_world2);
+    tnecs_new_phase(inclusive_world2);
+    tnecs_new_phase(inclusive_world2);
+    tnecs_new_phase(inclusive_world2);
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMoveDoNothing, 2, 0, Unit_ID);                            // 4X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase1,    1, 0, Unit_ID, Velocity_ID);               // 2X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2,    4, 0, Unit_ID, Position_ID);               // 2X
+    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase4,    3, 0, Unit_ID, Position_ID, Velocity_ID);  // 1X
 
     lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
     lok(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
