@@ -390,9 +390,12 @@ size_t tnecs_register_system(tnecs_world *world,
         TNECS_CHECK_CALL(tnecs_grow_system_byphase(world, phase));
 
     /* -- Actual registration -- */
-    /* Register new phase if didn't exist */
-    if (!world->byphase.id[phase])
-        TNECS_CHECK_CALL(tnecs_register_phase(world, phase));
+    /* Check if phase exist */
+    if (!world->byphase.id[phase]) {
+        printf("tnecs: System phase '%d' is invalid.\n", phase);
+        return (TNECS_NULL);
+        // TNECS_CHECK_CALL(tnecs_new_phase(world, phase));
+    }
 
     world->systems.exclusive[system_id]     = isExclusive;
     world->systems.phases[system_id]        = phase;
@@ -488,7 +491,7 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
     return (tID);
 }
 
-size_t tnecs_register_phase(tnecs_world *world, tnecs_phase phase) {
+size_t tnecs_new_phase(tnecs_world *world, tnecs_phase phase) {
     if (phase <= 0)
         return (1);
 

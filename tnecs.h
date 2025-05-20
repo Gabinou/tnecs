@@ -231,10 +231,8 @@ int tnecs_custom_system_run(
     tnecs_component ar, tnecs_ns         dt,    void *data);
 
 /*********************** REGISTRATION ***********************/
-size_t tnecs_register_phase(
-    tnecs_world    *w,    tnecs_phase         phase);
-size_t tnecs_register_pipeline(
-    tnecs_world    *w,    int         pipeline);
+size_t tnecs_new_phase(     tnecs_world    *w);
+size_t tnecs_new_pipeline(  tnecs_world    *w);
 size_t tnecs_register_system(
     tnecs_world    *w,    tnecs_system_ptr    system,
     tnecs_phase     p,    int                 isExclusive,
