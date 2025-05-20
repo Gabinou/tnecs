@@ -231,7 +231,9 @@ int tnecs_custom_system_run(
     tnecs_component ar, tnecs_ns         dt,    void *data);
 
 /*********************** REGISTRATION ***********************/
+/* Phases start at 1, increment every call. */
 size_t tnecs_new_phase(     tnecs_world    *w);
+/* Pipelines start at 1, increment every call. */
 size_t tnecs_new_pipeline(  tnecs_world    *w);
 size_t tnecs_register_system(
     tnecs_world    *w,    tnecs_system_ptr    system,
