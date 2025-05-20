@@ -108,9 +108,7 @@ Systems are run by phases.
 For each phase, the systems are run first come first served.
 
 Phases are greater than zero ```ull``` integers.
-Default phase is 0, the NULL phase, which always runs first.
-Other phases run in order of their phase id. 
-This order can be changed with ```tnecs_system_order_switch```.
+Default phase is 0, the NULL phase, which always runs first. 
 
 By default, systems are inclusive, meaning that entities that have additional components to the system's are also run by it. 
 Inclusive systems are run once for every compatible archetype to the system archetype, in the order saved in ```systems_torun``` in the ```world``` after each step.

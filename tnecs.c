@@ -392,7 +392,6 @@ size_t tnecs_register_system(tnecs_world *world,
     if (!TNECS_PHASE_VALID(world, phase)) {
         printf("tnecs: System phase '%d' is invalid.\n", phase);
         return (TNECS_NULL);
-        // TNECS_CHECK_CALL(tnecs_new_phase(world, phase));
     }
 
     world->systems.exclusive[system_id]     = isExclusive;
@@ -489,7 +488,12 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
     return (tID);
 }
 
-size_t tnecs_new_phase(tnecs_world *world) {
+size_t tnecs_register_pipeline(tnecs_world *world) {
+    tnecs_pipeline pipeline = world->pipelines.num++;
+    return (pipeline);
+}
+
+size_t tnecs_register_phase(tnecs_world *world) {
     tnecs_phase phase = world->byphase.num++;
     while (phase >= world->byphase.len) {
         TNECS_CHECK_CALL(tnecs_grow_phase(world));

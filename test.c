@@ -843,10 +843,10 @@ void tnecs_test_world_progress() {
     temp_position->x = 100;
     temp_position->y = 200;
 
-    tnecs_new_phase(test_world);
-    tnecs_new_phase(test_world);
-    tnecs_new_phase(test_world);
-    tnecs_new_phase(test_world);
+    tnecs_register_phase(test_world);
+    tnecs_register_phase(test_world);
+    tnecs_register_phase(test_world);
+    tnecs_register_phase(test_world);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase1, 1, 1, Position_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 2, 1, Velocity_ID);
     TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, 1, 1, Unit_ID);
@@ -1028,10 +1028,10 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_COMPONENT(inclusive_world2, Unit);
     TNECS_REGISTER_COMPONENT(inclusive_world2, Sprite);
 
-    tnecs_new_phase(inclusive_world2);
-    tnecs_new_phase(inclusive_world2);
-    tnecs_new_phase(inclusive_world2);
-    tnecs_new_phase(inclusive_world2);
+    tnecs_register_phase(inclusive_world2);
+    tnecs_register_phase(inclusive_world2);
+    tnecs_register_phase(inclusive_world2);
+    tnecs_register_phase(inclusive_world2);
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMoveDoNothing, 2, 0, Unit_ID);                            // 4X
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase1,    1, 0, Unit_ID, Velocity_ID);               // 2X
     TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2,    4, 0, Unit_ID, Position_ID);               // 2X
