@@ -36,6 +36,7 @@ static int tnecs_grow_torun(            tnecs_world *w);
 static int tnecs_grow_bytype(           tnecs_world *w, size_t aID);
 static int tnecs_grow_entity(           tnecs_world *w);
 static int tnecs_grow_system(           tnecs_world *w);
+static int tnecs_grow_pipeline(         tnecs_world *w);
 static int tnecs_grow_archetype(        tnecs_world *w);
 static int tnecs_grow_entities_open(    tnecs_world *w);
 
@@ -530,6 +531,11 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
 
 size_t tnecs_register_pipeline(tnecs_world *world) {
     tnecs_pipeline pipeline = world->pipelines.num++;
+    while (phase >= world->pipelines.len) {
+        TNECS_CHECK_CALL(tnecs_grow_pipeline(world));
+    }
+    _tnecs_world_breath_phases(world->pipelines[pipeline]);
+
     return (pipeline);
 }
 
@@ -1234,6 +1240,11 @@ int tnecs_grow_archetype(tnecs_world *world) {
         world->bytype.len_entities[i] = TNECS_INIT_ENTITY_LEN;
         world->bytype.num_entities[i] = 0;
     }
+    return (1);
+}
+
+int tnecs_grow_pipeline(tnecs_world *world) {
+
     return (1);
 }
 

@@ -182,7 +182,7 @@ typedef struct tnecs_components {
 } tnecs_components;
 
 typedef struct tnecs_world {
-    tnecs_phases        byphase;
+    // tnecs_phases        byphase;
     tnecs_system        systems;
     tnecs_entities      entities;
     tnecs_archetype     bytype;
@@ -377,13 +377,11 @@ int tnecs_system_order_switch(
     world->systems.archetypes[id]
 
 /************************** PHASE ***********************/
-// #define TNECS_PHASE_VALID(world, pipeline_id, phase_order)
-// ((index == TNECS_NULL) || (world->pipelines[pipeline_id]->byphase.id[index] == index))
-#define TNECS_PHASE_VALID(world, phase) \
-    ((phase) < world->byphase.num)
+#define TNECS_PHASE_VALID(world, pipeline, phase) \
+    (phase < world->pipelines[pipeline]->byphase.num)
 
 /************************** PIPELINE ***********************/
 #define TNECS_PIPELINE_VALID(world, pipeline_id) \
-    ((index == TNECS_NULL) || (world->pipelines.id[pipeline_id] == index))
+    (pipeline < world->pipelines.num)
 
 #endif /* __TNECS_H__ */
