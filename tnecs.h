@@ -119,10 +119,10 @@ typedef struct tnecs_phases {
     size_t num;
     size_t len;
 
-    tnecs_phase       *id;          // [phase_order]
-    size_t            *len_systems; // [phase_order]
-    size_t            *num_systems; // [phase_order]
-    size_t           **systems_id;  // [phase_order][system_order]
+    // tnecs_phase       *id;          // [phase_order]
+    size_t            *len_systems; // [phase_id]
+    size_t            *num_systems; // [phase_id]
+    size_t           **systems_id;  // [phase_id][system_order]
     tnecs_system_ptr **systems;     // [phase_order][system_id]
 } tnecs_phases;
 
@@ -130,8 +130,8 @@ typedef struct tnecs_pipelines {
     size_t num;
     size_t len;
 
-    tnecs_pipeline  *id;        // [pipeline_order]
-    tnecs_phases    *byphase;   // [pipeline_order]
+    // tnecs_pipeline  *id;        // [pipeline_order]
+    tnecs_phases    *byphase;   // [pipeline_id]
 } tnecs_pipelines;
 
 typedef struct tnecs_entities {

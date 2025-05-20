@@ -498,7 +498,6 @@ size_t tnecs_new_phase(tnecs_world *world, tnecs_phase phase) {
     while (phase >= world->byphase.len) {
         TNECS_CHECK_CALL(tnecs_grow_phase(world));
     }
-    // TODO: just increase num. 
     world->byphase.id[phase]    = phase;
     world->byphase.num          = (phase >= world->byphase.num) ? (phase + 1) : world->byphase.num;
     return (phase);
