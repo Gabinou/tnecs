@@ -242,13 +242,13 @@ size_t tnecs_register_pipeline( tnecs_world    *w);
 
 size_t tnecs_register_system(
     tnecs_world    *w,    tnecs_system_ptr    system,
-    tnecs_phase     p,    tnecs_pipeline      pipe,
+    tnecs_pipeline      pipe, tnecs_phase     p,    
     int             isExclusive, size_t       num, 
     tnecs_component     archetype);
 tnecs_component tnecs_register_component(
     tnecs_world    *w,    size_t b);
 
-#define TNECS_REGISTER_SYSTEM(world, pfunc, phase, pipeline, excl, ...) \
+#define TNECS_REGISTER_SYSTEM(world, pfunc, pipeline, phase, excl, ...) \
     tnecs_register_system(\
         world, &pfunc, phase, pipeline, excl, \
         TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
