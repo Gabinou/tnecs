@@ -126,7 +126,7 @@ int tnecs_world_destroy(tnecs_world **world) {
     free((*world)->byphase.num_systems);
     free((*world)->bytype.num_archetype_ids);
     free((*world)->bytype.num_components);
-    free((*world)->byphase.id);
+    // free((*world)->byphase.id);
     free((*world)->bytype.archetype_id);
     free((*world)->byphase.systems);
     free((*world)->systems.orders);
@@ -159,7 +159,7 @@ int tnecs_world_step_phase(tnecs_world *world,
                            tnecs_ns     deltat,
                            void        *data,
                            tnecs_phase  phase) {
-    if (phase != world->byphase.id[phase]) {
+    if (!TNECS_PHASE_VALID(world, phase)) {
         printf("tnecs: Invalid phase '%llu' \n", phase);
         return (0);
     }
@@ -201,7 +201,6 @@ int _tnecs_world_breath_phases(tnecs_world *world) {
     world->byphase.len          = TNECS_INIT_PHASE_LEN;
     world->byphase.num          = TNECS_NULLSHIFT;
 
-    world->byphase.id                   = calloc(world->byphase.len,        sizeof(*world->byphase.id));
     world->byphase.systems              = calloc(world->byphase.len,
                                                  sizeof(*world->byphase.systems));
     world->byphase.systems_id           = calloc(world->byphase.len,
@@ -211,7 +210,6 @@ int _tnecs_world_breath_phases(tnecs_world *world) {
     world->byphase.len_systems          = calloc(world->byphase.len,
                                                  sizeof(*world->byphase.len_systems));
 
-    TNECS_CHECK_ALLOC(world->byphase.id);
     TNECS_CHECK_ALLOC(world->byphase.systems);
     TNECS_CHECK_ALLOC(world->byphase.systems_id);
     TNECS_CHECK_ALLOC(world->byphase.num_systems);
@@ -391,7 +389,7 @@ size_t tnecs_register_system(tnecs_world *world,
 
     /* -- Actual registration -- */
     /* Check if phase exist */
-    if (!world->byphase.id[phase]) {
+    if (!TNECS_PHASE_VALID(world, phase)) {
         printf("tnecs: System phase '%d' is invalid.\n", phase);
         return (TNECS_NULL);
         // TNECS_CHECK_CALL(tnecs_new_phase(world, phase));
@@ -491,15 +489,11 @@ size_t _tnecs_register_archetype(tnecs_world *world, size_t num_components,
     return (tID);
 }
 
-size_t tnecs_new_phase(tnecs_world *world, tnecs_phase phase) {
-    if (phase <= 0)
-        return (1);
-
+size_t tnecs_new_phase(tnecs_world *world) {
+    tnecs_phase phase = world->byphase.num++;
     while (phase >= world->byphase.len) {
         TNECS_CHECK_CALL(tnecs_grow_phase(world));
     }
-    world->byphase.id[phase]    = phase;
-    world->byphase.num          = (phase >= world->byphase.num) ? (phase + 1) : world->byphase.num;
     return (phase);
 }
 
@@ -977,7 +971,7 @@ int tnecs_carr_init(tnecs_world *world, tnecs_carr *comp_arr, size_t cID) {
 
 int tnecs_system_order_switch(tnecs_world *world, tnecs_phase phase,
                               size_t order1, size_t order2) {
-    if (!world->byphase.id[phase]) {
+    if (!TNECS_PHASE_VALID(world, phase)) {
         return (0);
     }
     if (!world->byphase.systems[phase][order1]) {
@@ -1208,9 +1202,6 @@ int tnecs_grow_phase(tnecs_world *world) {
         return (TNECS_NULL);
     }
 
-    world->byphase.id           = tnecs_realloc(world->byphase.id,          olen, nlen,
-                                                sizeof(*world->byphase.id));
-    TNECS_CHECK_ALLOC(world->byphase.id);
     world->byphase.systems      = tnecs_realloc(world->byphase.systems,     olen, nlen,
                                                 sizeof(*world->byphase.systems));
     TNECS_CHECK_ALLOC(world->byphase.systems);

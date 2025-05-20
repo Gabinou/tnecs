@@ -235,6 +235,7 @@ int tnecs_custom_system_run(
 size_t tnecs_new_phase(     tnecs_world    *w);
 /* Pipelines start at 1, increment every call. */
 size_t tnecs_new_pipeline(  tnecs_world    *w);
+
 size_t tnecs_register_system(
     tnecs_world    *w,    tnecs_system_ptr    system,
     tnecs_phase     p,    int                 isExclusive,
@@ -379,8 +380,8 @@ int tnecs_system_order_switch(
 /************************** PHASE ***********************/
 // #define TNECS_PHASE_VALID(world, pipeline_id, phase_order) \
     // ((index == TNECS_NULL) || (world->pipelines[pipeline_id]->byphase.id[index] == index))
-#define TNECS_PHASE_VALID(world, phase_order) \
-    ((phase_order == TNECS_NULL) || (world->byphase.id[phase_order] == phase_order))
+#define TNECS_PHASE_VALID(world, phase) \
+    ((phase) < world->byphase.num)
 
 /************************** PIPELINE ***********************/
 #define TNECS_PIPELINE_VALID(world, pipeline_id) \
