@@ -377,8 +377,8 @@ int tnecs_system_order_switch(
     world->systems.archetypes[id]
 
 /************************** PHASE ***********************/
-// #define TNECS_PHASE_VALID(world, pipeline_id, phase_order) \
-    // ((index == TNECS_NULL) || (world->pipelines[pipeline_id]->byphase.id[index] == index))
+// #define TNECS_PHASE_VALID(world, pipeline_id, phase_order)
+// ((index == TNECS_NULL) || (world->pipelines[pipeline_id]->byphase.id[index] == index))
 #define TNECS_PHASE_VALID(world, phase) \
     ((phase) < world->byphase.num)
 

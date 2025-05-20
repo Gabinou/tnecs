@@ -99,6 +99,7 @@ int tnecs_world_destroy(tnecs_world **world) {
     _tnecs_world_destroy_phases(&((*world)->byphase));
     _tnecs_world_destroy_systems(&((*world)->systems));
     _tnecs_world_destroy_entities(&((*world)->entities));
+    _tnecs_world_destroy_pipelines(&((*world)->pipelines));
     _tnecs_world_destroy_archetypes(&((*world)->bytype));
     free(*world);
 
@@ -120,26 +121,36 @@ static int _tnecs_world_destroy_phases(tnecs_phases *byphase) {
 
     return(1);
 }
+
 static int _tnecs_world_destroy_systems(tnecs_system *systems) {
     free(systems->orders);
     free(systems->exclusive);
     free(systems->torun.arr);
     free(systems->archetypes);
     free(systems->phases);
+    free(systems->pipeline);
 
     return(1);
 }
-static int _tnecs_world_destroy_entities(    tnecs_entities      *entities) {
+
+static int _tnecs_world_destroy_entities(tnecs_entities *entities) {
     free(entities->orders);
     free(entities->id);
     free(entities->open.arr);
     free(entities->archetypes);
+    
     return(1);
 }
-static int _tnecs_world_destroy_pipelines(   tnecs_pipelines     *pipelines) {
 
+static int _tnecs_world_destroy_pipelines(tnecs_pipelines *pipelines) {
+    for (size_t i = 0; i < pipelines->len; i++) {
+        _tnecs_world_destroy_phases(&pipelines->byphase[i]);
+    }
+    free(pipelines->byphase);
+    
     return(1);
 }
+
 static int _tnecs_world_destroy_archetypes(tnecs_archetype *bytype) {
     for (size_t i = 0; i < bytype->len; i++) {
         if (bytype->entities != NULL)
@@ -171,7 +182,6 @@ static int _tnecs_world_destroy_archetypes(tnecs_archetype *bytype) {
 
     return(1);
 }
-
 
 int tnecs_world_step(tnecs_world    *world,
                      tnecs_ns        deltat,
@@ -420,7 +430,7 @@ size_t tnecs_register_system(tnecs_world *world,
     /* -- Actual registration -- */
     /* Check if phase exist */
     if (!TNECS_PHASE_VALID(world, phase)) {
-        printf("tnecs: System phase '%d' is invalid.\n", phase);
+        printf("tnecs: System phase '%lld' is invalid.\n", phase);
         return (TNECS_NULL);
     }
 
