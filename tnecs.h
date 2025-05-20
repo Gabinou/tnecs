@@ -34,10 +34,11 @@
     } while (0)
 
 /********************* TYPE DEFINITIONS *********************/
-typedef unsigned long long int  tnecs_entity;
-typedef unsigned long long int  tnecs_component;
-typedef unsigned long long int  tnecs_phase;
 typedef unsigned long long int  tnecs_ns;
+typedef unsigned long long int  tnecs_phase;
+typedef unsigned long long int  tnecs_entity;
+typedef unsigned long long int  tnecs_pipeline;
+typedef unsigned long long int  tnecs_component;
 
 struct tnecs_input; /* Forward declaration */
 typedef void (*tnecs_system_ptr)(struct tnecs_input *);
@@ -118,12 +119,20 @@ typedef struct tnecs_phases {
     size_t num;
     size_t len;
 
-    tnecs_phase       *id;          // [phase_id]
-    size_t            *len_systems; // [phase_id]
-    size_t            *num_systems; // [phase_id]
-    size_t           **systems_id;  // [phase_id][system_order]
-    tnecs_system_ptr **systems;     // [phase_id][system_id]
+    tnecs_phase       *id;          // [phase_order]
+    size_t            *len_systems; // [phase_order]
+    size_t            *num_systems; // [phase_order]
+    size_t           **systems_id;  // [phase_order][system_order]
+    tnecs_system_ptr **systems;     // [phase_order][system_id]
 } tnecs_phases;
+
+typedef struct tnecs_pipelines {
+    size_t num;
+    size_t len;
+
+    tnecs_pipeline  *id;        // [pipeline_order]
+    tnecs_phases    *byphase;   // [pipeline_order]
+} tnecs_pipelines;
 
 typedef struct tnecs_entities {
     // - .num doesn't change even if entities get deleted
@@ -176,6 +185,7 @@ typedef struct tnecs_world {
     tnecs_system        systems;
     tnecs_entities      entities;
     tnecs_archetype     bytype;
+    tnecs_pipelines     pipelines;
     tnecs_components    components;
     tnecs_array         entities_open;
     tnecs_array         systems_torun;
@@ -198,12 +208,19 @@ int tnecs_world_destroy(tnecs_world **w);
 
 void tnecs_world_toggle_reuse(tnecs_world *w, int toggle);
 
+/* Run all systems in world, by phases */
+int tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data);
+/* Run all systems in input phase */
+int tnecs_world_step_phase(tnecs_world *world, 
+                           tnecs_ns     deltat,
+                           void        *data,
+                           tnecs_phase  phase);
+
 /********************* PIPELINES ********************/
 /* Run all systems in pipeline, by phases */
-int tnecs_pipeline_run(
-    tnecs_world *w, tnecs_ns deltat, void *data, int pipeline);
+int tnecs_pipeline_step(tnecs_world *w, tnecs_ns deltat, void *data, int pipeline);
 /* Run all systems in input pipeline and input phase */
-int tnecs_pipeline_run_phase(
+int tnecs_pipeline_step_phase(
     tnecs_world *w, tnecs_ns deltat, void *data, tnecs_phase phase, int pipeline);
 
 /********************* SYSTEM ********************/
@@ -216,6 +233,8 @@ int tnecs_custom_system_run(
 /*********************** REGISTRATION ***********************/
 size_t tnecs_register_phase(
     tnecs_world    *w,    tnecs_phase         phase);
+size_t tnecs_register_pipeline(
+    tnecs_world    *w,    int         pipeline);
 size_t tnecs_register_system(
     tnecs_world    *w,    tnecs_system_ptr    system,
     tnecs_phase     p,    int                 isExclusive,
@@ -358,7 +377,13 @@ int tnecs_system_order_switch(
     world->systems.archetypes[id]
 
 /************************** PHASE ***********************/
-#define TNECS_PHASE_VALID(world, index) \
-    ((index == TNECS_NULL) || (world->byphase.id[index] == index))
+// #define TNECS_PHASE_VALID(world, pipeline_id, phase_order) \
+    // ((index == TNECS_NULL) || (world->pipelines[pipeline_id]->byphase.id[index] == index))
+#define TNECS_PHASE_VALID(world, phase_order) \
+    ((phase_order == TNECS_NULL) || (world->byphase.id[phase_order] == phase_order))
+
+/************************** PIPELINE ***********************/
+#define TNECS_PIPELINE_VALID(world, pipeline_id) \
+    ((index == TNECS_NULL) || (world->pipelines.id[pipeline_id] == index))
 
 #endif /* __TNECS_H__ */

@@ -142,7 +142,9 @@ int tnecs_world_destroy(tnecs_world **world) {
     return (1);
 }
 
-int tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
+int tnecs_world_step(tnecs_world    *world,
+                     tnecs_ns        deltat,
+                     void           *data) {
     world->systems_torun.num = 0;
     for (size_t phase = 0; phase < world->byphase.num; phase++) {
         if (!TNECS_PHASE_VALID(world, phase))
@@ -153,8 +155,10 @@ int tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data) {
     return (1);
 }
 
-int tnecs_world_step_phase(tnecs_world *world, tnecs_ns     deltat,
-                           void        *data,  tnecs_phase  phase) {
+int tnecs_world_step_phase(tnecs_world *world, 
+                           tnecs_ns     deltat,
+                           void        *data,
+                           tnecs_phase  phase) {
     if (phase != world->byphase.id[phase]) {
         printf("tnecs: Invalid phase '%llu' \n", phase);
         return (0);
@@ -491,6 +495,7 @@ size_t tnecs_register_phase(tnecs_world *world, tnecs_phase phase) {
     while (phase >= world->byphase.len) {
         TNECS_CHECK_CALL(tnecs_grow_phase(world));
     }
+    // TODO: just increase num. 
     world->byphase.id[phase]    = phase;
     world->byphase.num          = (phase >= world->byphase.num) ? (phase + 1) : world->byphase.num;
     return (phase);
