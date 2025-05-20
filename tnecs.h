@@ -144,6 +144,7 @@ typedef struct tnecs_entities {
     tnecs_entity    *id;            // [entity_id] -> eID
     size_t          *orders;        // [entity_id]
     tnecs_component *archetypes;    // [entity_id]
+    tnecs_array      open;
 } tnecs_entities;
 
 typedef struct tnecs_system {
@@ -155,6 +156,7 @@ typedef struct tnecs_system {
     int             *exclusive;     // [system_id]
     tnecs_component *archetypes;    // [system_id]
     int             *pipeline;      // [system_id]
+    tnecs_array      torun;
 } tnecs_system;
 
 typedef struct tnecs_archetype {
@@ -186,8 +188,6 @@ typedef struct tnecs_world {
     tnecs_archetype     bytype;
     tnecs_pipelines     pipelines;
     tnecs_components    components;
-    tnecs_array         entities_open;
-    tnecs_array         systems_torun;
 
     int reuse_entities;
 } tnecs_world;

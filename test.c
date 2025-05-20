@@ -470,11 +470,11 @@ void tnecs_test_entity_creation() {
     #else
     assert(tnecs_entity_destroy(test_world, Silou));
     #endif
-    tnecs_entity *open_arr = test_world->entities_open.arr;
-    lok(test_world->entities_open.num == 0);
+    tnecs_entity *open_arr = test_world->entities.open.arr;
+    lok(test_world->entities.open.num == 0);
     lok(!test_world->entities.id[Silou]);
     tnecs_entities_open_reuse(test_world);
-    lok(test_world->entities_open.num == 1);
+    lok(test_world->entities.open.num == 1);
     lok(open_arr[0] != TNECS_NULL);
     lok(open_arr[0] == Silou);
     tnecs_entity_create(test_world);
@@ -870,8 +870,8 @@ void tnecs_test_world_progress() {
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
 
-    lok(test_world->systems_torun.num == 5);
-    tnecs_system_ptr *torun_arr = test_world->systems_torun.arr;
+    lok(test_world->systems.torun.num == 5);
+    tnecs_system_ptr *torun_arr = test_world->systems.torun.arr;
     lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
     lok(torun_arr[2] == &SystemMovePhase2);
@@ -889,8 +889,8 @@ void tnecs_test_world_progress() {
     tnecs_world_step(test_world, 1, NULL);
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
-    lok(test_world->systems_torun.num == 5);
-    torun_arr = test_world->systems_torun.arr;
+    lok(test_world->systems.torun.num == 5);
+    torun_arr = test_world->systems.torun.arr;
 
     lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
@@ -1004,8 +1004,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world->bytype.num == 8);
     tnecs_world_step(inclusive_world, 1, NULL);
 
-    lok(inclusive_world->systems_torun.num == 9);
-    torun_arr = inclusive_world->systems_torun.arr;
+    lok(inclusive_world->systems.torun.num == 9);
+    torun_arr = inclusive_world->systems.torun.arr;
     lok(torun_arr[0] == &SystemMoveDoNothing);
     lok(torun_arr[1] == &SystemMoveDoNothing);
     lok(torun_arr[2] == &SystemMoveDoNothing);
@@ -1059,8 +1059,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world2->bytype.num == 8);
     tnecs_world_step(inclusive_world2, 1, NULL);
 
-    lok(inclusive_world2->systems_torun.num == 9);
-    torun_arr = inclusive_world2->systems_torun.arr; 
+    lok(inclusive_world2->systems.torun.num == 9);
+    torun_arr = inclusive_world2->systems.torun.arr; 
     lok(torun_arr[0]  == &SystemMovePhase1);
     lok(torun_arr[1]  == &SystemMovePhase1);
     lok(torun_arr[2]  == &SystemMoveDoNothing);
@@ -1096,8 +1096,8 @@ void tnecs_test_grow() {
     lok(grow_world->systems.num     == 1);
     lok(grow_world->byphase.len     == TNECS_INIT_PHASE_LEN);
     lok(grow_world->byphase.num     == 1);
-    lok(grow_world->entities_open.num == 0);
-    lok(grow_world->entities_open.len == TNECS_INIT_ENTITY_LEN);
+    lok(grow_world->entities.open.num == 0);
+    lok(grow_world->entities.open.len == TNECS_INIT_ENTITY_LEN);
 
     for (size_t i = 0; i < grow_world->entities.len; i++) {
         lok(grow_world->entities.archetypes[i] == 0);
