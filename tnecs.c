@@ -95,10 +95,10 @@ int tnecs_world_genesis(tnecs_world **world) {
 }
 
 int tnecs_world_destroy(tnecs_world **world) {
-    _tnecs_destroy_systems(&((*world)->systems));
-    _tnecs_destroy_entities(&((*world)->entities));
-    _tnecs_destroy_pipelines(&((*world)->pipelines));
-    _tnecs_destroy_archetypes(&((*world)->bytype));
+    _tnecs_destroy_systems(     &((*world)->systems));
+    _tnecs_destroy_entities(    &((*world)->entities));
+    _tnecs_destroy_pipelines(   &((*world)->pipelines));
+    _tnecs_destroy_archetypes(  &((*world)->bytype));
     free(*world);
 
     *world = NULL;
@@ -112,8 +112,8 @@ static int _tnecs_destroy_phases(tnecs_phases *byphase) {
         if (byphase->systems_id != NULL)
             free(byphase->systems_id[i]);
     }
-    free(byphase->systems_id);
     free(byphase->systems);
+    free(byphase->systems_id);
     free(byphase->len_systems);
     free(byphase->num_systems);
 
@@ -122,18 +122,18 @@ static int _tnecs_destroy_phases(tnecs_phases *byphase) {
 
 static int _tnecs_destroy_systems(tnecs_system *systems) {
     free(systems->orders);
-    free(systems->exclusive);
-    free(systems->ran.arr);
-    free(systems->archetypes);
     free(systems->phases);
+    free(systems->ran.arr);
     free(systems->pipeline);
+    free(systems->exclusive);
+    free(systems->archetypes);
 
     return(1);
 }
 
 static int _tnecs_destroy_entities(tnecs_entities *entities) {
-    free(entities->orders);
     free(entities->id);
+    free(entities->orders);
     free(entities->open.arr);
     free(entities->archetypes);
     
@@ -167,16 +167,16 @@ static int _tnecs_destroy_archetypes(tnecs_archetype *bytype) {
         }
     }
 
-    free(bytype->components);
-    free(bytype->components_id);
-    free(bytype->components_order);
+    free(bytype->id);
     free(bytype->entities);
+    free(bytype->components);
     free(bytype->len_entities);
     free(bytype->num_entities);
-    free(bytype->num_archetype_ids);
-    free(bytype->num_components);
     free(bytype->archetype_id);
-    free(bytype->id);
+    free(bytype->components_id);
+    free(bytype->num_components);
+    free(bytype->components_order);
+    free(bytype->num_archetype_ids);
 
     return(1);
 }
@@ -200,8 +200,8 @@ int tnecs_pipeline_step_phase(tnecs_world *world,
                               tnecs_pipeline pipeline,
                               tnecs_phase phase) {
     tnecs_phases *byphase = TNECS_PIPELINE_GET(world, pipeline);
-
-    for (size_t sorder = 0; sorder < byphase->num_systems[phase]; sorder++) {
+    size_t num = byphase->num_systems[phase];
+    for (size_t sorder = 0; sorder < num; sorder++) {
         size_t system_id = byphase->systems_id[phase][sorder];
         TNECS_CHECK_CALL(tnecs_system_run(world, system_id,
                      deltat, data));
@@ -238,8 +238,8 @@ int _tnecs_breath_entities(tnecs_entities *entities) {
     entities->open.arr    = calloc(entities->len, sizeof(tnecs_entity));
     entities->archetypes  = calloc(entities->len, sizeof(*entities->archetypes));
     TNECS_CHECK_ALLOC(entities->id);
-    TNECS_CHECK_ALLOC(entities->open.arr);
     TNECS_CHECK_ALLOC(entities->orders);
+    TNECS_CHECK_ALLOC(entities->open.arr);
     TNECS_CHECK_ALLOC(entities->archetypes);
     return (1);
 }
@@ -289,16 +289,17 @@ int _tnecs_breath_systems(tnecs_system *systems) {
     /* Allocs */
     systems->phases     = calloc(systems->len, sizeof(*systems->phases));
     systems->orders     = calloc(systems->len, sizeof(*systems->orders));
-    systems->archetypes = calloc(systems->len, sizeof(*systems->archetypes));
-    systems->exclusive  = calloc(systems->len, sizeof(*systems->exclusive));
-    systems->pipeline   = calloc(systems->len, sizeof(*systems->pipeline));
     systems->ran.arr    = calloc(systems->ran.len,  sizeof(tnecs_system_ptr));
+    systems->pipeline   = calloc(systems->len, sizeof(*systems->pipeline));
+    systems->exclusive  = calloc(systems->len, sizeof(*systems->exclusive));
+    systems->archetypes = calloc(systems->len, sizeof(*systems->archetypes));
 
-    TNECS_CHECK_ALLOC(systems->ran.arr);
     TNECS_CHECK_ALLOC(systems->phases);
     TNECS_CHECK_ALLOC(systems->orders);
-    TNECS_CHECK_ALLOC(systems->archetypes);
+    TNECS_CHECK_ALLOC(systems->ran.arr);
+    TNECS_CHECK_ALLOC(systems->pipeline);
     TNECS_CHECK_ALLOC(systems->exclusive);
+    TNECS_CHECK_ALLOC(systems->archetypes);
 
     return (1);
 }
@@ -309,25 +310,20 @@ int _tnecs_breath_archetypes(tnecs_archetype *bytype) {
     bytype->len = TNECS_INIT_ARCHETYPE_LEN;
 
     /* Allocs */
-    bytype->id                    = calloc(bytype->len, sizeof(*bytype->id));
-    bytype->entities              = calloc(bytype->len, sizeof(*bytype->entities));
-    bytype->len_entities          = calloc(bytype->len,
-                                                 sizeof(*bytype->len_entities));
-    bytype->num_entities          = calloc(bytype->len,
-                                                 sizeof(*bytype->num_entities));
-    bytype->archetype_id          = calloc(bytype->len,
-                                                 sizeof(*bytype->archetype_id));
-    bytype->components_id         = calloc(bytype->len,
-                                                 sizeof(*bytype->components_id));
-    bytype->num_components        = calloc(bytype->len,
-                                                 sizeof(*bytype->num_components));
-    bytype->components_order      = calloc(bytype->len,
-                                                 sizeof(*bytype->components_order));
-    bytype->num_archetype_ids     = calloc(bytype->len,
-                                                 sizeof(*bytype->num_archetype_ids));
+    bytype->id                  = calloc(bytype->len, sizeof(*bytype->id));
+    bytype->entities            = calloc(bytype->len, sizeof(*bytype->entities));
+    bytype->components          = calloc(bytype->len, sizeof(*bytype->components));
+    bytype->len_entities        = calloc(bytype->len, sizeof(*bytype->len_entities));
+    bytype->num_entities        = calloc(bytype->len, sizeof(*bytype->num_entities));
+    bytype->archetype_id        = calloc(bytype->len, sizeof(*bytype->archetype_id));
+    bytype->components_id       = calloc(bytype->len, sizeof(*bytype->components_id));
+    bytype->num_components      = calloc(bytype->len, sizeof(*bytype->num_components));
+    bytype->components_order    = calloc(bytype->len, sizeof(*bytype->components_order));
+    bytype->num_archetype_ids   = calloc(bytype->len, sizeof(*bytype->num_archetype_ids));
 
     TNECS_CHECK_ALLOC(bytype->id);
     TNECS_CHECK_ALLOC(bytype->entities);
+    TNECS_CHECK_ALLOC(bytype->components);
     TNECS_CHECK_ALLOC(bytype->archetype_id);
     TNECS_CHECK_ALLOC(bytype->len_entities);
     TNECS_CHECK_ALLOC(bytype->num_entities);
@@ -336,14 +332,11 @@ int _tnecs_breath_archetypes(tnecs_archetype *bytype) {
     TNECS_CHECK_ALLOC(bytype->components_order);
     TNECS_CHECK_ALLOC(bytype->num_archetype_ids);
 
-    bytype->components            = calloc(bytype->len, sizeof(*bytype->components));
-    TNECS_CHECK_ALLOC(bytype->components);
-
     /* Alloc & check for id_bytype elements */
     for (size_t i = 0; i < bytype->len; i++) {
         bytype->archetype_id[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**bytype->archetype_id));
         TNECS_CHECK_ALLOC(bytype->archetype_id[i]);
-        bytype->entities[i] =     calloc(TNECS_INIT_ENTITY_LEN, sizeof(**bytype->entities));
+        bytype->entities[i]     = calloc(TNECS_INIT_ENTITY_LEN, sizeof(**bytype->entities));
         TNECS_CHECK_ALLOC(bytype->entities[i]);
 
         bytype->num_entities[i] = 0;
