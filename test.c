@@ -872,8 +872,8 @@ void tnecs_test_world_progress() {
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
 
-    lok(test_world->systems.torun.num == 5);
-    tnecs_system_ptr *torun_arr = test_world->systems.torun.arr;
+    lok(test_world->systems.ran.num == 5);
+    tnecs_system_ptr *torun_arr = test_world->systems.ran.arr;
     lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
     lok(torun_arr[2] == &SystemMovePhase2);
@@ -891,8 +891,8 @@ void tnecs_test_world_progress() {
     tnecs_world_step(test_world, 1, NULL);
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
-    lok(test_world->systems.torun.num == 5);
-    torun_arr = test_world->systems.torun.arr;
+    lok(test_world->systems.ran.num == 5);
+    torun_arr = test_world->systems.ran.arr;
 
     lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
@@ -1006,8 +1006,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world->bytype.num == 8);
     tnecs_world_step(inclusive_world, 1, NULL);
 
-    lok(inclusive_world->systems.torun.num == 9);
-    torun_arr = inclusive_world->systems.torun.arr;
+    lok(inclusive_world->systems.ran.num == 9);
+    torun_arr = inclusive_world->systems.ran.arr;
     lok(torun_arr[0] == &SystemMoveDoNothing);
     lok(torun_arr[1] == &SystemMoveDoNothing);
     lok(torun_arr[2] == &SystemMoveDoNothing);
@@ -1061,8 +1061,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world2->bytype.num == 8);
     tnecs_world_step(inclusive_world2, 1, NULL);
 
-    lok(inclusive_world2->systems.torun.num == 9);
-    torun_arr = inclusive_world2->systems.torun.arr; 
+    lok(inclusive_world2->systems.ran.num == 9);
+    torun_arr = inclusive_world2->systems.ran.arr; 
     lok(torun_arr[0]  == &SystemMovePhase1);
     lok(torun_arr[1]  == &SystemMovePhase1);
     lok(torun_arr[2]  == &SystemMoveDoNothing);
@@ -1360,18 +1360,17 @@ void tnecs_test_pipelines() {
     lok(pipe_world->pipelines.byphase[pipe0].num_systems[0] == 2);
     lok(pipe_world->pipelines.byphase[pipe1].num_systems[0] == 2);
 
-    // TNECS_ENTITY_CREATE_wCOMPONENTS(pipe_world, Unit_ID);
     // Checking which systems need to be run for pipe0
     tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
-    lok(pipe_world->systems.torun.num == 2);
-    tnecs_system_ptr *system_arr_pipe0 = pipe_world->systems.torun.arr;
+    lok(pipe_world->systems.ran.num == 2);
+    tnecs_system_ptr *system_arr_pipe0 = pipe_world->systems.ran.arr;
     lok(system_arr_pipe0[0] == SystemMoveDoNothing);
     lok(system_arr_pipe0[1] == SystemMovePhase1);
 
     // Checking which systems need to be run for pipe1
     tnecs_pipeline_step(pipe_world, 1, NULL, pipe1);
-    lok(pipe_world->systems.torun.num == 2);
-    tnecs_system_ptr *system_arr_pipe1 = pipe_world->systems.torun.arr;
+    lok(pipe_world->systems.ran.num == 2);
+    tnecs_system_ptr *system_arr_pipe1 = pipe_world->systems.ran.arr;
     lok(system_arr_pipe1[0] == SystemMovePhase2);
     lok(system_arr_pipe1[1] == SystemMovePhase4);
 

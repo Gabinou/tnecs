@@ -123,7 +123,7 @@ static int _tnecs_world_destroy_phases(tnecs_phases *byphase) {
 static int _tnecs_world_destroy_systems(tnecs_system *systems) {
     free(systems->orders);
     free(systems->exclusive);
-    free(systems->torun.arr);
+    free(systems->ran.arr);
     free(systems->archetypes);
     free(systems->phases);
     free(systems->pipeline);
@@ -190,7 +190,7 @@ int tnecs_pipeline_step(tnecs_world *world,
                         tnecs_ns deltat,
                         void *data,
                         tnecs_pipeline pipeline) {
-    world->systems.torun.num = 0;
+    world->systems.ran.num = 0;
     tnecs_phases *byphase = tnecs_pipeline_get(world, pipeline);
     for (size_t phase = 0; phase < byphase->num; phase++) {
         TNECS_CHECK_CALL(tnecs_pipeline_step_phase(world, deltat, data, phase, pipeline));
@@ -288,7 +288,7 @@ int _tnecs_world_breath_phases(tnecs_phases *byphase) {
 int _tnecs_world_breath_systems(tnecs_system *systems) {
     /* Variables */
     systems->len          = TNECS_INIT_SYSTEM_LEN;
-    systems->torun.len    = TNECS_INIT_SYSTEM_LEN;
+    systems->ran.len    = TNECS_INIT_SYSTEM_LEN;
     systems->num          = TNECS_NULLSHIFT;
 
     /* Allocs */
@@ -297,9 +297,9 @@ int _tnecs_world_breath_systems(tnecs_system *systems) {
     systems->archetypes = calloc(systems->len, sizeof(*systems->archetypes));
     systems->exclusive  = calloc(systems->len, sizeof(*systems->exclusive));
     systems->pipeline   = calloc(systems->len, sizeof(*systems->pipeline));
-    systems->torun.arr  = calloc(systems->torun.len,  sizeof(tnecs_system_ptr));
+    systems->ran.arr  = calloc(systems->ran.len,  sizeof(tnecs_system_ptr));
 
-    TNECS_CHECK_ALLOC(systems->torun.arr);
+    TNECS_CHECK_ALLOC(systems->ran.arr);
     TNECS_CHECK_ALLOC(systems->phases);
     TNECS_CHECK_ALLOC(systems->orders);
     TNECS_CHECK_ALLOC(systems->archetypes);
@@ -395,15 +395,15 @@ int tnecs_system_run(tnecs_world *world, size_t system_id,
     input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
 
     /* Running the exclusive systems in current phase */
-    while (world->systems.torun.num >= (world->systems.torun.len - 1)) {
+    while (world->systems.ran.num >= (world->systems.ran.len - 1)) {
         TNECS_CHECK_CALL(tnecs_grow_torun(world));
     }
     tnecs_system_ptr *system_ptr;
     size_t system_num;
     tnecs_phases *byphase               = tnecs_pipeline_get(world, pipeline);
     tnecs_system_ptr system             = byphase->systems[phase][sorder];
-    system_num                          = world->systems.torun.num++;
-    system_ptr                          = world->systems.torun.arr;
+    system_num                          = world->systems.ran.num++;
+    system_ptr                          = world->systems.ran.arr;
     system_ptr[system_num]              = byphase->systems[phase][sorder];
     system(&input);
 
@@ -414,13 +414,13 @@ int tnecs_system_run(tnecs_world *world, size_t system_id,
     for (size_t tsub = 0; tsub < world->bytype.num_archetype_ids[system_archetype_id]; tsub++) {
         input.entity_archetype_id   = world->bytype.archetype_id[system_archetype_id][tsub];
         input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
-        while (world->systems.torun.num >= (world->systems.torun.len - 1)) {
+        while (world->systems.ran.num >= (world->systems.ran.len - 1)) {
             TNECS_CHECK_CALL(tnecs_grow_torun(world));
         }
 
         system                  = byphase->systems[phase][sorder];
-        system_num              = world->systems.torun.num++;
-        system_ptr              = world->systems.torun.arr;
+        system_num              = world->systems.ran.num++;
+        system_ptr              = world->systems.ran.arr;
         system_ptr[system_num]  = system;
         system(&input);
     }
@@ -1150,13 +1150,13 @@ void *tnecs_arrdel(void *arr, size_t elem, size_t len, size_t bytesize) {
 
 int tnecs_grow_torun(tnecs_world *world) {
     /* Realloc systems_torun if too many */
-    size_t old_len              = world->systems.torun.len;
+    size_t old_len              = world->systems.ran.len;
     size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-    world->systems.torun.len    = new_len;
+    world->systems.ran.len    = new_len;
     size_t bytesize             = sizeof(tnecs_system_ptr);
 
-    world->systems.torun.arr    = tnecs_realloc(world->systems.torun.arr, old_len, new_len, bytesize);
-    TNECS_CHECK_ALLOC(world->systems.torun.arr);
+    world->systems.ran.arr    = tnecs_realloc(world->systems.ran.arr, old_len, new_len, bytesize);
+    TNECS_CHECK_ALLOC(world->systems.ran.arr);
     return (1);
 }
 
