@@ -170,16 +170,16 @@ typedef struct tnecs_archetype {
     size_t            *num_entities;        // [archetype_id]
     size_t            *num_archetype_ids;   // [archetype_id]
 
-    size_t          **archetype_id;     // [aID][archetype_id_order]
-    tnecs_entity    **entities;         // [aID][entity_order_bytype]
-    size_t          **components_order; // [aID][component_id]
-    tnecs_component **components_id;    // [aID][component_order_bytype]
-    tnecs_carr      **components;       // [aID][component_order_bytype]
+    size_t           **archetype_id;     // [aID][archetype_id_order]
+    tnecs_entity     **entities;         // [aID][entity_order_bytype]
+    size_t           **components_order; // [aID][component_id]
+    tnecs_component  **components_id;    // [aID][component_order_bytype]
+    tnecs_carr       **components;       // [aID][component_order_bytype]
 } tnecs_archetype;
 
 typedef struct tnecs_components {
-    size_t           num;
-    size_t           bytesizes[TNECS_COMPONENT_CAP];  // [cID]
+    size_t num;
+    size_t bytesizes[TNECS_COMPONENT_CAP];  // [cID]
 } tnecs_components;
 
 typedef struct tnecs_world {
@@ -216,7 +216,7 @@ int tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data);
 int tnecs_pipeline_step(tnecs_world *w, tnecs_ns deltat, void *data, tnecs_pipeline pipeline);
 /* Run all systems in input pipeline and input phase */
 int tnecs_pipeline_step_phase(
-    tnecs_world *w, tnecs_ns deltat, void *data, tnecs_phase phase, tnecs_pipeline pipeline);
+    tnecs_world *w, tnecs_ns deltat, void *data, tnecs_pipeline pipeline, tnecs_phase phase);
 
 tnecs_phases *tnecs_pipeline_get(tnecs_world *w,
                                  tnecs_pipeline pipeline);

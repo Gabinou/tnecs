@@ -193,7 +193,7 @@ int tnecs_pipeline_step(tnecs_world *world,
     world->systems.ran.num = 0;
     tnecs_phases *byphase = tnecs_pipeline_get(world, pipeline);
     for (size_t phase = 0; phase < byphase->num; phase++) {
-        TNECS_CHECK_CALL(tnecs_pipeline_step_phase(world, deltat, data, phase, pipeline));
+        TNECS_CHECK_CALL(tnecs_pipeline_step_phase(world, deltat, data, pipeline, phase));
     }
 
     return(1);
@@ -202,8 +202,8 @@ int tnecs_pipeline_step(tnecs_world *world,
 int tnecs_pipeline_step_phase(tnecs_world *world,
                               tnecs_ns deltat,
                               void *data,
-                              tnecs_phase phase,
-                              tnecs_pipeline pipeline) {
+                              tnecs_pipeline pipeline,
+                              tnecs_phase phase) {
     tnecs_phases *byphase = tnecs_pipeline_get(world, pipeline);
 
     for (size_t sorder = 0; sorder < byphase->num_systems[phase]; sorder++) {
@@ -400,11 +400,11 @@ int tnecs_system_run(tnecs_world *world, size_t system_id,
     }
     tnecs_system_ptr *system_ptr;
     size_t system_num;
-    tnecs_phases *byphase               = tnecs_pipeline_get(world, pipeline);
-    tnecs_system_ptr system             = byphase->systems[phase][sorder];
-    system_num                          = world->systems.ran.num++;
-    system_ptr                          = world->systems.ran.arr;
-    system_ptr[system_num]              = byphase->systems[phase][sorder];
+    tnecs_phases *byphase   = tnecs_pipeline_get(world, pipeline);
+    tnecs_system_ptr system = byphase->systems[phase][sorder];
+    system_num              = world->systems.ran.num++;
+    system_ptr              = world->systems.ran.arr;
+    system_ptr[system_num]  = byphase->systems[phase][sorder];
     system(&input);
 
     if (world->systems.exclusive[system_id])

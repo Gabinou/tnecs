@@ -1324,7 +1324,9 @@ void tnecs_test_pipelines() {
 
     tnecs_world *pipe_world = NULL;
     tnecs_world_genesis(&pipe_world);
-    const tnecs_pipeline pipe1 = 1;
+    const tnecs_phase phase0    = 0;
+    const tnecs_phase phase1    = 1;
+    const tnecs_pipeline pipe1  = 1;
     
     lok(TNECS_REGISTER_COMPONENT(pipe_world, Position_ID));
     lok(TNECS_REGISTER_COMPONENT(pipe_world, Velocity_ID));
@@ -1345,11 +1347,11 @@ void tnecs_test_pipelines() {
     lok(pipe_world->pipelines.byphase[pipe0].num == 3);
     lok(pipe_world->pipelines.byphase[pipe1].num == 3);
 
-    // Register systems, all exclusives
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMoveDoNothing,  pipe0, 0, 1, Unit_ID);                              /* 4X */
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase1,     pipe0, 0, 1, Unit_ID, Velocity_ID);                 /* 2X */
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase2,     pipe1, 0, 1, Unit_ID, Position_ID);                 /* 2X */
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase4,     pipe1, 0, 1, Unit_ID, Position_ID, Velocity_ID);    /* 1X */
+    // Register systems, all exclusives, all phase0
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMoveDoNothing,  pipe0, phase0, 1, Unit_ID);                              /* 4X */
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase1,     pipe0, phase1, 1, Unit_ID, Velocity_ID);                 /* 2X */
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase2,     pipe1, phase0, 1, Unit_ID, Position_ID);                 /* 2X */
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase4,     pipe1, phase1, 1, Unit_ID, Position_ID, Velocity_ID);    /* 1X */
 
     lok(pipe_world->systems.pipeline[0] == pipe0);
     lok(pipe_world->systems.pipeline[1] == pipe0);
@@ -1357,8 +1359,10 @@ void tnecs_test_pipelines() {
     lok(pipe_world->systems.pipeline[3] == pipe1);
     lok(pipe_world->systems.pipeline[4] == pipe1);
 
-    lok(pipe_world->pipelines.byphase[pipe0].num_systems[0] == 2);
-    lok(pipe_world->pipelines.byphase[pipe1].num_systems[0] == 2);
+    lok(pipe_world->pipelines.byphase[pipe0].num_systems[phase0] == 1);
+    lok(pipe_world->pipelines.byphase[pipe0].num_systems[phase1] == 1);
+    lok(pipe_world->pipelines.byphase[pipe1].num_systems[phase0] == 1);
+    lok(pipe_world->pipelines.byphase[pipe1].num_systems[phase1] == 1);
 
     // Checking which systems need to be run for pipe0
     tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
@@ -1373,6 +1377,26 @@ void tnecs_test_pipelines() {
     tnecs_system_ptr *system_arr_pipe1 = pipe_world->systems.ran.arr;
     lok(system_arr_pipe1[0] == SystemMovePhase2);
     lok(system_arr_pipe1[1] == SystemMovePhase4);
+
+    // Checking which systems need to be run for pipe0, phase0
+    pipe_world->systems.ran.num = 0;
+    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe0, phase0);
+    lok(pipe_world->systems.ran.num == 1);
+
+    // Checking which systems need to be run for pipe0, phase1
+    pipe_world->systems.ran.num = 0;
+    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe0, phase1);
+    lok(pipe_world->systems.ran.num == 1);
+
+    // Checking which systems need to be run for pipe1, phase0
+    pipe_world->systems.ran.num = 0;
+    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe1, phase0);
+    lok(pipe_world->systems.ran.num == 1);
+
+    // Checking which systems need to be run for pipe1, phase1
+    pipe_world->systems.ran.num = 0;
+    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe1, phase1);
+    lok(pipe_world->systems.ran.num == 1);
 
     tnecs_world_destroy(&pipe_world);
 }
