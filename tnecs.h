@@ -238,10 +238,10 @@ size_t tnecs_register_phase(    tnecs_world    *w,
 size_t tnecs_register_pipeline( tnecs_world    *w);
 
 size_t tnecs_register_system(
-    tnecs_world    *w,    tnecs_system_ptr    system,
-    tnecs_pipeline      pipe, tnecs_phase     p,    
-    int             isExclusive, size_t       num, 
-    tnecs_component     archetype);
+    tnecs_world         *w,             tnecs_system_ptr    system,
+    tnecs_pipeline       pipe,          tnecs_phase     p,    
+    int                  isExclusive,   size_t       num, 
+    tnecs_component      archetype);
 tnecs_component tnecs_register_component(
     tnecs_world    *w,    size_t b);
 

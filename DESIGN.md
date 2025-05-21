@@ -4,7 +4,7 @@
 ## Intro
 - I use the ```tcc``` compiler sometimes, so compiler-specific instructions are out of the question.
 - Everything inside the world is a dynamic array that grows exponentially as required.
-- The indices of registered components or systems, created entities, always start at 1 and increase monotonically.
+- The indices of everything (entities, components, systems, phases, pipelines) always start at 1 and increase monotonically.
 - Index 0 is always reserved for NULL.
 - Use X macros to have the indices at compile time.
 
@@ -27,7 +27,7 @@ Every time a new component is added to an entity, its type changes, so each asso
 This is somewhat costly, so create entities with all of its components directly with the ```TNECS_ENTITY_CREATE_wCOMPONENTS``` macro.
 
 ## Systems
-Systems are ran in phases, so they are arranged in ```byphase``` arrays of pointers.
+Systems are ran in phases for each independent pipeline, so they are arranged in ```byphase``` arrays of pointers.
 By default the NULL phase 0 is ran first.
 System order in these phases is first come first served by default, and can be set by the user with ```tnecs_system_order_switch```.
 
