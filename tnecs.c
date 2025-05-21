@@ -190,7 +190,7 @@ int tnecs_pipeline_step(tnecs_world *world,
                         tnecs_ns deltat,
                         void *data,
                         tnecs_pipeline pipeline) {
-
+    world->systems.torun.num = 0;
     tnecs_phases *byphase = tnecs_pipeline_get(world, pipeline);
     for (size_t phase = 0; phase < byphase->num; phase++) {
         TNECS_CHECK_CALL(tnecs_pipeline_step_phase(world, deltat, data, phase, pipeline));
@@ -218,7 +218,6 @@ int tnecs_pipeline_step_phase(tnecs_world *world,
 int tnecs_world_step(tnecs_world    *world,
                      tnecs_ns        deltat,
                      void           *data) {
-    world->systems.torun.num = 0;
     for (size_t p = 0; p < world->pipelines.num; p++) {
         TNECS_CHECK_CALL(tnecs_pipeline_step(world, deltat, data, p));
     }
@@ -449,7 +448,6 @@ size_t tnecs_register_system(tnecs_world *world, tnecs_system_ptr in_system,
     /* Realloc systems if too many */
     if (world->systems.num >= world->systems.len) {
         TNECS_CHECK_CALL(tnecs_grow_system(world));
-
     }
 
     /* Realloc systems_byphase if too many */
@@ -461,6 +459,7 @@ size_t tnecs_register_system(tnecs_world *world, tnecs_system_ptr in_system,
     /* -- Actual registration -- */
     world->systems.exclusive[system_id]     = isExclusive;
     world->systems.phases[system_id]        = phase;
+    world->systems.pipeline[system_id]      = pipeline;
     world->systems.archetypes[system_id]    = components_archetype;
 
     /* System order */

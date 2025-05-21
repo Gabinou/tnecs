@@ -208,13 +208,8 @@ int tnecs_world_destroy(tnecs_world **w);
 
 void tnecs_world_toggle_reuse(tnecs_world *w, int toggle);
 
-/* Run all systems in world, by phases */
+/* Run all systems in all pipelines, by phases */
 int tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data);
-/* Run all systems in input phase */
-int tnecs_world_step_phase(tnecs_world *world, 
-                           tnecs_ns     deltat,
-                           void        *data,
-                           tnecs_phase  phase);
 
 /********************* PIPELINES ********************/
 /* Run all systems in pipeline, by phases */

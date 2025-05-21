@@ -1305,7 +1305,6 @@ void tnecs_benchmarks(uint64_t num) {
     dupprintf(globalf, "%7llu\n", t_1 - t_0);
 }
 
-
 void test_log2() {
     lok(log2(0.0) == -INFINITY);
     lok(log2(0.0) == -INFINITY);
@@ -1315,6 +1314,79 @@ void test_log2() {
     lok(log2(1.0) == 0);
     lok(log2(2.0) == 1.0);
     lok(log2(2.0) == 1);
+}
+
+void tnecs_test_pipelines() {
+    int Position_ID = 1;
+    int Velocity_ID = 2;
+    int Unit_ID     = 3;
+    int Sprite_ID   = 4;
+
+    tnecs_world *pipe_world = NULL;
+    tnecs_world_genesis(&pipe_world);
+    const tnecs_pipeline pipe1 = 1;
+    
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Position_ID));
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Velocity_ID));
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Sprite_ID));
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Unit_ID));
+
+    // Register pipelines
+    lok(tnecs_register_pipeline(pipe_world));
+    lok(TNECS_PIPELINE_VALID(pipe_world, pipe0));
+    lok(TNECS_PIPELINE_VALID(pipe_world, pipe1));
+    lok(pipe_world->pipelines.num == 2);
+
+    // Register phases
+    lok(tnecs_register_phase(pipe_world, pipe0) == 1);
+    lok(tnecs_register_phase(pipe_world, pipe0) == 2);
+    lok(tnecs_register_phase(pipe_world, pipe1) == 1);
+    lok(tnecs_register_phase(pipe_world, pipe1) == 2);
+    lok(pipe_world->pipelines.byphase[pipe0].num == 3);
+    lok(pipe_world->pipelines.byphase[pipe1].num == 3);
+
+    // Register systems, all exclusives
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMoveDoNothing,  pipe0, 0, 1, Unit_ID);                              /* 4X */
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase1,     pipe0, 0, 1, Unit_ID, Velocity_ID);                 /* 2X */
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase2,     pipe1, 0, 1, Unit_ID, Position_ID);                 /* 2X */
+    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase4,     pipe1, 0, 1, Unit_ID, Position_ID, Velocity_ID);    /* 1X */
+
+    lok(pipe_world->systems.pipeline[0] == pipe0);
+    lok(pipe_world->systems.pipeline[1] == pipe0);
+    lok(pipe_world->systems.pipeline[2] == pipe0);
+    lok(pipe_world->systems.pipeline[3] == pipe1);
+    lok(pipe_world->systems.pipeline[4] == pipe1);
+
+    lok(pipe_world->pipelines.byphase[pipe0].num_systems[0] == 2);
+    lok(pipe_world->pipelines.byphase[pipe1].num_systems[0] == 2);
+
+    // TNECS_ENTITY_CREATE_wCOMPONENTS(pipe_world, Unit_ID);
+    // Checking which systems need to be run for pipe0
+    tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
+    lok(pipe_world->systems.torun.num == 2);
+    tnecs_system_ptr *system_arr_pipe0 = pipe_world->systems.torun.arr;
+    lok(system_arr_pipe0[0] == SystemMoveDoNothing);
+    lok(system_arr_pipe0[1] == SystemMovePhase1);
+
+    // Checking which systems need to be run for pipe1
+    tnecs_pipeline_step(pipe_world, 1, NULL, pipe1);
+    lok(pipe_world->systems.torun.num == 2);
+    tnecs_system_ptr *system_arr_pipe1 = pipe_world->systems.torun.arr;
+    lok(system_arr_pipe1[0] == SystemMovePhase2);
+    lok(system_arr_pipe1[1] == SystemMovePhase4);
+
+    printf("pipe_world->systems.torun.num %lld\n", pipe_world->systems.torun.num);
+    printf("pipe_world->systems.torun.num %lld\n", pipe_world->systems.torun.num);
+    printf("pipe_world->systems.torun.num %lld\n", pipe_world->systems.torun.num);
+    // TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Velocity_ID);
+    // TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Position_ID);
+    // TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Position_ID, Velocity_ID);
+
+
+    tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
+
+
+    tnecs_world_destroy(&pipe_world);
 }
 
 int main() {
@@ -1331,6 +1403,7 @@ int main() {
     lrun("c_array",    tnecs_test_component_array);
     lrun("grow",       tnecs_test_grow);
     lrun("progress",   tnecs_test_world_progress);
+    lrun("pipelines",  tnecs_test_pipelines);
     lresults();
 
     dupprintf(globalf, "\n --- Notes ---\n");
