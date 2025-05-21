@@ -1375,17 +1375,6 @@ void tnecs_test_pipelines() {
     lok(system_arr_pipe1[0] == SystemMovePhase2);
     lok(system_arr_pipe1[1] == SystemMovePhase4);
 
-    printf("pipe_world->systems.torun.num %lld\n", pipe_world->systems.torun.num);
-    printf("pipe_world->systems.torun.num %lld\n", pipe_world->systems.torun.num);
-    printf("pipe_world->systems.torun.num %lld\n", pipe_world->systems.torun.num);
-    // TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Velocity_ID);
-    // TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Position_ID);
-    // TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Position_ID, Velocity_ID);
-
-
-    tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
-
-
     tnecs_world_destroy(&pipe_world);
 }
 

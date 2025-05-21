@@ -157,7 +157,7 @@ typedef struct tnecs_system {
     int             *exclusive;     // [system_id]
     tnecs_component *archetypes;    // [system_id]
     tnecs_pipeline  *pipeline;      // [system_id]
-    tnecs_array      torun;
+    tnecs_array      ran;
 } tnecs_system;
 
 typedef struct tnecs_archetype {
@@ -224,6 +224,8 @@ tnecs_phases *tnecs_pipeline_get(tnecs_world *w,
 /********************* SYSTEM ********************/
 int tnecs_system_run(
     tnecs_world *w, size_t id, tnecs_ns deltat, void *data);
+int tnecs_system_run();
+
 int tnecs_custom_system_run(
     tnecs_world *w,     tnecs_system_ptr c,    
     tnecs_component ar, tnecs_ns         dt,    void *data);
