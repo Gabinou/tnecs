@@ -218,8 +218,8 @@ int tnecs_pipeline_step(tnecs_world *w, tnecs_ns deltat, void *data, tnecs_pipel
 int tnecs_pipeline_step_phase(
     tnecs_world *w, tnecs_ns deltat, void *data, tnecs_pipeline pipeline, tnecs_phase phase);
 
-tnecs_phases *tnecs_pipeline_get(tnecs_world *w,
-                                 tnecs_pipeline pipeline);
+#define TNECS_PIPELINE_GET(world, pipeline) \
+    &world->pipelines.byphase[(pipeline)]
 
 /********************* SYSTEM ********************/
 int tnecs_system_run(
@@ -375,7 +375,7 @@ tnecs_component tnecs_archetypeid(
 /************************** SYSTEM ***********************/
 int tnecs_system_order_switch(tnecs_world *w,
                               tnecs_pipeline pipeline, 
-                              tnecs_phase phase,
+                              tnecs_phase phase, 
                               size_t o1, size_t o2);
 
 #define TNECS_SYSTEM_ID2ARCHETYPE(world, id) \
