@@ -157,6 +157,12 @@ typedef struct tnecs_system {
     int             *exclusive;     // [system_id]
     tnecs_component *archetypes;    // [system_id]
     tnecs_pipeline  *pipeline;      // [system_id]
+#ifndef NDEBUG
+    /* Systems that might be run in current pipeline */
+    tnecs_array to_run;
+    /* Systems ran in pipeline, if num_entities > 0 */
+    tnecs_array ran;
+#endif /* NDEBUG */
 } tnecs_system;
 
 typedef struct tnecs_archetype {

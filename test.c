@@ -160,95 +160,6 @@ void dupprintf(FILE *f, char const *fmt, ...) {   // duplicate printf
     va_end(ap);
 }
 
-/*******************************TEST FUNCTIONS***************************/
-int _tnecs_breath_systems(tnecs_system *systems) {
-    /* Variables */
-    systems->len        = TNECS_INIT_SYSTEM_LEN;
-    systems->ran.len    = TNECS_INIT_SYSTEM_LEN;
-    systems->num        = TNECS_NULLSHIFT;
-
-    /* Allocs */
-    systems->phases     = calloc(systems->len, sizeof(*systems->phases));
-    systems->orders     = calloc(systems->len, sizeof(*systems->orders));
-    systems->ran.arr    = calloc(systems->ran.len,  sizeof(tnecs_system_ptr));
-    systems->pipeline   = calloc(systems->len, sizeof(*systems->pipeline));
-    systems->exclusive  = calloc(systems->len, sizeof(*systems->exclusive));
-    systems->archetypes = calloc(systems->len, sizeof(*systems->archetypes));
-
-    TNECS_CHECK_ALLOC(systems->phases);
-    TNECS_CHECK_ALLOC(systems->orders);
-    TNECS_CHECK_ALLOC(systems->ran.arr);
-    TNECS_CHECK_ALLOC(systems->pipeline);
-    TNECS_CHECK_ALLOC(systems->exclusive);
-    TNECS_CHECK_ALLOC(systems->archetypes);
-
-    return (1);
-}
-
-int tnecs_test_system_run(tnecs_test_world *world, size_t system_id,
-                          tnecs_ns     deltat, void *data) {
-    /* Building the systems input */
-    tnecs_input input = {.world = world, .deltat = deltat, .data = data};
-    size_t sorder               = world->systems.orders[system_id];
-    tnecs_phase phase           = world->systems.phases[system_id];
-    tnecs_pipeline pipeline     = world->systems.pipeline[system_id];
-    size_t system_archetype_id  = tnecs_archetypeid(world, world->systems.archetypes[system_id]);
-
-    input.entity_archetype_id   = system_archetype_id;
-    input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
-
-    // Skip running system if no entities!
-    tnecs_system_ptr *system_ptr;
-    size_t system_num;
-    tnecs_phases *byphase   = TNECS_PIPELINE_GET(world, pipeline);
-    if (input.num_entities <= 0) {
-        /* Running the exclusive systems in current phase */
-        while (world->systems.ran.num >= (world->systems.ran.len - 1)) {
-            TNECS_CHECK_CALL(tnecs_grow_ran(world));
-        }
-        tnecs_system_ptr system = byphase->systems[phase][sorder];
-        system_num              = world->systems.ran.num++;
-        system_ptr              = world->systems.ran.arr;
-        system_ptr[system_num]  = byphase->systems[phase][sorder];
-        system(&input);
-    }
-
-    if (world->systems.exclusive[system_id])
-        return (1);
-
-    /* Running the inclusive systems in current phase */
-    for (size_t tsub = 0; tsub < world->bytype.num_archetype_ids[system_archetype_id]; tsub++) {
-
-        input.entity_archetype_id   = world->bytype.archetype_id[system_archetype_id][tsub];
-        input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
-        if (input.num_entities <= 0) {
-            continue;
-        }
-        while (world->systems.ran.num >= (world->systems.ran.len - 1)) {
-            TNECS_CHECK_CALL(tnecs_grow_ran(world));
-        }
-
-        tnecs_system_ptr system = byphase->systems[phase][sorder];
-        system_num              = world->systems.ran.num++;
-        system_ptr              = world->systems.ran.arr;
-        system_ptr[system_num]  = system;
-        system(&input);
-    }
-    return (1);
-}
-
-int tnecs_grow_ran(tnecs_world *world) {
-    /* Realloc systems_ran if too many */
-    size_t old_len          = world->systems.ran.len;
-    size_t new_len          = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-    world->systems.ran.len  = new_len;
-    size_t bytesize         = sizeof(tnecs_system_ptr);
-
-    world->systems.ran.arr  = tnecs_realloc(world->systems.ran.arr, old_len, new_len, bytesize);
-    TNECS_CHECK_ALLOC(world->systems.ran.arr);
-    return (1);
-}
-
 /*******************************TEST COMPONENTS***************************/
 typedef struct Position {
     uint32_t x;
@@ -960,10 +871,11 @@ void tnecs_test_world_progress() {
     tnecs_world_step(test_world, 1, NULL);
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
-
-    world->systems.ran.num = 0;
-    lok(test_world->systems.ran.num == 5);
-    tnecs_system_ptr *torun_arr = test_world->systems.ran.arr;
+    #ifndef NDEBUG
+    test_world->systems.to_run.num = 0;
+    #endif /* NDEBUG */
+    lok(test_world->systems.to_run.num == 5);
+    tnecs_system_ptr *torun_arr = test_world->systems.to_run.arr;
     lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
     lok(torun_arr[2] == &SystemMovePhase2);
@@ -981,8 +893,8 @@ void tnecs_test_world_progress() {
     tnecs_world_step(test_world, 1, NULL);
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
-    lok(test_world->systems.ran.num == 5);
-    torun_arr = test_world->systems.ran.arr;
+    lok(test_world->systems.to_run.num == 5);
+    torun_arr = test_world->systems.to_run.arr;
 
     lok(torun_arr[0] == &SystemMove);
     lok(torun_arr[1] == &SystemMovePhase1);
@@ -1096,8 +1008,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world->bytype.num == 8);
     tnecs_world_step(inclusive_world, 1, NULL);
 
-    lok(inclusive_world->systems.ran.num == 9);
-    torun_arr = inclusive_world->systems.ran.arr;
+    lok(inclusive_world->systems.to_run.num == 9);
+    torun_arr = inclusive_world->systems.to_run.arr;
     lok(torun_arr[0] == &SystemMoveDoNothing);
     lok(torun_arr[1] == &SystemMoveDoNothing);
     lok(torun_arr[2] == &SystemMoveDoNothing);
@@ -1151,8 +1063,8 @@ void tnecs_test_world_progress() {
     lok(inclusive_world2->bytype.num == 8);
     tnecs_world_step(inclusive_world2, 1, NULL);
 
-    lok(inclusive_world2->systems.ran.num == 9);
-    torun_arr = inclusive_world2->systems.ran.arr; 
+    lok(inclusive_world2->systems.to_run.num == 9);
+    torun_arr = inclusive_world2->systems.to_run.arr; 
     lok(torun_arr[0]  == &SystemMovePhase1);
     lok(torun_arr[1]  == &SystemMovePhase1);
     lok(torun_arr[2]  == &SystemMoveDoNothing);
@@ -1456,37 +1368,37 @@ void tnecs_test_pipelines() {
 
     // Checking which systems need to be run for pipe0
     tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
-    lok(pipe_world->systems.ran.num == 2);
-    tnecs_system_ptr *system_arr_pipe0 = pipe_world->systems.ran.arr;
+    lok(pipe_world->systems.to_run.num == 2);
+    tnecs_system_ptr *system_arr_pipe0 = pipe_world->systems.to_run.arr;
     lok(system_arr_pipe0[0] == SystemMoveDoNothing);
     lok(system_arr_pipe0[1] == SystemMovePhase1);
 
     // Checking which systems need to be run for pipe1
     tnecs_pipeline_step(pipe_world, 1, NULL, pipe1);
-    lok(pipe_world->systems.ran.num == 2);
-    tnecs_system_ptr *system_arr_pipe1 = pipe_world->systems.ran.arr;
+    lok(pipe_world->systems.to_run.num == 2);
+    tnecs_system_ptr *system_arr_pipe1 = pipe_world->systems.to_run.arr;
     lok(system_arr_pipe1[0] == SystemMovePhase2);
     lok(system_arr_pipe1[1] == SystemMovePhase4);
 
     // Checking which systems need to be run for pipe0, phase0
-    pipe_world->systems.ran.num = 0;
+    pipe_world->systems.to_run.num = 0;
     tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe0, phase0);
-    lok(pipe_world->systems.ran.num == 1);
+    lok(pipe_world->systems.to_run.num == 1);
 
     // Checking which systems need to be run for pipe0, phase1
-    pipe_world->systems.ran.num = 0;
+    pipe_world->systems.to_run.num = 0;
     tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe0, phase1);
-    lok(pipe_world->systems.ran.num == 1);
+    lok(pipe_world->systems.to_run.num == 1);
 
     // Checking which systems need to be run for pipe1, phase0
-    pipe_world->systems.ran.num = 0;
+    pipe_world->systems.to_run.num = 0;
     tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe1, phase0);
-    lok(pipe_world->systems.ran.num == 1);
+    lok(pipe_world->systems.to_run.num == 1);
 
     // Checking which systems need to be run for pipe1, phase1
-    pipe_world->systems.ran.num = 0;
+    pipe_world->systems.to_run.num = 0;
     tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe1, phase1);
-    lok(pipe_world->systems.ran.num == 1);
+    lok(pipe_world->systems.to_run.num == 1);
 
     tnecs_world_destroy(&pipe_world);
 }

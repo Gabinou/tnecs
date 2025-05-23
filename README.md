@@ -38,7 +38,7 @@ For more in-depth discussion about tnecs' design, see the [On Design](https://gi
 
 ```bash
 rm -f test
-tcc -O0 -DNDEBUG -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g test.c -o test -lm
+tcc -O0 -fsanitize=undefined,address -fno-strict-aliasing -fwrapv -fno-delete-null-pointer-checks -Wall -Werror -g test.c -o test -lm
 ./test
 
 rm -f test
