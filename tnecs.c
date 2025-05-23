@@ -327,6 +327,11 @@ int tnecs_pipeline_step(tnecs_world     *world,
                         tnecs_ns         deltat,
                         void            *data,
                         tnecs_pipeline   pipeline) {
+    #ifndef NDEBUG
+    world->systems.to_run.num   = 0;
+    world->systems.ran.num      = 0;
+    #endif /* NDEBUG */
+
     tnecs_phases *byphase = TNECS_PIPELINE_GET(world, pipeline);
     for (size_t phase = 0; phase < byphase->num; phase++) {
         TNECS_CHECK_CALL(tnecs_pipeline_step_phase(world, deltat, data, pipeline, phase));

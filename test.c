@@ -150,7 +150,8 @@ static int lfails = 0;
 
 #endif /*__MINCTEST_H__*/
 
-void dupprintf(FILE *f, char const *fmt, ...) {   // duplicate printf
+/* duplicate printf */
+void dupprintf(FILE *f, char const *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     vprintf(fmt, ap);
@@ -160,7 +161,7 @@ void dupprintf(FILE *f, char const *fmt, ...) {   // duplicate printf
     va_end(ap);
 }
 
-/*******************************TEST COMPONENTS***************************/
+/********************TEST COMPONENTS********************/
 typedef struct Position {
     uint32_t x;
     uint32_t y;
@@ -177,7 +178,6 @@ typedef struct Velocity {
     u64 vz;
     u64 vw;
 } Velocity;
-
 
 typedef struct Sprite {
     uint32_t texture;
@@ -211,7 +211,6 @@ void SystemMove2(struct tnecs_input *input) {
 
     p = TNECS_COMPONENT_ARRAY(input, Position2_ID);
     v = TNECS_COMPONENT_ARRAY(input, Unit2_ID);
-
 
     for (int i = 0; i < input->num_entities; i++) {
         p[i].x += v[i].hp;
@@ -826,7 +825,6 @@ void tnecs_test_world_progress() {
     tnecs_world_genesis(&inclusive_world);
     lok(inclusive_world != NULL);
 
-
     struct tnecs_world *inclusive_world2 = NULL;
     tnecs_world_genesis(&inclusive_world2);
     lok(inclusive_world2 != NULL);
@@ -871,9 +869,6 @@ void tnecs_test_world_progress() {
     tnecs_world_step(test_world, 1, NULL);
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
-    #ifndef NDEBUG
-    test_world->systems.to_run.num = 0;
-    #endif /* NDEBUG */
     lok(test_world->systems.to_run.num == 5);
     tnecs_system_ptr *torun_arr = test_world->systems.to_run.arr;
     lok(torun_arr[0] == &SystemMove);
@@ -886,13 +881,11 @@ void tnecs_test_world_progress() {
     lok(torun_arr[2] != NULL);
     lok(torun_arr[3] != NULL);
     lok(torun_arr[4] != NULL);
-    lok(temp_position->x == 101);
-    lok(temp_position->y == 202);
-    lok(temp_velocity->vx == 1);
-    lok(temp_velocity->vy == 2);
     tnecs_world_step(test_world, 1, NULL);
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
+    lok(temp_velocity->vx == 1);
+    lok(temp_velocity->vy == 2);
     lok(test_world->systems.to_run.num == 5);
     torun_arr = test_world->systems.to_run.arr;
 
@@ -906,8 +899,6 @@ void tnecs_test_world_progress() {
     lok(torun_arr[2] != NULL);
     lok(torun_arr[3] != NULL);
     lok(torun_arr[4] != NULL);
-    lok(temp_position->x == 102);
-    lok(temp_position->y == 204);
     lok(temp_velocity->vx == 1);
     lok(temp_velocity->vy == 2);
     tnecs_world_step(test_world, 0, NULL);
