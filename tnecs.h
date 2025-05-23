@@ -157,7 +157,6 @@ typedef struct tnecs_system {
     int             *exclusive;     // [system_id]
     tnecs_component *archetypes;    // [system_id]
     tnecs_pipeline  *pipeline;      // [system_id]
-    tnecs_array      ran;
 } tnecs_system;
 
 typedef struct tnecs_archetype {
@@ -183,7 +182,6 @@ typedef struct tnecs_components {
 } tnecs_components;
 
 typedef struct tnecs_world {
-    // tnecs_phases        byphase;
     tnecs_system        systems;
     tnecs_entities      entities;
     tnecs_archetype     bytype;

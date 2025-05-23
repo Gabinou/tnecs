@@ -32,7 +32,6 @@ static void *tnecs_realloc(
     void *ptr, size_t olen, size_t nlen, size_t bytesize);
 
 static int tnecs_grow_phase(            tnecs_world *w, tnecs_pipeline pipeline);
-static int tnecs_grow_ran(            tnecs_world *w);
 static int tnecs_grow_bytype(           tnecs_world *w, size_t aID);
 static int tnecs_grow_entity(           tnecs_world *w);
 static int tnecs_grow_system(           tnecs_world *w);
@@ -169,20 +168,17 @@ int _tnecs_breath_phases(tnecs_phases *byphase) {
 int _tnecs_breath_systems(tnecs_system *systems) {
     /* Variables */
     systems->len        = TNECS_INIT_SYSTEM_LEN;
-    systems->ran.len    = TNECS_INIT_SYSTEM_LEN;
     systems->num        = TNECS_NULLSHIFT;
 
     /* Allocs */
     systems->phases     = calloc(systems->len, sizeof(*systems->phases));
     systems->orders     = calloc(systems->len, sizeof(*systems->orders));
-    systems->ran.arr    = calloc(systems->ran.len,  sizeof(tnecs_system_ptr));
     systems->pipeline   = calloc(systems->len, sizeof(*systems->pipeline));
     systems->exclusive  = calloc(systems->len, sizeof(*systems->exclusive));
     systems->archetypes = calloc(systems->len, sizeof(*systems->archetypes));
 
     TNECS_CHECK_ALLOC(systems->phases);
     TNECS_CHECK_ALLOC(systems->orders);
-    TNECS_CHECK_ALLOC(systems->ran.arr);
     TNECS_CHECK_ALLOC(systems->pipeline);
     TNECS_CHECK_ALLOC(systems->exclusive);
     TNECS_CHECK_ALLOC(systems->archetypes);
@@ -249,7 +245,6 @@ static int _tnecs_destroy_phases(tnecs_phases *byphase) {
 static int _tnecs_destroy_systems(tnecs_system *systems) {
     free(systems->orders);
     free(systems->phases);
-    free(systems->ran.arr);
     free(systems->pipeline);
     free(systems->exclusive);
     free(systems->archetypes);
@@ -312,7 +307,6 @@ int tnecs_pipeline_step(tnecs_world     *world,
                         tnecs_ns         deltat,
                         void            *data,
                         tnecs_pipeline   pipeline) {
-    world->systems.ran.num = 0;
     tnecs_phases *byphase = TNECS_PIPELINE_GET(world, pipeline);
     for (size_t phase = 0; phase < byphase->num; phase++) {
         TNECS_CHECK_CALL(tnecs_pipeline_step_phase(world, deltat, data, pipeline, phase));
@@ -386,34 +380,29 @@ int tnecs_system_run(tnecs_world *world, size_t system_id,
     input.entity_archetype_id   = system_archetype_id;
     input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
 
-    /* Running the exclusive systems in current phase */
-    while (world->systems.ran.num >= (world->systems.ran.len - 1)) {
-        TNECS_CHECK_CALL(tnecs_grow_ran(world));
-    }
+    // Skip running system if no entities!
     tnecs_system_ptr *system_ptr;
     size_t system_num;
     tnecs_phases *byphase   = TNECS_PIPELINE_GET(world, pipeline);
-    tnecs_system_ptr system = byphase->systems[phase][sorder];
-    system_num              = world->systems.ran.num++;
-    system_ptr              = world->systems.ran.arr;
-    system_ptr[system_num]  = byphase->systems[phase][sorder];
-    system(&input);
+    if (input.num_entities <= 0) {
+        /* Running the exclusive systems in current phase */
+        tnecs_system_ptr system = byphase->systems[phase][sorder];
+        system(&input);
+    }
 
     if (world->systems.exclusive[system_id])
         return (1);
 
     /* Running the inclusive systems in current phase */
     for (size_t tsub = 0; tsub < world->bytype.num_archetype_ids[system_archetype_id]; tsub++) {
+
         input.entity_archetype_id   = world->bytype.archetype_id[system_archetype_id][tsub];
         input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
-        while (world->systems.ran.num >= (world->systems.ran.len - 1)) {
-            TNECS_CHECK_CALL(tnecs_grow_ran(world));
+        if (input.num_entities <= 0) {
+            continue;
         }
 
-        system                  = byphase->systems[phase][sorder];
-        system_num              = world->systems.ran.num++;
-        system_ptr              = world->systems.ran.arr;
-        system_ptr[system_num]  = system;
+        tnecs_system_ptr system = byphase->systems[phase][sorder];
         system(&input);
     }
     return (1);
@@ -1168,18 +1157,6 @@ void *tnecs_arrdel(void *arr,  size_t elem,
 
     memset(bytes + ((len - 1) * bytesize), TNECS_NULL, bytesize);
     return (arr);
-}
-
-int tnecs_grow_ran(tnecs_world *world) {
-    /* Realloc systems_ran if too many */
-    size_t old_len          = world->systems.ran.len;
-    size_t new_len          = old_len * TNECS_ARRAY_GROWTH_FACTOR;
-    world->systems.ran.len  = new_len;
-    size_t bytesize         = sizeof(tnecs_system_ptr);
-
-    world->systems.ran.arr  = tnecs_realloc(world->systems.ran.arr, old_len, new_len, bytesize);
-    TNECS_CHECK_ALLOC(world->systems.ran.arr);
-    return (1);
 }
 
 int tnecs_grow_entities_open(tnecs_world *world) {
