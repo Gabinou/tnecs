@@ -42,6 +42,8 @@ typedef unsigned long long int  tnecs_component;
 
 struct tnecs_input; /* Forward declaration */
 typedef void (*tnecs_system_ptr)(struct tnecs_input *);
+typedef void (*tnecs_free_ptr)(void *);
+typedef void (*tnecs_init_ptr)(void *);
 
 /******************* CONSTANT DEFINITIONS *******************/
 enum TNECS {
@@ -183,8 +185,10 @@ typedef struct tnecs_archetype {
 } tnecs_archetype;
 
 typedef struct tnecs_components {
-    size_t num;
-    size_t bytesizes[TNECS_COMPONENT_CAP];  // [cID]
+    size_t          num;
+    size_t          bytesizes[TNECS_COMPONENT_CAP]; // [cID]
+    tnecs_init_ptr  finit[TNECS_COMPONENT_CAP];     // [cID]
+    tnecs_free_ptr  ffree[TNECS_COMPONENT_CAP];     // [cID]
 } tnecs_components;
 
 typedef struct tnecs_world {
@@ -246,9 +250,6 @@ size_t tnecs_register_system(
     tnecs_pipeline       pipe,          tnecs_phase     p,    
     int                  isExclusive,   size_t       num, 
     tnecs_component      archetype);
-tnecs_component tnecs_register_component(
-    tnecs_world    *w,    size_t b);
-
 #define TNECS_REGISTER_SYSTEM(world, pfunc, pipeline, phase, excl, ...) \
     tnecs_register_system(\
         world, &pfunc, pipeline, phase, excl, \
@@ -258,8 +259,13 @@ tnecs_component tnecs_register_component(
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         )\
     )
-#define TNECS_REGISTER_COMPONENT(world, name) \
-    tnecs_register_component(world, sizeof(name))
+
+tnecs_component tnecs_register_component(
+    tnecs_world    *w,      size_t          b,
+    tnecs_free_ptr  ffree,  tnecs_init_ptr  finit);
+
+#define TNECS_REGISTER_COMPONENT(world, name, ffinit, ffree) \
+    tnecs_register_component(world, sizeof(name), ffinit, ffree)
 
 /********************** ENTITY ***********************/
 tnecs_entity tnecs_entity_isOpen( 
