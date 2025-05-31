@@ -1394,21 +1394,26 @@ void tnecs_test_pipelines() {
     tnecs_world_destroy(&pipe_world);
 }
 
+void tnecs_test_finit_ffree(void) {
+    lok(0);
+}
+
 int main() {
     globalf = fopen("tnecs_test_results.txt", "w+");
     dupprintf(globalf, "\n --- tnecs test start ---\n");
-    lrun("utilities",  tnecs_test_utilities);
-    lrun("log2",       test_log2);
-    lrun("c_regis",    tnecs_test_component_registration);
-    lrun("s_regis",    tnecs_test_system_registration);
-    lrun("e_create",   tnecs_test_entity_creation);
-    lrun("e_destroy",  tnecs_test_entity_destroy);
-    lrun("c_add",      tnecs_test_component_add);
-    lrun("c_remove",   tnecs_test_component_remove);
-    lrun("c_array",    tnecs_test_component_array);
-    lrun("grow",       tnecs_test_grow);
-    lrun("progress",   tnecs_test_world_progress);
-    lrun("pipelines",  tnecs_test_pipelines);
+    lrun("utilities",   tnecs_test_utilities);
+    lrun("log2",        test_log2);
+    lrun("c_regis",     tnecs_test_component_registration);
+    lrun("s_regis",     tnecs_test_system_registration);
+    lrun("e_create",    tnecs_test_entity_creation);
+    lrun("e_destroy",   tnecs_test_entity_destroy);
+    lrun("c_add",       tnecs_test_component_add);
+    lrun("c_remove",    tnecs_test_component_remove);
+    lrun("c_array",     tnecs_test_component_array);
+    lrun("grow",        tnecs_test_grow);
+    lrun("progress",    tnecs_test_world_progress);
+    lrun("finit_ffree", tnecs_test_finit_ffree);
+    lrun("pipelines",   tnecs_test_pipelines);
     lresults();
 
     dupprintf(globalf, "\n --- Notes ---\n");
