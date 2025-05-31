@@ -346,7 +346,7 @@ void tnecs_test_component_registration() {
     tnecs_world_genesis(&test_world);
     lok(test_world != NULL);
     assert(sizeof(Position) > 0);
-    TNECS_REGISTER_COMPONENT(test_world, Position);
+    TNECS_REGISTER_COMPONENT(test_world, Position, NULL, NULL);
     size_t temp_comp_flag       = 1;
     size_t temp_comp_id         = 1;
     size_t temp_comp_order      = 0;
@@ -361,7 +361,7 @@ void tnecs_test_component_registration() {
     lok(test_world->bytype.id[1] == temp_comp_flag);
     lok(test_world->components.num == 2);
 
-    TNECS_REGISTER_COMPONENT(test_world, Unit);
+    TNECS_REGISTER_COMPONENT(test_world, Unit, NULL, NULL);
     temp_comp_flag = 2;
     temp_comp_id = 2;
     temp_comp_order = 0;
@@ -375,7 +375,7 @@ void tnecs_test_component_registration() {
     lok(test_world->bytype.id[2] == temp_comp_flag);
     lok(test_world->components.num == 3);
 
-    TNECS_REGISTER_COMPONENT(test_world, Sprite);
+    TNECS_REGISTER_COMPONENT(test_world, Sprite, NULL, NULL);
     temp_comp_flag = 4;
     temp_comp_id = 3;
     temp_comp_order = 0;
@@ -389,7 +389,7 @@ void tnecs_test_component_registration() {
     lok(test_world->bytype.id[3] == temp_comp_flag);
     lok(test_world->components.num == 4);
 
-    TNECS_REGISTER_COMPONENT(test_world, Velocity);
+    TNECS_REGISTER_COMPONENT(test_world, Velocity, NULL, NULL);
     temp_comp_flag = 8;
     temp_comp_id = 4;
     temp_comp_order = 0;
@@ -433,7 +433,7 @@ void tnecs_test_entity_creation() {
     int Sprite_ID   = 4;
 
     lok(test_world->entities.num == TNECS_NULLSHIFT);
-    TNECS_REGISTER_COMPONENT(test_world, Sprite);
+    TNECS_REGISTER_COMPONENT(test_world, Sprite, NULL, NULL);
     tnecs_entity Silou = tnecs_entity_create(test_world);
     lok(Silou == TNECS_NULLSHIFT);
     lok(test_world->entities.num == (TNECS_NULLSHIFT + 1));
@@ -501,7 +501,7 @@ void tnecs_test_entity_creation() {
     tnecs_world_genesis(&test_world2);
 
     test_world2->bytype.num = TNECS_INIT_SYSTEM_LEN;
-    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+    TNECS_REGISTER_COMPONENT(test_world2, Position2, NULL, NULL);
     lok(test_world2->components.num == 2);
 
     // Coverage for if in tnecs_register_system
@@ -512,15 +512,15 @@ void tnecs_test_entity_creation() {
     int Position2_ID = 1;
     int Unit2_ID     = 2;
 
-    TNECS_REGISTER_COMPONENT(test_world2, Position2);
+    TNECS_REGISTER_COMPONENT(test_world2, Position2, NULL, NULL);
     test_world2->pipelines.byphase[0].num_systems[0] = TNECS_INIT_PHASE_LEN;
     TNECS_REGISTER_SYSTEM(test_world2, SystemMovePhase1, pipe0, 0, 0, Position2_ID);
     tnecs_world_destroy(&test_world2);
 
     // Coverage for "for" in tnecs_component_del
     tnecs_world_genesis(&test_world2);
-    TNECS_REGISTER_COMPONENT(test_world2, Unit2_ID);
-    TNECS_REGISTER_COMPONENT(test_world2, Position2_ID);
+    TNECS_REGISTER_COMPONENT(test_world2, Unit2_ID, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(test_world2, Position2_ID, NULL, NULL);
     tnecs_entity Erwin = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world2, Position2_ID, Unit2_ID);
     tnecs_component_del(test_world2, Erwin, (1 + 2));
     tnecs_world_destroy(&test_world2);
@@ -708,10 +708,10 @@ void tnecs_test_component_array() {
     tnecs_world *arr_world = NULL;
     tnecs_world_genesis(&arr_world);
     
-    lok(TNECS_REGISTER_COMPONENT(arr_world, Position_ID));
-    lok(TNECS_REGISTER_COMPONENT(arr_world, Velocity_ID));
-    lok(TNECS_REGISTER_COMPONENT(arr_world, Sprite_ID));
-    lok(TNECS_REGISTER_COMPONENT(arr_world, Unit_ID));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Position_ID, NULL, NULL));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Velocity_ID, NULL, NULL));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Sprite_ID, NULL, NULL));
+    lok(TNECS_REGISTER_COMPONENT(arr_world, Unit_ID, NULL, NULL));
     TNECS_REGISTER_SYSTEM(arr_world, SystemMoveDoNothing,  pipe0, 0, 0, Unit_ID); // 4X
     TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase1,     pipe0, 0, 0, Unit_ID, Velocity_ID);  // 2X
     TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase2,     pipe0, 0, 0, Unit_ID, Position_ID); // 2X
@@ -911,10 +911,10 @@ void tnecs_test_world_progress() {
     tnecs_grow_system(test_world);
     tnecs_grow_archetype(test_world);
 
-    TNECS_REGISTER_COMPONENT(inclusive_world, Position);
-    TNECS_REGISTER_COMPONENT(inclusive_world, Velocity);
-    TNECS_REGISTER_COMPONENT(inclusive_world, Sprite);
-    TNECS_REGISTER_COMPONENT(inclusive_world, Unit);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Position, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Velocity, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Sprite, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(inclusive_world, Unit, NULL, NULL);
     TNECS_REGISTER_SYSTEM(inclusive_world, SystemMoveDoNothing, pipe0, 0, 0, Unit_ID); // 4X
     TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase1,    pipe0, 0, 0, Unit_ID, Velocity_ID);  // 2X
     TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase2,    pipe0, 0, 0, Unit_ID, Position_ID); // 2X
@@ -1018,10 +1018,10 @@ void tnecs_test_world_progress() {
     lok(torun_arr[14] == NULL);
     lok(torun_arr[15] == NULL);
 
-    TNECS_REGISTER_COMPONENT(inclusive_world2, Position);
-    TNECS_REGISTER_COMPONENT(inclusive_world2, Velocity);
-    TNECS_REGISTER_COMPONENT(inclusive_world2, Unit);
-    TNECS_REGISTER_COMPONENT(inclusive_world2, Sprite);
+    TNECS_REGISTER_COMPONENT(inclusive_world2, Position, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(inclusive_world2, Velocity, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(inclusive_world2, Unit, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(inclusive_world2, Sprite, NULL, NULL);
 
     tnecs_register_phase(inclusive_world2, pipe0);
     tnecs_register_phase(inclusive_world2, pipe0);
@@ -1199,8 +1199,8 @@ void tnecs_benchmarks(uint64_t num) {
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
-    TNECS_REGISTER_COMPONENT(bench_world, Position2);
-    TNECS_REGISTER_COMPONENT(bench_world, Unit2);
+    TNECS_REGISTER_COMPONENT(bench_world, Position2, NULL, NULL);
+    TNECS_REGISTER_COMPONENT(bench_world, Unit2, NULL, NULL);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
@@ -1321,10 +1321,10 @@ void tnecs_test_pipelines() {
     const tnecs_phase phase1    = 1;
     const tnecs_pipeline pipe1  = 1;
     
-    lok(TNECS_REGISTER_COMPONENT(pipe_world, Position_ID));
-    lok(TNECS_REGISTER_COMPONENT(pipe_world, Velocity_ID));
-    lok(TNECS_REGISTER_COMPONENT(pipe_world, Sprite_ID));
-    lok(TNECS_REGISTER_COMPONENT(pipe_world, Unit_ID));
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Position_ID, NULL, NULL));
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Velocity_ID, NULL, NULL));
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Sprite_ID, NULL, NULL));
+    lok(TNECS_REGISTER_COMPONENT(pipe_world, Unit_ID, NULL, NULL));
 
     // Register pipelines
     lok(tnecs_register_pipeline(pipe_world));
