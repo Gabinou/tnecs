@@ -5,21 +5,24 @@ Upon error, functions/macros return 0 or ```NULL```.
 ## Worlds Creation/Destruction
 The world contains everything tnecs needs.
 ```c
-    struct tnecs_world *world = NULL;
+    tnecs_world *world = NULL;
     tnecs_world_genesis(&world);
     ...
     tnecs_world_destroy(&world);
    ```
+
 ## Registering Components
 A component is a user-defined struct:
 ```c
 typedef struct Position {
-    uint32_t x;
-    uint32_t y;
+    int x;
+    int y;
 } Position;
 
 // Register Position without init, free function
 TNECS_REGISTER_COMPONENT(world, Position, NULL, NULL);
+// Keeping track of component IDs is user reponsibility
+int Position_ID = 1;
 
 void Position_Init(void *voidpos) {
     struct Position *pos = voidpos;
@@ -42,9 +45,10 @@ Tip: Use X macros to create lists of component IDs.
 
 You can get the component type with the macro:
 ```c
-    Position_ID     == TNECS_COMPONENT_ID2TYPE(Position_type);
     Position_type   == TNECS_COMPONENT_TYPE2ID(Position_id);
+    Position_ID     == TNECS_COMPONENT_ID2TYPE(Position_type);
 ```
+Note: A type only has one set bit. An archetype has multiple set bits, by adding types, OR'ing multiple archetypes.
 
 ## Creating/Destroying Entities
 ```c
@@ -56,17 +60,12 @@ Entities can be created with any number of components directly with this variadi
 ```c
     tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(world, Position_ID, Unit_ID);
 ```
-Or you can write directly:
-```c
-    tnecs_entity_t Perignon = tnecs_entity_create_wcomponents(world, 2, Position_ID, Unit_ID);
-```
 
 ## Getting Components
 ```c
-    int Position_ID = 1;
-    struct Position *pos = tnecs_get_component(world, Silou, Position_id);
-    pos->x += 1;
-    pos->y += 2;
+    struct Position *pos = tnecs_get_component(world, Silou, Position_ID);
+    pos->x = 1;
+    pos->y = 2;
 ```
 By default, all component bits are set to zero with ```calloc``` when no init function is provided.
 
@@ -79,6 +78,7 @@ By default, all component bits are set to zero with ```calloc``` when no init fu
     TNECS_ADD_COMPONENT(world, Silou, Position, isNew);
 ```
 By default, tnecs checks if the entity archetype is new, when the new component is added.
+If you know that the archetype isn't new, set isNew to false to skip comparing the entity's new archetype with all other recorded archetypes.
 
 Multiple components can also be added at once:
 ```c
@@ -89,13 +89,13 @@ Multiple components can also be added at once:
 ## Register System to the world
 A system is a user-defined function, with a ```struct *tnecs_system_input``` pointer as input and no output:
 ```c
-    void SystemMove(tnecs_system_input_t * in_input) {
-        Position *p = TNECS_COMPONENT_ARRAY(in_input, Position);
-        Velocity *v = TNECS_COMPONENT_ARRAY(in_input, Velocity);
+    void SystemMove(tnecs_system_input_t *input) {
+        Position *p = TNECS_COMPONENT_ARRAY(input, Position);
+        Velocity *v = TNECS_COMPONENT_ARRAY(input, Velocity);
 
-        for (int i = 0; i < in_input->entity_num; i++) {
-            p[i].x += v[i].vx * in_input->deltat;
-            p[i].y += v[i].vy * in_input->deltat;
+        for (int i = 0; i < input->entity_num; i++) {
+            p[i].x += v[i].vx * input->deltat;
+            p[i].y += v[i].vy * input->deltat;
         }
     }
     // More about pipeline, phase in next section
@@ -107,10 +107,9 @@ A system is a user-defined function, with a ```struct *tnecs_system_input``` poi
     TNECS_REGISTER_SYSTEM(world, SystemMove, pipeline, phase, exclusive, Position, Unit); 
 ```
 
-
 ## Updating the world
 ```c
-// Time elapsed by stepping. Useful for timers.
+// Time elapsed by stepping.
 tnecs_time_ns_t frame_deltat = 1;
 // User-defined data input into system
 void *data = NULL; 
