@@ -2,90 +2,88 @@
 ## Error Handling
 Upon error, functions/macros return 0 or ```NULL```.
 
-## Initializing the world
+## Worlds Creation/Destruction
+The world contains everything tnecs needs.
 ```c
     struct tnecs_world *world = NULL;
     tnecs_world_genesis(&world);
+    ...
+    tnecs_world_destroy(&world);
    ```
-The world contains everything tnecs needs.
-Use ```tnecs_world_destroy``` to free all memory.
-
-## Entity creation/destruction
-```c
-    tnecs_entity_t Silou = tnecs_entity_create(world);
-```
-```tnecs_entity_t``` is a ```ull``` index. 
-
-Entity index 0 is reserved for ```TNECS_NULL```.
-Entities can be destroyed with ```tnecs_entity_destroy```, which frees all associated components.
-
-## Register Component to the world
+## Registering Components
 A component is a user-defined struct:
 ```c
-    typedef struct Position {
-        uint32_t x;
-        uint32_t y;
-    } Position;
+typedef struct Position {
+    uint32_t x;
+    uint32_t y;
+} Position;
 
-    TNECS_REGISTER_COMPONENT(world, Position);
-```
-The components IDs start at 1, and increment for every new component.
-Use X macros to create compile-time component IDs. 
-```tnecs_component_t``` is an ```ull``` integer, used as a bitflag: each component type only has one bit set, at ```component_id``` location. 
-Component index 0 is reserved for the NULL component, so a maximal number of 63 components can be registered.
+// Register Position without init, free function
+TNECS_REGISTER_COMPONENT(world, Position, NULL, NULL);
 
-The component's type can be obtained with:
-```c
-    tnecs_component_t Position_flag = TNECS_COMPONENT_TYPE(world, Position); 
-```
-NOTE: A component type has one bit set, an archetype can have any number of bits set.
+void Position_Init(void *voidpos) {
+    struct Position *pos = voidpos;
+    // 1. Set variables to non-zero, non-NULL values
+    // 2. Alloc member variables
+}
 
-The relation between component indices and types is:
-```c
-    Position_type   == (1 << (Position_id - 1));
-    Position_id     == ((tnecs_component_t)(log2(Position_type) + 1.1f));  // casting to int truncates to 0
+void Position_Free(void *voidpos) {
+    struct Position *pos = voidpos;
+    // Free member variables
+}
+
+// All Position components initialized on creation,
+// freed on destruction
+TNECS_REGISTER_COMPONENT(world, Position, Position_Init, Position_Free);
+
 ```
-which are accessible through the macros:
+The components IDs start 1, and increase monotonically, up to a cap of 63.
+Tip: Use X macros to create lists of component IDs.
+
+You can get the component type with the macro:
 ```c
-    Position_id     == TNECS_COMPONENT_ID2TYPE(Position_type);
+    Position_ID     == TNECS_COMPONENT_ID2TYPE(Position_type);
     Position_type   == TNECS_COMPONENT_TYPE2ID(Position_id);
 ```
 
-## Add Components to Entities
+## Creating/Destroying Entities
+```c
+    tnecs_entity_t Silou = tnecs_entity_create(world);
+    ...
+    tnecs_entity_destroy(world, Silou);
+```
+Entities can be created with any number of components directly with this variadic macro: 
+```c
+    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(world, Position_ID, Unit_ID);
+```
+Or you can write directly:
+```c
+    tnecs_entity_t Perignon = tnecs_entity_create_wcomponents(world, 2, Position_ID, Unit_ID);
+```
+
+## Getting Components
+```c
+    int Position_ID = 1;
+    struct Position *pos = tnecs_get_component(world, Silou, Position_id);
+    pos->x += 1;
+    pos->y += 2;
+```
+By default, all component bits are set to zero with ```calloc``` when no init function is provided.
+
+## Adding/Removing Components
+
 ```c 
     TNECS_ADD_COMPONENT(world, Silou, Position);
-```
-By default, tnecs checks if the entity archetype is new, when the new component is added.
-```TNECS_ADD_COMPONENT``` is an overloaded macro, so you can specify if the archetype is not new and skip a check for better performance:
-
-```c
+    // TNECS_ADD_COMPONENT is an overloaded macro
     bool isNew = false;
     TNECS_ADD_COMPONENT(world, Silou, Position, isNew);
 ```
+By default, tnecs checks if the entity archetype is new, when the new component is added.
+
 Multiple components can also be added at once:
 ```c
     bool isNew = false;
     TNECS_ADD_COMPONENTS(world, Pirou, isNew, Position, Velocity);
-```
-```TNECS_ADD_COMPONENTS``` is NOT an overloaded macro.
-
-You can get a pointer to the component:
-```c
-    int Position_id = 1;
-    struct Position * pos_Silou = tnecs_get_component(world, Silou, Position_id);
-    pos_Silou->x += 1;
-    pos_Silou->y += 2;
-```
-By default, all component bits are set to zero with ```calloc```.
-
-Entities can be created with any number of components directly with this variadic macro: 
-```c
-    tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(world, Position, Unit);
-```
-```TNECS_ENTITY_CREATE_wCOMPONENTS``` wraps around the variadic function ```tnecs_new_entity_wcomponents``` by counting the number of input components. So you can also write, if you wish:
-
-```c
-    tnecs_entity_t Perignon = tnecs_entity_create_wcomponents(world, 2, Position_ID, Unit_ID);
 ```
 
 ## Register System to the world
