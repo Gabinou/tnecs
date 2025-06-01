@@ -98,33 +98,33 @@ A system is a user-defined function, with a ```struct *tnecs_system_input``` poi
             p[i].y += v[i].vy * in_input->deltat;
         }
     }
+    // More about pipeline, phase in next section
     int pipeline        = 0;
     int phase           = 0;
+    // Exclusive systems run only for all entities that have exactly the system's archetype.
+    // Otherwise, system is run for every compatible archetype.
     int exclusive       = 0;
     TNECS_REGISTER_SYSTEM(world, SystemMove, pipeline, phase, exclusive, Position, Unit); 
 ```
-System index 0 is reserved for NULL. 
 
-Each pipeline can be run with ```tnecs_pipeline_step```.
-Systems are run in phases within each pipeline.
-For each phase, the systems are run first come first served.
-
-Phases are greater than zero ```ull``` integers.
-Default phase is 0, the NULL phase, which always runs first. 
-
-Inclusive systems, run for entities that have all required components, and more.
-Inclusive systems are run once for every compatible archetype to the system archetype, in the order saved in ```systems_torun``` in the ```world``` after each step.
-If the system is set to exclusive, it runs only one time for the entities that only have exactly the system's components.
 
 ## Updating the world
 ```c
-tnecs_time_ns_t frame_deltat;
-tnecs_world_step(world, frame_deltat, NULL);
+// Time elapsed by stepping. Useful for timers.
+tnecs_time_ns_t frame_deltat = 1;
+// User-defined data input into system
+void *data = NULL; 
+
+// Run all pipelines, starting from pipeline 0.
+tnecs_world_step(world, frame_deltat, data);
+
+// Run a specific pipeline, starting from phase 0
+int pipeline = 1;
+tnecs_pipeline_step(world, frame_deltat, data, pipeline);
+
+// Run a specific phase
+// In each phase, systems are run first-come first-served 
+int phase = 1;
+tnecs_pipeline_step_phase(world, frame_deltat, data, pipeline, phase);
+
 ```
-This runs each system in every pipeline, in phases.
-Pipelines and phases are always ran in order e.g. pipeline 0 first, pipeline 1 next...
-To run only systems registered to a specific pipeline, use ```tnecs_pipeline_step```.
-For a specific phase inside a pipeline, use ```tnecs_pipeline_step_phase```.
-
-The frame time is the ```deltat``` member in ```tnecs_system_input_t```, accessible from inside registered systems.
-
