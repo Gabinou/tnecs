@@ -1168,38 +1168,6 @@ int tnecs_carr_init(tnecs_world *world,
     return (1);
 }
 
-int tnecs_system_order_switch(tnecs_world       *world,
-                              tnecs_pipeline     pipeline,
-                              tnecs_phase        phase,
-                              size_t             order1,
-                              size_t             order2) {
-    if (!TNECS_PIPELINE_VALID(world, pipeline)) {
-        return (0);
-    }
-
-    if (!TNECS_PHASE_VALID(world, pipeline, phase)) {
-        return (0);
-    }
-    tnecs_phases *byphase = TNECS_PIPELINE_GET(world, pipeline);
-    if (!byphase->systems[phase][order1]) {
-        return (0);
-    }
-    if (!byphase->systems[phase][order2]) {
-        return  (0);
-    }
-
-    assert(byphase->num                   > phase);
-    assert(byphase->num_systems[phase]    > order1);
-    assert(byphase->num_systems[phase]    > order2);
-
-    tnecs_system_ptr systems_temp   = byphase->systems[phase][order1];
-    byphase->systems[phase][order1] = byphase->systems[phase][order2];
-    byphase->systems[phase][order2] = systems_temp;
-    int out1 = (byphase->systems[phase][order1] != NULL);
-    int out2 = (byphase->systems[phase][order2] != NULL);
-    return (out1 && out2);
-}
-
 /************************ UTILITY FUNCTIONS/MACROS ***************************/
 
 size_t tnecs_component_order_bytype(const tnecs_world *const world,

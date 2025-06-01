@@ -859,12 +859,6 @@ void tnecs_test_world_progress() {
     test_true(test_world->pipelines.byphase[0].systems[1][1] == &SystemMovePhase2);
     test_true(test_world->pipelines.byphase[0].systems[2][0] == &SystemMovePhase2);
     test_true(test_world->pipelines.byphase[0].systems[4][0] == &SystemMovePhase4);
-    tnecs_system_order_switch(test_world, pipe0, 1, 0, 1);
-    test_true(test_world->pipelines.byphase[0].systems[1][0] == &SystemMovePhase2);
-    test_true(test_world->pipelines.byphase[0].systems[1][1] == &SystemMovePhase1);
-    tnecs_system_order_switch(test_world, pipe0, 1, 0, 1);
-    test_true(test_world->pipelines.byphase[0].systems[1][0] == &SystemMovePhase1);
-    test_true(test_world->pipelines.byphase[0].systems[1][1] == &SystemMovePhase2);
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;

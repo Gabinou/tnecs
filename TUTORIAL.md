@@ -70,7 +70,6 @@ Entities can be created with any number of components directly with this variadi
 By default, all component bits are set to zero with ```calloc``` when no init function is provided.
 
 ## Adding/Removing Components
-
 ```c 
     TNECS_ADD_COMPONENT(world, Silou, Position);
     // TNECS_ADD_COMPONENT is an overloaded macro
@@ -87,7 +86,7 @@ Multiple components can also be added at once:
 ```
 
 ## Register System to the world
-A system is a user-defined function, with a ```struct *tnecs_system_input``` pointer as input and no output:
+A system is a user-defined function, with a ```tnecs_system_input``` pointer as input and no output:
 ```c
     void SystemMove(tnecs_system_input_t *input) {
         Position *p = TNECS_COMPONENT_ARRAY(input, Position);
@@ -121,7 +120,7 @@ tnecs_world_step(world, frame_deltat, data);
 int pipeline = 1;
 tnecs_pipeline_step(world, frame_deltat, data, pipeline);
 
-// Run a specific phase
+// Run a specific phase, in a specific pipeline
 // In each phase, systems are run first-come first-served 
 int phase = 1;
 tnecs_pipeline_step_phase(world, frame_deltat, data, pipeline, phase);
