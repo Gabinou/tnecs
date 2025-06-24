@@ -42,5 +42,5 @@ gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-aliasing -fw
 ```
 
 ## Credits
-Copyright (c) 2025 Average Bear Games, Made by Gabriel Taillon
+Copyright (c) 2025 Gabriel Taillon
 Originally created for use in a game I am developing: [Codename Firesaga](https://gitlab.com/Gabinou/firesagamaker).
