@@ -83,7 +83,6 @@ u64 tnecs_get_us() {
 #  define tnecs_get_ns() ((clock())/CLOCKS_PER_SEC*1e9) // [ns]
 #endif
 
-
 // TODO:
 //   -> tests for component_del
 //   -> tests for entity destroy
