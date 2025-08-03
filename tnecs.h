@@ -287,9 +287,6 @@ tnecs_component tnecs_register_component(
     tnecs_register_component(world, sizeof(name), ffinit, ffree)
 
 /* --- ENTITY --- */
-#define TNECS_ENTITY_VALID(world, entity) \
-    (TNECS_NULL != world->entities.id[entity])
-
 tnecs_entity tnecs_entity_isOpen( 
     tnecs_world *w, tnecs_entity ent);
 tnecs_entity tnecs_entity_create( 
