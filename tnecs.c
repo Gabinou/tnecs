@@ -93,7 +93,7 @@ static int tnecs_component_free(
     tnecs_component of);
 static int tnecs_component_run(
     tnecs_world     *w,     tnecs_entity    ent,
-    tnecs_component  of,    tnecs_free_ptr *f);
+    tnecs_component  of,    tnecs_free_f *f);
 
 static int tnecs_component_copy(
     tnecs_world     *w,     tnecs_entity ent, 
@@ -224,9 +224,9 @@ int _tnecs_breath_systems(tnecs_system *systems) {
                                  sizeof(*systems->archetypes));
 #ifndef NDEBUG
     systems->ran.arr    = calloc(systems->ran.len,
-                                 sizeof(tnecs_system_ptr));
+                                 sizeof(tnecs_system_f));
     systems->to_run.arr = calloc(systems->to_run.len,
-                                 sizeof(tnecs_system_ptr));
+                                 sizeof(tnecs_system_f));
 #endif /* NDEBUG */
 
     TNECS_CHECK_ALLOC(systems->phases);
@@ -417,7 +417,7 @@ int tnecs_world_step(tnecs_world    *world,
 
 /************* SYSTEM FUNCTIONS ***************/
 int tnecs_custom_system_run(tnecs_world         *world,
-                            tnecs_system_ptr     custom_system,
+                            tnecs_system_f     custom_system,
                             tnecs_component      archetype,
                             tnecs_ns             deltat, 
                             void                *data) {
@@ -460,9 +460,9 @@ int tnecs_system_run(tnecs_world *world, size_t system_id,
         TNECS_CHECK_CALL(tnecs_grow_ran(world));
     }
 
-    tnecs_system_ptr system = byphase->systems[phase][sorder];
+    tnecs_system_f system = byphase->systems[phase][sorder];
 #ifndef NDEBUG
-    tnecs_system_ptr *system_ptr;
+    tnecs_system_f *system_ptr;
     size_t system_num;
     system_num              = world->systems.to_run.num++;
     system_ptr              = world->systems.to_run.arr;
@@ -488,7 +488,7 @@ int tnecs_system_run(tnecs_world *world, size_t system_id,
 
         input.entity_archetype_id   = world->bytype.archetype_id[system_archetype_id][tsub];
         input.num_entities          = world->bytype.num_entities[input.entity_archetype_id];
-        tnecs_system_ptr system = byphase->systems[phase][sorder];
+        tnecs_system_f system = byphase->systems[phase][sorder];
 
     #ifndef NDEBUG
         system_num              = world->systems.to_run.num++;
@@ -517,7 +517,7 @@ int tnecs_system_run(tnecs_world *world, size_t system_id,
 
 /*************** REGISTRATION ***************/
 size_t tnecs_register_system(tnecs_world       *world,
-                             tnecs_system_ptr   system,
+                             tnecs_system_f   system,
                              tnecs_pipeline     pipeline,
                              tnecs_phase        phase,
                              int                isExclusive,
@@ -565,8 +565,8 @@ size_t tnecs_register_system(tnecs_world       *world,
 
 tnecs_component tnecs_register_component(tnecs_world    *world,
                                          size_t          bytesize,
-                                         tnecs_free_ptr  finit,
-                                         tnecs_free_ptr  ffree) {
+                                         tnecs_free_f  finit,
+                                         tnecs_free_f  ffree) {
     /* Checks */
     if (bytesize <= 0) {
         printf("tnecs: Component should have >0 bytesize.\n");
@@ -1093,12 +1093,12 @@ int tnecs_component_copy(tnecs_world    *world,
 int tnecs_component_run(tnecs_world     *world,
                         tnecs_entity     entity,
                         tnecs_component  archetype,
-                        tnecs_init_ptr  *funcs) {
+                        tnecs_init_f  *funcs) {
     size_t tID      = tnecs_archetypeid(world, archetype);
     size_t comp_num = world->bytype.num_components[tID];
     for (size_t corder = 0; corder < comp_num; corder++) {
         size_t cID = world->bytype.components_id[tID][corder];
-        tnecs_init_ptr func = funcs[cID]; 
+        tnecs_init_f func = funcs[cID]; 
         if (func == NULL) {
             continue;
         }
@@ -1291,7 +1291,7 @@ int tnecs_grow_ran(tnecs_world *world) {
     size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
     world->systems.ran.len      = new_len;
     world->systems.to_run.len   = new_len;
-    size_t bytesize             = sizeof(tnecs_system_ptr);
+    size_t bytesize             = sizeof(tnecs_system_f);
 
     world->systems.ran.arr  = tnecs_realloc(world->systems.ran.arr, old_len, new_len, bytesize);
     world->systems.to_run.arr  = tnecs_realloc(world->systems.to_run.arr, old_len, new_len, bytesize);
@@ -1514,7 +1514,7 @@ int tnecs_grow_system_byphase(tnecs_phases *byphase,
     size_t bs                   = sizeof(**byphase->systems);
     size_t bsid                 = sizeof(**byphase->systems_id);
 
-    tnecs_system_ptr *systems   = byphase->systems[phase];
+    tnecs_system_f *systems   = byphase->systems[phase];
     size_t *system_id           = byphase->systems_id[phase];
     byphase->systems[phase]     = tnecs_realloc(systems, olen, nlen, bs);
     TNECS_CHECK_ALLOC(byphase->systems[phase]);

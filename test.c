@@ -865,7 +865,7 @@ void tnecs_test_world_progress() {
     temp_position = tnecs_get_component(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_component(test_world, Perignon, Velocity_ID);
     test_true(test_world->systems.to_run.num == 5);
-    tnecs_system_ptr *torun_arr = test_world->systems.to_run.arr;
+    tnecs_system_f *torun_arr = test_world->systems.to_run.arr;
     test_true(torun_arr[0] == &SystemMove);
     test_true(torun_arr[1] == &SystemMovePhase1);
     test_true(torun_arr[2] == &SystemMovePhase2);
@@ -1355,14 +1355,14 @@ void tnecs_test_pipelines() {
     // Checking which systems need to be run for pipe0
     tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
     test_true(pipe_world->systems.to_run.num == 2);
-    tnecs_system_ptr *system_arr_pipe0 = pipe_world->systems.to_run.arr;
+    tnecs_system_f *system_arr_pipe0 = pipe_world->systems.to_run.arr;
     test_true(system_arr_pipe0[0] == SystemMoveDoNothing);
     test_true(system_arr_pipe0[1] == SystemMovePhase1);
 
     // Checking which systems need to be run for pipe1
     tnecs_pipeline_step(pipe_world, 1, NULL, pipe1);
     test_true(pipe_world->systems.to_run.num == 2);
-    tnecs_system_ptr *system_arr_pipe1 = pipe_world->systems.to_run.arr;
+    tnecs_system_f *system_arr_pipe1 = pipe_world->systems.to_run.arr;
     test_true(system_arr_pipe1[0] == SystemMovePhase2);
     test_true(system_arr_pipe1[1] == SystemMovePhase4);
 

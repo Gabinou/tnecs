@@ -53,9 +53,9 @@ typedef unsigned long long int  tnecs_pipeline;
 typedef unsigned long long int  tnecs_component;
 
 struct tnecs_input; /* Forward declaration */
-typedef void (*tnecs_system_ptr)(struct tnecs_input *);
-typedef void (*tnecs_free_ptr)(void *);
-typedef void (*tnecs_init_ptr)(void *);
+typedef void (*tnecs_system_f)(struct tnecs_input *);
+typedef void (*tnecs_free_f)(void *);
+typedef void (*tnecs_init_f)(void *);
 
 /* --- CONSTANTS --- */
 enum TNECS {
@@ -138,7 +138,7 @@ typedef struct tnecs_phases {
     size_t            *len_systems; /* [phase_id] */
     size_t            *num_systems; /* [phase_id] */
     size_t           **systems_id;  /* [phase_id][system_order] */
-    tnecs_system_ptr **systems;     /* [phase_id][system_id]    */
+    tnecs_system_f **systems;     /* [phase_id][system_id]    */
 } tnecs_phases;
 
 typedef struct tnecs_pipelines {
@@ -199,8 +199,8 @@ typedef struct tnecs_archetype {
 typedef struct tnecs_components {
     size_t          num;
     size_t          bytesizes[TNECS_COMPONENT_CAP]; /* [cID] */
-    tnecs_init_ptr  finit[TNECS_COMPONENT_CAP];     /* [cID] */
-    tnecs_free_ptr  ffree[TNECS_COMPONENT_CAP];     /* [cID] */
+    tnecs_init_f    finit[TNECS_COMPONENT_CAP];     /* [cID] */
+    tnecs_free_f    ffree[TNECS_COMPONENT_CAP];     /* [cID] */
 } tnecs_components;
 
 typedef struct tnecs_world {
@@ -250,7 +250,7 @@ int tnecs_system_run(
     tnecs_ns deltat, void *data);
 
 int tnecs_custom_system_run(
-    tnecs_world     *w,     tnecs_system_ptr    c,    
+    tnecs_world     *w,     tnecs_system_f    c,    
     tnecs_component  ar,    tnecs_ns            dt,    
     void            *data);
 
@@ -263,7 +263,7 @@ size_t tnecs_register_pipeline( tnecs_world    *w);
 
 size_t tnecs_register_system(
     tnecs_world         *w,
-    tnecs_system_ptr     system,
+    tnecs_system_f     system,
     tnecs_pipeline       pipe,
     tnecs_phase          p,    
     int                  isExclusive,
@@ -281,7 +281,7 @@ size_t tnecs_register_system(
 
 tnecs_component tnecs_register_component(
     tnecs_world    *w,      size_t          b,
-    tnecs_free_ptr  ffree,  tnecs_init_ptr  finit);
+    tnecs_free_f  ffree,  tnecs_init_f  finit);
 
 #define TNECS_REGISTER_COMPONENT(world, name, ffinit, ffree) \
     tnecs_register_component(world, sizeof(name), ffinit, ffree)
