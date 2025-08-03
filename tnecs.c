@@ -697,7 +697,8 @@ tnecs_entity tnecs_entity_create(tnecs_world *world) {
                     return (TNECS_NULL);
                 }
             }
-        } while (TNECS_ENTITY_VALID(world, (out = world->entities.num++)));
+            out = world->entities.num++;
+        } while (TNECS_ENTITY_EXISTS(world, out));
     }
     assert(out != TNECS_NULL);
 
@@ -743,7 +744,7 @@ tnecs_entity tnecs_entity_create_wcomponents(tnecs_world    *world,
 int tnecs_entities_open_reuse(tnecs_world *world) {
     // Adds all null entities to open list
     for (tnecs_entity i = TNECS_NULLSHIFT; i < world->entities.num; i++) {
-        if (TNECS_ENTITY_VALID(world, i))
+        if (TNECS_ENTITY_EXISTS(world, i))
             continue; /* Skip if entity exists */
 
         if (tnecs_entity_isOpen(world, i))
@@ -784,7 +785,7 @@ tnecs_entity tnecs_entity_destroy(tnecs_world *world,
         return (1);
     }
 
-    if (!TNECS_ENTITY_VALID(world, entity)) {
+    if (!TNECS_ENTITY_EXISTS(world, entity)) {
         world->entities.id[entity]         = TNECS_NULL;
         world->entities.orders[entity]     = TNECS_NULL;
         world->entities.archetypes[entity] = TNECS_NULL;
@@ -820,7 +821,7 @@ tnecs_entity tnecs_entity_destroy(tnecs_world *world,
         tnecs_entity *arr = world->entities.open.arr;
         arr[world->entities.open.num++] = entity;
     }
-    assert(!TNECS_ENTITY_VALID(world, entity));
+    assert(!TNECS_ENTITY_EXISTS(world, entity));
     assert(world->entities.orders[entity]       == TNECS_NULL);
     assert(world->entities.archetypes[entity]   == TNECS_NULL);
     assert(world->entities.orders[entity_order] != entity);
