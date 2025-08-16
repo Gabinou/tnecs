@@ -86,22 +86,21 @@ enum TNECS_PUBLIC {
 #define TNECS_CONCAT( arg1, arg2) TNECS_CONCAT1(arg1, arg2)
 #define TNECS_CONCAT1(arg1, arg2) TNECS_CONCAT2(arg1, arg2)
 #define TNECS_CONCAT2(arg1, arg2) arg1##arg2
-#define TNECS_A_HAS_T(archetype, type) \
-    ((archetype & type) > 0)
-#define TNECS_A_IS_subT(archetype1, archetype2) \
-    ((archetype1 & archetype2) == archetype1)
+
+#define TNECS_A_HAS_T(A, T)         ((A & T) > 0)
+#define TNECS_A_IS_subT(A1, A2)     ((A1 & A2) == A1)
 
 /* --- HACKY DISTRIBUTION FOR VARIADIC MACROS --- */
 /* Distribution as in algebra: a(x + b) -> ax + ab */
 
-// TNECS_VAR_EACH_ARGN(__VA_ARGS__) counts the number of args
-//  - up to 63, if TNECS_VAR_ARGN and TNECS_VAR_VARG_SEQ exist
-#define TNECS_VAR_EACH_ARGN(...) \
-    TNECS_VAR_EACH_ARGN_(__VA_ARGS__, TNECS_VAR_VARG_SEQ())
-#define TNECS_VAR_EACH_ARGN_(...) TNECS_VAR_ARGN(__VA_ARGS__)
-#define TNECS_VAR_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) \
+// TNECS_EACH_ARGN(__VA_ARGS__) counts the number of args
+//  - up to 63, if TNECS_ARGN and TNECS_VARG_SEQ exist
+#define TNECS_EACH_ARGN(...) \
+    TNECS_EACH_ARGN_(__VA_ARGS__, TNECS_VARG_SEQ())
+#define TNECS_EACH_ARGN_(...) TNECS_ARGN(__VA_ARGS__)
+#define TNECS_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) \
     N
-#define TNECS_VAR_VARG_SEQ() \
+#define TNECS_VARG_SEQ() \
     8, 7, 6, 5, 4, 3, 2, 1, 0
 
 // TNECS_VARMACRO_COMMA(__VA_ARGS__) puts commas after each arg,
@@ -109,7 +108,7 @@ enum TNECS_PUBLIC {
 //  - up to 63 args if all TNECS_COMMA_N exist
 #define TNECS_VARMACRO_COMMA(...) \
     TNECS_VARMACRO_COMMA_(\
-        TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
+        TNECS_EACH_ARGN(__VA_ARGS__), \
         __VA_ARGS__\
     )
 #define TNECS_VARMACRO_COMMA_(N, ...) \
@@ -173,36 +172,31 @@ size_t tnecs_register_S(
 #define TNECS_REGISTER_S(world, pfunc, pipeline, phase, excl, ...) \
     tnecs_register_S(\
         world, pfunc, pipeline, phase, excl, \
-        TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
+        TNECS_EACH_ARGN(__VA_ARGS__), \
         tnecs_C_ids2A(\
-            TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
+            TNECS_EACH_ARGN(__VA_ARGS__), \
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         )\
     )
 
-tnecs_C tnecs_register_C(
-    tnecs_W    *w,      size_t          b,
-    tnecs_free_f  ffree,  tnecs_init_f  finit);
+tnecs_C tnecs_register_C(   tnecs_W         *w,
+                            size_t           b,
+                            tnecs_free_f     ffree,  
+                            tnecs_init_f     finit);
 
 #define TNECS_REGISTER_C(world, name, ffinit, ffree) \
     tnecs_register_C(world, sizeof(name), ffinit, ffree)
 
 /* --- ENTITY --- */
-tnecs_E tnecs_E_isOpen( 
-    tnecs_W *w, tnecs_E ent);
-tnecs_E tnecs_E_create( 
-    tnecs_W *w);
-tnecs_E tnecs_E_destroy(
-    tnecs_W *w, tnecs_E ent);
-tnecs_E tnecs_E_create_wC(
-    tnecs_W *w, size_t argnum, ...);
+tnecs_E tnecs_E_isOpen(     tnecs_W *w, tnecs_E ent);
+tnecs_E tnecs_E_create(     tnecs_W *w);
+tnecs_E tnecs_E_destroy(    tnecs_W *w, tnecs_E ent);
+tnecs_E tnecs_E_create_wC(  tnecs_W *w, size_t argnum, ...);
 
-tnecs_E tnecs_E_add_C(
-    tnecs_W     *w,         tnecs_E    eID,
-    tnecs_C  archetype, int             isNew);
-tnecs_E tnecs_E_remove_C(
-    tnecs_W *w, tnecs_E eID,
-    tnecs_C archetype);
+tnecs_E tnecs_E_add_C(  tnecs_W *w, tnecs_E eID,
+                        tnecs_C  A, int     isNew);
+tnecs_E tnecs_E_rm_C(   tnecs_W *w, tnecs_E eID, 
+                        tnecs_C A);
 
 int tnecs_E_reuse(tnecs_W *w);
 int tnecs_E_flush(tnecs_W *w);
@@ -210,12 +204,15 @@ int tnecs_E_flush(tnecs_W *w);
 #define TNECS_E_CREATE_wC(world, ...) \
     tnecs_E_create_wC(\
         world, \
-        TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
+        TNECS_EACH_ARGN(__VA_ARGS__), \
         TNECS_VARMACRO_COMMA(__VA_ARGS__)\
     )
 #define TNECS_E_EXISTS(world, index) \
-    ((index != TNECS_NULL) && (world->entities.id[index] == index))
-#define TNECS_E_ARCHETYPE(world, entity) \
+    (\
+        (index != TNECS_NULL) && \
+        (world->entities.id[index] == index) \
+    )
+#define TNECS_E_A(world, entity) \
     world->entities.archetypes[entity]
 
 /* --- COMPONENT --- */
@@ -255,25 +252,25 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
         world, \
         entity_id, \
         tnecs_C_ids2A(\
-            TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
+            TNECS_EACH_ARGN(__VA_ARGS__), \
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         ), \
         isnewtype\
     )
 #define TNECS_REMOVE_C(world, entity_id, ...) \
-    tnecs_E_remove_C(\
+    tnecs_E_rm_C(\
         world, \
         entity_id, \
         tnecs_C_ids2A(\
-            TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
+            TNECS_EACH_ARGN(__VA_ARGS__), \
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         )\
     )
 
 /* --- COMPONENT ARRAY --- */
-void *tnecs_C_array(
-        tnecs_W *w, const size_t cID,
-        const size_t tID);
+void *tnecs_C_array(tnecs_W         *w, 
+                    const size_t     cID,
+                    const size_t     tID);
 
 #define TNECS_C_ARRAY(input, cID) \
     tnecs_C_array(\
@@ -283,23 +280,24 @@ void *tnecs_C_array(
     )
 
 /* --- ARCHETYPES --- */
-tnecs_C tnecs_C_ids2A( size_t argnum, ...);
+tnecs_C tnecs_C_ids2A(size_t argnum, ...);
 tnecs_C tnecs_A_id(const tnecs_W *const w, tnecs_C arch);
 
 #define TNECS_C_ID2T(id) \
-    (((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
+    ( \
+        ((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? \
+        (1ULL << (id - TNECS_NULLSHIFT)) : \
+        0ULL \
+    )
 #define TNECS_C_T2ID(type) \
     (type >= 1 ? (tnecs_C)(log2(type) + 1.1f) : 0) 
 #define TNECS_C_IDS2A(...) \
     tnecs_C_ids2A(\
-        TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
+        TNECS_EACH_ARGN(__VA_ARGS__), \
         TNECS_VARMACRO_COMMA(__VA_ARGS__)\
     )
 #define TNECS_C_IDS2AID(world, ...) \
-    tnecs_A_id(\
-        world, \
-        TNECS_C_IDS2A(__VA_ARGS__)\
-    )
+    tnecs_A_id(world, TNECS_C_IDS2A(__VA_ARGS__))
 
 /* --- SYSTEM --- */
 #define TNECS_S_ID2A(world, id) \

@@ -991,7 +991,7 @@ tnecs_E tnecs_E_add_C(tnecs_W *world,
     return (world->entities.id[entity]);
 }
 
-tnecs_E tnecs_E_remove_C(tnecs_W *world,
+tnecs_E tnecs_E_rm_C(tnecs_W *world,
                                             tnecs_E entity,
                                             tnecs_C archetype) {
     /* Get new archetype. Since it is a archetype, just need to substract. */
@@ -1023,7 +1023,7 @@ void *tnecs_get_C(tnecs_W       *world,
         return (NULL);
 
     tnecs_C component_flag      = TNECS_C_ID2T(cID);
-    tnecs_C entity_archetype    = TNECS_E_ARCHETYPE(world, eID);
+    tnecs_C entity_archetype    = TNECS_E_A(world, eID);
     // If entity has component, get output it. If not output NULL.
     if (!TNECS_A_HAS_T(component_flag, entity_archetype))
         return (NULL);
