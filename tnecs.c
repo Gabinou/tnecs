@@ -152,11 +152,11 @@ static int _tnecs_breath_Ss(    tnecs_Ss    *Ss);
 static int _tnecs_breath_Phs(   tnecs_Phs   *byPh);
 static int _tnecs_breath_Pis(   tnecs_Pis   *Pis);
 
-static int _tnecs_destroy_Ss(   tnecs_Ss    *Ss);
-static int _tnecs_destroy_Es(   tnecs_Es    *Es);
-static int _tnecs_destroy_As(   tnecs_As    *byT);
-static int _tnecs_destroy_Phs(  tnecs_Phs   *byPh);
-static int _tnecs_destroy_Pis(  tnecs_Pis   *Pis);
+static int _tnecs_fin_Ss(   tnecs_Ss    *Ss);
+static int _tnecs_fin_Es(   tnecs_Es    *Es);
+static int _tnecs_fin_As(   tnecs_As    *byT);
+static int _tnecs_fin_Phs(  tnecs_Phs   *byPh);
+static int _tnecs_fin_Pis(  tnecs_Pis   *Pis);
 
 /* --- REGISTRATION  --- */
 static size_t _tnecs_register_A( tnecs_W *w, size_t num_c,
@@ -225,9 +225,9 @@ static int tnecs_C_migrate( tnecs_W *w,     tnecs_E ent,
                             tnecs_C  of,    tnecs_C nf);
 
 /************* W FUNCTIONS ***************/
-int tnecs_W_genesis(tnecs_W **W) {
+int tnecs_genesis(tnecs_W **W) {
     if (*W != NULL) 
-        TNECS_CHECK(tnecs_W_destroy(W));
+        TNECS_CHECK(tnecs_fin(W));
 
     *W = calloc(1, sizeof(tnecs_W));
     TNECS_CHECK(*W);
@@ -241,11 +241,11 @@ int tnecs_W_genesis(tnecs_W **W) {
     return (1);
 }
 
-int tnecs_W_destroy(tnecs_W **W) {
-    TNECS_CHECK(_tnecs_destroy_Pis( &((*W)->Pis)));
-    TNECS_CHECK(_tnecs_destroy_Ss(  &((*W)->Ss)));
-    TNECS_CHECK(_tnecs_destroy_Es(  &((*W)->Es)));
-    TNECS_CHECK(_tnecs_destroy_As(  &((*W)->byT)));
+int tnecs_fin(tnecs_W **W) {
+    TNECS_CHECK(_tnecs_fin_Pis( &((*W)->Pis)));
+    TNECS_CHECK(_tnecs_fin_Ss(  &((*W)->Ss)));
+    TNECS_CHECK(_tnecs_fin_Es(  &((*W)->Es)));
+    TNECS_CHECK(_tnecs_fin_As(  &((*W)->byT)));
     free(*W);
 
     *W = NULL;
@@ -387,7 +387,7 @@ int _tnecs_breath_As(tnecs_As *byT) {
     return (1);
 }
 
-static int _tnecs_destroy_Phs(tnecs_Phs *byPh) {
+static int _tnecs_fin_Phs(tnecs_Phs *byPh) {
     for (size_t i = 0; i < byPh->len; i++) {
         if (byPh->Ss != NULL)
             free(byPh->Ss[i]);
@@ -402,7 +402,7 @@ static int _tnecs_destroy_Phs(tnecs_Phs *byPh) {
     return(1);
 }
 
-static int _tnecs_destroy_Ss(tnecs_Ss *Ss) {
+static int _tnecs_fin_Ss(tnecs_Ss *Ss) {
     free(Ss->Os);
     free(Ss->Phs);
     free(Ss->Pi);
@@ -416,7 +416,7 @@ static int _tnecs_destroy_Ss(tnecs_Ss *Ss) {
     return(1);
 }
 
-static int _tnecs_destroy_Es(tnecs_Es *Es) {
+static int _tnecs_fin_Es(tnecs_Es *Es) {
     free(Es->id);
     free(Es->Os);
     free(Es->open.arr);
@@ -425,16 +425,16 @@ static int _tnecs_destroy_Es(tnecs_Es *Es) {
     return(1);
 }
 
-static int _tnecs_destroy_Pis(tnecs_Pis *Pis) {
+static int _tnecs_fin_Pis(tnecs_Pis *Pis) {
     for (size_t i = 0; i < Pis->len; i++) {
-        _tnecs_destroy_Phs(&Pis->byPh[i]);
+        _tnecs_fin_Phs(&Pis->byPh[i]);
     }
     free(Pis->byPh);
     
     return(1);
 }
 
-static int _tnecs_destroy_As(tnecs_As *byT) {
+static int _tnecs_fin_As(tnecs_As *byT) {
     for (size_t i = 0; i < byT->len; i++) {
         if (byT->Es != NULL)
             free(byT->Es[i]);
@@ -467,14 +467,14 @@ static int _tnecs_destroy_As(tnecs_As *byT) {
 }
 
 /********************* STEPPING ********************/
-int tnecs_W_step(tnecs_W *W, tnecs_ns dt, void *data) {
+int tnecs_step(tnecs_W *W, tnecs_ns dt, void *data) {
     for (size_t p = 0; p < W->Pis.num; p++) {
-        TNECS_CHECK(tnecs_Pi_step(W, dt, data, p));
+        TNECS_CHECK(tnecs_step_Pi(W, dt, data, p));
     }
     return (1);
 }
 
-int tnecs_Pi_step(  tnecs_W     *w,     tnecs_ns     dt,
+int tnecs_step_Pi(  tnecs_W     *w,     tnecs_ns     dt,
                     void        *data,  tnecs_Pi     pi) {
     #ifndef NDEBUG
     w->Ss.to_run.num   = 0;
@@ -483,12 +483,12 @@ int tnecs_Pi_step(  tnecs_W     *w,     tnecs_ns     dt,
 
     tnecs_Phs *byPh = TNECS_Pi_GET(w, pi);
     for (size_t ph = 0; ph < byPh->num; ph++) {
-        TNECS_CHECK(tnecs_Pi_step_Ph(w, dt, data, pi, ph));
+        TNECS_CHECK(tnecs_step_Pi_Ph(w, dt, data, pi, ph));
     }
     return(1);
 }
 
-int tnecs_Pi_step_Ph(   tnecs_W  *w,    tnecs_ns  dt,
+int tnecs_step_Pi_Ph(   tnecs_W  *w,    tnecs_ns  dt,
                         void     *data, tnecs_Pi  pi,
                         tnecs_Ph  ph) {
     tnecs_Phs *byPh = TNECS_Pi_GET(w, pi);
@@ -1358,7 +1358,7 @@ int tnecs_grow_Es_open(tnecs_W *W) {
 }
 
 int tnecs_grow_C_array( tnecs_W *W, tnecs_carr *C_arr,
-                        size_t tID, size_t C_O) {
+                        size_t tID, size_t      C_O) {
     size_t olen = C_arr->len;
     size_t nlen = olen * TNECS_ARR_GROW;
     C_arr->len  = nlen;

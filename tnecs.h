@@ -109,23 +109,23 @@ enum TNECS_PUBLIC {
 #define TNECS_COMMA_8(x, ...) x, TNECS_COMMA_7(__VA_ARGS__)
 
 /* --- WORLD --- */
-int tnecs_W_genesis(tnecs_W **w);
-int tnecs_W_destroy(tnecs_W **w);
+int tnecs_genesis(tnecs_W **w);
+int tnecs_fin(tnecs_W **w);
 
 /* Toggle entity reuse i.e. deleted entity in queue */
 void tnecs_W_reuse( tnecs_W *w, int toggle);
 
 /* Run all Ss in all Pis, by Phs */
-int tnecs_W_step(   tnecs_W *w,     tnecs_ns dt, 
-                    void    *data);
+int tnecs_step( tnecs_W *w,     tnecs_ns dt, 
+                void    *data);
 
 /* --- PIPELINES --- */
 /* Run all Ss in pipeline, by Phs */
-int tnecs_Pi_step(  tnecs_W *w,     tnecs_ns dt,
+int tnecs_step_Pi(  tnecs_W *w,     tnecs_ns dt,
                     void    *data,  tnecs_Pi pi);
 
 /* Run all Ss in pipeline & phase combo */
-int tnecs_Pi_step_Ph(   tnecs_W     *w, tnecs_ns dt,
+int tnecs_step_Pi_Ph(   tnecs_W     *w, tnecs_ns dt,
                         void        *d, tnecs_Pi pi,
                         tnecs_Ph     ph);
 
