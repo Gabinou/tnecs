@@ -17,6 +17,15 @@
 **      
 **  The simplest possible C99 ECS library, 
 **  only with the minimum necessary features. 
+**  Glossary:
+**      - E:    Entity
+**      - C:    Component
+**      - S:    System
+**      - A:    Archetype  i.e. multiple bits set u64
+**      - T:    Type       i.e. single bit set u64
+**      - Pi:   Pipeline
+**      - Ph:   Phase
+**      - W:    World
 **
 */
 
@@ -77,9 +86,9 @@ enum TNECS_PUBLIC {
 #define TNECS_CONCAT( arg1, arg2) TNECS_CONCAT1(arg1, arg2)
 #define TNECS_CONCAT1(arg1, arg2) TNECS_CONCAT2(arg1, arg2)
 #define TNECS_CONCAT2(arg1, arg2) arg1##arg2
-#define TNECS_ARCHETYPE_HAS_TYPE(archetype, type) \
+#define TNECS_A_HAS_T(archetype, type) \
     ((archetype & type) > 0)
-#define TNECS_ARCHETYPE_IS_SUBTYPE(archetype1, archetype2) \
+#define TNECS_A_IS_subT(archetype1, archetype2) \
     ((archetype1 & archetype2) == archetype1)
 
 /* --- HACKY DISTRIBUTION FOR VARIADIC MACROS --- */
@@ -119,33 +128,31 @@ enum TNECS_PUBLIC {
 int tnecs_W_genesis(tnecs_W **w);
 int tnecs_W_destroy(tnecs_W **w);
 
-void tnecs_W_toggle_reuse(tnecs_W *w, int toggle);
+void tnecs_W_reuse(tnecs_W *w, int toggle);
 
 /* Run all systems in all pipelines, by phases */
-int tnecs_W_step(tnecs_W *world, tnecs_ns deltat, void *data);
+int tnecs_W_step(   tnecs_W *w, tnecs_ns dt, 
+                    void    *data);
 
 /* --- PIPELINES --- */
 /* Run all systems in pipeline, by phases */
-int tnecs_Pi_step(tnecs_W *w, tnecs_ns deltat,
-                        void *data, tnecs_Pi pipeline);
+int tnecs_Pi_step(  tnecs_W *w,     tnecs_ns dt,
+                    void    *data,  tnecs_Pi pi);
 /* Run all systems in input pipeline and input phase */
-int tnecs_Pi_step_Ph(
-    tnecs_W *w, tnecs_ns deltat,
-    void *data, tnecs_Pi pipeline,
-    tnecs_Ph phase);
+int tnecs_Pi_step_Ph(   tnecs_W     *w, tnecs_ns dt,
+                        void        *d, tnecs_Pi pi,
+                        tnecs_Ph     ph);
 
 #define TNECS_Pi_GET(world, pipeline) \
     &world->pipelines.byphase[(pipeline)]
 
 /* --- SYSTEM --- */
-int tnecs_S_run(
-    tnecs_W *w, size_t id,
-    tnecs_ns deltat, void *data);
+int tnecs_S_run(tnecs_W *w,     size_t   id,
+                tnecs_ns dt,    void    *data);
 
-int tnecs_custom_system_run(
-    tnecs_W     *w,     tnecs_S    c,    
-    tnecs_C  ar,    tnecs_ns            dt,    
-    void            *data);
+int tnecs_custom_S_run( tnecs_W *w,     tnecs_S     s,    
+                        tnecs_C  a,     tnecs_ns    dt,    
+                        void    *data);
 
 /* --- REGISTRATION --- */
 /* Phases start at 1, increment every call. */
@@ -167,7 +174,7 @@ size_t tnecs_register_S(
     tnecs_register_S(\
         world, pfunc, pipeline, phase, excl, \
         TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
-        tnecs_C_ids2archetype(\
+        tnecs_C_ids2A(\
             TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         )\
@@ -218,7 +225,7 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
     (\
         (\
             world->entities.archetypes[entity] & \
-            tnecs_C_ids2archetype(1, cID)\
+            tnecs_C_ids2A(1, cID)\
         ) > 0\
     )
 #define TNECS_ADD_C(...) \
@@ -233,21 +240,21 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
     tnecs_E_add_C(\
         world, \
         entity_id, \
-        tnecs_C_ids2archetype(1, cID), \
+        tnecs_C_ids2A(1, cID), \
         true\
     )
 #define TNECS_ADD_C4(world, entity_id, cID, isnewtype) \
     tnecs_E_add_C(\
         world, \
         entity_id, \
-        tnecs_C_ids2archetype(1, cID), \
+        tnecs_C_ids2A(1, cID), \
         isnewtype\
     )
 #define TNECS_ADD_Cs(world, entity_id, isnewtype, ...) \
     tnecs_E_add_C(\
         world, \
         entity_id, \
-        tnecs_C_ids2archetype(\
+        tnecs_C_ids2A(\
             TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         ), \
@@ -257,7 +264,7 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
     tnecs_E_remove_C(\
         world, \
         entity_id, \
-        tnecs_C_ids2archetype(\
+        tnecs_C_ids2A(\
             TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
             TNECS_VARMACRO_COMMA(__VA_ARGS__)\
         )\
@@ -276,27 +283,26 @@ void *tnecs_C_array(
     )
 
 /* --- ARCHETYPES --- */
-tnecs_C tnecs_C_ids2archetype( size_t argnum, ...);
-tnecs_C tnecs_archetypeid(  const tnecs_W *const w, 
-                            tnecs_C arch);
+tnecs_C tnecs_C_ids2A( size_t argnum, ...);
+tnecs_C tnecs_A_id(const tnecs_W *const w, tnecs_C arch);
 
-#define TNECS_C_ID2TYPE(id) \
+#define TNECS_C_ID2T(id) \
     (((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
-#define TNECS_C_TYPE2ID(type) \
+#define TNECS_C_T2ID(type) \
     (type >= 1 ? (tnecs_C)(log2(type) + 1.1f) : 0) 
-#define TNECS_C_IDS2ARCHETYPE(...) \
-    tnecs_C_ids2archetype(\
+#define TNECS_C_IDS2A(...) \
+    tnecs_C_ids2A(\
         TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
         TNECS_VARMACRO_COMMA(__VA_ARGS__)\
     )
-#define TNECS_C_IDS2ARCHETYPEID(world, ...) \
-    tnecs_archetypeid(\
+#define TNECS_C_IDS2AID(world, ...) \
+    tnecs_A_id(\
         world, \
-        TNECS_C_IDS2ARCHETYPE(__VA_ARGS__)\
+        TNECS_C_IDS2A(__VA_ARGS__)\
     )
 
 /* --- SYSTEM --- */
-#define TNECS_S_ID2ARCHETYPE(world, id) \
+#define TNECS_S_ID2A(world, id) \
     world->systems.archetypes[id]
 
 /* --- PHASE --- */
