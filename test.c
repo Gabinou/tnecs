@@ -1341,11 +1341,11 @@ void tnecs_test_Pis() {
     TNECS_REGISTER_S(pipe_world, SystemMovePhase2,     pipe1, phase0, 1, Unit_ID, Position_ID);                 /* 2X */
     TNECS_REGISTER_S(pipe_world, SystemMovePhase4,     pipe1, phase1, 1, Unit_ID, Position_ID, Velocity_ID);    /* 1X */
 
-    test_true(pipe_world->Ss.pipeline[0] == pipe0);
-    test_true(pipe_world->Ss.pipeline[1] == pipe0);
-    test_true(pipe_world->Ss.pipeline[2] == pipe0);
-    test_true(pipe_world->Ss.pipeline[3] == pipe1);
-    test_true(pipe_world->Ss.pipeline[4] == pipe1);
+    test_true(pipe_world->Ss.Pi[0] == pipe0);
+    test_true(pipe_world->Ss.Pi[1] == pipe0);
+    test_true(pipe_world->Ss.Pi[2] == pipe0);
+    test_true(pipe_world->Ss.Pi[3] == pipe1);
+    test_true(pipe_world->Ss.Pi[4] == pipe1);
 
     test_true(pipe_world->Pis.byPh[pipe0].num_Ss[phase0] == 1);
     test_true(pipe_world->Pis.byPh[pipe0].num_Ss[phase1] == 1);
