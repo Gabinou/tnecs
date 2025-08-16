@@ -53,10 +53,10 @@ typedef unsigned long long int  tnecs_Pi;
 typedef unsigned long long int  tnecs_C;
 
 /* -- Forward declarations -- */
-struct tnecs_In;
 struct tnecs_W;
-typedef struct tnecs_In tnecs_In;
+struct tnecs_In;
 typedef struct tnecs_W  tnecs_W;
+typedef struct tnecs_In tnecs_In;
 
 /* -- Functions -- */
 typedef void (*tnecs_S)(tnecs_In *);
@@ -65,13 +65,12 @@ typedef void (*tnecs_init_f)(void *);
 
 /* --- CONSTANTS --- */
 enum TNECS_PUBLIC {
-    TNECS_NULL                  =         0,
-    TNECS_NULLSHIFT             =         1,
+    TNECS_NULL           =         0,
+    TNECS_NULLSHIFT      =         1,
     TNECS_E_CAP          = 100000000,
     TNECS_Pi_CAP         =        64,
-    TNECS_Ph_CAP            =        64,
-    TNECS_C_CAP         =        64,
-    TNECS_ARRAY_GROWTH   =         2
+    TNECS_Ph_CAP         =        64,
+    TNECS_C_CAP          =        64
 };
 
 /* --- UTILITY MACROS --- */

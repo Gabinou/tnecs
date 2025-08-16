@@ -11,6 +11,8 @@ enum TNECS_PRIVATE {
     TNECS_INIT_COMPONENT_LEN    =         8,
     TNECS_INIT_SYSTEM_LEN       =        16,
     TNECS_INIT_ARCHETYPE_LEN    =        16,
+    TNECS_ARRAY_GROWTH          =         2
+  
 };
 
 /* -- struct -- */
