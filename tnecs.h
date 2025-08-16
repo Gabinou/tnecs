@@ -93,25 +93,24 @@ enum TNECS_PUBLIC {
 /* --- HACKY DISTRIBUTION FOR VARIADIC MACROS --- */
 /* Distribution as in algebra: a(x + b) -> ax + ab */
 
-// TNECS_EACH_ARGN(__VA_ARGS__) counts the number of args
-//  - up to 63, if TNECS_ARGN and TNECS_VARG_SEQ exist
-#define TNECS_EACH_ARGN(...) \
-    TNECS_EACH_ARGN_(__VA_ARGS__, TNECS_VARG_SEQ())
-#define TNECS_EACH_ARGN_(...) TNECS_ARGN(__VA_ARGS__)
-#define TNECS_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) \
+// TNECS_ARGN(__VA_ARGS__) counts the number of args
+//  - up to 63, if _TNECS_VARGN and TNECS_VARG_SEQ exist
+#define TNECS_ARGN(...) \
+    _TNECS_ARGN_(__VA_ARGS__, _TNECS_SEQ())
+#define _TNECS_ARGN_(...) _TNECS_VARGN(__VA_ARGS__)
+#define _TNECS_VARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) \
     N
-#define TNECS_VARG_SEQ() \
-    8, 7, 6, 5, 4, 3, 2, 1, 0
+#define _TNECS_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
 
-// TNECS_VARMACRO_COMMA(__VA_ARGS__) puts commas after each arg,
+// TNECS_EACH_COMMA(__VA_ARGS__) puts commas after each arg,
 // except the last.
 //  - up to 63 args if all TNECS_COMMA_N exist
-#define TNECS_VARMACRO_COMMA(...) \
-    TNECS_VARMACRO_COMMA_(\
-        TNECS_EACH_ARGN(__VA_ARGS__), \
+#define TNECS_EACH_COMMA(...) \
+    TNECS_EACH_COMMA_(\
+        TNECS_ARGN(__VA_ARGS__), \
         __VA_ARGS__\
     )
-#define TNECS_VARMACRO_COMMA_(N, ...) \
+#define TNECS_EACH_COMMA_(N, ...) \
     TNECS_CONCAT(TNECS_COMMA_, N)(__VA_ARGS__)
 
 #define TNECS_COMMA_1(x)      x
@@ -172,10 +171,10 @@ size_t tnecs_register_S(
 #define TNECS_REGISTER_S(world, pfunc, pipeline, phase, excl, ...) \
     tnecs_register_S(\
         world, pfunc, pipeline, phase, excl, \
-        TNECS_EACH_ARGN(__VA_ARGS__), \
+        TNECS_ARGN(__VA_ARGS__), \
         tnecs_C_ids2A(\
-            TNECS_EACH_ARGN(__VA_ARGS__), \
-            TNECS_VARMACRO_COMMA(__VA_ARGS__)\
+            TNECS_ARGN(__VA_ARGS__), \
+            TNECS_EACH_COMMA(__VA_ARGS__)\
         )\
     )
 
@@ -204,8 +203,8 @@ int tnecs_E_flush(tnecs_W *w);
 #define TNECS_E_CREATE_wC(world, ...) \
     tnecs_E_create_wC(\
         world, \
-        TNECS_EACH_ARGN(__VA_ARGS__), \
-        TNECS_VARMACRO_COMMA(__VA_ARGS__)\
+        TNECS_ARGN(__VA_ARGS__), \
+        TNECS_EACH_COMMA(__VA_ARGS__)\
     )
 #define TNECS_E_EXISTS(world, index) \
     (\
@@ -252,8 +251,8 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
         world, \
         entity_id, \
         tnecs_C_ids2A(\
-            TNECS_EACH_ARGN(__VA_ARGS__), \
-            TNECS_VARMACRO_COMMA(__VA_ARGS__)\
+            TNECS_ARGN(__VA_ARGS__), \
+            TNECS_EACH_COMMA(__VA_ARGS__)\
         ), \
         isnewtype\
     )
@@ -262,8 +261,8 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
         world, \
         entity_id, \
         tnecs_C_ids2A(\
-            TNECS_EACH_ARGN(__VA_ARGS__), \
-            TNECS_VARMACRO_COMMA(__VA_ARGS__)\
+            TNECS_ARGN(__VA_ARGS__), \
+            TNECS_EACH_COMMA(__VA_ARGS__)\
         )\
     )
 
@@ -293,8 +292,8 @@ tnecs_C tnecs_A_id(const tnecs_W *const w, tnecs_C arch);
     (type >= 1 ? (tnecs_C)(log2(type) + 1.1f) : 0) 
 #define TNECS_C_IDS2A(...) \
     tnecs_C_ids2A(\
-        TNECS_EACH_ARGN(__VA_ARGS__), \
-        TNECS_VARMACRO_COMMA(__VA_ARGS__)\
+        TNECS_ARGN(__VA_ARGS__), \
+        TNECS_EACH_COMMA(__VA_ARGS__)\
     )
 #define TNECS_C_IDS2AID(world, ...) \
     tnecs_A_id(world, TNECS_C_IDS2A(__VA_ARGS__))
