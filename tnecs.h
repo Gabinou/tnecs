@@ -56,7 +56,7 @@ typedef unsigned long long int  tnecs_C;
 struct tnecs_In;
 struct tnecs_W;
 typedef struct tnecs_In tnecs_In;
-typedef struct tnecs_W tnecs_W;
+typedef struct tnecs_W  tnecs_W;
 
 /* -- Functions -- */
 typedef void (*tnecs_S)(tnecs_In *);
@@ -67,11 +67,11 @@ typedef void (*tnecs_init_f)(void *);
 enum TNECS_PUBLIC {
     TNECS_NULL                  =         0,
     TNECS_NULLSHIFT             =         1,
-    TNECS_ENTITIES_CAP          = 100000000,
-    TNECS_PIPELINES_CAP         =        64,
-    TNECS_PHASES_CAP            =        64,
-    TNECS_COMPONENT_CAP         =        64,
-    TNECS_ARRAY_GROWTH_FACTOR   =         2
+    TNECS_E_CAP          = 100000000,
+    TNECS_Pi_CAP         =        64,
+    TNECS_Ph_CAP            =        64,
+    TNECS_C_CAP         =        64,
+    TNECS_ARRAY_GROWTH   =         2
 };
 
 /* --- UTILITY MACROS --- */
@@ -287,7 +287,7 @@ tnecs_C tnecs_archetypeid(
     const tnecs_W *const w, tnecs_C arch);
 
 #define TNECS_COMPONENT_ID2TYPE(id) \
-    (((id >= TNECS_NULLSHIFT) && (id < TNECS_COMPONENT_CAP)) ? (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
+    (((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
 #define TNECS_COMPONENT_TYPE2ID(type) \
     (type >= 1 ? (tnecs_C)(log2(type) + 1.1f) : 0) 
 #define TNECS_COMPONENT_IDS2ARCHETYPE(...) \

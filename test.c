@@ -762,7 +762,7 @@ void tnecs_test_component_array() {
     test_true(old_archetypeid == Unit_ID);
     size_t old_component_order = tnecs_component_order_bytypeid(arr_world, Unit_ID, old_archetypeid);
 
-    test_true(old_component_order < TNECS_COMPONENT_CAP);
+    test_true(old_component_order < TNECS_C_CAP);
     test_true(old_component_order == 0);
 
     test_true(arr_world->bytype.components[old_archetypeid][old_component_order].num == 1);
@@ -1113,7 +1113,7 @@ void tnecs_test_grow() {
     }
 
     tnecs_grow_entity(grow_world);
-    test_true(grow_world->entities.len == TNECS_INIT_ENTITY_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+    test_true(grow_world->entities.len == TNECS_INIT_ENTITY_LEN * TNECS_ARRAY_GROWTH);
 
     for (size_t i = 0; i < grow_world->entities.len; i++) {
         test_true(grow_world->entities.archetypes[i] == 0);
@@ -1125,7 +1125,7 @@ void tnecs_test_grow() {
     tnecs_grow_bytype(grow_world, test_archetypeid);
     test_true(grow_world->bytype.num_entities[test_archetypeid] == 0);
     test_true(grow_world->bytype.len_entities[test_archetypeid] == TNECS_INIT_ENTITY_LEN *
-        TNECS_ARRAY_GROWTH_FACTOR);
+        TNECS_ARRAY_GROWTH);
     for (size_t j = 0; j < grow_world->bytype.len_entities[test_archetypeid]; j++) {
         test_true(grow_world->bytype.entities[test_archetypeid][j] == 0);
     }
@@ -1134,7 +1134,7 @@ void tnecs_test_grow() {
     tnecs_grow_bytype(grow_world, test_archetypeid);
     test_true(grow_world->bytype.num_entities[test_archetypeid] == 0);
     test_true(grow_world->bytype.len_entities[test_archetypeid] == TNECS_INIT_ENTITY_LEN *
-        TNECS_ARRAY_GROWTH_FACTOR);
+        TNECS_ARRAY_GROWTH);
     for (size_t j = 0; j < grow_world->bytype.len_entities[test_archetypeid]; j++) {
         test_true(grow_world->bytype.entities[test_archetypeid][j] == 0);
     }
@@ -1148,10 +1148,10 @@ void tnecs_test_grow() {
     }
 
     tnecs_grow_system(grow_world);
-    test_true(grow_world->systems.len == TNECS_INIT_SYSTEM_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+    test_true(grow_world->systems.len == TNECS_INIT_SYSTEM_LEN * TNECS_ARRAY_GROWTH);
     test_true(grow_world->systems.num == 1);
     tnecs_grow_archetype(grow_world);
-    test_true(grow_world->bytype.len == TNECS_INIT_SYSTEM_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+    test_true(grow_world->bytype.len == TNECS_INIT_SYSTEM_LEN * TNECS_ARRAY_GROWTH);
     test_true(grow_world->bytype.num == 1);
 
     for (size_t i = TNECS_INIT_SYSTEM_LEN; i < grow_world->bytype.len; i++) {
@@ -1164,7 +1164,7 @@ void tnecs_test_grow() {
     }
 
     tnecs_grow_phase(grow_world, 0);
-    test_true(grow_world->pipelines.byphase[0].len == TNECS_INIT_PHASE_LEN * TNECS_ARRAY_GROWTH_FACTOR);
+    test_true(grow_world->pipelines.byphase[0].len == TNECS_INIT_PHASE_LEN * TNECS_ARRAY_GROWTH);
 
     test_true(grow_world->pipelines.byphase[0].num == 1);
     for (size_t i = TNECS_INIT_PHASE_LEN; i < grow_world->pipelines.byphase[0].len; i++) {

@@ -94,9 +94,9 @@ typedef struct tnecs_archetype {
 
 typedef struct tnecs_components {
     size_t          num;
-    size_t          bytesizes[TNECS_COMPONENT_CAP]; /* [cID] */
-    tnecs_init_f    finit[TNECS_COMPONENT_CAP];     /* [cID] */
-    tnecs_free_f    ffree[TNECS_COMPONENT_CAP];     /* [cID] */
+    size_t          bytesizes[TNECS_C_CAP]; /* [cID] */
+    tnecs_init_f    finit[TNECS_C_CAP];     /* [cID] */
+    tnecs_free_f    ffree[TNECS_C_CAP];     /* [cID] */
 } tnecs_components;
 
 struct tnecs_W {
@@ -397,7 +397,7 @@ int _tnecs_breath_archetypes(tnecs_archetype *bytype) {
 
     /* Alloc & check for id_bytype elements */
     for (size_t i = 0; i < bytype->len; i++) {
-        bytype->archetype_id[i] = calloc(TNECS_COMPONENT_CAP, sizeof(**bytype->archetype_id));
+        bytype->archetype_id[i] = calloc(TNECS_C_CAP, sizeof(**bytype->archetype_id));
         TNECS_CHECK_ALLOC(bytype->archetype_id[i]);
         bytype->entities[i]     = calloc(TNECS_INIT_ENTITY_LEN, sizeof(**bytype->entities));
         TNECS_CHECK_ALLOC(bytype->entities[i]);
@@ -687,7 +687,7 @@ tnecs_C tnecs_register_component(tnecs_W    *world,
         printf("tnecs: Component should have >0 bytesize.\n");
         return (TNECS_NULL);
     }
-    if (world->components.num >= TNECS_COMPONENT_CAP) {
+    if (world->components.num >= TNECS_C_CAP) {
         printf("tnecs: Component capacity reached.\n");
         return (TNECS_NULL);
     }
@@ -729,7 +729,7 @@ size_t _tnecs_register_archetype(tnecs_W        *world,
     size_t bytesize2 = sizeof(**world->bytype.components_order);
     world->bytype.components_id[tID]     = calloc(num_components,      bytesize1);
     TNECS_CHECK_ALLOC(world->bytype.components_id[tID]);
-    world->bytype.components_order[tID]  = calloc(TNECS_COMPONENT_CAP, bytesize2);
+    world->bytype.components_order[tID]  = calloc(TNECS_C_CAP, bytesize2);
     TNECS_CHECK_ALLOC(world->bytype.components_order[tID]);
 
     size_t k = 0;
@@ -797,7 +797,7 @@ tnecs_E tnecs_entity_create(tnecs_W *world) {
     tnecs_E *arr = world->entities.open.arr;
     while ((out == TNECS_NULL) &&
            (world->entities.open.num > 0) && 
-           (world->entities.open.num < TNECS_ENTITIES_CAP)
+           (world->entities.open.num < TNECS_E_CAP)
           ) {
         out = arr[--world->entities.open.num];
         arr[world->entities.open.num] = TNECS_NULL;
@@ -1339,7 +1339,7 @@ size_t tnecs_component_order_bytype(const tnecs_W *const world,
 
 size_t tnecs_component_order_bytypeid(const tnecs_W *const world,
                                       size_t cID, size_t tID) {
-    size_t order = TNECS_COMPONENT_CAP;
+    size_t order = TNECS_C_CAP;
     for (size_t i = 0; i < world->bytype.num_components[tID]; i++) {
         if (world->bytype.components_id[tID][i] == cID) {
             order = i;
@@ -1404,7 +1404,7 @@ void *tnecs_arrdel(void *arr,  size_t elem,
 int tnecs_grow_ran(tnecs_W *world) {
     /* Realloc systems ran if too many */
     size_t old_len              = world->systems.ran.len;
-    size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t new_len              = old_len * TNECS_ARRAY_GROWTH;
     world->systems.ran.len      = new_len;
     world->systems.to_run.len   = new_len;
     size_t bytesize             = sizeof(tnecs_S);
@@ -1421,7 +1421,7 @@ int tnecs_grow_entities_open(tnecs_W *world) {
     /* Realloc entities_open if too many */
     if ((world->entities.open.num + 1) >= world->entities.open.len) {
         size_t old_len              = world->entities.open.len;
-        size_t new_len              = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+        size_t new_len              = old_len * TNECS_ARRAY_GROWTH;
         size_t bytesize             = sizeof(tnecs_E);
         world->entities.open.len    = new_len;
 
@@ -1435,7 +1435,7 @@ int tnecs_grow_component_array(tnecs_W  *world,
                                tnecs_carr   *comp_arr,
                                size_t tID, size_t corder) {
     size_t old_len      = comp_arr->len;
-    size_t new_len      = old_len * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t new_len      = old_len * TNECS_ARRAY_GROWTH;
     comp_arr->len       = new_len;
 
     size_t cID = world->bytype.components_id[tID][corder];
@@ -1448,9 +1448,9 @@ int tnecs_grow_component_array(tnecs_W  *world,
 
 int tnecs_grow_entity(tnecs_W *world) {
     size_t olen = world->entities.len;
-    size_t nlen = world->entities.len * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t nlen = world->entities.len * TNECS_ARRAY_GROWTH;
     world->entities.len = nlen;
-    if (nlen >= TNECS_ENTITIES_CAP) {
+    if (nlen >= TNECS_E_CAP) {
         printf("tnecs: entities cap reached\n");
         return (TNECS_NULL);
     }
@@ -1473,7 +1473,7 @@ int tnecs_grow_entity(tnecs_W *world) {
 
 int tnecs_grow_system(tnecs_W *world) {
     size_t olen = world->systems.len;
-    size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t nlen = olen * TNECS_ARRAY_GROWTH;
     assert(olen > 0);
     world->systems.len          = nlen;
 
@@ -1503,7 +1503,7 @@ int tnecs_grow_system(tnecs_W *world) {
 
 int tnecs_grow_archetype(tnecs_W *world) {
     size_t olen = world->bytype.len;
-    size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t nlen = olen * TNECS_ARRAY_GROWTH;
     world->bytype.len = nlen;
 
     world->bytype.id                = tnecs_realloc(world->bytype.id,
@@ -1552,7 +1552,7 @@ int tnecs_grow_archetype(tnecs_W *world) {
         world->bytype.entities[i]       = calloc(TNECS_INIT_ENTITY_LEN,
                                                  sizeof(**world->bytype.entities));
         TNECS_CHECK_ALLOC(world->bytype.entities[i]);
-        world->bytype.archetype_id[i]   = calloc(TNECS_COMPONENT_CAP,
+        world->bytype.archetype_id[i]   = calloc(TNECS_C_CAP,
                                                  sizeof(**world->bytype.archetype_id));
         TNECS_CHECK_ALLOC(world->bytype.archetype_id[i]);
 
@@ -1564,9 +1564,9 @@ int tnecs_grow_archetype(tnecs_W *world) {
 
 int tnecs_grow_pipeline(tnecs_W *world) {
     size_t olen = world->pipelines.len;
-    size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t nlen = olen * TNECS_ARRAY_GROWTH;
     world->pipelines.len = nlen;
-    if (nlen >= TNECS_PIPELINES_CAP) {
+    if (nlen >= TNECS_Pi_CAP) {
         printf("tnecs: pipelines cap reached\n");
         return (TNECS_NULL);
     }
@@ -1583,9 +1583,9 @@ int tnecs_grow_phase(tnecs_W    *world,
                      tnecs_Pi  pipeline) {
     tnecs_phases *byphase = TNECS_PIPELINE_GET(world, pipeline);
     size_t olen = byphase->len;
-    size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t nlen = olen * TNECS_ARRAY_GROWTH;
     byphase->len = nlen;
-    if (nlen >= TNECS_PHASES_CAP) {
+    if (nlen >= TNECS_Ph_CAP) {
         printf("tnecs: phases cap reached\n");
         return (TNECS_NULL);
     }
@@ -1625,7 +1625,7 @@ int tnecs_grow_phase(tnecs_W    *world,
 int tnecs_grow_system_byphase(tnecs_phases *byphase,
                               tnecs_Ph   phase) {
     size_t olen                 = byphase->len_systems[phase];
-    size_t nlen                 = olen * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t nlen                 = olen * TNECS_ARRAY_GROWTH;
     byphase->len_systems[phase] = nlen;
     size_t bs                   = sizeof(**byphase->systems);
     size_t bsid                 = sizeof(**byphase->systems_id);
@@ -1641,7 +1641,7 @@ int tnecs_grow_system_byphase(tnecs_phases *byphase,
 
 int tnecs_grow_bytype(tnecs_W *world, size_t tID) {
     size_t olen = world->bytype.len_entities[tID];
-    size_t nlen = olen * TNECS_ARRAY_GROWTH_FACTOR;
+    size_t nlen = olen * TNECS_ARRAY_GROWTH;
 
     assert(olen > 0);
     world->bytype.len_entities[tID] = nlen;
