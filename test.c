@@ -204,7 +204,7 @@ typedef struct Unit2 {
     u64 res;
 } Unit2;
 
-void SystemMove2(struct tnecs_input *input) {
+void SystemMove2(struct tnecs_In *input) {
     int     Position2_ID    = 1;
     int     Unit2_ID        = 2;
     struct  Position2   *p = NULL;
@@ -219,7 +219,7 @@ void SystemMove2(struct tnecs_input *input) {
     }
 }
 
-void SystemMovePhase1(struct tnecs_input *input) {
+void SystemMovePhase1(struct tnecs_In *input) {
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_E current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         test_true(current_ent);
@@ -230,7 +230,7 @@ void SystemMovePhase1(struct tnecs_input *input) {
     }
 }
 
-void SystemMovePhase4(struct tnecs_input *input) {
+void SystemMovePhase4(struct tnecs_In *input) {
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_E current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         test_true(current_ent);
@@ -241,7 +241,7 @@ void SystemMovePhase4(struct tnecs_input *input) {
     }
 }
 
-void SystemMovePhase2(struct tnecs_input *input) {
+void SystemMovePhase2(struct tnecs_In *input) {
     for (int ent = 0; ent < input->num_entities; ent++) {
         tnecs_E current_ent = input->world->bytype.entities[input->entity_archetype_id][ent];
         test_true(current_ent);
@@ -262,9 +262,9 @@ tnecs_E        *components_list;
 struct Position     *temp_position;
 struct Unit         *temp_unit;
 struct Sprite       *temp_sprite;
-struct tnecs_world  *test_world;
+struct tnecs_W  *test_world;
 
-void SystemMove(struct tnecs_input *input) {
+void SystemMove(struct tnecs_In *input) {
     // printf("SystemMove\n");
     int Position_ID = 1;
     int Velocity_ID = 2;
@@ -286,7 +286,7 @@ void SystemMove(struct tnecs_input *input) {
     }
 }
 
-void SystemMoveDoNothing(struct tnecs_input *input) {
+void SystemMoveDoNothing(struct tnecs_In *input) {
     int doesnotexist_ID = 8;
     void *ptr = NULL;
     ptr = TNECS_COMPONENT_ARRAY(input, doesnotexist_ID);
@@ -493,12 +493,12 @@ void tnecs_test_entity_creation() {
     test_true(tnecs_entity_create(test_world));
     test_true(test_world->entities.num == 105);
 
-    tnecs_world *test_world3 = NULL;
+    tnecs_W *test_world3 = NULL;
     tnecs_world_genesis(&test_world3);
     tnecs_world_destroy(&test_world3);
 
     // MORE TESTS FOR COVERAGE
-    tnecs_world *test_world2 = NULL;
+    tnecs_W *test_world2 = NULL;
     tnecs_world_genesis(&test_world2);
 
     test_world2->bytype.num = TNECS_INIT_SYSTEM_LEN;
@@ -706,7 +706,7 @@ void tnecs_test_component_array() {
     int Unit_ID     = 3;
     int Sprite_ID   = 4;
 
-    tnecs_world *arr_world = NULL;
+    tnecs_W *arr_world = NULL;
     tnecs_world_genesis(&arr_world);
     
     test_true(TNECS_REGISTER_COMPONENT(arr_world, Position_ID, NULL, NULL));
@@ -822,11 +822,11 @@ void tnecs_test_world_progress() {
     int Velocity_ID = 2;
     int Unit_ID     = 3;
 
-    struct tnecs_world *inclusive_world = NULL;
+    struct tnecs_W *inclusive_world = NULL;
     tnecs_world_genesis(&inclusive_world);
     test_true(inclusive_world != NULL);
 
-    struct tnecs_world *inclusive_world2 = NULL;
+    struct tnecs_W *inclusive_world2 = NULL;
     tnecs_world_genesis(&inclusive_world2);
     test_true(inclusive_world2 != NULL);
 
@@ -1073,7 +1073,7 @@ void tnecs_test_world_progress() {
 }
 
 void tnecs_test_grow() {
-    struct tnecs_world *grow_world = NULL;
+    struct tnecs_W *grow_world = NULL;
     tnecs_world_genesis(&grow_world);
     test_true(grow_world != NULL);
 
@@ -1188,7 +1188,7 @@ void tnecs_benchmarks(uint64_t num) {
 
     dupprintf(globalf, " %8llu\t", num);
     t_0 = tnecs_get_us();
-    tnecs_world *bench_world = NULL;
+    tnecs_W *bench_world = NULL;
     tnecs_world_genesis(&bench_world);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
@@ -1310,7 +1310,7 @@ void tnecs_test_pipelines() {
     int Unit_ID     = 3;
     int Sprite_ID   = 4;
 
-    tnecs_world *pipe_world = NULL;
+    tnecs_W *pipe_world = NULL;
     tnecs_world_genesis(&pipe_world);
     const tnecs_Ph phase0    = 0;
     const tnecs_Ph phase1    = 1;
@@ -1410,7 +1410,7 @@ void tnecs_test_finit_ffree(void) {
     int Position_ID = 1;
 
     /* Testing that everything is NULL when creating without functions */
-    tnecs_world *nof_world = NULL;
+    tnecs_W *nof_world = NULL;
     tnecs_world_genesis(&nof_world);
    
     TNECS_REGISTER_COMPONENT(nof_world, Position, NULL, NULL);
@@ -1421,7 +1421,7 @@ void tnecs_test_finit_ffree(void) {
     test_true(pos->arr_len  == 0);
 
     /* Testing that everything is NULL when creating without functions */
-    tnecs_world *f_world = NULL;
+    tnecs_W *f_world = NULL;
     tnecs_world_genesis(&f_world);
    
     TNECS_REGISTER_COMPONENT(f_world, Position, Position_Init, Position_Free);
@@ -1458,7 +1458,7 @@ int main() {
     lresults();
 
     dupprintf(globalf, "\n --- Notes ---\n");
-    dupprintf(globalf, "world size: %ld bytes\n", sizeof(struct tnecs_world));
+    dupprintf(globalf, "world size: %ld bytes\n", sizeof(struct tnecs_W));
     dupprintf(globalf, "%d frame %d fps, ", fps_iterations, 60);
     dupprintf(globalf, "%.1f [us] \n\n", fps_iterations / 60.0f * 1e6);
 

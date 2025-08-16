@@ -52,25 +52,25 @@ typedef unsigned long long int  tnecs_E;
 typedef unsigned long long int  tnecs_Pi;
 typedef unsigned long long int  tnecs_C;
 
-struct tnecs_input; /* Forward declaration */
-typedef void (*tnecs_S)(struct tnecs_input *);
+/* -- Forward declarations -- */
+struct tnecs_In;
+struct tnecs_W;
+typedef struct tnecs_In tnecs_In;
+typedef struct tnecs_W tnecs_W;
+
+/* -- Functions -- */
+typedef void (*tnecs_S)(tnecs_In *);
 typedef void (*tnecs_free_f)(void *);
 typedef void (*tnecs_init_f)(void *);
 
 /* --- CONSTANTS --- */
-enum TNECS {
+enum TNECS_PUBLIC {
     TNECS_NULL                  =         0,
     TNECS_NULLSHIFT             =         1,
-    TNECS_INIT_ENTITY_LEN       =       128,
-    TNECS_INIT_PHASE_LEN        =         4,
-    TNECS_INIT_PIPELINE_LEN     =         4,
-    TNECS_INIT_COMPONENT_LEN    =         8,
-    TNECS_INIT_SYSTEM_LEN       =        16,
-    TNECS_INIT_ARCHETYPE_LEN    =        16,
-    TNECS_COMPONENT_CAP         =        64,
     TNECS_ENTITIES_CAP          = 100000000,
-    TNECS_PHASES_CAP            = TNECS_INIT_PHASE_LEN * 16 + 1,
-    TNECS_PIPELINES_CAP         = TNECS_INIT_PIPELINE_LEN * 16 + 1,
+    TNECS_PIPELINES_CAP         =        64,
+    TNECS_PHASES_CAP            =        64,
+    TNECS_COMPONENT_CAP         =        64,
     TNECS_ARRAY_GROWTH_FACTOR   =         2
 };
 
@@ -118,126 +118,23 @@ enum TNECS {
 #define TNECS_COMMA_8(x, ...) x, TNECS_COMMA_7(__VA_ARGS__)
 
 /* ---  STRUCTS --- */
-typedef struct tnecs_carr { /* 1D array of components */
-    tnecs_C  type;
-    size_t           num;
-    size_t           len;
-    void            *components; /* [entity_order_bytype] */
-} tnecs_carr;
-
-typedef struct tnecs_array {
-    void    *arr;
-    size_t   num;
-    size_t   len;
-} tnecs_array;
-
-typedef struct tnecs_phases {
-    size_t num;
-    size_t len;
-
-    size_t            *len_systems; /* [phase_id] */
-    size_t            *num_systems; /* [phase_id] */
-    size_t           **systems_id;  /* [phase_id][system_order] */
-    tnecs_S **systems;     /* [phase_id][system_id]    */
-} tnecs_phases;
-
-typedef struct tnecs_pipelines {
-    size_t num;
-    size_t len;
-
-    tnecs_phases    *byphase;   /* [pipeline_id] */
-} tnecs_pipelines;
-
-typedef struct tnecs_entities {
-    // - .num doesn't change even if entities get deleted
-    // - if reuse_entities: add deleted entities to entities_open
-    //      - Call tnecs_entities_open_reuse to add entities with
-    //        id[ent] == false entities_open.
-    size_t num;
-    size_t len;
-
-    tnecs_E    *id;            /* [entity_id] -> eID */
-    size_t          *orders;        /* [eID] */
-    tnecs_C *archetypes;    /* [eID] */
-    tnecs_array      open;
-} tnecs_entities;
-
-typedef struct tnecs_system {
-    size_t num;
-    size_t len;
-
-    tnecs_Ph     *phases;        /* [system_id] -> sID */
-    size_t          *orders;        /* [sID] */
-    int             *exclusive;     /* [sID] */
-    tnecs_C *archetypes;    /* [sID] */
-    tnecs_Pi  *pipeline;      /* [sID] */
-#ifndef NDEBUG
-    /* Systems that might be run in current pipeline */
-    tnecs_array to_run;
-    /* Systems ran in pipeline, if num_entities > 0 */
-    tnecs_array ran;
-#endif /* NDEBUG */
-} tnecs_system;
-
-typedef struct tnecs_archetype {
-    size_t num;
-    size_t len;
-
-    tnecs_C   *id;                  /* [archetype_id] -> aID */
-    size_t            *num_components;      /* [aID] */
-    size_t            *len_entities;        /* [aID] */
-    size_t            *num_entities;        /* [aID] */
-    size_t            *num_archetype_ids;   /* [aID] */
-
-    size_t           **archetype_id;     /* [aID][archetype_id_order]       */
-    tnecs_E     **entities;         /* [aID][entity_order_bytype]      */
-    size_t           **components_order; /* [aID][cID]                      */
-    tnecs_C  **components_id;    /* [aID][component_order_bytype]   */
-    tnecs_carr       **components;       /* [aID][component_order_bytype]   */
-} tnecs_archetype;
-
-typedef struct tnecs_components {
-    size_t          num;
-    size_t          bytesizes[TNECS_COMPONENT_CAP]; /* [cID] */
-    tnecs_init_f    finit[TNECS_COMPONENT_CAP];     /* [cID] */
-    tnecs_free_f    ffree[TNECS_COMPONENT_CAP];     /* [cID] */
-} tnecs_components;
-
-typedef struct tnecs_world {
-    tnecs_system        systems;
-    tnecs_entities      entities;
-    tnecs_archetype     bytype;
-    tnecs_pipelines     pipelines;
-    tnecs_components    components;
-
-    int reuse_entities;
-} tnecs_world;
-
-typedef struct tnecs_input {
-    tnecs_world     *world;
-    tnecs_ns         deltat;
-    tnecs_C  system_archetype;
-    size_t           num_entities;
-    size_t           entity_archetype_id;
-    void            *data;
-} tnecs_input;
 
 /* --- WORLD --- */
-int tnecs_world_genesis(tnecs_world **w);
-int tnecs_world_destroy(tnecs_world **w);
+int tnecs_world_genesis(tnecs_W **w);
+int tnecs_world_destroy(tnecs_W **w);
 
-void tnecs_world_toggle_reuse(tnecs_world *w, int toggle);
+void tnecs_world_toggle_reuse(tnecs_W *w, int toggle);
 
 /* Run all systems in all pipelines, by phases */
-int tnecs_world_step(tnecs_world *world, tnecs_ns deltat, void *data);
+int tnecs_world_step(tnecs_W *world, tnecs_ns deltat, void *data);
 
 /* --- PIPELINES --- */
 /* Run all systems in pipeline, by phases */
-int tnecs_pipeline_step(tnecs_world *w, tnecs_ns deltat,
+int tnecs_pipeline_step(tnecs_W *w, tnecs_ns deltat,
                         void *data, tnecs_Pi pipeline);
 /* Run all systems in input pipeline and input phase */
 int tnecs_pipeline_step_phase(
-    tnecs_world *w, tnecs_ns deltat,
+    tnecs_W *w, tnecs_ns deltat,
     void *data, tnecs_Pi pipeline,
     tnecs_Ph phase);
 
@@ -246,23 +143,23 @@ int tnecs_pipeline_step_phase(
 
 /* --- SYSTEM --- */
 int tnecs_system_run(
-    tnecs_world *w, size_t id,
+    tnecs_W *w, size_t id,
     tnecs_ns deltat, void *data);
 
 int tnecs_custom_system_run(
-    tnecs_world     *w,     tnecs_S    c,    
+    tnecs_W     *w,     tnecs_S    c,    
     tnecs_C  ar,    tnecs_ns            dt,    
     void            *data);
 
 /* --- REGISTRATION --- */
 /* Phases start at 1, increment every call. */
-size_t tnecs_register_phase(    tnecs_world    *w, 
+size_t tnecs_register_phase(    tnecs_W    *w, 
                                 tnecs_Pi  p);
 /* Pipelines start at 1, increment every call. */
-size_t tnecs_register_pipeline( tnecs_world    *w);
+size_t tnecs_register_pipeline( tnecs_W    *w);
 
 size_t tnecs_register_system(
-    tnecs_world         *w,
+    tnecs_W         *w,
     tnecs_S     system,
     tnecs_Pi       pipe,
     tnecs_Ph          p,    
@@ -280,7 +177,7 @@ size_t tnecs_register_system(
     )
 
 tnecs_C tnecs_register_component(
-    tnecs_world    *w,      size_t          b,
+    tnecs_W    *w,      size_t          b,
     tnecs_free_f  ffree,  tnecs_init_f  finit);
 
 #define TNECS_REGISTER_COMPONENT(world, name, ffinit, ffree) \
@@ -288,23 +185,23 @@ tnecs_C tnecs_register_component(
 
 /* --- ENTITY --- */
 tnecs_E tnecs_entity_isOpen( 
-    tnecs_world *w, tnecs_E ent);
+    tnecs_W *w, tnecs_E ent);
 tnecs_E tnecs_entity_create( 
-    tnecs_world *w);
+    tnecs_W *w);
 tnecs_E tnecs_entity_destroy(
-    tnecs_world *w, tnecs_E ent);
+    tnecs_W *w, tnecs_E ent);
 tnecs_E tnecs_entity_create_wcomponents(
-    tnecs_world *w, size_t argnum, ...);
+    tnecs_W *w, size_t argnum, ...);
 
 tnecs_E tnecs_entity_add_components(
-    tnecs_world     *w,         tnecs_E    eID,
+    tnecs_W     *w,         tnecs_E    eID,
     tnecs_C  archetype, int             isNew);
 tnecs_E tnecs_entity_remove_components(
-    tnecs_world *w, tnecs_E eID,
+    tnecs_W *w, tnecs_E eID,
     tnecs_C archetype);
 
-int tnecs_entities_open_reuse(tnecs_world *w);
-int tnecs_entities_open_flush(tnecs_world *w);
+int tnecs_entities_open_reuse(tnecs_W *w);
+int tnecs_entities_open_flush(tnecs_W *w);
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) \
     tnecs_entity_create_wcomponents(\
@@ -319,7 +216,7 @@ int tnecs_entities_open_flush(tnecs_world *w);
 
 /* --- COMPONENT --- */
 void *tnecs_get_component(
-    tnecs_world *w, tnecs_E eID,
+    tnecs_W *w, tnecs_E eID,
     tnecs_C cID);
 
 #define TNECS_ENTITY_HASCOMPONENT(world, entity, cID) \
@@ -373,7 +270,7 @@ void *tnecs_get_component(
 
 /* --- COMPONENT ARRAY --- */
 void *tnecs_component_array(
-        tnecs_world *w, const size_t cID,
+        tnecs_W *w, const size_t cID,
         const size_t tID);
 
 #define TNECS_COMPONENT_ARRAY(input, cID) \
@@ -387,7 +284,7 @@ void *tnecs_component_array(
 tnecs_C tnecs_component_ids2archetype(
     size_t argnum, ...);
 tnecs_C tnecs_archetypeid(
-    const tnecs_world *const w, tnecs_C arch);
+    const tnecs_W *const w, tnecs_C arch);
 
 #define TNECS_COMPONENT_ID2TYPE(id) \
     (((id >= TNECS_NULLSHIFT) && (id < TNECS_COMPONENT_CAP)) ? (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
