@@ -21,13 +21,13 @@ Components are arranged in ```byT``` arrays of pointers.
 Each new archetype gets an index, with associated entities and components array pointer at the index.
 Then, each component has an order inside the ```byT``` array, on a first come first served basis.
 The ```byT``` arrays are exclusive, components are NOT copied for each compatible archetype.
-As such, inclusive systems are called once for each compatible archetype.
+archetypes such, inclusive systems are called once for each compatible archetype.
 
 Every time a new component is added to an entity, its type changes, so each associated components and its index in the ```byT``` arrays is copied over, then deleted from the previous location.
 This is somewhat costly, so create entities with all of its components directly with the ```TNECS_ENTITY_CREATE_wCOMPONENTS``` macro.
 
 ## Systems
-Systems are ran in phases for each independent pipeline, so they are arranged in ```byphase``` arrays of pointers.
+Systems are ran in phases for each independent pipeline, so they are arranged in ```byPh``` arrays of pointers.
 Pipelines, phases are always ran in order, starting from the default 0.
 System order in each phase is first-come first-served.
 

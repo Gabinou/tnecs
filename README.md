@@ -21,8 +21,8 @@ Tiny C99 Entity-Component-System (ECS) library.
 
 ECS is an architectural pattern that organizes data and functions by favoring composition over inheritance:
 1. Components (i.e. `struct`) are purely data.
-2. Entities (i.e. `ull`) can have any number of components.
-3. Systems (i.e. functions) act on all entities that have a certain set of components.
+2. Entities (i.e. `ull`) can have any number of Cs.
+3. Systems (i.e. functions) act on all entities that have a certain set of Cs.
 
 Example:
 - Enemy Entity: AIControlled component, Sprite Component, Physics Component

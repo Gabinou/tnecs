@@ -35,12 +35,12 @@ void Position_Free(void *voidpos) {
     // Free member variables
 }
 
-// All Position components initialized on creation,
+// All Position Cs initialized on creation,
 // freed on destruction
 TNECS_REGISTER_COMPONENT(world, Position, Position_Init, Position_Free);
 
 ```
-The components IDs start 1, and increase monotonically, up to a cap of 63.
+The Cs IDs start 1, and increase monotonically, up to a cap of 63.
 Tip: Use X macros to create lists of component IDs.
 
 You can get the component type with the macro:
@@ -48,7 +48,7 @@ You can get the component type with the macro:
     Position_type   == TNECS_COMPONENT_TYPE2ID(Position_id);
     Position_ID     == TNECS_COMPONENT_ID2TYPE(Position_type);
 ```
-Note: A type only has one set bit. An archetype has multiple set bits, by adding types, OR'ing multiple archetypes.
+Note: A type only has one set bit. An archetype has multiple set bits, by adding types, OR'ing multiple As.
 
 ## Creating/Destroying Entities
 ```c
@@ -56,7 +56,7 @@ Note: A type only has one set bit. An archetype has multiple set bits, by adding
     ...
     tnecs_entity_destroy(world, Silou);
 ```
-Entities can be created with any number of components directly with this variadic macro: 
+Entities can be created with any number of Cs directly with this variadic macro: 
 ```c
     tnecs_entity_t Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(world, Position_ID, Unit_ID);
 ```
@@ -77,18 +77,18 @@ By default, all component bits are set to zero with ```calloc``` when no init fu
     TNECS_ADD_COMPONENT(world, Silou, Position, isNew);
 ```
 By default, tnecs checks if the entity archetype is new, when the new component is added.
-If you know that the archetype isn't new, set isNew to false to skip comparing the entity's new archetype with all other recorded archetypes.
+If you know that the archetype isn't new, set isNew to false to skip comparing the entity's new archetype with all other recorded As.
 
-Multiple components can also be added at once:
+Multiple Cs can also be added at once:
 ```c
     bool isNew = false;
     TNECS_ADD_COMPONENTS(world, Pirou, isNew, Position, Velocity);
 ```
 
 ## Register System to the world
-A system is a user-defined function, with a ```tnecs_system_input``` pointer as input and no output:
+A system is a user-defined function, with a ```tnecs_Ss_input``` pointer as input and no output:
 ```c
-    void SystemMove(tnecs_system_input_t *input) {
+    void SystemMove(tnecs_Ss_input_t *input) {
         Position *p = TNECS_COMPONENT_ARRAY(input, Position);
         Velocity *v = TNECS_COMPONENT_ARRAY(input, Velocity);
 
@@ -100,7 +100,7 @@ A system is a user-defined function, with a ```tnecs_system_input``` pointer as 
     // More about pipeline, phase in next section
     int pipeline        = 0;
     int phase           = 0;
-    // Exclusive systems run only for all entities that have exactly the system's archetype.
+    // Exclusive Ss run only for all Es that have exactly the system's archetype.
     // Otherwise, system is run for every compatible archetype.
     int exclusive       = 0;
     TNECS_REGISTER_S(world, SystemMove, pipeline, phase, exclusive, Position, Unit); 
@@ -113,7 +113,7 @@ tnecs_time_ns_t frame_deltat = 1;
 // User-defined data input into system
 void *data = NULL; 
 
-// Run all pipelines, starting from pipeline 0.
+// Run all Pis, starting from pipeline 0.
 tnecs_W_step(world, frame_deltat, data);
 
 // Run a specific pipeline, starting from phase 0
@@ -121,7 +121,7 @@ int pipeline = 1;
 tnecs_Pi_step(world, frame_deltat, data, pipeline);
 
 // Run a specific phase, in a specific pipeline
-// In each phase, systems are run first-come first-served 
+// In each phase, Ss are run first-come first-served 
 int phase = 1;
 tnecs_Pi_step_Ph(world, frame_deltat, data, pipeline, phase);
 
