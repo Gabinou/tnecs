@@ -177,23 +177,23 @@ tnecs_C tnecs_register_C(
     tnecs_W    *w,      size_t          b,
     tnecs_free_f  ffree,  tnecs_init_f  finit);
 
-#define TNECS_REGISTER_COMPONENT(world, name, ffinit, ffree) \
+#define TNECS_REGISTER_C(world, name, ffinit, ffree) \
     tnecs_register_C(world, sizeof(name), ffinit, ffree)
 
 /* --- ENTITY --- */
-tnecs_E tnecs_entity_isOpen( 
+tnecs_E tnecs_E_isOpen( 
     tnecs_W *w, tnecs_E ent);
-tnecs_E tnecs_entity_create( 
+tnecs_E tnecs_E_create( 
     tnecs_W *w);
-tnecs_E tnecs_entity_destroy(
+tnecs_E tnecs_E_destroy(
     tnecs_W *w, tnecs_E ent);
-tnecs_E tnecs_entity_create_wC(
+tnecs_E tnecs_E_create_wC(
     tnecs_W *w, size_t argnum, ...);
 
-tnecs_E tnecs_entity_add_Cs(
+tnecs_E tnecs_E_add_Cs(
     tnecs_W     *w,         tnecs_E    eID,
     tnecs_C  archetype, int             isNew);
-tnecs_E tnecs_entity_remove_Cs(
+tnecs_E tnecs_E_remove_Cs(
     tnecs_W *w, tnecs_E eID,
     tnecs_C archetype);
 
@@ -201,7 +201,7 @@ int tnecs_entities_open_reuse(tnecs_W *w);
 int tnecs_entities_open_flush(tnecs_W *w);
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) \
-    tnecs_entity_create_wC(\
+    tnecs_E_create_wC(\
         world, \
         TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
         TNECS_VARMACRO_COMMA(__VA_ARGS__)\
@@ -223,30 +223,30 @@ void *tnecs_get_C(
             tnecs_C_ids2archetype(1, cID)\
         ) > 0\
     )
-#define TNECS_ADD_COMPONENT(...) \
-    TNECS_CHOOSE_ADD_COMPONENT(\
+#define TNECS_ADD_C(...) \
+    TNECS_CHOOSE_ADD_C(\
         __VA_ARGS__, \
-        TNECS_ADD_COMPONENT4, \
-        TNECS_ADD_COMPONENT3\
+        TNECS_ADD_C4, \
+        TNECS_ADD_C3\
     )(__VA_ARGS__)
-#define TNECS_CHOOSE_ADD_COMPONENT(_1,_2,_3,_4,NAME,...) \
+#define TNECS_CHOOSE_ADD_C(_1,_2,_3,_4,NAME,...) \
     NAME
-#define TNECS_ADD_COMPONENT3(world, entity_id, cID) \
-    tnecs_entity_add_Cs(\
+#define TNECS_ADD_C3(world, entity_id, cID) \
+    tnecs_E_add_Cs(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(1, cID), \
         true\
     )
-#define TNECS_ADD_COMPONENT4(world, entity_id, cID, isnewtype) \
-    tnecs_entity_add_Cs(\
+#define TNECS_ADD_C4(world, entity_id, cID, isnewtype) \
+    tnecs_E_add_Cs(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(1, cID), \
         isnewtype\
     )
-#define TNECS_ADD_COMPONENTS(world, entity_id, isnewtype, ...) \
-    tnecs_entity_add_Cs(\
+#define TNECS_ADD_CS(world, entity_id, isnewtype, ...) \
+    tnecs_E_add_Cs(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(\
@@ -255,8 +255,8 @@ void *tnecs_get_C(
         ), \
         isnewtype\
     )
-#define TNECS_REMOVE_COMPONENTS(world, entity_id, ...) \
-    tnecs_entity_remove_Cs(\
+#define TNECS_REMOVE_CS(world, entity_id, ...) \
+    tnecs_E_remove_Cs(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(\
@@ -270,7 +270,7 @@ void *tnecs_C_array(
         tnecs_W *w, const size_t cID,
         const size_t tID);
 
-#define TNECS_COMPONENT_ARRAY(input, cID) \
+#define TNECS_C_ARRAY(input, cID) \
     tnecs_C_array(\
         input->world, \
         cID, \
@@ -283,19 +283,19 @@ tnecs_C tnecs_C_ids2archetype(
 tnecs_C tnecs_archetypeid(
     const tnecs_W *const w, tnecs_C arch);
 
-#define TNECS_COMPONENT_ID2TYPE(id) \
+#define TNECS_C_ID2TYPE(id) \
     (((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
-#define TNECS_COMPONENT_TYPE2ID(type) \
+#define TNECS_C_TYPE2ID(type) \
     (type >= 1 ? (tnecs_C)(log2(type) + 1.1f) : 0) 
-#define TNECS_COMPONENT_IDS2ARCHETYPE(...) \
+#define TNECS_C_IDS2ARCHETYPE(...) \
     tnecs_C_ids2archetype(\
         TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
         TNECS_VARMACRO_COMMA(__VA_ARGS__)\
     )
-#define TNECS_COMPONENT_IDS2ARCHETYPEID(world, ...) \
+#define TNECS_C_IDS2ARCHETYPEID(world, ...) \
     tnecs_archetypeid(\
         world, \
-        TNECS_COMPONENT_IDS2ARCHETYPE(__VA_ARGS__)\
+        TNECS_C_IDS2ARCHETYPE(__VA_ARGS__)\
     )
 
 /* --- SYSTEM --- */
