@@ -21,12 +21,11 @@
 **      - E:    Entity
 **      - C:    Component
 **      - S:    System
-**      - A:    Archetype  i.e. multiple bits set u64
-**      - T:    Type       i.e. single bit set u64
+**      - A:    Archetype  i.e. ull w/ many bits set
+**      - T:    Type       i.e. ull w/ single bit set 
 **      - Pi:   Pipeline
 **      - Ph:   Phase
 **      - W:    World
-**
 */
 
 #include <stdio.h>
@@ -38,21 +37,6 @@
 #ifndef log2 /* for tcc: log2(x) = log(x) / log(2) */
     #define log2(x) (log(x) * 1.44269504088896340736)
 #endif
-
-/******************** DEBUG *********************/
-#define TNECS_CHECK_ALLOC(name) do {\
-        if (name == NULL) { \
-            printf("tnecs: failed allocation " #name "\n"); \
-            return(0); \
-        } \
-    } while (0)
-
-#define TNECS_CHECK_CALL(call) do {\
-        if (!call) { \
-            printf("tnecs: failed function call " #call "\n"); \
-            return(0); \
-        } \
-    } while (0)
 
 /* --- TYPEDEFS --- */
 typedef unsigned long long int  tnecs_ns;
@@ -93,18 +77,23 @@ enum TNECS_PUBLIC {
 /* --- HACKY DISTRIBUTION FOR VARIADIC MACROS --- */
 /* Distribution as in algebra: a(x + b) -> ax + ab */
 
-// TNECS_ARGN(__VA_ARGS__) counts the number of args
-//  - up to 63, if _TNECS_VARGN and TNECS_VARG_SEQ exist
-#define TNECS_ARGN(...) \
-    _TNECS_ARGN_(__VA_ARGS__, _TNECS_SEQ())
+/* TNECS_ARGN(__VA_ARGS__) counts the number of args,
+**  _TNECS_SEQ pushes the args so correct N is output.
+**  Example: 
+**      1. TNECS_ARGN(x,y,z)
+**      2. _TNECS_ARGN_(x, y, z, _TNECS_SEQ())
+**      3. _TNECS_VARGN(x, y, z, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+**         i.e.         _1,_2,_3,_4,_5,_6,_7,_8,N, ...  
+**      4. 3 is output
+**  - up to 63 args, if _TNECS_VARGN and TNECS_VARG_SEQ exist
+*/
+#define TNECS_ARGN(...) _TNECS_ARGN_(__VA_ARGS__, _TNECS_SEQ())
 #define _TNECS_ARGN_(...) _TNECS_VARGN(__VA_ARGS__)
-#define _TNECS_VARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) \
-    N
+#define _TNECS_VARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) N
 #define _TNECS_SEQ() 8, 7, 6, 5, 4, 3, 2, 1, 0
 
-// TNECS_EACH_COMMA(__VA_ARGS__) puts commas after each arg,
-// except the last.
-//  - up to 63 args if all TNECS_COMMA_N exist
+/* TNECS_EACH_COMMA puts commas after each arg except last. 
+**  - up to 63 args, if all TNECS_COMMA_N exist */
 #define TNECS_EACH_COMMA(...) \
     TNECS_EACH_COMMA_(\
         TNECS_ARGN(__VA_ARGS__), \

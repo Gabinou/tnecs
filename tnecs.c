@@ -1,6 +1,15 @@
 
 #include "tnecs.h"
 
+/* --- DEBUG --- */
+/* Early return if something fails. */
+#define TNECS_CHECK(check) do {\
+        if (!check) { \
+            printf("tnecs: failed " #check "\n"); \
+            return(0); \
+        } \
+    } while (0)
+
 /* --- PRIVATE DECLARATIONS --- */
 typedef unsigned char tnecs_byte;
 
@@ -222,25 +231,25 @@ static int tnecs_C_migrate(
 /************* WORLD FUNCTIONS ***************/
 int tnecs_W_genesis(tnecs_W **world) {
     if (*world != NULL)
-        TNECS_CHECK_CALL(tnecs_W_destroy(world));
+        TNECS_CHECK(tnecs_W_destroy(world));
 
     *world = calloc(1, sizeof(tnecs_W));
-    TNECS_CHECK_ALLOC(*world);
+    TNECS_CHECK(*world);
 
     /* Allocate world members */
-    TNECS_CHECK_CALL(_tnecs_breath_systems(   &((*world)->systems)));
-    TNECS_CHECK_CALL(_tnecs_breath_entities(  &((*world)->entities)));
-    TNECS_CHECK_CALL(_tnecs_breath_pipelines( &((*world)->pipelines)));
-    TNECS_CHECK_CALL(_tnecs_breath_archetypes(&((*world)->bytype)));
-    TNECS_CHECK_CALL(_tnecs_breath_C(&((*world)->components)));
+    TNECS_CHECK(_tnecs_breath_systems(   &((*world)->systems)));
+    TNECS_CHECK(_tnecs_breath_entities(  &((*world)->entities)));
+    TNECS_CHECK(_tnecs_breath_pipelines( &((*world)->pipelines)));
+    TNECS_CHECK(_tnecs_breath_archetypes(&((*world)->bytype)));
+    TNECS_CHECK(_tnecs_breath_C(&((*world)->components)));
     return (1);
 }
 
 int tnecs_W_destroy(tnecs_W **world) {
-    TNECS_CHECK_CALL(_tnecs_destroy_pipelines(   &((*world)->pipelines)));
-    TNECS_CHECK_CALL(_tnecs_destroy_systems(     &((*world)->systems)));
-    TNECS_CHECK_CALL(_tnecs_destroy_entities(    &((*world)->entities)));
-    TNECS_CHECK_CALL(_tnecs_destroy_archetypes(  &((*world)->bytype)));
+    TNECS_CHECK(_tnecs_destroy_pipelines(   &((*world)->pipelines)));
+    TNECS_CHECK(_tnecs_destroy_systems(     &((*world)->systems)));
+    TNECS_CHECK(_tnecs_destroy_entities(    &((*world)->entities)));
+    TNECS_CHECK(_tnecs_destroy_archetypes(  &((*world)->bytype)));
     free(*world);
 
     *world = NULL;
@@ -269,10 +278,10 @@ int _tnecs_breath_entities(tnecs_entities *entities) {
                                    sizeof(tnecs_E));
     entities->archetypes  = calloc(entities->len,
                                    sizeof(*entities->archetypes));
-    TNECS_CHECK_ALLOC(entities->id);
-    TNECS_CHECK_ALLOC(entities->orders);
-    TNECS_CHECK_ALLOC(entities->open.arr);
-    TNECS_CHECK_ALLOC(entities->archetypes);
+    TNECS_CHECK(entities->id);
+    TNECS_CHECK(entities->orders);
+    TNECS_CHECK(entities->open.arr);
+    TNECS_CHECK(entities->archetypes);
     return (1);
 }
 
@@ -299,19 +308,19 @@ int _tnecs_breath_phases(tnecs_phases *byphase) {
     byphase->len_systems    = calloc(byphase->len,
                                      sizeof(*byphase->len_systems));
 
-    TNECS_CHECK_ALLOC(byphase->systems);
-    TNECS_CHECK_ALLOC(byphase->systems_id);
-    TNECS_CHECK_ALLOC(byphase->num_systems);
-    TNECS_CHECK_ALLOC(byphase->len_systems);
+    TNECS_CHECK(byphase->systems);
+    TNECS_CHECK(byphase->systems_id);
+    TNECS_CHECK(byphase->num_systems);
+    TNECS_CHECK(byphase->len_systems);
 
     /* Alloc & check for entities_byphase elements */
     for (size_t i = 0; i < byphase->len; i++) {
         byphase->systems[i]     = calloc(byphase->len,
                                          sizeof(**byphase->systems));
-        TNECS_CHECK_ALLOC(byphase->systems[i]);
+        TNECS_CHECK(byphase->systems[i]);
         byphase->systems_id[i]  = calloc(byphase->len,
                                          sizeof(**byphase->systems_id));
-        TNECS_CHECK_ALLOC(byphase->systems_id[i]);
+        TNECS_CHECK(byphase->systems_id[i]);
 
         byphase->num_systems[i] = 0;
         byphase->len_systems[i] = byphase->len;
@@ -346,14 +355,14 @@ int _tnecs_breath_systems(tnecs_system *systems) {
                                  sizeof(tnecs_S));
 #endif /* NDEBUG */
 
-    TNECS_CHECK_ALLOC(systems->phases);
-    TNECS_CHECK_ALLOC(systems->orders);
-    TNECS_CHECK_ALLOC(systems->pipeline);
-    TNECS_CHECK_ALLOC(systems->exclusive);
-    TNECS_CHECK_ALLOC(systems->archetypes);
+    TNECS_CHECK(systems->phases);
+    TNECS_CHECK(systems->orders);
+    TNECS_CHECK(systems->pipeline);
+    TNECS_CHECK(systems->exclusive);
+    TNECS_CHECK(systems->archetypes);
 #ifndef NDEBUG
-    TNECS_CHECK_ALLOC(systems->ran.arr);
-    TNECS_CHECK_ALLOC(systems->to_run.arr);
+    TNECS_CHECK(systems->ran.arr);
+    TNECS_CHECK(systems->to_run.arr);
 #endif /* NDEBUG */
 
     return (1);
@@ -386,23 +395,23 @@ int _tnecs_breath_archetypes(tnecs_archetype *bytype) {
     bytype->num_archetype_ids   = calloc(bytype->len,
                                          sizeof(*bytype->num_archetype_ids));
 
-    TNECS_CHECK_ALLOC(bytype->id);
-    TNECS_CHECK_ALLOC(bytype->entities);
-    TNECS_CHECK_ALLOC(bytype->components);
-    TNECS_CHECK_ALLOC(bytype->archetype_id);
-    TNECS_CHECK_ALLOC(bytype->len_entities);
-    TNECS_CHECK_ALLOC(bytype->num_entities);
-    TNECS_CHECK_ALLOC(bytype->components_id);
-    TNECS_CHECK_ALLOC(bytype->num_Cs);
-    TNECS_CHECK_ALLOC(bytype->components_order);
-    TNECS_CHECK_ALLOC(bytype->num_archetype_ids);
+    TNECS_CHECK(bytype->id);
+    TNECS_CHECK(bytype->entities);
+    TNECS_CHECK(bytype->components);
+    TNECS_CHECK(bytype->archetype_id);
+    TNECS_CHECK(bytype->len_entities);
+    TNECS_CHECK(bytype->num_entities);
+    TNECS_CHECK(bytype->components_id);
+    TNECS_CHECK(bytype->num_Cs);
+    TNECS_CHECK(bytype->components_order);
+    TNECS_CHECK(bytype->num_archetype_ids);
 
     /* Alloc & check for id_bytype elements */
     for (size_t i = 0; i < bytype->len; i++) {
         bytype->archetype_id[i] = calloc(TNECS_C_CAP, sizeof(**bytype->archetype_id));
-        TNECS_CHECK_ALLOC(bytype->archetype_id[i]);
+        TNECS_CHECK(bytype->archetype_id[i]);
         bytype->entities[i]     = calloc(TNECS_INIT_ENTITY_LEN, sizeof(**bytype->entities));
-        TNECS_CHECK_ALLOC(bytype->entities[i]);
+        TNECS_CHECK(bytype->entities[i]);
 
         bytype->num_entities[i] = 0;
         bytype->len_entities[i] = TNECS_INIT_ENTITY_LEN;
@@ -501,7 +510,7 @@ int tnecs_Pi_step(tnecs_W     *world,
 
     tnecs_phases *byphase = TNECS_Pi_GET(world, pipeline);
     for (size_t phase = 0; phase < byphase->num; phase++) {
-        TNECS_CHECK_CALL(tnecs_Pi_step_Ph(world, deltat, data, pipeline, phase));
+        TNECS_CHECK(tnecs_Pi_step_Ph(world, deltat, data, pipeline, phase));
     }
 
     return(1);
@@ -516,7 +525,7 @@ int tnecs_Pi_step_Ph(tnecs_W       *world,
     size_t num = byphase->num_systems[phase];
     for (size_t sorder = 0; sorder < num; sorder++) {
         size_t system_id = byphase->systems_id[phase][sorder];
-        TNECS_CHECK_CALL(tnecs_S_run(world, system_id,
+        TNECS_CHECK(tnecs_S_run(world, system_id,
                      deltat, data));
     }
 
@@ -527,7 +536,7 @@ int tnecs_W_step(tnecs_W    *world,
                      tnecs_ns        deltat,
                      void           *data) {
     for (size_t p = 0; p < world->pipelines.num; p++) {
-        TNECS_CHECK_CALL(tnecs_Pi_step(world, deltat, data, p));
+        TNECS_CHECK(tnecs_Pi_step(world, deltat, data, p));
     }
     return (1);
 }
@@ -574,7 +583,7 @@ int tnecs_S_run(tnecs_W *world, size_t system_id,
     tnecs_phases *byphase       = TNECS_Pi_GET(world, pipeline);
 
     while (world->systems.to_run.num >= (world->systems.to_run.len - 1)) {
-        TNECS_CHECK_CALL(tnecs_grow_ran(world));
+        TNECS_CHECK(tnecs_grow_ran(world));
     }
 
     tnecs_S system = byphase->systems[phase][sorder];
@@ -614,7 +623,7 @@ int tnecs_S_run(tnecs_W *world, size_t system_id,
     #endif /* NDEBUG */
 
         while (world->systems.to_run.num >= (world->systems.to_run.len - 1)) {
-            TNECS_CHECK_CALL(tnecs_grow_ran(world));
+            TNECS_CHECK(tnecs_grow_ran(world));
         }
 
         if (input.num_entities <= 0) {
@@ -655,13 +664,13 @@ size_t tnecs_register_S(tnecs_W       *world,
 
     /* Realloc systems if too many */
     if (world->systems.num >= world->systems.len) {
-        TNECS_CHECK_CALL(tnecs_grow_system(world));
+        TNECS_CHECK(tnecs_grow_system(world));
     }
 
     /* Realloc systems_byphase if too many */
     tnecs_phases *byphase = TNECS_Pi_GET(world, pipeline);
     if (byphase->num_systems[phase] >= byphase->len_systems[phase]) {
-        TNECS_CHECK_CALL(tnecs_grow_system_byphase(byphase, phase));
+        TNECS_CHECK(tnecs_grow_system_byphase(byphase, phase));
     }
 
     /* -- Actual registration -- */
@@ -676,7 +685,7 @@ size_t tnecs_register_S(tnecs_W       *world,
     world->systems.orders[system_id]            = system_order;
     byphase->systems[phase][system_order]       = system;
     byphase->systems_id[phase][system_order]    = system_id;
-    TNECS_CHECK_CALL(_tnecs_register_archetype(world, num_Cs, archetype));
+    TNECS_CHECK(_tnecs_register_archetype(world, num_Cs, archetype));
     return (system_id);
 }
 
@@ -700,7 +709,7 @@ tnecs_C tnecs_register_C(tnecs_W    *world,
     world->components.bytesizes[new_C_id]   = bytesize;
     world->components.ffree[new_C_id]       = ffree;
     world->components.finit[new_C_id]       = finit;
-    TNECS_CHECK_CALL(_tnecs_register_archetype(world, 1, new_C_flag));
+    TNECS_CHECK(_tnecs_register_archetype(world, 1, new_C_flag));
     return (new_C_id);
 }
 
@@ -716,23 +725,23 @@ size_t _tnecs_register_archetype(tnecs_W        *world,
 
     // 1- Add new bytype.components at [tID]
     if ((world->bytype.num + 1) >= world->bytype.len)
-        TNECS_CHECK_CALL(tnecs_grow_archetype(world));
+        TNECS_CHECK(tnecs_grow_archetype(world));
     world->bytype.id[world->bytype.num++] = archetype_new;
     size_t tID = tnecs_A_id(world, archetype_new);
     assert(tID == (world->bytype.num - 1));
     world->bytype.num_Cs[tID] = num_Cs;
 
     // 2- Add arrays to bytype.components[tID] for each component
-    TNECS_CHECK_CALL(tnecs_carr_new(world, num_Cs, archetype_new));
+    TNECS_CHECK(tnecs_carr_new(world, num_Cs, archetype_new));
 
     // 3- Add all components to bytype.components_id
     tnecs_C archetype_reduced = archetype_new, archetype_added = 0;
     size_t bytesize1 = sizeof(**world->bytype.components_id);
     size_t bytesize2 = sizeof(**world->bytype.components_order);
     world->bytype.components_id[tID]     = calloc(num_Cs,      bytesize1);
-    TNECS_CHECK_ALLOC(world->bytype.components_id[tID]);
+    TNECS_CHECK(world->bytype.components_id[tID]);
     world->bytype.components_order[tID]  = calloc(TNECS_C_CAP, bytesize2);
-    TNECS_CHECK_ALLOC(world->bytype.components_order[tID]);
+    TNECS_CHECK(world->bytype.components_order[tID]);
 
     size_t k = 0;
     while (archetype_reduced) {
@@ -768,7 +777,7 @@ size_t _tnecs_register_archetype(tnecs_W        *world,
 size_t tnecs_register_Pi(tnecs_W *world) {
     tnecs_Pi pipeline = world->pipelines.num++;
     while (pipeline >= world->pipelines.len) {
-        TNECS_CHECK_CALL(tnecs_grow_pipeline(world));
+        TNECS_CHECK(tnecs_grow_pipeline(world));
     }
     tnecs_phases *byphase = TNECS_Pi_GET(world, pipeline);
     _tnecs_breath_phases(byphase);
@@ -786,7 +795,7 @@ size_t tnecs_register_Ph(tnecs_W   *world,
     tnecs_phases *byphase   = TNECS_Pi_GET(world, pipeline);
     tnecs_Ph phase       = byphase->num++;
     while (phase >= byphase->len) {
-        TNECS_CHECK_CALL(tnecs_grow_phase(world, pipeline));
+        TNECS_CHECK(tnecs_grow_phase(world, pipeline));
     }
     return (phase);
 }
@@ -821,7 +830,7 @@ tnecs_E tnecs_E_create(tnecs_W *world) {
 
     /* Set entity and checks  */
     world->entities.id[out] = out;
-    TNECS_CHECK_CALL(tnecs_entitiesbytype_add(world, out, TNECS_NULL));
+    TNECS_CHECK(tnecs_entitiesbytype_add(world, out, TNECS_NULL));
     assert(world->entities.id[out]                                          == out);
     assert(world->bytype.entities[TNECS_NULL][world->entities.orders[out]]  == out);
     return (out);
@@ -846,7 +855,7 @@ tnecs_E tnecs_E_create_wC(tnecs_W    *world,
         printf("tnecs: could not create new entity\n");
         return (TNECS_NULL);
     }
-    TNECS_CHECK_CALL(tnecs_E_add_C(world, new_E, archetype, 1));
+    TNECS_CHECK(tnecs_E_add_C(world, new_E, archetype, 1));
 
 #ifndef NDEBUG
     size_t tID      = tnecs_A_id(world, archetype);
@@ -867,7 +876,7 @@ int tnecs_E_reuse(tnecs_W *world) {
         if (tnecs_E_isOpen(world, i))
             continue; /* Skip if already in open list */
 
-        TNECS_CHECK_CALL(tnecs_grow_entities_open(world));
+        TNECS_CHECK(tnecs_grow_entities_open(world));
         tnecs_E *arr = world->entities.open.arr;
         arr[world->entities.open.num++] = i;
     }
@@ -913,8 +922,8 @@ tnecs_E tnecs_E_destroy(tnecs_W *world,
     tnecs_C archetype   = world->entities.archetypes[entity];
 
     /* Delete components */
-    TNECS_CHECK_CALL(tnecs_C_free(world, entity, archetype));
-    TNECS_CHECK_CALL(tnecs_C_del(world, entity, archetype));
+    TNECS_CHECK(tnecs_C_free(world, entity, archetype));
+    TNECS_CHECK(tnecs_C_del(world, entity, archetype));
 
 #ifndef NDEBUG
     size_t entity_order         = world->entities.orders[entity];
@@ -925,7 +934,7 @@ tnecs_E tnecs_E_destroy(tnecs_W *world,
 #endif /* NDEBUG */
 
     /* Delete entitiesbytype */
-    TNECS_CHECK_CALL(tnecs_entitiesbytype_del(world, entity, archetype));
+    TNECS_CHECK(tnecs_entitiesbytype_del(world, entity, archetype));
 
     /* Delete entity */
     world->entities.id[entity]         = TNECS_NULL;
@@ -934,7 +943,7 @@ tnecs_E tnecs_E_destroy(tnecs_W *world,
     // user can call tnecs_E_reuse to reuse entities manually.
     if (world->reuse_entities) {
         /* Add deleted entity to open entities */
-        TNECS_CHECK_CALL(tnecs_grow_entities_open(world));
+        TNECS_CHECK(tnecs_grow_entities_open(world));
         tnecs_E *arr = world->entities.open.arr;
         arr[world->entities.open.num++] = entity;
     }
@@ -973,13 +982,13 @@ tnecs_E tnecs_E_add_C(tnecs_W *world,
     tnecs_C archetype_new = archetype_toadd + archetype_old;
     assert(archetype_new != archetype_old);
     if (isNew)
-        TNECS_CHECK_CALL(_tnecs_register_archetype(world, 
+        TNECS_CHECK(_tnecs_register_archetype(world, 
                                                    setBits_KnR(archetype_new),
                                                    archetype_new));
 
-    TNECS_CHECK_CALL(tnecs_C_migrate(world,      entity, archetype_old, archetype_new));
-    TNECS_CHECK_CALL(tnecs_entitiesbytype_migrate(world, entity, archetype_old, archetype_new));
-    TNECS_CHECK_CALL(tnecs_C_init(world,         entity, archetype_toadd));
+    TNECS_CHECK(tnecs_C_migrate(world,      entity, archetype_old, archetype_new));
+    TNECS_CHECK(tnecs_entitiesbytype_migrate(world, entity, archetype_old, archetype_new));
+    TNECS_CHECK(tnecs_C_init(world,         entity, archetype_toadd));
 
 #ifndef NDEBUG
     size_t tID_new = tnecs_A_id(world, archetype_new);
@@ -999,19 +1008,19 @@ tnecs_E tnecs_E_rm_C(tnecs_W *world,
     tnecs_C archetype_new = archetype_old - archetype;
 
     /* Free removed components. */
-    TNECS_CHECK_CALL(tnecs_C_free(world, entity, archetype));
+    TNECS_CHECK(tnecs_C_free(world, entity, archetype));
     if (archetype_new != TNECS_NULL) {
         /* Migrate remaining components to new archetype array. */
-        TNECS_CHECK_CALL(_tnecs_register_archetype(world,
+        TNECS_CHECK(_tnecs_register_archetype(world,
                                                    setBits_KnR(archetype_new),
                                                    archetype_new));
-        TNECS_CHECK_CALL(tnecs_C_migrate(world, entity, archetype_old, archetype_new));
+        TNECS_CHECK(tnecs_C_migrate(world, entity, archetype_old, archetype_new));
     } else {
         /* No remaining component, delete everything. */
-        TNECS_CHECK_CALL(tnecs_C_del(world, entity, archetype_old));
+        TNECS_CHECK(tnecs_C_del(world, entity, archetype_old));
     }
     /* Migrate entity to new bytype array. */
-    TNECS_CHECK_CALL(tnecs_entitiesbytype_migrate(world, entity, archetype_old, archetype_new));
+    TNECS_CHECK(tnecs_entitiesbytype_migrate(world, entity, archetype_old, archetype_new));
     assert(archetype_new == world->entities.archetypes[entity]);
     return (1);
 }
@@ -1048,7 +1057,7 @@ int tnecs_entitiesbytype_add(tnecs_W    *world,
                              tnecs_C archetype_new) {
     size_t tID_new = tnecs_A_id(world, archetype_new);
     if ((world->bytype.num_entities[tID_new] + 1) >= world->bytype.len_entities[tID_new]) {
-        TNECS_CHECK_CALL(tnecs_grow_bytype(world, tID_new));
+        TNECS_CHECK(tnecs_grow_bytype(world, tID_new));
     }
     size_t new_order                            = world->bytype.num_entities[tID_new]++;
     world->entities.orders[entity]              = new_order;
@@ -1081,7 +1090,7 @@ int tnecs_entitiesbytype_del(tnecs_W    *world,
     tnecs_E top_E = world->bytype.entities[archetype_old_id][old_num - 1];
 
     /* components scrambles -> entitiesbytype too */
-    TNECS_CHECK_ALLOC(tnecs_arrdel(world->bytype.entities[archetype_old_id], entity_order_old, old_num,
+    TNECS_CHECK(tnecs_arrdel(world->bytype.entities[archetype_old_id], entity_order_old, old_num,
                  sizeof(**world->bytype.entities)));
 
     if (top_E != entity) {
@@ -1101,10 +1110,10 @@ int tnecs_entitiesbytype_migrate(tnecs_W    *world,
                                  tnecs_C archetype_old,
                                  tnecs_C archetype_new) {
     /* Migrate entities into correct bytype array */
-    TNECS_CHECK_CALL(tnecs_entitiesbytype_del(world, entity, archetype_old));
+    TNECS_CHECK(tnecs_entitiesbytype_del(world, entity, archetype_old));
     assert(world->entities.archetypes[entity]   == TNECS_NULL);
     assert(world->entities.orders[entity]       == TNECS_NULL);
-    TNECS_CHECK_CALL(tnecs_entitiesbytype_add(world, entity, archetype_new));
+    TNECS_CHECK(tnecs_entitiesbytype_add(world, entity, archetype_new));
 
 #ifndef NDEBUG
     size_t tID_new      = tnecs_A_id(world, archetype_new);
@@ -1132,7 +1141,7 @@ int tnecs_C_add(tnecs_W    *world,
         assert(entity_order == comp_arr->num);
 
         if (++comp_arr->num >= comp_arr->len)
-            TNECS_CHECK_CALL(tnecs_grow_C_array(world, comp_arr, tID, corder));
+            TNECS_CHECK(tnecs_grow_C_array(world, comp_arr, tID, corder));
 
     }
 
@@ -1264,7 +1273,7 @@ int tnecs_C_del(tnecs_W     *world,
         size_t comp_by       = world->components.bytesizes[current_C_id];
         size_t new_comp_num  = world->bytype.num_entities[old_tID];
         const tnecs_byte *const scramble = tnecs_arrdel(comp_ptr, order_old, new_comp_num, comp_by);
-        TNECS_CHECK_ALLOC(scramble);
+        TNECS_CHECK(scramble);
 
         old_array->num--;
     }
@@ -1278,10 +1287,10 @@ int tnecs_C_migrate(tnecs_W    *world,
     if (old_archetype != world->entities.archetypes[entity]) {
         return (0);
     }
-    TNECS_CHECK_CALL(tnecs_C_add(world,  new_archetype));
+    TNECS_CHECK(tnecs_C_add(world,  new_archetype));
     if (old_archetype > TNECS_NULL) {
-        TNECS_CHECK_CALL(tnecs_C_copy(world, entity, old_archetype, new_archetype));
-        TNECS_CHECK_CALL(tnecs_C_del( world, entity, old_archetype));
+        TNECS_CHECK(tnecs_C_copy(world, entity, old_archetype, new_archetype));
+        TNECS_CHECK(tnecs_C_del( world, entity, old_archetype));
     }
     return (1);
 }
@@ -1290,7 +1299,7 @@ int tnecs_carr_new(tnecs_W      *world,
                    size_t            num_Cs,
                    tnecs_C   archetype) {
     tnecs_carr *comp_arr = calloc(num_Cs, sizeof(tnecs_carr));
-    TNECS_CHECK_ALLOC(comp_arr);
+    TNECS_CHECK(comp_arr);
 
     tnecs_C archetype_reduced = archetype, archetype_added = 0;
     tnecs_C tID = tnecs_A_id(world, archetype);
@@ -1303,7 +1312,7 @@ int tnecs_carr_new(tnecs_W      *world,
         id_toadd = TNECS_C_T2ID(type_toadd);
         assert(id_toadd > 0);
         assert(id_toadd < world->components.num);
-        TNECS_CHECK_CALL(tnecs_carr_init(world, &comp_arr[num_flags], id_toadd));
+        TNECS_CHECK(tnecs_carr_init(world, &comp_arr[num_flags], id_toadd));
         num_flags++;
         archetype_added += type_toadd;
     }
@@ -1327,7 +1336,7 @@ int tnecs_carr_init(tnecs_W *world,
     comp_arr->num           = 0;
     comp_arr->len           = TNECS_INIT_C_LEN;
     comp_arr->components    = calloc(TNECS_INIT_C_LEN, bytesize);
-    TNECS_CHECK_ALLOC(comp_arr->components);
+    TNECS_CHECK(comp_arr->components);
     return (1);
 }
 
@@ -1413,8 +1422,8 @@ int tnecs_grow_ran(tnecs_W *world) {
 
     world->systems.ran.arr  = tnecs_realloc(world->systems.ran.arr, old_len, new_len, bytesize);
     world->systems.to_run.arr  = tnecs_realloc(world->systems.to_run.arr, old_len, new_len, bytesize);
-    TNECS_CHECK_ALLOC(world->systems.ran.arr);
-    TNECS_CHECK_ALLOC(world->systems.to_run.arr);
+    TNECS_CHECK(world->systems.ran.arr);
+    TNECS_CHECK(world->systems.to_run.arr);
     return (1);
 }
 #endif /* NDEBUG */
@@ -1428,7 +1437,7 @@ int tnecs_grow_entities_open(tnecs_W *world) {
         world->entities.open.len    = new_len;
 
         world->entities.open.arr = tnecs_realloc(world->entities.open.arr, old_len, new_len, bytesize);
-        TNECS_CHECK_ALLOC(world->entities.open.arr);
+        TNECS_CHECK(world->entities.open.arr);
     }
     return (1);
 }
@@ -1444,7 +1453,7 @@ int tnecs_grow_C_array(tnecs_W  *world,
 
     size_t bytesize         = world->components.bytesizes[cID];
     comp_arr->components    = tnecs_realloc(comp_arr->components, old_len, new_len, bytesize);
-    TNECS_CHECK_ALLOC(comp_arr->components);
+    TNECS_CHECK(comp_arr->components);
     return (1);
 }
 
@@ -1460,15 +1469,15 @@ int tnecs_grow_E(tnecs_W *world) {
     world->entities.id          = tnecs_realloc(world->entities.id,
                                                 olen, nlen,
                                                 sizeof(*world->entities.id));
-    TNECS_CHECK_ALLOC(world->entities.id);
+    TNECS_CHECK(world->entities.id);
     world->entities.orders      = tnecs_realloc(world->entities.orders,
                                                 olen, nlen,
                                                 sizeof(*world->entities.orders));
-    TNECS_CHECK_ALLOC(world->entities.orders);
+    TNECS_CHECK(world->entities.orders);
     world->entities.archetypes  = tnecs_realloc(world->entities.archetypes,
                                                 olen, nlen,
                                                 sizeof(*world->entities.archetypes));
-    TNECS_CHECK_ALLOC(world->entities.archetypes);
+    TNECS_CHECK(world->entities.archetypes);
 
     return (1);
 }
@@ -1482,23 +1491,23 @@ int tnecs_grow_system(tnecs_W *world) {
     world->systems.phases       = tnecs_realloc(world->systems.phases,
                                                 olen, nlen,
                                                 sizeof(*world->systems.phases));
-    TNECS_CHECK_ALLOC(world->systems.phases);
+    TNECS_CHECK(world->systems.phases);
     world->systems.orders       = tnecs_realloc(world->systems.orders,
                                                 olen, nlen,
                                                 sizeof(*world->systems.orders));
-    TNECS_CHECK_ALLOC(world->systems.orders);
+    TNECS_CHECK(world->systems.orders);
     world->systems.exclusive    = tnecs_realloc(world->systems.exclusive,
                                                 olen, nlen,
                                                 sizeof(*world->systems.exclusive));
-    TNECS_CHECK_ALLOC(world->systems.pipeline);
+    TNECS_CHECK(world->systems.pipeline);
     world->systems.pipeline    = tnecs_realloc(world->systems.pipeline,
                                                olen, nlen,
                                                sizeof(*world->systems.pipeline));
-    TNECS_CHECK_ALLOC(world->systems.exclusive);
+    TNECS_CHECK(world->systems.exclusive);
     world->systems.archetypes   = tnecs_realloc(world->systems.archetypes,
                                                 olen, nlen,
                                                 sizeof(*world->systems.archetypes));
-    TNECS_CHECK_ALLOC(world->systems.archetypes);
+    TNECS_CHECK(world->systems.archetypes);
 
     return (1);
 }
@@ -1536,27 +1545,27 @@ int tnecs_grow_archetype(tnecs_W *world) {
                                                     olen, nlen,
                                                     sizeof(*world->bytype.num_archetype_ids));
 
-    TNECS_CHECK_ALLOC(world->bytype.id);
-    TNECS_CHECK_ALLOC(world->bytype.entities);
-    TNECS_CHECK_ALLOC(world->bytype.num_entities);
-    TNECS_CHECK_ALLOC(world->bytype.archetype_id);
-    TNECS_CHECK_ALLOC(world->bytype.len_entities);
-    TNECS_CHECK_ALLOC(world->bytype.components_id);
-    TNECS_CHECK_ALLOC(world->bytype.num_Cs);
-    TNECS_CHECK_ALLOC(world->bytype.components_order);
-    TNECS_CHECK_ALLOC(world->bytype.num_archetype_ids);
+    TNECS_CHECK(world->bytype.id);
+    TNECS_CHECK(world->bytype.entities);
+    TNECS_CHECK(world->bytype.num_entities);
+    TNECS_CHECK(world->bytype.archetype_id);
+    TNECS_CHECK(world->bytype.len_entities);
+    TNECS_CHECK(world->bytype.components_id);
+    TNECS_CHECK(world->bytype.num_Cs);
+    TNECS_CHECK(world->bytype.components_order);
+    TNECS_CHECK(world->bytype.num_archetype_ids);
 
     world->bytype.components        = tnecs_realloc(world->bytype.components,           olen, nlen,
                                                     sizeof(*world->bytype.components));
-    TNECS_CHECK_ALLOC(world->bytype.components);
+    TNECS_CHECK(world->bytype.components);
 
     for (size_t i = olen; i < world->bytype.len; i++) {
         world->bytype.entities[i]       = calloc(TNECS_INIT_ENTITY_LEN,
                                                  sizeof(**world->bytype.entities));
-        TNECS_CHECK_ALLOC(world->bytype.entities[i]);
+        TNECS_CHECK(world->bytype.entities[i]);
         world->bytype.archetype_id[i]   = calloc(TNECS_C_CAP,
                                                  sizeof(**world->bytype.archetype_id));
-        TNECS_CHECK_ALLOC(world->bytype.archetype_id[i]);
+        TNECS_CHECK(world->bytype.archetype_id[i]);
 
         world->bytype.len_entities[i] = TNECS_INIT_ENTITY_LEN;
         world->bytype.num_entities[i] = 0;
@@ -1576,7 +1585,7 @@ int tnecs_grow_pipeline(tnecs_W *world) {
     world->pipelines.byphase = tnecs_realloc(world->pipelines.byphase,
                                              olen, nlen,
                                              sizeof(*world->pipelines.byphase));
-    TNECS_CHECK_ALLOC(world->pipelines.byphase);
+    TNECS_CHECK(world->pipelines.byphase);
 
     return (1);
 }
@@ -1595,28 +1604,28 @@ int tnecs_grow_phase(tnecs_W    *world,
     byphase->systems      = tnecs_realloc(byphase->systems,
                                           olen, nlen,
                                           sizeof(*byphase->systems));
-    TNECS_CHECK_ALLOC(byphase->systems);
+    TNECS_CHECK(byphase->systems);
     byphase->systems_id   = tnecs_realloc(byphase->systems_id,
                                           olen, nlen,
                                           sizeof(*byphase->systems_id));
-    TNECS_CHECK_ALLOC(byphase->systems_id);
+    TNECS_CHECK(byphase->systems_id);
     byphase->len_systems  = tnecs_realloc(byphase->len_systems,
                                           olen, nlen,
                                           sizeof(*byphase->len_systems));
-    TNECS_CHECK_ALLOC(byphase->len_systems);
+    TNECS_CHECK(byphase->len_systems);
     byphase->num_systems  = tnecs_realloc(byphase->num_systems,
                                           olen, nlen,
                                           sizeof(*byphase->num_systems));
-    TNECS_CHECK_ALLOC(byphase->num_systems);
+    TNECS_CHECK(byphase->num_systems);
 
     for (size_t i = olen; i < byphase->len; i++) {
         size_t bytesize1 = sizeof(**byphase->systems);
         size_t bytesize2 = sizeof(**byphase->systems_id);
 
         byphase->systems[i]       = calloc(TNECS_INIT_PHASE_LEN, bytesize1);
-        TNECS_CHECK_ALLOC(byphase->systems[i]);
+        TNECS_CHECK(byphase->systems[i]);
         byphase->systems_id[i]    = calloc(TNECS_INIT_PHASE_LEN, bytesize2);
-        TNECS_CHECK_ALLOC(byphase->systems_id[i]);
+        TNECS_CHECK(byphase->systems_id[i]);
 
         byphase->len_systems[i] = TNECS_INIT_PHASE_LEN;
         byphase->num_systems[i] = 0;
@@ -1635,9 +1644,9 @@ int tnecs_grow_system_byphase(tnecs_phases *byphase,
     tnecs_S *systems   = byphase->systems[phase];
     size_t *system_id           = byphase->systems_id[phase];
     byphase->systems[phase]     = tnecs_realloc(systems, olen, nlen, bs);
-    TNECS_CHECK_ALLOC(byphase->systems[phase]);
+    TNECS_CHECK(byphase->systems[phase]);
     byphase->systems_id[phase]  = tnecs_realloc(system_id, olen, nlen, bsid);
-    TNECS_CHECK_ALLOC(byphase->systems_id[phase]);
+    TNECS_CHECK(byphase->systems_id[phase]);
     return (1);
 }
 
@@ -1651,7 +1660,7 @@ int tnecs_grow_bytype(tnecs_W *world, size_t tID) {
     size_t bytesize             = sizeof(*world->bytype.entities[tID]);
     tnecs_E *ptr           = world->bytype.entities[tID];
     world->bytype.entities[tID] = tnecs_realloc(ptr, olen, nlen, bytesize);
-    TNECS_CHECK_ALLOC(world->bytype.entities[tID]);
+    TNECS_CHECK(world->bytype.entities[tID]);
 
     return (1);
 }
