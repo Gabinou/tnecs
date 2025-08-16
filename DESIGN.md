@@ -17,13 +17,13 @@ Each entity, system has its own archetype.
 Simple binary operators are used to check for type match.
 
 ## Components
-Components are arranged in ```bytype``` arrays of pointers.
+Components are arranged in ```byT``` arrays of pointers.
 Each new archetype gets an index, with associated entities and components array pointer at the index.
-Then, each component has an order inside the ```bytype``` array, on a first come first served basis.
-The ```bytype``` arrays are exclusive, components are NOT copied for each compatible archetype.
+Then, each component has an order inside the ```byT``` array, on a first come first served basis.
+The ```byT``` arrays are exclusive, components are NOT copied for each compatible archetype.
 As such, inclusive systems are called once for each compatible archetype.
 
-Every time a new component is added to an entity, its type changes, so each associated components and its index in the ```bytype``` arrays is copied over, then deleted from the previous location.
+Every time a new component is added to an entity, its type changes, so each associated components and its index in the ```byT``` arrays is copied over, then deleted from the previous location.
 This is somewhat costly, so create entities with all of its components directly with the ```TNECS_ENTITY_CREATE_wCOMPONENTS``` macro.
 
 ## Systems
