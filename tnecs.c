@@ -49,7 +49,7 @@ typedef struct tnecs_pipelines {
 typedef struct tnecs_entities {
     // - .num doesn't change even if entities get deleted
     // - if reuse_entities: add deleted entities to entities_open
-    //      - Call tnecs_entities_open_reuse to add entities with
+    //      - Call tnecs_E_reuse to add entities with
     //        id[ent] == false entities_open.
     size_t num;
     size_t len;
@@ -858,7 +858,7 @@ tnecs_E tnecs_E_create_wC(tnecs_W    *world,
     return (new_E);
 }
 
-int tnecs_entities_open_reuse(tnecs_W *world) {
+int tnecs_E_reuse(tnecs_W *world) {
     // Adds all null entities to open list
     for (tnecs_E i = TNECS_NULLSHIFT; i < world->entities.num; i++) {
         if (TNECS_ENTITY_EXISTS(world, i))
@@ -874,7 +874,7 @@ int tnecs_entities_open_reuse(tnecs_W *world) {
     return (1);
 };
 
-int tnecs_entities_open_flush(tnecs_W *world) {
+int tnecs_E_flush(tnecs_W *world) {
     /* Get rid of all entities in entities_open */
     world->entities.open.num = 0;
     return (1);
@@ -931,7 +931,7 @@ tnecs_E tnecs_E_destroy(tnecs_W *world,
     world->entities.id[entity]         = TNECS_NULL;
 
     // Note: reuse_entities used to add to entities_open, so that
-    // user can call tnecs_entities_open_reuse to reuse entities manually.
+    // user can call tnecs_E_reuse to reuse entities manually.
     if (world->reuse_entities) {
         /* Add deleted entity to open entities */
         TNECS_CHECK_CALL(tnecs_grow_entities_open(world));

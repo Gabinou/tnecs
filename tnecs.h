@@ -197,8 +197,8 @@ tnecs_E tnecs_E_remove_Cs(
     tnecs_W *w, tnecs_E eID,
     tnecs_C archetype);
 
-int tnecs_entities_open_reuse(tnecs_W *w);
-int tnecs_entities_open_flush(tnecs_W *w);
+int tnecs_E_reuse(tnecs_W *w);
+int tnecs_E_flush(tnecs_W *w);
 
 #define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) \
     tnecs_E_create_wC(\

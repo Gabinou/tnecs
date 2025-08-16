@@ -475,7 +475,7 @@ void tnecs_test_E_creation() {
     tnecs_E *open_arr = test_world->entities.open.arr;
     test_true(test_world->entities.open.num == 0);
     test_true(!test_world->entities.id[Silou]);
-    tnecs_entities_open_reuse(test_world);
+    tnecs_E_reuse(test_world);
     test_true(test_world->entities.open.num == 1);
     test_true(open_arr[0] != TNECS_NULL);
     test_true(open_arr[0] == Silou);
