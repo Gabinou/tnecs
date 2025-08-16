@@ -29,12 +29,12 @@
 typedef unsigned char tnecs_byte;
 
 enum TNECS_PRIVATE {
-    TNECS_E_0LEN        = 128,
-    TNECS_Ph_0LEN       =   4,
-    TNECS_Pi_0LEN       =   4,
-    TNECS_C_0LEN        =   8,
-    TNECS_S_0LEN        =  16,
-    TNECS_A_0LEN        =  16,
+    TNECS_E_0LEN    = 128,
+    TNECS_Ph_0LEN   =   4,
+    TNECS_Pi_0LEN   =   4,
+    TNECS_C_0LEN    =   8,
+    TNECS_S_0LEN    =  16,
+    TNECS_A_0LEN    =  16,
     TNECS_ARR_GROW  =   2
 };
 
@@ -43,7 +43,7 @@ typedef struct tnecs_carr { /* 1D array of Cs */
     tnecs_C  type;
     size_t   num;
     size_t   len;
-    void    *Cs; /* [E_order_byT] */
+    void    *Cs; /* [E_O_byT] */
 } tnecs_carr;
 
 typedef struct tnecs_arr {
@@ -56,17 +56,17 @@ typedef struct tnecs_Phs {
     size_t num;
     size_t len;
 
-    size_t       *len_Ss; /* [ph_id] */
-    size_t       *num_Ss; /* [ph_id] */
-    size_t      **Ss_id;  /* [ph_id][S_order] */
-    tnecs_S_f   **Ss;     /* [ph_id][S_id]    */
+    size_t       *len_Ss; /* [Ph_id] */
+    size_t       *num_Ss; /* [Ph_id] */
+    size_t      **Ss_id;  /* [Ph_id][S_O] */
+    tnecs_S_f   **Ss;     /* [Ph_id][S_id]    */
 } tnecs_Phs;
 
 typedef struct tnecs_Pis {
     size_t num;
     size_t len;
 
-    tnecs_Phs *byPh;   /* [pipeline_id] */
+    tnecs_Phs *byPh;   /* [Pi_id] */
 } tnecs_Pis;
 
 typedef struct tnecs_Es {
@@ -87,11 +87,11 @@ typedef struct tnecs_Ss {
     size_t num;
     size_t len;
 
-    tnecs_Ph    *Phs;       /* [S_id] -> sID */
-    size_t      *Os;        /* [sID] */
-    int         *exclusive; /* [sID] */
-    tnecs_C     *As;        /* [sID] */
-    tnecs_Pi    *Pi;        /* [sID] */
+    tnecs_Ph    *Phs;   /* [S_id] -> sID */
+    size_t      *Os;    /* [sID] */
+    int         *Ex;    /* [sID] */
+    tnecs_C     *As;    /* [sID] */
+    tnecs_Pi    *Pi;    /* [sID] */
 #ifndef NDEBUG
     /* Systems that might be run in current pipeline */
     tnecs_arr to_run;
@@ -113,7 +113,7 @@ typedef struct tnecs_As {
 
     /* List of ALL SUBTYPES: rn subT */
     size_t      **A_id;     /* [aID][A_id_order]    */
-    tnecs_E     **Es;       /* [aID][E_order_byT]   */
+    tnecs_E     **Es;       /* [aID][E_O_byT]   */
     size_t      **Cs_O;     /* [aID][cID]           */
     tnecs_C     **Cs_id;    /* [aID][C_O_byT]       */
     tnecs_carr  **Cs;       /* [aID][C_O_byT]       */
@@ -132,7 +132,6 @@ struct tnecs_W {
     tnecs_As    byT;
     tnecs_Pis   Pis;
     tnecs_Cs    Cs;
-
     int reuse_Es;
 };
 
@@ -145,14 +144,13 @@ struct tnecs_In {
     void    *data;
 };
 
-
 /* --- W FUNCTIONS --- */
-static int _tnecs_breath_C(   tnecs_Cs  *Cs);
-static int _tnecs_breath_As(  tnecs_As  *byT);
-static int _tnecs_breath_Es(  tnecs_Es  *Es);
-static int _tnecs_breath_Ss(  tnecs_Ss  *Ss);
-static int _tnecs_breath_Phs( tnecs_Phs *byPh);
-static int _tnecs_breath_Pis( tnecs_Pis *Pis);
+static int _tnecs_breath_C(     tnecs_Cs    *Cs);
+static int _tnecs_breath_As(    tnecs_As    *byT);
+static int _tnecs_breath_Es(    tnecs_Es    *Es);
+static int _tnecs_breath_Ss(    tnecs_Ss    *Ss);
+static int _tnecs_breath_Phs(   tnecs_Phs   *byPh);
+static int _tnecs_breath_Pis(   tnecs_Pis   *Pis);
 
 static int _tnecs_destroy_Ss(   tnecs_Ss    *Ss);
 static int _tnecs_destroy_Es(   tnecs_Es    *Es);
@@ -174,7 +172,7 @@ static void *tnecs_realloc( void *ptr,  size_t olen,
                             size_t len, size_t bytesize);
 
 #ifndef NDEBUG
-static int tnecs_grow_ran(      tnecs_W *w);
+static int tnecs_grow_ran(tnecs_W *w);
 #endif /* NDEBUG */
 
 static int tnecs_grow_Ph(       tnecs_W *w, tnecs_Pi    pi);
@@ -186,10 +184,10 @@ static int tnecs_grow_A(        tnecs_W *w);
 static int tnecs_grow_Es_open(  tnecs_W *w);
 
 static int tnecs_grow_S_byPh(   tnecs_Phs   *byPh,
-                                tnecs_Ph     phase);
+                                tnecs_Ph     Ph);
 static int tnecs_grow_C_array(  tnecs_W     *w, 
-                                tnecs_carr  *comp_arr, 
-                                size_t tID, size_t corder);
+                                tnecs_carr  *C_arr, 
+                                size_t tID, size_t C_O);
 
 /* --- UTILITIES --- */
 static size_t tnecs_C_O_byT(    const tnecs_W *const w,
@@ -289,8 +287,8 @@ int _tnecs_breath_Pis(tnecs_Pis *Pis) {
 }
 
 int _tnecs_breath_Phs(tnecs_Phs *byPh) {
-    byPh->len    = TNECS_Ph_0LEN;
-    byPh->num    = TNECS_NULLSHIFT;
+    byPh->len = TNECS_Ph_0LEN;
+    byPh->num = TNECS_NULLSHIFT;
 
     byPh->Ss        = calloc(byPh->len, sizeof(*byPh->Ss));
     byPh->Ss_id     = calloc(byPh->len, sizeof(*byPh->Ss_id));
@@ -325,20 +323,20 @@ int _tnecs_breath_Ss(tnecs_Ss *Ss) {
 #endif /* NDEBUG */
 
     /* Allocs */
-    Ss->Phs         = calloc(Ss->len, sizeof(*Ss->Phs));
-    Ss->Os          = calloc(Ss->len, sizeof(*Ss->Os));
-    Ss->Pi          = calloc(Ss->len, sizeof(*Ss->Pi));
-    Ss->exclusive   = calloc(Ss->len, sizeof(*Ss->exclusive));
-    Ss->As          = calloc(Ss->len, sizeof(*Ss->As));
+    Ss->Phs = calloc(Ss->len, sizeof(*Ss->Phs));
+    Ss->Os  = calloc(Ss->len, sizeof(*Ss->Os));
+    Ss->Pi  = calloc(Ss->len, sizeof(*Ss->Pi));
+    Ss->Ex  = calloc(Ss->len, sizeof(*Ss->Ex));
+    Ss->As  = calloc(Ss->len, sizeof(*Ss->As));
 #ifndef NDEBUG
-    Ss->ran.arr    = calloc(Ss->ran.len,    sizeof(tnecs_S_f));
-    Ss->to_run.arr = calloc(Ss->to_run.len, sizeof(tnecs_S_f));
+    Ss->ran.arr     = calloc(Ss->ran.len,    sizeof(tnecs_S_f));
+    Ss->to_run.arr  = calloc(Ss->to_run.len, sizeof(tnecs_S_f));
 #endif /* NDEBUG */
 
     TNECS_CHECK(Ss->Phs);
     TNECS_CHECK(Ss->Os);
     TNECS_CHECK(Ss->Pi);
-    TNECS_CHECK(Ss->exclusive);
+    TNECS_CHECK(Ss->Ex);
     TNECS_CHECK(Ss->As);
 #ifndef NDEBUG
     TNECS_CHECK(Ss->ran.arr);
@@ -408,7 +406,7 @@ static int _tnecs_destroy_Ss(tnecs_Ss *Ss) {
     free(Ss->Os);
     free(Ss->Phs);
     free(Ss->Pi);
-    free(Ss->exclusive);
+    free(Ss->Ex);
     free(Ss->As);
     #ifndef NDEBUG
     free(Ss->to_run.arr);
@@ -469,8 +467,7 @@ static int _tnecs_destroy_As(tnecs_As *byT) {
 }
 
 /********************* STEPPING ********************/
-int tnecs_W_step(   tnecs_W *W, tnecs_ns dt,
-                    void    *data) {
+int tnecs_W_step(tnecs_W *W, tnecs_ns dt, void *data) {
     for (size_t p = 0; p < W->Pis.num; p++) {
         TNECS_CHECK(tnecs_Pi_step(W, dt, data, p));
     }
@@ -533,54 +530,54 @@ int tnecs_custom_S_run( tnecs_W     *W, tnecs_S_f    S,
 int tnecs_S_run(tnecs_W *W, size_t S_id,
                 tnecs_ns dt, void *data) {
     /* Building the Ss input */
-    tnecs_In input = {.world = W, .dt = dt, .data = data};
-    size_t S_O     = W->Ss.Os[S_id];
-    tnecs_Ph phase    = W->Ss.Phs[S_id];
-    tnecs_Pi pipeline = W->Ss.Pi[S_id];
-    size_t system_A_id  = tnecs_A_id(W, W->Ss.As[S_id]);
+    tnecs_In input  = {.world = W, .dt = dt, .data = data};
+    size_t S_O      = W->Ss.Os[S_id];
+    tnecs_Ph Ph     = W->Ss.Phs[S_id];
+    tnecs_Pi Pi     = W->Ss.Pi[S_id];
+    size_t S_A_id   = tnecs_A_id(W, W->Ss.As[S_id]);
 
-    input.E_A_id   = system_A_id;
-    input.num_Es          = W->byT.num_Es[input.E_A_id];
-    tnecs_Phs *byPh       = TNECS_Pi_GET(W, pipeline);
+    input.E_A_id    = S_A_id;
+    input.num_Es    = W->byT.num_Es[input.E_A_id];
+    tnecs_Phs *byPh = TNECS_Pi_GET(W, Pi);
 
     while (W->Ss.to_run.num >= (W->Ss.to_run.len - 1)) {
         TNECS_CHECK(tnecs_grow_ran(W));
     }
 
-    tnecs_S_f system = byPh->Ss[phase][S_O];
+    tnecs_S_f S = byPh->Ss[Ph][S_O];
 #ifndef NDEBUG
-    tnecs_S_f *system_ptr;
-    size_t system_num;
-    system_num              = W->Ss.to_run.num++;
-    system_ptr              = W->Ss.to_run.arr;
-    system_ptr[system_num]  = system;
+    tnecs_S_f *S_ptr;
+    size_t S_num;
+    S_num           = W->Ss.to_run.num++;
+    S_ptr           = W->Ss.to_run.arr;
+    S_ptr[S_num]    = S;
 #endif /* NDEBUG */
 
     /* - Running the exclusive Ss in current phase - */
     if (input.num_Es > 0) {
         /* Skip running system if no Es! */
     #ifndef NDEBUG
-        system_num              = W->Ss.ran.num++;
-        system_ptr              = W->Ss.ran.arr;
-        system_ptr[system_num]  = system;
+        S_num           = W->Ss.ran.num++;
+        S_ptr           = W->Ss.ran.arr;
+        S_ptr[S_num]    = S;
     #endif /* NDEBUG */
-        system(&input);
+        S(&input);
     }
 
-    if (W->Ss.exclusive[S_id])
+    if (W->Ss.Ex[S_id])
         return (1);
 
     /* - Running the inclusive Ss in current phase - */
-    for (size_t subT = 0; subT < W->byT.num_A_ids[system_A_id]; subT++) {
+    for (size_t subT = 0; subT < W->byT.num_A_ids[S_A_id]; subT++) {
 
-        input.E_A_id = W->byT.A_id[system_A_id][subT];
-        input.num_Es = W->byT.num_Es[input.E_A_id];
-        tnecs_S_f system = byPh->Ss[phase][S_O];
+        input.E_A_id    = W->byT.A_id[S_A_id][subT];
+        input.num_Es    = W->byT.num_Es[input.E_A_id];
+        tnecs_S_f S     = byPh->Ss[Ph][S_O];
 
     #ifndef NDEBUG
-        system_num              = W->Ss.to_run.num++;
-        system_ptr              = W->Ss.to_run.arr;
-        system_ptr[system_num]  = system;
+        S_num           = W->Ss.to_run.num++;
+        S_ptr           = W->Ss.to_run.arr;
+        S_ptr[S_num]    = S;
     #endif /* NDEBUG */
 
         while (W->Ss.to_run.num >= (W->Ss.to_run.len - 1)) {
@@ -592,28 +589,28 @@ int tnecs_S_run(tnecs_W *W, size_t S_id,
         }
 
         #ifndef NDEBUG
-            system_num              = W->Ss.ran.num++;
-            system_ptr              = W->Ss.ran.arr;
-            system_ptr[system_num]  = system;
+            S_num           = W->Ss.ran.num++;
+            S_ptr           = W->Ss.ran.arr;
+            S_ptr[S_num]    = S;
         #endif /* NDEBUG */
 
-        system(&input);
+        S(&input);
     }
     return (1);
 }
 
 /*************** REGISTRATION ***************/
-size_t tnecs_register_S(tnecs_W *W,     tnecs_S_f     system,
-                        tnecs_Pi pipeline,  tnecs_Ph    phase,
-                        int isExclusive,    size_t      num_Cs,
-                        tnecs_C archetype) {
+size_t tnecs_register_S(tnecs_W     *W,     tnecs_S_f  S,
+                        tnecs_Pi     Pi,    tnecs_Ph   Ph,
+                        int          isEx,  size_t     num_Cs,
+                        tnecs_C      A) {
     /* Check if phase exist */
-    if (!TNECS_Pi_VALID(W, pipeline)) {
-        printf("tnecs: System pipeline '%lld' is invalid.\n", pipeline);
+    if (!TNECS_Pi_VALID(W, Pi)) {
+        printf("tnecs: System pipeline '%lld' is invalid.\n", Pi);
         return (TNECS_NULL);
     }
-    if (!TNECS_Ph_VALID(W, pipeline, phase)) {
-        printf("tnecs: System phase '%lld' is invalid (pipeline '%lld').\n", phase, pipeline);
+    if (!TNECS_Ph_VALID(W, Pi, Ph)) {
+        printf("tnecs: System phase '%lld' is invalid (pipeline '%lld').\n", Ph, Pi);
         return (TNECS_NULL);
     }
 
@@ -626,24 +623,24 @@ size_t tnecs_register_S(tnecs_W *W,     tnecs_S_f     system,
     }
 
     /* Realloc Ss_byPh if too many */
-    tnecs_Phs *byPh = TNECS_Pi_GET(W, pipeline);
-    if (byPh->num_Ss[phase] >= byPh->len_Ss[phase]) {
-        TNECS_CHECK(tnecs_grow_S_byPh(byPh, phase));
+    tnecs_Phs *byPh = TNECS_Pi_GET(W, Pi);
+    if (byPh->num_Ss[Ph] >= byPh->len_Ss[Ph]) {
+        TNECS_CHECK(tnecs_grow_S_byPh(byPh, Ph));
     }
 
     /* -- Actual registration -- */
     /* Note: phase is exclusive to pipeline */
-    W->Ss.Phs[S_id]        = phase;
-    W->Ss.Pi[S_id]   = pipeline;
-    W->Ss.exclusive[S_id]  = isExclusive;
-    W->Ss.As[S_id]         = archetype;
+    W->Ss.Phs[S_id] = Ph;
+    W->Ss.Pi[S_id]  = Pi;
+    W->Ss.Ex[S_id]  = isEx;
+    W->Ss.As[S_id]  = A;
 
     /* System order */
-    size_t S_order                 = byPh->num_Ss[phase]++;
-    W->Ss.Os[S_id]            = S_order;
-    byPh->Ss[phase][S_order]       = system;
-    byPh->Ss_id[phase][S_order]    = S_id;
-    TNECS_CHECK(_tnecs_register_A(W, num_Cs, archetype));
+    size_t S_O              = byPh->num_Ss[Ph]++;
+    W->Ss.Os[S_id]          = S_O;
+    byPh->Ss[Ph][S_O]       = S;
+    byPh->Ss_id[Ph][S_O]    = S_id;
+    TNECS_CHECK(_tnecs_register_A(W, num_Cs, A));
     return (S_id);
 }
 
@@ -671,12 +668,11 @@ tnecs_C tnecs_register_C(   tnecs_W     *W,
     return (new_C_id);
 }
 
-size_t _tnecs_register_A(   tnecs_W    *W,
-                            size_t      num_Cs,
-                            tnecs_C     archetype_new) {
+size_t _tnecs_register_A(   tnecs_W    *W, size_t      num_Cs,
+                            tnecs_C     A_new) {
     // 0- Check if archetype exists, return
     for (size_t i = 0 ; i < W->byT.num; i++) {
-        if (archetype_new == W->byT.id[i]) {
+        if (A_new == W->byT.id[i]) {
             return (i);
         }
     }
@@ -684,16 +680,16 @@ size_t _tnecs_register_A(   tnecs_W    *W,
     // 1- Add new byT.Cs at [tID]
     if ((W->byT.num + 1) >= W->byT.len)
         TNECS_CHECK(tnecs_grow_A(W));
-    W->byT.id[W->byT.num++] = archetype_new;
-    size_t tID = tnecs_A_id(W, archetype_new);
+    W->byT.id[W->byT.num++] = A_new;
+    size_t tID = tnecs_A_id(W, A_new);
     assert(tID == (W->byT.num - 1));
     W->byT.num_Cs[tID] = num_Cs;
 
     // 2- Add arrays to byT.Cs[tID] for each component
-    TNECS_CHECK(tnecs_carr_new(W, num_Cs, archetype_new));
+    TNECS_CHECK(tnecs_carr_new(W, num_Cs, A_new));
 
     // 3- Add all Cs to byT.Cs_id
-    tnecs_C archetype_reduced = archetype_new, archetype_added = 0;
+    tnecs_C A_reduced = A_new, A_added = 0;
     size_t bytesize1 = sizeof(**W->byT.Cs_id);
     size_t bytesize2 = sizeof(**W->byT.Cs_O);
     W->byT.Cs_id[tID]   = calloc(num_Cs,      bytesize1);
@@ -702,16 +698,16 @@ size_t _tnecs_register_A(   tnecs_W    *W,
     TNECS_CHECK(W->byT.Cs_O[tID]);
 
     size_t k = 0;
-    while (archetype_reduced) {
-        archetype_reduced &= (archetype_reduced - 1);
+    while (A_reduced) {
+        A_reduced &= (A_reduced - 1);
 
-        tnecs_C component_type_toadd = (archetype_reduced + archetype_added) ^ archetype_new;
-        archetype_added      += component_type_toadd;
-        assert(component_type_toadd > 0);
-        tnecs_C component_id_toadd   = TNECS_C_T2ID(component_type_toadd);
+        tnecs_C C_T_toadd = (A_reduced + A_added) ^ A_new;
+        A_added += C_T_toadd;
+        assert(C_T_toadd > 0);
+        tnecs_C C_id_toadd   = TNECS_C_T2ID(C_T_toadd);
 
-        W->byT.Cs_id[tID][k]      = component_id_toadd;
-        W->byT.Cs_O[tID][component_id_toadd] = k++;
+        W->byT.Cs_id[tID][k]            = C_id_toadd;
+        W->byT.Cs_O[tID][C_id_toadd]    = k++;
     }
 
     /* 4- Find every subtype of every archertype. 
@@ -735,28 +731,28 @@ size_t _tnecs_register_A(   tnecs_W    *W,
 }
 
 size_t tnecs_register_Pi(tnecs_W *W) {
-    tnecs_Pi pipeline = W->Pis.num++;
-    while (pipeline >= W->Pis.len) {
+    tnecs_Pi Pi = W->Pis.num++;
+    while (Pi >= W->Pis.len) {
         TNECS_CHECK(tnecs_grow_Pi(W));
     }
-    tnecs_Phs *byPh = TNECS_Pi_GET(W, pipeline);
+    tnecs_Phs *byPh = TNECS_Pi_GET(W, Pi);
     _tnecs_breath_Phs(byPh);
 
-    return (pipeline);
+    return (Pi);
 }
 
-size_t tnecs_register_Ph(tnecs_W *W, tnecs_Pi pipeline) {
-    if (!TNECS_Pi_VALID(W, pipeline)) {
-        printf("tnecs: Pipeline '%lld' is invalid for new phase.\n", pipeline);
+size_t tnecs_register_Ph(tnecs_W *W, tnecs_Pi Pi) {
+    if (!TNECS_Pi_VALID(W, Pi)) {
+        printf("tnecs: Pi '%lld' is invalid for new phase.\n", Pi);
         return (TNECS_NULL);
     }
 
-    tnecs_Phs *byPh   = TNECS_Pi_GET(W, pipeline);
-    tnecs_Ph phase       = byPh->num++;
-    while (phase >= byPh->len) {
-        TNECS_CHECK(tnecs_grow_Ph(W, pipeline));
+    tnecs_Phs *byPh   = TNECS_Pi_GET(W, Pi);
+    tnecs_Ph Ph       = byPh->num++;
+    while (Ph >= byPh->len) {
+        TNECS_CHECK(tnecs_grow_Ph(W, Pi));
     }
-    return (phase);
+    return (Ph);
 }
 
 /**************** ENTITY MANIPULATION **************/
@@ -799,10 +795,10 @@ tnecs_E tnecs_E_create_wC(tnecs_W *W, size_t argnum, ...) {
     /* Get archetype of all vararg Cs ids */
     va_list ap;
     va_start(ap, argnum);
-    tnecs_C archetype = 0;
+    tnecs_C A = 0;
     for (size_t i = 0; i < argnum; i++) {
-        tnecs_C component_id = va_arg(ap, tnecs_C);
-        archetype += TNECS_C_ID2T(component_id);
+        tnecs_C C_id = va_arg(ap, tnecs_C);
+        A += TNECS_C_ID2T(C_id);
     }
     va_end(ap);
 
@@ -812,13 +808,13 @@ tnecs_E tnecs_E_create_wC(tnecs_W *W, size_t argnum, ...) {
         printf("tnecs: could not create new entity\n");
         return (TNECS_NULL);
     }
-    TNECS_CHECK(tnecs_E_add_C(W, new_E, archetype, 1));
+    TNECS_CHECK(tnecs_E_add_C(W, new_E, A, 1));
 
 #ifndef NDEBUG
-    size_t tID      = tnecs_A_id(W, archetype);
+    size_t tID      = tnecs_A_id(W, A);
     size_t order    = W->Es.Os[new_E];
-    assert(W->byT.Es[tID][order]   == new_E);
-    assert(W->Es.id[new_E]       == new_E);
+    assert(W->byT.Es[tID][order]    == new_E);
+    assert(W->Es.id[new_E]          == new_E);
 #endif /* NDEBUG */
 
     return (new_E);
@@ -846,53 +842,53 @@ int tnecs_E_flush(tnecs_W *W) {
     return (1);
 }
 
-tnecs_E tnecs_E_isOpen(tnecs_W *W, tnecs_E entity) {
-    if (entity <= TNECS_NULL) {
+tnecs_E tnecs_E_isOpen(tnecs_W *W, tnecs_E E) {
+    if (E <= TNECS_NULL) {
         return (0);
     }
 
     const tnecs_E * const open_arr = W->Es.open.arr;
 
     for (tnecs_E i = TNECS_NULLSHIFT; i < W->Es.open.num; i++) {
-        if (open_arr[i] == entity) {
+        if (open_arr[i] == E) {
             return (1);
         }
     }
     return (0);
 }
 
-tnecs_E tnecs_E_destroy(tnecs_W *W, tnecs_E entity) {
-    if (entity <= TNECS_NULL) {
+tnecs_E tnecs_E_destroy(tnecs_W *W, tnecs_E E) {
+    if (E <= TNECS_NULL) {
         return (1);
     }
 
-    if (!TNECS_E_EXISTS(W, entity)) {
-        W->Es.id[entity]         = TNECS_NULL;
-        W->Es.Os[entity]     = TNECS_NULL;
-        W->Es.As[entity] = TNECS_NULL;
+    if (!TNECS_E_EXISTS(W, E)) {
+        W->Es.id[E] = TNECS_NULL;
+        W->Es.Os[E] = TNECS_NULL;
+        W->Es.As[E] = TNECS_NULL;
         return (1);
     }
 
     /* Preliminaries */
-    tnecs_C archetype   = W->Es.As[entity];
+    tnecs_C A = W->Es.As[E];
 
     /* Delete Cs */
-    TNECS_CHECK(tnecs_C_free(W, entity, archetype));
-    TNECS_CHECK(tnecs_C_del(W, entity, archetype));
+    TNECS_CHECK(tnecs_C_free(W, E, A));
+    TNECS_CHECK(tnecs_C_del(W, E, A));
 
 #ifndef NDEBUG
-    size_t entity_order         = W->Es.Os[entity];
-    size_t tID                  = tnecs_A_id(W, archetype);
+    size_t E_O = W->Es.Os[E];
+    size_t tID = tnecs_A_id(W, A);
     assert(W->byT.num_Es[tID] > TNECS_NULL);
-    assert(W->byT.len_Es[tID] >= entity_order);
+    assert(W->byT.len_Es[tID] >= E_O);
     assert(W->byT.num_Es[tID] > TNECS_NULL);
 #endif /* NDEBUG */
 
     /* Delete EsbyT */
-    TNECS_CHECK(tnecs_EsbyT_del(W, entity, archetype));
+    TNECS_CHECK(tnecs_EsbyT_del(W, E, A));
 
     /* Delete entity */
-    W->Es.id[entity]         = TNECS_NULL;
+    W->Es.id[E] = TNECS_NULL;
 
     // Note: reuse_Es used to add to Es_open, so that
     // user can call tnecs_E_reuse to reuse Es manually.
@@ -900,12 +896,12 @@ tnecs_E tnecs_E_destroy(tnecs_W *W, tnecs_E entity) {
         /* Add deleted entity to open Es */
         TNECS_CHECK(tnecs_grow_Es_open(W));
         tnecs_E *arr = W->Es.open.arr;
-        arr[W->Es.open.num++] = entity;
+        arr[W->Es.open.num++] = E;
     }
-    assert(!TNECS_E_EXISTS(W, entity));
-    assert(W->Es.Os[entity]       == TNECS_NULL);
-    assert(W->Es.As[entity]   == TNECS_NULL);
-    assert(W->Es.Os[entity_order] != entity);
+    assert(!TNECS_E_EXISTS(W, E));
+    assert(W->Es.Os[E]      == TNECS_NULL);
+    assert(W->Es.As[E]      == TNECS_NULL);
+    assert(W->Es.Os[E_O]    != E);
     return (1);
 }
 
@@ -916,67 +912,63 @@ void tnecs_W_reuse(tnecs_W *W, int toggle) {
 /*****************************************************/
 /***************** TNECS INTERNALS *******************/
 /*****************************************************/
-tnecs_E tnecs_E_add_C(  tnecs_W *W,
-                        tnecs_E  entity,
-                        tnecs_C  archetype_toadd,
-                        int      isNew) {
-    if (archetype_toadd <= 0) {
+tnecs_E tnecs_E_add_C(  tnecs_W *W,         tnecs_E  E,
+                        tnecs_C  A_toadd,   int      isNew) {
+    if (A_toadd <= 0) {
         return (TNECS_NULL);
     }
 
-    if (!TNECS_E_EXISTS(W, entity)) {
+    if (!TNECS_E_EXISTS(W, E)) {
         return (TNECS_NULL);
     }
 
-    tnecs_C archetype_old = W->Es.As[entity];
+    tnecs_C A_old = W->Es.As[E];
 
-    if (TNECS_A_HAS_T(archetype_toadd, archetype_old)) {
-        return (entity);
+    if (TNECS_A_HAS_T(A_toadd, A_old)) {
+        return (E);
     }
 
-    tnecs_C archetype_new = archetype_toadd + archetype_old;
-    assert(archetype_new != archetype_old);
+    tnecs_C A_new = A_toadd + A_old;
+    assert(A_new != A_old);
     if (isNew)
-        TNECS_CHECK(_tnecs_register_A(W, 
-                                                   setBits_KnR(archetype_new),
-                                                   archetype_new));
+        TNECS_CHECK(_tnecs_register_A(  W, setBits_KnR(A_new), 
+                                        A_new));
 
-    TNECS_CHECK(tnecs_C_migrate(W,      entity, archetype_old, archetype_new));
-    TNECS_CHECK(tnecs_EsbyT_migrate(W, entity, archetype_old, archetype_new));
-    TNECS_CHECK(tnecs_C_init(W,         entity, archetype_toadd));
+    TNECS_CHECK(tnecs_C_migrate(    W, E, A_old, A_new));
+    TNECS_CHECK(tnecs_EsbyT_migrate(W, E, A_old, A_new));
+    TNECS_CHECK(tnecs_C_init(       W, E, A_toadd));
 
 #ifndef NDEBUG
-    size_t tID_new = tnecs_A_id(W, archetype_new);
-    size_t new_order = W->byT.num_Es[tID_new] - 1;
-    assert(W->Es.As[entity]           == archetype_new);
-    assert(W->byT.Es[tID_new][new_order]   == entity);
-    assert(W->Es.Os[entity]               == new_order);
+    size_t tID_new = tnecs_A_id(W, A_new);
+    size_t new_O = W->byT.num_Es[tID_new] - 1;
+    assert(W->Es.As[E]                  == A_new);
+    assert(W->byT.Es[tID_new][new_O]    == E);
+    assert(W->Es.Os[E]                  == new_O);
 #endif /* NDEBUG */
-    return (W->Es.id[entity]);
+    return (W->Es.id[E]);
 }
 
-tnecs_E tnecs_E_rm_C(   tnecs_W *W,
-                        tnecs_E  entity,
-                        tnecs_C  archetype) {
-    /* Get new archetype. Since it is a archetype, just need to substract. */
-    tnecs_C archetype_old = W->Es.As[entity];
-    tnecs_C archetype_new = archetype_old - archetype;
+tnecs_E tnecs_E_rm_C(   tnecs_W *W, tnecs_E  E,
+                        tnecs_C  A) {
+    /* Get new archetype. 
+    ** Since it is a archetype, just need to substract. */
+    tnecs_C A_old = W->Es.As[E];
+    tnecs_C A_new = A_old - A;
 
     /* Free removed Cs. */
-    TNECS_CHECK(tnecs_C_free(W, entity, archetype));
-    if (archetype_new != TNECS_NULL) {
-        /* Migrate remaining Cs to new archetype array. */
-        TNECS_CHECK(_tnecs_register_A(W,
-                                                   setBits_KnR(archetype_new),
-                                                   archetype_new));
-        TNECS_CHECK(tnecs_C_migrate(W, entity, archetype_old, archetype_new));
+    TNECS_CHECK(tnecs_C_free(W, E, A));
+    if (A_new != TNECS_NULL) {
+        /* Migrate remaining Cs to new A array. */
+        TNECS_CHECK(_tnecs_register_A(  W, setBits_KnR(A_new),
+                                        A_new));
+        TNECS_CHECK(tnecs_C_migrate(W, E, A_old, A_new));
     } else {
         /* No remaining component, delete everything. */
-        TNECS_CHECK(tnecs_C_del(W, entity, archetype_old));
+        TNECS_CHECK(tnecs_C_del(W, E, A_old));
     }
-    /* Migrate entity to new byT array. */
-    TNECS_CHECK(tnecs_EsbyT_migrate(W, entity, archetype_old, archetype_new));
-    assert(archetype_new == W->Es.As[entity]);
+    /* Migrate E to new byT array. */
+    TNECS_CHECK(tnecs_EsbyT_migrate(W, E, A_old, A_new));
+    assert(A_new == W->Es.As[E]);
     return (1);
 }
 
@@ -985,179 +977,174 @@ void *tnecs_get_C(  tnecs_W *W, tnecs_E  eID,
     if (!TNECS_E_EXISTS(W, eID))
         return (NULL);
 
-    tnecs_C component_flag      = TNECS_C_ID2T(cID);
-    tnecs_C entity_archetype    = TNECS_E_A(W, eID);
-    // If entity has component, get output it. If not output NULL.
-    if (!TNECS_A_HAS_T(component_flag, entity_archetype))
+    tnecs_C C_flag  = TNECS_C_ID2T(cID);
+    tnecs_C E_A     = TNECS_E_A(W, eID);
+    /* If entity has component, get output it.  */
+    /* If not output NULL. */
+    if (!TNECS_A_HAS_T(C_flag, E_A))
         return (NULL);
 
-    size_t tID = tnecs_A_id(W, entity_archetype);
+    size_t tID = tnecs_A_id(W, E_A);
     assert(tID > 0);
-    size_t component_order = tnecs_C_O_byT(W, cID, entity_archetype);
-    assert(component_order <= W->byT.num_Cs[tID]);
-    size_t entity_order = W->Es.Os[eID];
-    size_t bytesize     = W->Cs.bytesizes[cID];
+    size_t C_O = tnecs_C_O_byT(W, cID, E_A);
+    assert(C_O <= W->byT.num_Cs[tID]);
+    size_t E_O = W->Es.Os[eID];
+    size_t bytesize = W->Cs.bytesizes[cID];
 
-    tnecs_carr *comp_array = &W->byT.Cs[tID][component_order];
-    assert(comp_array != NULL);
-    tnecs_byte *temp_C_bytesptr = (tnecs_byte *)(comp_array->Cs);
-    void *out = temp_C_bytesptr + (bytesize * entity_order);
+    tnecs_carr *C_array = &W->byT.Cs[tID][C_O];
+    assert(C_array != NULL);
+    tnecs_byte *temp_C_bytesptr = (tnecs_byte *)(C_array->Cs);
+    void *out = temp_C_bytesptr + (bytesize * E_O);
 
     return (out);
 }
 
-int tnecs_EsbyT_add(tnecs_W *W, tnecs_E  entity,
-                             tnecs_C  archetype_new) {
-    size_t tID_new = tnecs_A_id(W, archetype_new);
+int tnecs_EsbyT_add(tnecs_W *W, tnecs_E E, tnecs_C A_new) {
+    size_t tID_new = tnecs_A_id(W, A_new);
     if ((W->byT.num_Es[tID_new] + 1) >= W->byT.len_Es[tID_new]) {
         TNECS_CHECK(tnecs_grow_byT(W, tID_new));
     }
-    size_t new_order                            = W->byT.num_Es[tID_new]++;
-    W->Es.Os[entity]              = new_order;
-    W->Es.As[entity]          = archetype_new;
-    W->byT.Es[tID_new][new_order]  = entity;
+    size_t new_O = W->byT.num_Es[tID_new]++;
+    W->Es.Os[E] = new_O;
+    W->Es.As[E] = A_new;
+    W->byT.Es[tID_new][new_O]  = E;
     return (1);
 }
 
-int tnecs_EsbyT_del(tnecs_W *W, tnecs_E  entity,
-                             tnecs_C archetype_old) {
-
-    if (!TNECS_E_EXISTS(W, entity))
+int tnecs_EsbyT_del(tnecs_W *W, tnecs_E E, tnecs_C A_old) {
+    if (!TNECS_E_EXISTS(W, E))
         return (1);
 
-    if (entity >= W->Es.len)
+    if (E >= W->Es.len)
         return (1);
 
-    size_t archetype_old_id = tnecs_A_id(W, archetype_old);
-    size_t old_num          = W->byT.num_Es[archetype_old_id];
+    size_t A_old_id = tnecs_A_id(W, A_old);
+    size_t old_num  = W->byT.num_Es[A_old_id];
     if (old_num <= 0)
         return (1);
 
-    size_t entity_order_old = W->Es.Os[entity];
-    assert(archetype_old == W->Es.As[entity]);
+    size_t E_O_old = W->Es.Os[E];
+    assert(A_old == W->Es.As[E]);
 
-    assert(entity_order_old < W->byT.len_Es[archetype_old_id]);
-    assert(W->byT.Es[archetype_old_id][entity_order_old] == entity);
+    assert(E_O_old < W->byT.len_Es[A_old_id]);
+    assert(W->byT.Es[A_old_id][E_O_old] == E);
 
-    tnecs_E top_E = W->byT.Es[archetype_old_id][old_num - 1];
+    tnecs_E top_E = W->byT.Es[A_old_id][old_num - 1];
 
     /* Cs scrambles -> EsbyT too */
-    TNECS_CHECK(tnecs_arrdel(W->byT.Es[archetype_old_id], entity_order_old, old_num,
-                 sizeof(**W->byT.Es)));
+    TNECS_CHECK(tnecs_arrdel(W->byT.Es[A_old_id], E_O_old, 
+                             old_num, sizeof(**W->byT.Es)));
 
-    if (top_E != entity) {
-        W->Es.Os[top_E] = entity_order_old;
-        assert(W->byT.Es[archetype_old_id][entity_order_old] == top_E);
+    if (top_E != E) {
+        W->Es.Os[top_E] = E_O_old;
+        assert(W->byT.Es[A_old_id][E_O_old] == top_E);
     }
 
-    W->Es.Os[entity]      = TNECS_NULL;
-    W->Es.As[entity]  = TNECS_NULL;
+    W->Es.Os[E] = TNECS_NULL;
+    W->Es.As[E] = TNECS_NULL;
 
-    --W->byT.num_Es[archetype_old_id];
+    --W->byT.num_Es[A_old_id];
     return (1);
 }
 
-int tnecs_EsbyT_migrate(tnecs_W    *W, 
-                                 tnecs_E    entity,
-                                 tnecs_C archetype_old,
-                                 tnecs_C archetype_new) {
+int tnecs_EsbyT_migrate(tnecs_W    *W, tnecs_E E,
+                        tnecs_C A_old, tnecs_C A_new) {
     /* Migrate Es into correct byT array */
-    TNECS_CHECK(tnecs_EsbyT_del(W, entity, archetype_old));
-    assert(W->Es.As[entity]   == TNECS_NULL);
-    assert(W->Es.Os[entity]       == TNECS_NULL);
-    TNECS_CHECK(tnecs_EsbyT_add(W, entity, archetype_new));
+    TNECS_CHECK(tnecs_EsbyT_del(W, E, A_old));
+    assert(W->Es.As[E]  == TNECS_NULL);
+    assert(W->Es.Os[E]  == TNECS_NULL);
+    TNECS_CHECK(tnecs_EsbyT_add(W, E, A_new));
 
 #ifndef NDEBUG
-    size_t tID_new      = tnecs_A_id(W, archetype_new);
-    size_t order_new    = W->Es.Os[entity];
-    assert(W->Es.As[entity]         == archetype_new);
-    assert(W->byT.num_Es[tID_new] - 1    == order_new);
-    assert(W->byT.Es[tID_new][order_new] == entity);
+    size_t tID_new  = tnecs_A_id(W, A_new);
+    size_t O_new    = W->Es.Os[E];
+    assert(W->Es.As[E]                  == A_new);
+    assert(W->byT.num_Es[tID_new] - 1   == O_new);
+    assert(W->byT.Es[tID_new][O_new]    == E);
 #endif /* NDEBUG */
     return (1);
 }
 
-int tnecs_C_add(tnecs_W *W, tnecs_C archetype) {
+int tnecs_C_add(tnecs_W *W, tnecs_C A) {
     /* Check if need to grow component array after adding new component */
-    size_t tID          = tnecs_A_id(W, archetype);
-    size_t new_comp_num = W->byT.num_Cs[tID];
+    size_t tID          = tnecs_A_id(W, A);
+    size_t new_C_num = W->byT.num_Cs[tID];
 #ifndef NDEBUG
-    size_t entity_order = W->byT.num_Es[tID];
+    size_t E_O = W->byT.num_Es[tID];
 #endif /* NDEBUG */
 
-    for (size_t corder = 0; corder < new_comp_num; corder++) {
+    for (size_t C_O = 0; C_O < new_C_num; C_O++) {
         // Take component array of current A_id
-        tnecs_carr *comp_arr = &W->byT.Cs[tID][corder];
+        tnecs_carr *C_arr = &W->byT.Cs[tID][C_O];
         // check if it need to grow after adding new component
-        assert(entity_order == comp_arr->num);
+        assert(E_O == C_arr->num);
 
-        if (++comp_arr->num >= comp_arr->len)
-            TNECS_CHECK(tnecs_grow_C_array(W, comp_arr, tID, corder));
+        if (++C_arr->num >= C_arr->len)
+            TNECS_CHECK(tnecs_grow_C_array(W, C_arr, tID, C_O));
     }
 
     return (1);
 }
 
-int tnecs_C_copy(tnecs_W *W, tnecs_E entity,
-                tnecs_C old_A, tnecs_C new_A) {
+int tnecs_C_copy(tnecs_W *W,    tnecs_E E,
+                tnecs_C old_A,  tnecs_C new_A) {
     /* Copy Cs from old order unto top of new type component array */
-    if (old_A == new_A) {
+    if (old_A == new_A)
         return (1);
-    }
 
-    size_t old_tID          = tnecs_A_id(W, old_A);
-    size_t new_tID          = tnecs_A_id(W, new_A);
-    size_t old_E_order = W->Es.Os[entity];
-    size_t new_E_order = W->byT.num_Es[new_tID];
-    size_t num_comp_new     = W->byT.num_Cs[new_tID];
-    size_t num_comp_old     = W->byT.num_Cs[old_tID];
+    size_t old_tID      = tnecs_A_id(W, old_A);
+    size_t new_tID      = tnecs_A_id(W, new_A);
+    size_t old_E_O      = W->Es.Os[E];
+    size_t new_E_O      = W->byT.num_Es[new_tID];
+    size_t num_C_new    = W->byT.num_Cs[new_tID];
+    size_t num_C_old    = W->byT.num_Cs[old_tID];
 
 #ifndef NDEBUG
     // Sanity check: entity order is the same in new Cs array
-    for (int i = 0; i < num_comp_new; ++i) {
+    for (int i = 0; i < num_C_new; ++i) {
         size_t num = W->byT.Cs[new_tID][i].num;
-        assert((num - 1) == new_E_order);
+        assert((num - 1) == new_E_O);
     }
 #endif /* NDEBUG */
 
-    size_t old_C_id, new_C_id, component_bytesize;
-    tnecs_carr *old_array,              *new_array;
-    tnecs_byte *old_C_ptr,      *new_C_ptr;
-    tnecs_byte *old_C_bytesptr, *new_C_bytesptr;
+    size_t old_C_id, new_C_id, C_bytesize;
+    tnecs_carr *old_arr,    *new_array;
+    tnecs_byte *old_C,      *new_C;
+    tnecs_byte *old_C_arr,  *new_C_arr;
 
-    for (size_t old_corder = 0; old_corder < num_comp_old; old_corder++) {
-        old_C_id = W->byT.Cs_id[old_tID][old_corder];
-        for (size_t new_corder = 0; new_corder < num_comp_new; new_corder++) {
-            new_C_id = W->byT.Cs_id[new_tID][new_corder];
+    for (size_t old_C_O = 0; old_C_O < num_C_old; old_C_O++) {
+        old_C_id = W->byT.Cs_id[old_tID][old_C_O];
+        for (size_t new_C_O = 0; new_C_O < num_C_new; new_C_O++) {
+            new_C_id = W->byT.Cs_id[new_tID][new_C_O];
             if (old_C_id != new_C_id)
                 continue;
 
-            new_array = &W->byT.Cs[new_tID][new_corder];
-            old_array = &W->byT.Cs[old_tID][old_corder];
-            assert(old_array->type == new_array->type);
-            assert(old_array != new_array);
+            new_array = &W->byT.Cs[new_tID][new_C_O];
+            old_arr = &W->byT.Cs[old_tID][old_C_O];
+            assert(old_arr->type == new_array->type);
+            assert(old_arr != new_array);
 
-            component_bytesize = W->Cs.bytesizes[old_C_id];
-            assert(component_bytesize > 0);
+            C_bytesize = W->Cs.bytesizes[old_C_id];
+            assert(C_bytesize > 0);
 
-            old_C_bytesptr = (tnecs_byte *)(old_array->Cs);
-            assert(old_C_bytesptr != NULL);
+            old_C_arr = (tnecs_byte *)(old_arr->Cs);
+            assert(old_C != NULL);
 
-            old_C_ptr = (old_C_bytesptr + (component_bytesize * old_E_order));
-            assert(old_C_ptr != NULL);
+            old_C = (old_C_arr + (C_bytesize * old_E_O));
+            assert(old_C != NULL);
 
-            new_C_bytesptr = (tnecs_byte *)(new_array->Cs);
-            assert(new_C_bytesptr != NULL);
+            new_C_arr = (tnecs_byte *)(new_array->Cs);
+            assert(new_C_arr != NULL);
 
-            new_C_ptr = (new_C_bytesptr + (component_bytesize * new_E_order));
-            assert(new_C_ptr != NULL);
-            assert(new_C_ptr != old_C_ptr);
+            new_C = (new_C_arr + (C_bytesize * new_E_O));
+            assert(new_C != NULL);
+            assert(new_C != old_C);
 
 #ifndef NDEBUG
-            const void *const out = memmove(new_C_ptr, old_C_ptr, component_bytesize);
-            assert(out == new_C_ptr);
+            const void *const out = memmove(new_C, old_C, C_bytesize);
+            assert(out == new_C);
 #else
-            memmove(new_C_ptr, old_C_ptr, component_bytesize);
+            memmove(new_C, old_C_ptr, C_bytesize);
 #endif /* NDEBUG */
             break;
         }
@@ -1165,97 +1152,94 @@ int tnecs_C_copy(tnecs_W *W, tnecs_E entity,
     return (1);
 }
 
-int tnecs_C_run(tnecs_W *W,     tnecs_E entity,
-                tnecs_C archetype,  tnecs_init_f *funcs) {
-    size_t tID      = tnecs_A_id(W, archetype);
-    size_t comp_num = W->byT.num_Cs[tID];
-    for (size_t corder = 0; corder < comp_num; corder++) {
-        size_t cID = W->byT.Cs_id[tID][corder];
+int tnecs_C_run(tnecs_W *W, tnecs_E          E,
+                tnecs_C  A, tnecs_init_f    *funcs) {
+    size_t tID      = tnecs_A_id(W, A);
+    size_t C_num = W->byT.num_Cs[tID];
+    for (size_t C_O = 0; C_O < C_num; C_O++) {
+        size_t cID = W->byT.Cs_id[tID][C_O];
         tnecs_init_f func = funcs[cID]; 
         if (func == NULL) {
             continue;
         }
-        void *comp = tnecs_get_C(W, entity, cID);
+        void *comp = tnecs_get_C(W, E, cID);
         assert(comp != NULL);
         func(comp);
     }
     return(1);
 }
 
-int tnecs_C_init(   tnecs_W *W, tnecs_E E, 
-                    tnecs_C  A) {
+int tnecs_C_init(tnecs_W *W, tnecs_E E, tnecs_C A) {
     /* Init ALL entity's Cs in archetype */
     return(tnecs_C_run(W, E, A, W->Cs.finit));
 }
 
-int tnecs_C_free(   tnecs_W *W, tnecs_E E,
-                    tnecs_C  A) {
+int tnecs_C_free(tnecs_W *W, tnecs_E E, tnecs_C A) {
     /* Free ALL entity's Cs in archetype */
     return(tnecs_C_run(W, E, A, W->Cs.ffree));
 }
 
-int tnecs_C_del(tnecs_W *W, tnecs_E entity,
-                tnecs_C  old_A) {
+int tnecs_C_del(tnecs_W *W, tnecs_E E, tnecs_C old_A) {
     /* Delete ALL Cs from CsbyT at old entity order */
     size_t old_tID      = tnecs_A_id(W, old_A);
-    size_t order_old    = W->Es.Os[entity];
-    size_t old_comp_num = W->byT.num_Cs[old_tID];
-    for (size_t corder = 0; corder < old_comp_num; corder++) {
-        size_t current_C_id = W->byT.Cs_id[old_tID][corder];
-        tnecs_carr   *old_array  = &W->byT.Cs[old_tID][corder];
-        tnecs_byte   *comp_ptr   = old_array->Cs;
-        assert(comp_ptr != NULL);
+    size_t O_old        = W->Es.Os[E];
+    size_t old_C_num    = W->byT.num_Cs[old_tID];
+    for (size_t C_O = 0; C_O < old_C_num; C_O++) {
+        size_t      C_id    = W->byT.Cs_id[old_tID][C_O];
+        tnecs_carr *old_arr = &W->byT.Cs[old_tID][C_O];
+        tnecs_byte *C       = old_arr->Cs;
+        assert(C != NULL);
 
         /* Scramble Cs too */
-        size_t comp_by       = W->Cs.bytesizes[current_C_id];
-        size_t new_comp_num  = W->byT.num_Es[old_tID];
-        const tnecs_byte *const scramble = tnecs_arrdel(comp_ptr, order_old, new_comp_num, comp_by);
+        size_t C_by       = W->Cs.bytesizes[C_id];
+        size_t new_C_num  = W->byT.num_Es[old_tID];
+        const tnecs_byte *scramble;
+        scramble = tnecs_arrdel(C, O_old, new_C_num, C_by);
         TNECS_CHECK(scramble);
 
-        old_array->num--;
+        old_arr->num--;
     }
     return (1);
 }
 
-int tnecs_C_migrate(tnecs_W *W, tnecs_E entity,
+int tnecs_C_migrate(tnecs_W *W,     tnecs_E E,
                     tnecs_C  old_A, tnecs_C new_A) {
-    if (old_A != W->Es.As[entity]) {
+    if (old_A != W->Es.As[E]) {
         return (0);
     }
     TNECS_CHECK(tnecs_C_add(W,  new_A));
     if (old_A > TNECS_NULL) {
-        TNECS_CHECK(tnecs_C_copy(W, entity, old_A, new_A));
-        TNECS_CHECK(tnecs_C_del( W, entity, old_A));
+        TNECS_CHECK(tnecs_C_copy(W, E, old_A, new_A));
+        TNECS_CHECK(tnecs_C_del( W, E, old_A));
     }
     return (1);
 }
 
-int tnecs_carr_new(tnecs_W *W, size_t   num_Cs,
-                   tnecs_C archetype) {
-    tnecs_carr *comp_arr = calloc(num_Cs, sizeof(tnecs_carr));
-    TNECS_CHECK(comp_arr);
+int tnecs_carr_new(tnecs_W *W, size_t num_Cs, tnecs_C A) {
+    tnecs_carr *C_arr = calloc(num_Cs, sizeof(tnecs_carr));
+    TNECS_CHECK(C_arr);
 
-    tnecs_C archetype_reduced = archetype, archetype_added = 0;
-    tnecs_C tID = tnecs_A_id(W, archetype);
+    tnecs_C A_reduced = A, A_added = 0;
+    tnecs_C tID     = tnecs_A_id(W, A);
     size_t id_toadd = 0, num_flags = 0;
 
-    while (archetype_reduced) {
-        archetype_reduced &= (archetype_reduced - 1);
-        tnecs_C type_toadd = (archetype_reduced + archetype_added) ^ archetype;
+    while (A_reduced) {
+        A_reduced &= (A_reduced - 1);
+        tnecs_C type_toadd = (A_reduced + A_added) ^ A;
         assert(type_toadd > 0);
         id_toadd = TNECS_C_T2ID(type_toadd);
         assert(id_toadd > 0);
         assert(id_toadd < W->Cs.num);
-        TNECS_CHECK(tnecs_carr_init(W, &comp_arr[num_flags], id_toadd));
+        TNECS_CHECK(tnecs_carr_init(W, &C_arr[num_flags], id_toadd));
         num_flags++;
-        archetype_added += type_toadd;
+        A_added += type_toadd;
     }
-    W->byT.Cs[tID] = comp_arr;
+    W->byT.Cs[tID] = C_arr;
     assert(id_toadd < W->Cs.num);
-    return ((archetype_added == archetype) && (num_flags == num_Cs));
+    return ((A_added == A) && (num_flags == num_Cs));
 }
 
-int tnecs_carr_init(tnecs_W *W, tnecs_carr  *comp_arr,
+int tnecs_carr_init(tnecs_W *W, tnecs_carr  *C_arr,
                     size_t   cID) {
     assert(cID > 0);
     assert(cID < W->Cs.num);
@@ -1265,31 +1249,29 @@ int tnecs_carr_init(tnecs_W *W, tnecs_carr  *comp_arr,
     size_t bytesize = W->Cs.bytesizes[cID];
     assert(bytesize > 0);
 
-    comp_arr->type          = in_type;
-    comp_arr->num           = 0;
-    comp_arr->len           = TNECS_C_0LEN;
-    comp_arr->Cs    = calloc(TNECS_C_0LEN, bytesize);
-    TNECS_CHECK(comp_arr->Cs);
+    C_arr->type  = in_type;
+    C_arr->num   = 0;
+    C_arr->len   = TNECS_C_0LEN;
+    C_arr->Cs    = calloc(TNECS_C_0LEN, bytesize);
+    TNECS_CHECK(C_arr->Cs);
     return (1);
 }
 
 /*********** UTILITY FUNCTIONS/MACROS **************/
 size_t tnecs_C_O_byT(   const tnecs_W *const W,
-                            size_t cID, tnecs_C flag) {
+                        size_t cID, tnecs_C flag) {
     tnecs_C tID = tnecs_A_id(W, flag);
     return (tnecs_C_O_byTid(W, cID, tID));
 }
 
 size_t tnecs_C_O_byTid( const tnecs_W *const W,
-                            size_t cID, size_t tID) {
-    size_t order = TNECS_C_CAP;
+                        size_t cID, size_t tID) {
     for (size_t i = 0; i < W->byT.num_Cs[tID]; i++) {
         if (W->byT.Cs_id[tID][i] == cID) {
-            order = i;
-            break;
+            return(i);
         }
     }
-    return (order);
+    return (TNECS_C_CAP);
 }
 
 tnecs_C tnecs_C_ids2A(size_t argnum, ...) {
@@ -1304,30 +1286,27 @@ tnecs_C tnecs_C_ids2A(size_t argnum, ...) {
     return (out);
 }
 
-tnecs_C tnecs_A_id(const tnecs_W *const W,
-                    tnecs_C archetype) {
-    size_t id = 0;
+tnecs_C tnecs_A_id(const tnecs_W *const W, tnecs_C A) {
     for (size_t i = 0; i < W->byT.num; i++) {
-        if (archetype == W->byT.id[i]) {
-            id = i;
-            break;
+        if (A == W->byT.id[i]) {
+            return(i);
         }
     }
-    return (id);
+    return (0);
 }
 
 /***************** "DYNAMIC" ARRAYS ******************/
-void *tnecs_realloc(void   *ptr,     size_t old_len,
-                    size_t  new_len, size_t elem_bytesize) {
+void *tnecs_realloc(void   *ptr,  size_t olen,
+                    size_t  nlen, size_t elem_bytesize) {
     if (!ptr)
         return (NULL);
-    void *realloced = calloc(new_len, elem_bytesize);
+    void *realloced = calloc(nlen, elem_bytesize);
     if (realloced == NULL) {
         printf("tnecs: failed allocation realloced\n");
         return(NULL);
     }
-
-    memcpy(realloced, ptr, (new_len > old_len ? old_len : new_len) * elem_bytesize);
+    size_t elen = (nlen > olen ? olen : nlen);
+    memcpy(realloced, ptr, elen * elem_bytesize);
     free(ptr);
     return (realloced);
 }
@@ -1335,25 +1314,28 @@ void *tnecs_realloc(void   *ptr,     size_t old_len,
 void *tnecs_arrdel(void *arr,  size_t elem, 
                    size_t len, size_t bytesize) {
     /* Scrambles by copying top element at [len - 1] to [elem] */
-    tnecs_byte *bytes = arr;
+    tnecs_byte *ptr = arr;
     if (elem != (len - 1))
-        memmove(bytes + (elem * bytesize), bytes + ((len - 1) * bytesize), bytesize);
+        memmove(ptr + (elem * bytesize),
+                ptr + ((len - 1) * bytesize), bytesize);
 
-    memset(bytes + ((len - 1) * bytesize), TNECS_NULL, bytesize);
+    memset(ptr + ((len - 1) * bytesize), TNECS_NULL, bytesize);
     return (arr);
 }
 
 #ifndef NDEBUG
 int tnecs_grow_ran(tnecs_W *W) {
     /* Realloc Ss ran if too many */
-    size_t old_len              = W->Ss.ran.len;
-    size_t new_len              = old_len * TNECS_ARR_GROW;
-    W->Ss.ran.len      = new_len;
-    W->Ss.to_run.len   = new_len;
-    size_t bytesize             = sizeof(tnecs_S_f);
+    size_t olen         = W->Ss.ran.len;
+    size_t nlen         = olen * TNECS_ARR_GROW;
+    W->Ss.ran.len       = nlen;
+    W->Ss.to_run.len    = nlen;
+    size_t bytesize     = sizeof(tnecs_S_f);
 
-    W->Ss.ran.arr  = tnecs_realloc(W->Ss.ran.arr, old_len, new_len, bytesize);
-    W->Ss.to_run.arr  = tnecs_realloc(W->Ss.to_run.arr, old_len, new_len, bytesize);
+    W->Ss.ran.arr       = tnecs_realloc(W->Ss.ran.arr, 
+                                        olen, nlen, bytesize);
+    W->Ss.to_run.arr    = tnecs_realloc(W->Ss.to_run.arr, 
+                                        olen, nlen, bytesize);
     TNECS_CHECK(W->Ss.ran.arr);
     TNECS_CHECK(W->Ss.to_run.arr);
     return (1);
@@ -1363,29 +1345,28 @@ int tnecs_grow_ran(tnecs_W *W) {
 int tnecs_grow_Es_open(tnecs_W *W) {
     /* Realloc Es_open if too many */
     if ((W->Es.open.num + 1) >= W->Es.open.len) {
-        size_t old_len              = W->Es.open.len;
-        size_t new_len              = old_len * TNECS_ARR_GROW;
-        size_t bytesize             = sizeof(tnecs_E);
-        W->Es.open.len    = new_len;
+        size_t olen     = W->Es.open.len;
+        size_t nlen     = olen * TNECS_ARR_GROW;
+        size_t bytesize = sizeof(tnecs_E);
+        W->Es.open.len  = nlen;
 
-        W->Es.open.arr = tnecs_realloc(W->Es.open.arr, old_len, new_len, bytesize);
+        W->Es.open.arr  = tnecs_realloc(W->Es.open.arr, 
+                                        olen, nlen, bytesize);
         TNECS_CHECK(W->Es.open.arr);
     }
     return (1);
 }
 
-int tnecs_grow_C_array( tnecs_W     *W,
-                        tnecs_carr  *comp_arr,
-                        size_t tID, size_t corder) {
-    size_t old_len      = comp_arr->len;
-    size_t new_len      = old_len * TNECS_ARR_GROW;
-    comp_arr->len       = new_len;
+int tnecs_grow_C_array( tnecs_W *W, tnecs_carr *C_arr,
+                        size_t tID, size_t C_O) {
+    size_t olen = C_arr->len;
+    size_t nlen = olen * TNECS_ARR_GROW;
+    C_arr->len  = nlen;
+    size_t cID  = W->byT.Cs_id[tID][C_O];
 
-    size_t cID = W->byT.Cs_id[tID][corder];
-
-    size_t bytesize         = W->Cs.bytesizes[cID];
-    comp_arr->Cs    = tnecs_realloc(comp_arr->Cs, old_len, new_len, bytesize);
-    TNECS_CHECK(comp_arr->Cs);
+    size_t bytesize = W->Cs.bytesizes[cID];
+    C_arr->Cs = tnecs_realloc(C_arr->Cs, olen, nlen, bytesize);
+    TNECS_CHECK(C_arr->Cs);
     return (1);
 }
 
@@ -1398,17 +1379,14 @@ int tnecs_grow_E(tnecs_W *W) {
         return (TNECS_NULL);
     }
 
-    W->Es.id          = tnecs_realloc(W->Es.id,
-                                                olen, nlen,
-                                                sizeof(*W->Es.id));
+    W->Es.id    = tnecs_realloc(W->Es.id, olen, nlen,
+                                sizeof(*W->Es.id));
     TNECS_CHECK(W->Es.id);
-    W->Es.Os      = tnecs_realloc(W->Es.Os,
-                                                olen, nlen,
-                                                sizeof(*W->Es.Os));
+    W->Es.Os    = tnecs_realloc(W->Es.Os, olen, nlen,
+                                sizeof(*W->Es.Os));
     TNECS_CHECK(W->Es.Os);
-    W->Es.As  = tnecs_realloc(W->Es.As,
-                                                olen, nlen,
-                                                sizeof(*W->Es.As));
+    W->Es.As    = tnecs_realloc(W->Es.As, olen, nlen,
+                                sizeof(*W->Es.As));
     TNECS_CHECK(W->Es.As);
 
     return (1);
@@ -1420,19 +1398,19 @@ int tnecs_grow_S(tnecs_W *W) {
     assert(olen > 0);
     W->Ss.len   = nlen;
 
-    W->Ss.Phs       = tnecs_realloc(W->Ss.Phs, olen, nlen,
-                                    sizeof(*W->Ss.Phs));
+    W->Ss.Phs   = tnecs_realloc(W->Ss.Phs, olen, nlen,
+                                sizeof(*W->Ss.Phs));
     TNECS_CHECK(W->Ss.Phs);
-    W->Ss.Os       = tnecs_realloc(W->Ss.Os, olen, nlen,
-                                   sizeof(*W->Ss.Os));
+    W->Ss.Os    = tnecs_realloc(W->Ss.Os, olen, nlen,
+                                sizeof(*W->Ss.Os));
     TNECS_CHECK(W->Ss.Os);
-    W->Ss.exclusive = tnecs_realloc(W->Ss.exclusive, olen, nlen,
-                                    sizeof(*W->Ss.exclusive));
+    W->Ss.Ex    = tnecs_realloc(W->Ss.Ex, olen, nlen,
+                                sizeof(*W->Ss.Ex));
     TNECS_CHECK(W->Ss.Pi);
-    W->Ss.Pi  = tnecs_realloc(W->Ss.Pi, olen, nlen,
-                                    sizeof(*W->Ss.Pi));
-    TNECS_CHECK(W->Ss.exclusive);
-    W->Ss.As   = tnecs_realloc( W->Ss.As, olen, nlen,
+    W->Ss.Pi    = tnecs_realloc(W->Ss.Pi, olen, nlen,
+                                sizeof(*W->Ss.Pi));
+    TNECS_CHECK(W->Ss.Ex);
+    W->Ss.As    = tnecs_realloc(W->Ss.As, olen, nlen,
                                 sizeof(*W->Ss.As));
     TNECS_CHECK(W->Ss.As);
 
@@ -1542,8 +1520,7 @@ int tnecs_grow_Ph(tnecs_W *W, tnecs_Pi Pi) {
     return (1);
 }
 
-int tnecs_grow_S_byPh(  tnecs_Phs   *byPh,
-                        tnecs_Ph     Ph) {
+int tnecs_grow_S_byPh(tnecs_Phs *byPh, tnecs_Ph Ph) {
     size_t olen         = byPh->len_Ss[Ph];
     size_t nlen         = olen * TNECS_ARR_GROW;
     byPh->len_Ss[Ph]    = nlen;
@@ -1594,7 +1571,7 @@ void *tnecs_C_array(tnecs_W *W, const size_t cID,
         return (NULL);
 
     tnecs_carr *carr    = W->byT.Cs[tID];
-    size_t      corder  = W->byT.Cs_O[tID][cID];
+    size_t      C_O  = W->byT.Cs_O[tID][cID];
 
-    return (carr[corder].Cs);
+    return (carr[C_O].Cs);
 }

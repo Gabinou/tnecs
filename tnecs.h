@@ -21,9 +21,12 @@
 **      - E:    Entity      - Pi:   Pipeline
 **      - C:    Component   - Ph:   Phase
 **      - S:    System      - W:    World
-**      - O:    Order
+**      - O:    Order       - Ex:   Exclusive
 **      - A:    Archetype  i.e. ull w/ many bits set
 **      - T:    Type       i.e. ull w/ single bit set 
+**      Notes: 
+**          1- wC means "with Components" 
+**          2- Plural forms i.e. "Cs"
 */
 
 #include <math.h>
@@ -80,14 +83,13 @@ enum TNECS_PUBLIC {
 **  Example: 
 **      1. TNECS_ARGN(x, y, z)
 **      2. _TNECS_ARGN_(x, y, z, _TNECS_SEQ())
-**      3. _TNECS_VARGN(x, y, z, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-**         i.e.        _1,_2,_3,_4,_5,_6,_7,_8, N, ...  
+**      3. _TNECS_SEQCUT(x, y, z, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+**         i.e.         _1,_2,_3,_4,_5,_6,_7,_8, N, ...  
 **      4. 3 is output
-**  - up to 63 args, if _TNECS_VARGN and TNECS_VARG_SEQ exist
-*/
+**  - up to 63 args, if _TNECS_SEQCUT and TNECS_VARG_SEQ exist */
 #define  TNECS_ARGN(...) _TNECS_ARGN( __VA_ARGS__, _TNECS_SEQ())
-#define _TNECS_ARGN(...) _TNECS_VARGN(__VA_ARGS__)
-#define _TNECS_VARGN(_1, _2, _3, _4, _5, _6, _7, _8,  N, ...) N
+#define _TNECS_ARGN(...) _TNECS_SEQCUT(__VA_ARGS__)
+#define _TNECS_SEQCUT(_1, _2, _3, _4, _5, _6, _7, _8,  N, ...) N
 #define _TNECS_SEQ()  8,  7,  6,  5,  4,  3,  2,  1,  0
 
 /* TNECS_COMMA puts commas after each arg except last. 
@@ -196,16 +198,14 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
 
 #define TNECS_E_HAS_C(w, e, cID) (\
         ( \
-            w->Es.As[e] & \
-            tnecs_C_ids2A(1, cID) \
+            w->Es.As[e] & tnecs_C_ids2A(1, cID) \
         ) > 0 \
     )
 #define TNECS_ADD_C(...) \
     TNECS_CHOOSE_ADD_C(\
         __VA_ARGS__, TNECS_ADD_C4, TNECS_ADD_C3 \
     )(__VA_ARGS__)
-#define TNECS_CHOOSE_ADD_C(_1,_2,_3,_4,NAME,...) \
-    NAME
+#define TNECS_CHOOSE_ADD_C(_1, _2, _3, _4, NAME, ...) NAME
 #define TNECS_ADD_C3(W, E_id, cID) \
     tnecs_E_add_C(W, E_id, tnecs_C_ids2A(1, cID), 1)
 #define TNECS_ADD_C4(W, E_id, cID, isnewT) \
@@ -242,8 +242,7 @@ void *tnecs_C_array(tnecs_W         *w,
 tnecs_C tnecs_C_ids2A(size_t argnum, ...);
 tnecs_C tnecs_A_id(const tnecs_W *const w, tnecs_C arch);
 
-#define TNECS_C_ID2T(id) \
-    ( \
+#define TNECS_C_ID2T(id) ( \
         ((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? \
         (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL \
     )
