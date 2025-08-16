@@ -6,9 +6,9 @@ Upon error, functions/macros return 0 or ```NULL```.
 The world contains everything tnecs needs.
 ```c
     tnecs_world *world = NULL;
-    tnecs_world_genesis(&world);
+    tnecs_W_genesis(&world);
     ...
-    tnecs_world_destroy(&world);
+    tnecs_W_destroy(&world);
    ```
 
 ## Registering Components
@@ -103,7 +103,7 @@ A system is a user-defined function, with a ```tnecs_system_input``` pointer as 
     // Exclusive systems run only for all entities that have exactly the system's archetype.
     // Otherwise, system is run for every compatible archetype.
     int exclusive       = 0;
-    TNECS_REGISTER_SYSTEM(world, SystemMove, pipeline, phase, exclusive, Position, Unit); 
+    TNECS_REGISTER_S(world, SystemMove, pipeline, phase, exclusive, Position, Unit); 
 ```
 
 ## Updating the world
@@ -114,15 +114,15 @@ tnecs_time_ns_t frame_deltat = 1;
 void *data = NULL; 
 
 // Run all pipelines, starting from pipeline 0.
-tnecs_world_step(world, frame_deltat, data);
+tnecs_W_step(world, frame_deltat, data);
 
 // Run a specific pipeline, starting from phase 0
 int pipeline = 1;
-tnecs_pipeline_step(world, frame_deltat, data, pipeline);
+tnecs_Pi_step(world, frame_deltat, data, pipeline);
 
 // Run a specific phase, in a specific pipeline
 // In each phase, systems are run first-come first-served 
 int phase = 1;
-tnecs_pipeline_step_phase(world, frame_deltat, data, pipeline, phase);
+tnecs_Pi_step_Ph(world, frame_deltat, data, pipeline, phase);
 
 ```

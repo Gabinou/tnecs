@@ -344,7 +344,7 @@ void tnecs_test_utilities() {
 }
 
 void tnecs_test_C_registration() {
-    tnecs_world_genesis(&test_world);
+    tnecs_W_genesis(&test_world);
     test_true(test_world != NULL);
     assert(sizeof(Position) > 0);
     TNECS_REGISTER_C(test_world, Position, NULL, NULL);
@@ -419,7 +419,7 @@ void tnecs_test_system_registration() {
     int Position_ID = 1;
     int Velocity_ID = 2;
 
-    TNECS_REGISTER_SYSTEM(test_world, SystemMove, pipe0, 0, 1, Position_ID, Velocity_ID);
+    TNECS_REGISTER_S(test_world, SystemMove, pipe0, 0, 1, Position_ID, Velocity_ID);
     size_t temp_archetype_id    = 5;
 
     test_true(test_world->bytype.components_id[temp_archetype_id][0] == Position_ID);
@@ -442,7 +442,7 @@ void tnecs_test_E_creation() {
     test_true(Pirou == (TNECS_NULLSHIFT + 1));
     test_true(test_world->entities.num == (TNECS_NULLSHIFT + 2));
     test_true(Silou != Pirou);
-    tnecs_E Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_E Perignon = TNECS_E_CREATE_wC(test_world, Position_ID, Unit_ID);
     test_true(Perignon != TNECS_NULL);
 
     temp_position = tnecs_get_C(test_world, Perignon, Position_ID);
@@ -494,37 +494,37 @@ void tnecs_test_E_creation() {
     test_true(test_world->entities.num == 105);
 
     tnecs_W *test_world3 = NULL;
-    tnecs_world_genesis(&test_world3);
-    tnecs_world_destroy(&test_world3);
+    tnecs_W_genesis(&test_world3);
+    tnecs_W_destroy(&test_world3);
 
     // MORE TESTS FOR COVERAGE
     tnecs_W *test_world2 = NULL;
-    tnecs_world_genesis(&test_world2);
+    tnecs_W_genesis(&test_world2);
 
     test_world2->bytype.num = TNECS_INIT_SYSTEM_LEN;
     TNECS_REGISTER_C(test_world2, Position2, NULL, NULL);
     test_true(test_world2->components.num == 2);
 
-    // Coverage for if in tnecs_register_system
-    tnecs_world_destroy(&test_world2);
+    // Coverage for if in TNECS_REGISTER_S
+    tnecs_W_destroy(&test_world2);
     test_true(test_world2 == NULL);
-    tnecs_world_genesis(&test_world2);
+    tnecs_W_genesis(&test_world2);
 
     int Position2_ID = 1;
     int Unit2_ID     = 2;
 
     TNECS_REGISTER_C(test_world2, Position2, NULL, NULL);
     test_world2->pipelines.byphase[0].num_systems[0] = TNECS_INIT_PHASE_LEN;
-    TNECS_REGISTER_SYSTEM(test_world2, SystemMovePhase1, pipe0, 0, 0, Position2_ID);
-    tnecs_world_destroy(&test_world2);
+    TNECS_REGISTER_S(test_world2, SystemMovePhase1, pipe0, 0, 0, Position2_ID);
+    tnecs_W_destroy(&test_world2);
 
     // Coverage for "for" in tnecs_C_del
-    tnecs_world_genesis(&test_world2);
+    tnecs_W_genesis(&test_world2);
     TNECS_REGISTER_C(test_world2, Unit2_ID, NULL, NULL);
     TNECS_REGISTER_C(test_world2, Position2_ID, NULL, NULL);
-    tnecs_E Erwin = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world2, Position2_ID, Unit2_ID);
+    tnecs_E Erwin = TNECS_E_CREATE_wC(test_world2, Position2_ID, Unit2_ID);
     tnecs_C_del(test_world2, Erwin, (1 + 2));
-    tnecs_world_destroy(&test_world2);
+    tnecs_W_destroy(&test_world2);
 }
 
 void tnecs_test_C_add() {
@@ -550,7 +550,7 @@ void tnecs_test_C_add() {
     test_true((test_world->entities.archetypes[Pirou] & TNECS_C_ID2TYPE(Sprite_ID)) == 0);
 
     tnecs_E Chasse = tnecs_E_create(test_world);
-    TNECS_ADD_CS(test_world, Chasse, 1, Sprite_ID, Position_ID);
+    TNECS_ADD_Cs(test_world, Chasse, 1, Sprite_ID, Position_ID);
     test_true((test_world->entities.archetypes[Chasse] & TNECS_C_ID2TYPE(Unit_ID)) == 0);
     test_true((test_world->entities.archetypes[Chasse] & TNECS_C_ID2TYPE(Sprite_ID)) > 0);
     test_true((test_world->entities.archetypes[Chasse] & TNECS_C_ID2TYPE(Position_ID)) > 0);
@@ -618,10 +618,10 @@ void tnecs_test_E_destroy() {
     int Chasse_x    = 30;
     int Michael_x   = 40;
 
-    tnecs_E Silou      = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
-    tnecs_E Pirou      = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
-    tnecs_E Chasse     = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
-    tnecs_E Michael    = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Unit_ID);
+    tnecs_E Silou      = TNECS_E_CREATE_wC(test_world, Position_ID, Unit_ID);
+    tnecs_E Pirou      = TNECS_E_CREATE_wC(test_world, Position_ID, Unit_ID);
+    tnecs_E Chasse     = TNECS_E_CREATE_wC(test_world, Position_ID, Unit_ID);
+    tnecs_E Michael    = TNECS_E_CREATE_wC(test_world, Position_ID, Unit_ID);
 
     test_true(test_world->entities.orders[Silou]      == 1);
     test_true(test_world->entities.orders[Pirou]      == 2);
@@ -675,29 +675,29 @@ void tnecs_test_C_remove() {
 
     tnecs_E Silou = tnecs_E_create(test_world);
     TNECS_ADD_C(test_world, Silou, Position_ID);
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Silou, Position_ID));
-    TNECS_REMOVE_CS(test_world, Silou, Position_ID);
-    test_true(!TNECS_ENTITY_HASCOMPONENT(test_world, Silou, Position_ID));
+    test_true(TNECS_E_HAS_C(test_world, Silou, Position_ID));
+    TNECS_REMOVE_C(test_world, Silou, Position_ID);
+    test_true(!TNECS_E_HAS_C(test_world, Silou, Position_ID));
 
-    tnecs_E Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Velocity_ID);
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Position_ID));
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity_ID));
-    test_true(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit_ID));
+    tnecs_E Perignon = TNECS_E_CREATE_wC(test_world, Position_ID, Velocity_ID);
+    test_true(TNECS_E_HAS_C(test_world, Perignon, Position_ID));
+    test_true(TNECS_E_HAS_C(test_world, Perignon, Velocity_ID));
+    test_true(!TNECS_E_HAS_C(test_world, Perignon, Unit_ID));
 
-    TNECS_REMOVE_CS(test_world, Perignon, Velocity_ID);
-    test_true(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity_ID));
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Position_ID));
-    test_true(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit_ID));
+    TNECS_REMOVE_C(test_world, Perignon, Velocity_ID);
+    test_true(!TNECS_E_HAS_C(test_world, Perignon, Velocity_ID));
+    test_true(TNECS_E_HAS_C(test_world, Perignon, Position_ID));
+    test_true(!TNECS_E_HAS_C(test_world, Perignon, Unit_ID));
 
-    tnecs_E Pirou = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Velocity_ID, Unit_ID);
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Position_ID));
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Velocity_ID));
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Unit_ID));
+    tnecs_E Pirou = TNECS_E_CREATE_wC(test_world, Position_ID, Velocity_ID, Unit_ID);
+    test_true(TNECS_E_HAS_C(test_world, Pirou, Position_ID));
+    test_true(TNECS_E_HAS_C(test_world, Pirou, Velocity_ID));
+    test_true(TNECS_E_HAS_C(test_world, Pirou, Unit_ID));
 
-    TNECS_REMOVE_CS(test_world, Pirou, Position_ID, Velocity_ID);
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Unit_ID));
-    test_true(!TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Position_ID));
-    test_true(!TNECS_ENTITY_HASCOMPONENT(test_world, Pirou, Velocity_ID));
+    TNECS_REMOVE_C(test_world, Pirou, Position_ID, Velocity_ID);
+    test_true(TNECS_E_HAS_C(test_world, Pirou, Unit_ID));
+    test_true(!TNECS_E_HAS_C(test_world, Pirou, Position_ID));
+    test_true(!TNECS_E_HAS_C(test_world, Pirou, Velocity_ID));
 }
 
 void tnecs_test_C_array() {
@@ -707,27 +707,27 @@ void tnecs_test_C_array() {
     int Sprite_ID   = 4;
 
     tnecs_W *arr_world = NULL;
-    tnecs_world_genesis(&arr_world);
+    tnecs_W_genesis(&arr_world);
     
     test_true(TNECS_REGISTER_C(arr_world, Position_ID, NULL, NULL));
     test_true(TNECS_REGISTER_C(arr_world, Velocity_ID, NULL, NULL));
     test_true(TNECS_REGISTER_C(arr_world, Sprite_ID, NULL, NULL));
     test_true(TNECS_REGISTER_C(arr_world, Unit_ID, NULL, NULL));
-    TNECS_REGISTER_SYSTEM(arr_world, SystemMoveDoNothing,  pipe0, 0, 0, Unit_ID); // 4X
-    TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase1,     pipe0, 0, 0, Unit_ID, Velocity_ID);  // 2X
-    TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase2,     pipe0, 0, 0, Unit_ID, Position_ID); // 2X
-    TNECS_REGISTER_SYSTEM(arr_world, SystemMovePhase4,     pipe0, 0, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
+    TNECS_REGISTER_S(arr_world, SystemMoveDoNothing,  pipe0, 0, 0, Unit_ID); // 4X
+    TNECS_REGISTER_S(arr_world, SystemMovePhase1,     pipe0, 0, 0, Unit_ID, Velocity_ID);  // 2X
+    TNECS_REGISTER_S(arr_world, SystemMovePhase2,     pipe0, 0, 0, Unit_ID, Position_ID); // 2X
+    TNECS_REGISTER_S(arr_world, SystemMovePhase4,     pipe0, 0, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
 
-    tnecs_E temp_ent = TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(arr_world, Unit_ID, Position_ID, Velocity_ID);
+    tnecs_E temp_ent = TNECS_E_CREATE_wC(arr_world, Unit_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(arr_world, Unit_ID, Position_ID, Velocity_ID);
 
     size_t temp_archetypeid     = TNECS_C_IDS2ARCHETYPEID(arr_world, Unit_ID, Position_ID);
 
@@ -814,7 +814,7 @@ void tnecs_test_C_array() {
     test_true(temp_pos->x     == 0);
     test_true(temp_pos->y     == 0);
 
-    tnecs_world_destroy(&arr_world);
+    tnecs_W_destroy(&arr_world);
 }
 
 void tnecs_test_world_progress() {
@@ -823,18 +823,18 @@ void tnecs_test_world_progress() {
     int Unit_ID     = 3;
 
     struct tnecs_W *inclusive_world = NULL;
-    tnecs_world_genesis(&inclusive_world);
+    tnecs_W_genesis(&inclusive_world);
     test_true(inclusive_world != NULL);
 
     struct tnecs_W *inclusive_world2 = NULL;
-    tnecs_world_genesis(&inclusive_world2);
+    tnecs_W_genesis(&inclusive_world2);
     test_true(inclusive_world2 != NULL);
 
     struct Velocity *temp_velocity;
-    tnecs_E Perignon = TNECS_ENTITY_CREATE_wCOMPONENTS(test_world, Position_ID, Velocity_ID);
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Position_ID));
-    test_true(TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Velocity_ID));
-    test_true(!TNECS_ENTITY_HASCOMPONENT(test_world, Perignon, Unit_ID));
+    tnecs_E Perignon = TNECS_E_CREATE_wC(test_world, Position_ID, Velocity_ID);
+    test_true(TNECS_E_HAS_C(test_world, Perignon, Position_ID));
+    test_true(TNECS_E_HAS_C(test_world, Perignon, Velocity_ID));
+    test_true(!TNECS_E_HAS_C(test_world, Perignon, Unit_ID));
 
     test_true(test_world->entities.archetypes[Perignon] == (1 + 2));
     test_true(test_world->bytype.num_entities[tnecs_archetypeid(test_world, 1 + 2)] == 1);
@@ -844,14 +844,14 @@ void tnecs_test_world_progress() {
     temp_position->x = 100;
     temp_position->y = 200;
 
-    tnecs_register_phase(test_world, pipe0);
-    tnecs_register_phase(test_world, pipe0);
-    tnecs_register_phase(test_world, pipe0);
-    tnecs_register_phase(test_world, pipe0);
-    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase1, pipe0, 1, 1, Position_ID);
-    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, pipe0, 2, 1, Velocity_ID);
-    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase2, pipe0, 1, 1, Unit_ID);
-    TNECS_REGISTER_SYSTEM(test_world, SystemMovePhase4, pipe0, 4, 1, Velocity_ID);
+    tnecs_register_Ph(test_world, pipe0);
+    tnecs_register_Ph(test_world, pipe0);
+    tnecs_register_Ph(test_world, pipe0);
+    tnecs_register_Ph(test_world, pipe0);
+    TNECS_REGISTER_S(test_world, SystemMovePhase1, pipe0, 1, 1, Position_ID);
+    TNECS_REGISTER_S(test_world, SystemMovePhase2, pipe0, 2, 1, Velocity_ID);
+    TNECS_REGISTER_S(test_world, SystemMovePhase2, pipe0, 1, 1, Unit_ID);
+    TNECS_REGISTER_S(test_world, SystemMovePhase4, pipe0, 4, 1, Velocity_ID);
 
     test_true(test_world->pipelines.byphase[0].num == 5);
     test_true(test_world->pipelines.byphase[0].systems[1][0] == &SystemMovePhase1);
@@ -861,7 +861,7 @@ void tnecs_test_world_progress() {
 
     temp_velocity->vx = 1;
     temp_velocity->vy = 2;
-    tnecs_world_step(test_world, 1, NULL);
+    tnecs_W_step(test_world, 1, NULL);
     temp_position = tnecs_get_C(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_C(test_world, Perignon, Velocity_ID);
     test_true(test_world->systems.to_run.num == 5);
@@ -876,7 +876,7 @@ void tnecs_test_world_progress() {
     test_true(torun_arr[2] != NULL);
     test_true(torun_arr[3] != NULL);
     test_true(torun_arr[4] != NULL);
-    tnecs_world_step(test_world, 1, NULL);
+    tnecs_W_step(test_world, 1, NULL);
     temp_position = tnecs_get_C(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_C(test_world, Perignon, Velocity_ID);
     test_true(temp_velocity->vx == 1);
@@ -896,7 +896,7 @@ void tnecs_test_world_progress() {
     test_true(torun_arr[4] != NULL);
     test_true(temp_velocity->vx == 1);
     test_true(temp_velocity->vy == 2);
-    tnecs_world_step(test_world, 0, NULL);
+    tnecs_W_step(test_world, 0, NULL);
 
     test_true(test_world->entities.archetypes[Perignon] == (1 + 2));
     test_true(test_world->bytype.num_entities[tnecs_archetypeid(test_world, 1 + 2)] == 1);
@@ -910,89 +910,89 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_C(inclusive_world, Velocity, NULL, NULL);
     TNECS_REGISTER_C(inclusive_world, Sprite, NULL, NULL);
     TNECS_REGISTER_C(inclusive_world, Unit, NULL, NULL);
-    TNECS_REGISTER_SYSTEM(inclusive_world, SystemMoveDoNothing, pipe0, 0, 0, Unit_ID); // 4X
-    TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase1,    pipe0, 0, 0, Unit_ID, Velocity_ID);  // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase2,    pipe0, 0, 0, Unit_ID, Position_ID); // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world, SystemMovePhase4,    pipe0, 0, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
+    TNECS_REGISTER_S(inclusive_world, SystemMoveDoNothing, pipe0, 0, 0, Unit_ID); // 4X
+    TNECS_REGISTER_S(inclusive_world, SystemMovePhase1,    pipe0, 0, 0, Unit_ID, Velocity_ID);  // 2X
+    TNECS_REGISTER_S(inclusive_world, SystemMovePhase2,    pipe0, 0, 0, Unit_ID, Position_ID); // 2X
+    TNECS_REGISTER_S(inclusive_world, SystemMovePhase4,    pipe0, 0, 0, Unit_ID, Position_ID, Velocity_ID); // 1X
 
     int SystemMove_ID       = 1;
     int SystemMovePhase1_ID = 2;
     int SystemMovePhase2_ID = 3;
     int SystemMovePhase4_ID = 4;
 
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
 
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID))] == 3);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMove_ID))] == 3);
     test_true(inclusive_world->bytype.archetype_id[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID))][0] == tnecs_archetypeid(inclusive_world,
-                                                                      TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID)));
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMove_ID))][0] == tnecs_archetypeid(inclusive_world,
+                                                                      TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID)));
     test_true(inclusive_world->bytype.archetype_id[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID))][1] == tnecs_archetypeid(inclusive_world,
-                                                                      TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID)));
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMove_ID))][1] == tnecs_archetypeid(inclusive_world,
+                                                                      TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID)));
     test_true(inclusive_world->bytype.archetype_id[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID))][2] == tnecs_archetypeid(inclusive_world,
-                                                                      TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID)));
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMove_ID))][2] == tnecs_archetypeid(inclusive_world,
+                                                                      TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID)));
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID))] == 1);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID))] == 1);
     test_true(inclusive_world->bytype.archetype_id[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world,
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world,
                                                                       SystemMovePhase1_ID))][0] == tnecs_archetypeid(inclusive_world,
-                                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID)));
+                                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID)));
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID))] == 1);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID))] == 1);
     test_true(inclusive_world->bytype.archetype_id[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world,
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world,
                                                                       SystemMovePhase2_ID))][0] == tnecs_archetypeid(inclusive_world,
-                                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID)));
+                                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID)));
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID))] == 0);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID))] == 0);
 
     test_true(inclusive_world->bytype.num == 8);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
-    tnecs_E temp_todestroy = TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID);
+    tnecs_E temp_todestroy = TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID);
     tnecs_E_destroy(inclusive_world, temp_todestroy);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
     test_true(inclusive_world->bytype.num_entities[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID))] == 9);
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMove_ID))] == 9);
     test_true(inclusive_world->bytype.num_entities[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID))] == 2);
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID))] == 2);
     test_true(inclusive_world->bytype.num_entities[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID))] == 6);
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID))] == 6);
     test_true(inclusive_world->bytype.num_entities[tnecs_archetypeid(inclusive_world,
-                                                              TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID))] == 12);
+                                                              TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID))] == 12);
     test_true(inclusive_world->bytype.num == 8);
-    tnecs_world_step(inclusive_world, 1, NULL);
+    tnecs_W_step(inclusive_world, 1, NULL);
 
     test_true(inclusive_world->systems.to_run.num == 9);
     torun_arr = inclusive_world->systems.to_run.arr;
@@ -1018,36 +1018,36 @@ void tnecs_test_world_progress() {
     TNECS_REGISTER_C(inclusive_world2, Unit, NULL, NULL);
     TNECS_REGISTER_C(inclusive_world2, Sprite, NULL, NULL);
 
-    tnecs_register_phase(inclusive_world2, pipe0);
-    tnecs_register_phase(inclusive_world2, pipe0);
-    tnecs_register_phase(inclusive_world2, pipe0);
-    tnecs_register_phase(inclusive_world2, pipe0);
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMoveDoNothing, pipe0, 2, 0, Unit_ID);                            // 4X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase1,    pipe0, 1, 0, Unit_ID, Velocity_ID);               // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase2,    pipe0, 4, 0, Unit_ID, Position_ID);               // 2X
-    TNECS_REGISTER_SYSTEM(inclusive_world2, SystemMovePhase4,    pipe0, 3, 0, Unit_ID, Position_ID, Velocity_ID);  // 1X
+    tnecs_register_Ph(inclusive_world2, pipe0);
+    tnecs_register_Ph(inclusive_world2, pipe0);
+    tnecs_register_Ph(inclusive_world2, pipe0);
+    tnecs_register_Ph(inclusive_world2, pipe0);
+    TNECS_REGISTER_S(inclusive_world2, SystemMoveDoNothing, pipe0, 2, 0, Unit_ID);                            // 4X
+    TNECS_REGISTER_S(inclusive_world2, SystemMovePhase1,    pipe0, 1, 0, Unit_ID, Velocity_ID);               // 2X
+    TNECS_REGISTER_S(inclusive_world2, SystemMovePhase2,    pipe0, 4, 0, Unit_ID, Position_ID);               // 2X
+    TNECS_REGISTER_S(inclusive_world2, SystemMovePhase4,    pipe0, 3, 0, Unit_ID, Position_ID, Velocity_ID);  // 1X
 
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
-    test_true(TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMove_ID) == 4);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase1_ID) == 4 + 2);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
+    test_true(TNECS_S_ID2ARCHETYPE(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
 
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world2,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMove_ID))] == 3);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world2, SystemMove_ID))] == 3);
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world2,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMovePhase1_ID))] == 1);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world2, SystemMovePhase1_ID))] == 1);
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world2,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMovePhase2_ID))] == 1);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world2, SystemMovePhase2_ID))] == 1);
     test_true(inclusive_world->bytype.num_archetype_ids[tnecs_archetypeid(inclusive_world2,
-                                                            TNECS_SYSTEM_ID2ARCHETYPE(inclusive_world2, SystemMovePhase4_ID))] == 0);
+                                                            TNECS_S_ID2ARCHETYPE(inclusive_world2, SystemMovePhase4_ID))] == 0);
 
     test_true(inclusive_world2->bytype.num == 8);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Velocity_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Position_ID);
-    TNECS_ENTITY_CREATE_wCOMPONENTS(inclusive_world2, Unit_ID, Position_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world2, Unit_ID);
+    TNECS_E_CREATE_wC(inclusive_world2, Unit_ID, Velocity_ID);
+    TNECS_E_CREATE_wC(inclusive_world2, Unit_ID, Position_ID);
+    TNECS_E_CREATE_wC(inclusive_world2, Unit_ID, Position_ID, Velocity_ID);
     test_true(inclusive_world2->bytype.num == 8);
-    tnecs_world_step(inclusive_world2, 1, NULL);
+    tnecs_W_step(inclusive_world2, 1, NULL);
 
     test_true(inclusive_world2->systems.to_run.num == 9);
     torun_arr = inclusive_world2->systems.to_run.arr; 
@@ -1068,13 +1068,13 @@ void tnecs_test_world_progress() {
     test_true(torun_arr[14] == NULL);
     test_true(torun_arr[15] == NULL);
 
-    tnecs_world_destroy(&inclusive_world2);
-    tnecs_world_destroy(&inclusive_world);
+    tnecs_W_destroy(&inclusive_world2);
+    tnecs_W_destroy(&inclusive_world);
 }
 
 void tnecs_test_grow() {
     struct tnecs_W *grow_world = NULL;
-    tnecs_world_genesis(&grow_world);
+    tnecs_W_genesis(&grow_world);
     test_true(grow_world != NULL);
 
     test_true(grow_world != NULL);
@@ -1175,7 +1175,7 @@ void tnecs_test_grow() {
         }
     }
 
-    tnecs_world_destroy(&grow_world);
+    tnecs_W_destroy(&grow_world);
 }
 
 void tnecs_benchmarks(uint64_t num) {
@@ -1189,7 +1189,7 @@ void tnecs_benchmarks(uint64_t num) {
     dupprintf(globalf, " %8llu\t", num);
     t_0 = tnecs_get_us();
     tnecs_W *bench_world = NULL;
-    tnecs_world_genesis(&bench_world);
+    tnecs_W_genesis(&bench_world);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
@@ -1202,11 +1202,11 @@ void tnecs_benchmarks(uint64_t num) {
     int Position2_ID    = 1;
     int Unit2_ID        = 2;
     for (uint64_t i = 0; i < num; i++) {
-        TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID, Unit2_ID);
+        TNECS_E_CREATE_wC(bench_world, Position2_ID, Unit2_ID);
     }
 
     t_0 = tnecs_get_us();
-    TNECS_REGISTER_SYSTEM(bench_world, SystemMove2, pipe0, 0, 0, Position2_ID, Unit2_ID);
+    TNECS_REGISTER_S(bench_world, SystemMove2, pipe0, 0, 0, Position2_ID, Unit2_ID);
     t_1 = tnecs_get_us();
 
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
@@ -1245,7 +1245,7 @@ void tnecs_benchmarks(uint64_t num) {
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID);
+        TNECS_E_CREATE_wC(bench_world, Position2_ID);
     }
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
@@ -1253,8 +1253,8 @@ void tnecs_benchmarks(uint64_t num) {
     tnecs_E tnecs_entities2[ITERATIONS];
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < ITERATIONS; i++) {
-        TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID);
-        tnecs_entities2[i] = TNECS_ENTITY_CREATE_wCOMPONENTS(bench_world, Position2_ID, Unit2_ID);
+        TNECS_E_CREATE_wC(bench_world, Position2_ID);
+        tnecs_entities2[i] = TNECS_E_CREATE_wC(bench_world, Position2_ID, Unit2_ID);
         assert(bench_world->entities.id[tnecs_entities2[i]] == tnecs_entities2[i]);
     }
 
@@ -1282,13 +1282,13 @@ void tnecs_benchmarks(uint64_t num) {
 
     t_0 = tnecs_get_us();
     for (size_t i = 0; i < fps_iterations; i++) {
-        tnecs_world_step(bench_world, 1, NULL);
+        tnecs_W_step(bench_world, 1, NULL);
     }
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
-    tnecs_world_destroy(&bench_world);
+    tnecs_W_destroy(&bench_world);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\n", t_1 - t_0);
 }
@@ -1311,7 +1311,7 @@ void tnecs_test_pipelines() {
     int Sprite_ID   = 4;
 
     tnecs_W *pipe_world = NULL;
-    tnecs_world_genesis(&pipe_world);
+    tnecs_W_genesis(&pipe_world);
     const tnecs_Ph phase0    = 0;
     const tnecs_Ph phase1    = 1;
     const tnecs_Pi pipe1  = 1;
@@ -1322,24 +1322,24 @@ void tnecs_test_pipelines() {
     test_true(TNECS_REGISTER_C(pipe_world, Unit_ID, NULL, NULL));
 
     // Register pipelines
-    test_true(tnecs_register_pipeline(pipe_world));
-    test_true(TNECS_PIPELINE_VALID(pipe_world, pipe0));
-    test_true(TNECS_PIPELINE_VALID(pipe_world, pipe1));
+    test_true(tnecs_register_Pi(pipe_world));
+    test_true(TNECS_Pi_VALID(pipe_world, pipe0));
+    test_true(TNECS_Pi_VALID(pipe_world, pipe1));
     test_true(pipe_world->pipelines.num == 2);
 
     // Register phases
-    test_true(tnecs_register_phase(pipe_world, pipe0) == 1);
-    test_true(tnecs_register_phase(pipe_world, pipe0) == 2);
-    test_true(tnecs_register_phase(pipe_world, pipe1) == 1);
-    test_true(tnecs_register_phase(pipe_world, pipe1) == 2);
+    test_true(tnecs_register_Ph(pipe_world, pipe0) == 1);
+    test_true(tnecs_register_Ph(pipe_world, pipe0) == 2);
+    test_true(tnecs_register_Ph(pipe_world, pipe1) == 1);
+    test_true(tnecs_register_Ph(pipe_world, pipe1) == 2);
     test_true(pipe_world->pipelines.byphase[pipe0].num == 3);
     test_true(pipe_world->pipelines.byphase[pipe1].num == 3);
 
     // Register systems, all exclusives, all phase0
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMoveDoNothing,  pipe0, phase0, 1, Unit_ID);                              /* 4X */
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase1,     pipe0, phase1, 1, Unit_ID, Velocity_ID);                 /* 2X */
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase2,     pipe1, phase0, 1, Unit_ID, Position_ID);                 /* 2X */
-    TNECS_REGISTER_SYSTEM(pipe_world, SystemMovePhase4,     pipe1, phase1, 1, Unit_ID, Position_ID, Velocity_ID);    /* 1X */
+    TNECS_REGISTER_S(pipe_world, SystemMoveDoNothing,  pipe0, phase0, 1, Unit_ID);                              /* 4X */
+    TNECS_REGISTER_S(pipe_world, SystemMovePhase1,     pipe0, phase1, 1, Unit_ID, Velocity_ID);                 /* 2X */
+    TNECS_REGISTER_S(pipe_world, SystemMovePhase2,     pipe1, phase0, 1, Unit_ID, Position_ID);                 /* 2X */
+    TNECS_REGISTER_S(pipe_world, SystemMovePhase4,     pipe1, phase1, 1, Unit_ID, Position_ID, Velocity_ID);    /* 1X */
 
     test_true(pipe_world->systems.pipeline[0] == pipe0);
     test_true(pipe_world->systems.pipeline[1] == pipe0);
@@ -1353,14 +1353,14 @@ void tnecs_test_pipelines() {
     test_true(pipe_world->pipelines.byphase[pipe1].num_systems[phase1] == 1);
 
     // Checking which systems need to be run for pipe0
-    tnecs_pipeline_step(pipe_world, 1, NULL, pipe0);
+    tnecs_Pi_step(pipe_world, 1, NULL, pipe0);
     test_true(pipe_world->systems.to_run.num == 2);
     tnecs_S *system_arr_pipe0 = pipe_world->systems.to_run.arr;
     test_true(system_arr_pipe0[0] == SystemMoveDoNothing);
     test_true(system_arr_pipe0[1] == SystemMovePhase1);
 
     // Checking which systems need to be run for pipe1
-    tnecs_pipeline_step(pipe_world, 1, NULL, pipe1);
+    tnecs_Pi_step(pipe_world, 1, NULL, pipe1);
     test_true(pipe_world->systems.to_run.num == 2);
     tnecs_S *system_arr_pipe1 = pipe_world->systems.to_run.arr;
     test_true(system_arr_pipe1[0] == SystemMovePhase2);
@@ -1368,25 +1368,25 @@ void tnecs_test_pipelines() {
 
     // Checking which systems need to be run for pipe0, phase0
     pipe_world->systems.to_run.num = 0;
-    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe0, phase0);
+    tnecs_Pi_step_Ph(pipe_world, 1, NULL, pipe0, phase0);
     test_true(pipe_world->systems.to_run.num == 1);
 
     // Checking which systems need to be run for pipe0, phase1
     pipe_world->systems.to_run.num = 0;
-    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe0, phase1);
+    tnecs_Pi_step_Ph(pipe_world, 1, NULL, pipe0, phase1);
     test_true(pipe_world->systems.to_run.num == 1);
 
     // Checking which systems need to be run for pipe1, phase0
     pipe_world->systems.to_run.num = 0;
-    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe1, phase0);
+    tnecs_Pi_step_Ph(pipe_world, 1, NULL, pipe1, phase0);
     test_true(pipe_world->systems.to_run.num == 1);
 
     // Checking which systems need to be run for pipe1, phase1
     pipe_world->systems.to_run.num = 0;
-    tnecs_pipeline_step_phase(pipe_world, 1, NULL, pipe1, phase1);
+    tnecs_Pi_step_Ph(pipe_world, 1, NULL, pipe1, phase1);
     test_true(pipe_world->systems.to_run.num == 1);
 
-    tnecs_world_destroy(&pipe_world);
+    tnecs_W_destroy(&pipe_world);
 }
 
 void Position_Init(void *voidpos) {
@@ -1411,22 +1411,22 @@ void tnecs_test_finit_ffree(void) {
 
     /* Testing that everything is NULL when creating without functions */
     tnecs_W *nof_world = NULL;
-    tnecs_world_genesis(&nof_world);
+    tnecs_W_genesis(&nof_world);
    
     TNECS_REGISTER_C(nof_world, Position, NULL, NULL);
 
-    tnecs_E Silou = TNECS_ENTITY_CREATE_wCOMPONENTS(nof_world, Position_ID);
+    tnecs_E Silou = TNECS_E_CREATE_wC(nof_world, Position_ID);
     struct Position *pos = tnecs_get_C(nof_world, Silou, Position_ID);
     test_true(pos->arr      == NULL);
     test_true(pos->arr_len  == 0);
 
     /* Testing that everything is NULL when creating without functions */
     tnecs_W *f_world = NULL;
-    tnecs_world_genesis(&f_world);
+    tnecs_W_genesis(&f_world);
    
     TNECS_REGISTER_C(f_world, Position, Position_Init, Position_Free);
 
-    Silou = TNECS_ENTITY_CREATE_wCOMPONENTS(f_world, Position_ID);
+    Silou = TNECS_E_CREATE_wC(f_world, Position_ID);
     pos = tnecs_get_C(f_world, Silou, Position_ID);
     test_true(pos->arr      != NULL);
     test_true(pos->arr_len  != 0);
@@ -1435,8 +1435,8 @@ void tnecs_test_finit_ffree(void) {
     test_true(pos->arr      == NULL);
     test_true(pos->arr_len  == 0);
 
-    tnecs_world_destroy(&nof_world);
-    tnecs_world_destroy(&f_world);
+    tnecs_W_destroy(&nof_world);
+    tnecs_W_destroy(&f_world);
 }
 
 int main() {
@@ -1479,7 +1479,7 @@ int main() {
     // for (uint64_t num = 1; num < 2e6; num *= 2)
     //     tnecs_benchmarks(num);
 
-    tnecs_world_destroy(&test_world);
+    tnecs_W_destroy(&test_world);
     dupprintf(globalf, "\n --- tnecs test end ---\n\n");
     fclose(globalf);
     return (0);

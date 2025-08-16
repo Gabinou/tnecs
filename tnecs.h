@@ -89,8 +89,7 @@ enum TNECS_PUBLIC {
 //  - up to 63, if TNECS_VAR_ARGN and TNECS_VAR_VARG_SEQ exist
 #define TNECS_VAR_EACH_ARGN(...) \
     TNECS_VAR_EACH_ARGN_(__VA_ARGS__, TNECS_VAR_VARG_SEQ())
-#define TNECS_VAR_EACH_ARGN_(...) \
-    TNECS_VAR_ARGN(__VA_ARGS__)
+#define TNECS_VAR_EACH_ARGN_(...) TNECS_VAR_ARGN(__VA_ARGS__)
 #define TNECS_VAR_ARGN(_1, _2, _3, _4, _5, _6, _7, _8, N, ...) \
     N
 #define TNECS_VAR_VARG_SEQ() \
@@ -117,29 +116,29 @@ enum TNECS_PUBLIC {
 #define TNECS_COMMA_8(x, ...) x, TNECS_COMMA_7(__VA_ARGS__)
 
 /* --- WORLD --- */
-int tnecs_world_genesis(tnecs_W **w);
-int tnecs_world_destroy(tnecs_W **w);
+int tnecs_W_genesis(tnecs_W **w);
+int tnecs_W_destroy(tnecs_W **w);
 
-void tnecs_world_toggle_reuse(tnecs_W *w, int toggle);
+void tnecs_W_toggle_reuse(tnecs_W *w, int toggle);
 
 /* Run all systems in all pipelines, by phases */
-int tnecs_world_step(tnecs_W *world, tnecs_ns deltat, void *data);
+int tnecs_W_step(tnecs_W *world, tnecs_ns deltat, void *data);
 
 /* --- PIPELINES --- */
 /* Run all systems in pipeline, by phases */
-int tnecs_pipeline_step(tnecs_W *w, tnecs_ns deltat,
+int tnecs_Pi_step(tnecs_W *w, tnecs_ns deltat,
                         void *data, tnecs_Pi pipeline);
 /* Run all systems in input pipeline and input phase */
-int tnecs_pipeline_step_phase(
+int tnecs_Pi_step_Ph(
     tnecs_W *w, tnecs_ns deltat,
     void *data, tnecs_Pi pipeline,
     tnecs_Ph phase);
 
-#define TNECS_PIPELINE_GET(world, pipeline) \
+#define TNECS_Pi_GET(world, pipeline) \
     &world->pipelines.byphase[(pipeline)]
 
 /* --- SYSTEM --- */
-int tnecs_system_run(
+int tnecs_S_run(
     tnecs_W *w, size_t id,
     tnecs_ns deltat, void *data);
 
@@ -150,22 +149,23 @@ int tnecs_custom_system_run(
 
 /* --- REGISTRATION --- */
 /* Phases start at 1, increment every call. */
-size_t tnecs_register_phase(    tnecs_W    *w, 
+size_t tnecs_register_Ph(    tnecs_W    *w, 
                                 tnecs_Pi  p);
 /* Pipelines start at 1, increment every call. */
-size_t tnecs_register_pipeline( tnecs_W    *w);
+size_t tnecs_register_Pi( tnecs_W    *w);
 
-size_t tnecs_register_system(
+size_t tnecs_register_S(
     tnecs_W         *w,
     tnecs_S     system,
     tnecs_Pi       pipe,
     tnecs_Ph          p,    
-    int                  isExclusive,
+    int         isExclusive,
     size_t               num, 
     tnecs_C      archetype);
-#define TNECS_REGISTER_SYSTEM(world, pfunc, pipeline, phase, excl, ...) \
-    tnecs_register_system(\
-        world, &pfunc, pipeline, phase, excl, \
+
+#define TNECS_REGISTER_S(world, pfunc, pipeline, phase, excl, ...) \
+    tnecs_register_S(\
+        world, pfunc, pipeline, phase, excl, \
         TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
         tnecs_C_ids2archetype(\
             TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
@@ -190,33 +190,31 @@ tnecs_E tnecs_E_destroy(
 tnecs_E tnecs_E_create_wC(
     tnecs_W *w, size_t argnum, ...);
 
-tnecs_E tnecs_E_add_Cs(
+tnecs_E tnecs_E_add_C(
     tnecs_W     *w,         tnecs_E    eID,
     tnecs_C  archetype, int             isNew);
-tnecs_E tnecs_E_remove_Cs(
+tnecs_E tnecs_E_remove_C(
     tnecs_W *w, tnecs_E eID,
     tnecs_C archetype);
 
 int tnecs_E_reuse(tnecs_W *w);
 int tnecs_E_flush(tnecs_W *w);
 
-#define TNECS_ENTITY_CREATE_wCOMPONENTS(world, ...) \
+#define TNECS_E_CREATE_wC(world, ...) \
     tnecs_E_create_wC(\
         world, \
         TNECS_VAR_EACH_ARGN(__VA_ARGS__), \
         TNECS_VARMACRO_COMMA(__VA_ARGS__)\
     )
-#define TNECS_ENTITY_EXISTS(world, index) \
+#define TNECS_E_EXISTS(world, index) \
     ((index != TNECS_NULL) && (world->entities.id[index] == index))
-#define TNECS_ENTITY_ARCHETYPE(world, entity) \
+#define TNECS_E_ARCHETYPE(world, entity) \
     world->entities.archetypes[entity]
 
 /* --- COMPONENT --- */
-void *tnecs_get_C(
-    tnecs_W *w, tnecs_E eID,
-    tnecs_C cID);
+void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
 
-#define TNECS_ENTITY_HASCOMPONENT(world, entity, cID) \
+#define TNECS_E_HAS_C(world, entity, cID) \
     (\
         (\
             world->entities.archetypes[entity] & \
@@ -232,21 +230,21 @@ void *tnecs_get_C(
 #define TNECS_CHOOSE_ADD_C(_1,_2,_3,_4,NAME,...) \
     NAME
 #define TNECS_ADD_C3(world, entity_id, cID) \
-    tnecs_E_add_Cs(\
+    tnecs_E_add_C(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(1, cID), \
         true\
     )
 #define TNECS_ADD_C4(world, entity_id, cID, isnewtype) \
-    tnecs_E_add_Cs(\
+    tnecs_E_add_C(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(1, cID), \
         isnewtype\
     )
-#define TNECS_ADD_CS(world, entity_id, isnewtype, ...) \
-    tnecs_E_add_Cs(\
+#define TNECS_ADD_Cs(world, entity_id, isnewtype, ...) \
+    tnecs_E_add_C(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(\
@@ -255,8 +253,8 @@ void *tnecs_get_C(
         ), \
         isnewtype\
     )
-#define TNECS_REMOVE_CS(world, entity_id, ...) \
-    tnecs_E_remove_Cs(\
+#define TNECS_REMOVE_C(world, entity_id, ...) \
+    tnecs_E_remove_C(\
         world, \
         entity_id, \
         tnecs_C_ids2archetype(\
@@ -278,10 +276,9 @@ void *tnecs_C_array(
     )
 
 /* --- ARCHETYPES --- */
-tnecs_C tnecs_C_ids2archetype(
-    size_t argnum, ...);
-tnecs_C tnecs_archetypeid(
-    const tnecs_W *const w, tnecs_C arch);
+tnecs_C tnecs_C_ids2archetype( size_t argnum, ...);
+tnecs_C tnecs_archetypeid(  const tnecs_W *const w, 
+                            tnecs_C arch);
 
 #define TNECS_C_ID2TYPE(id) \
     (((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
@@ -299,15 +296,15 @@ tnecs_C tnecs_archetypeid(
     )
 
 /* --- SYSTEM --- */
-#define TNECS_SYSTEM_ID2ARCHETYPE(world, id) \
+#define TNECS_S_ID2ARCHETYPE(world, id) \
     world->systems.archetypes[id]
 
 /* --- PHASE --- */
-#define TNECS_PHASE_VALID(world, pipeline, phase) \
+#define TNECS_Ph_VALID(world, pipeline, phase) \
     (phase < world->pipelines.byphase[pipeline].num)
 
 /* --- PIPELINE --- */
-#define TNECS_PIPELINE_VALID(world, pipeline) \
+#define TNECS_Pi_VALID(world, pipeline) \
     (pipeline < world->pipelines.num)
 
 #endif /* __TNECS_H__ */
