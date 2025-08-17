@@ -110,7 +110,7 @@ enum TNECS_PUBLIC {
 
 /* --- WORLD --- */
 int tnecs_genesis(tnecs_W **w);
-int tnecs_fin(tnecs_W **w);
+int tnecs_finale(tnecs_W **w);
 
 /* Toggle entity reuse i.e. deleted entity in queue */
 void tnecs_W_reuse( tnecs_W *w, int toggle);

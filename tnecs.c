@@ -98,9 +98,9 @@ typedef struct tnecs_Ss {
     tnecs_C     *As;    /* [sID] */
     tnecs_Pi    *Pi;    /* [sID] */
 #ifndef NDEBUG
-    /* Systems that might be run in current pipeline */
+    /* Systems maybe run in current pipeline */
     tnecs_arr to_run;
-    /* Systems ran in pipeline, if num_Es > 0 */
+    /* Systems ran, if num_Es > 0 */
     tnecs_arr ran;
 #endif /* NDEBUG */
 } tnecs_Ss;
@@ -159,11 +159,11 @@ static int _tnecs_breath_Ss(    tnecs_Ss    *Ss);
 static int _tnecs_breath_Phs(   tnecs_Phs   *byPh);
 static int _tnecs_breath_Pis(   tnecs_Pis   *Pis);
 
-static int _tnecs_fin_Ss(   tnecs_Ss    *Ss);
-static int _tnecs_fin_Es(   tnecs_Es    *Es);
-static int _tnecs_fin_As(   tnecs_As    *byT);
-static int _tnecs_fin_Phs(  tnecs_Phs   *byPh);
-static int _tnecs_fin_Pis(  tnecs_Pis   *Pis);
+static int _tnecs_finale_Ss(   tnecs_Ss    *Ss);
+static int _tnecs_finale_Es(   tnecs_Es    *Es);
+static int _tnecs_finale_As(   tnecs_As    *byT);
+static int _tnecs_finale_Phs(  tnecs_Phs   *byPh);
+static int _tnecs_finale_Pis(  tnecs_Pis   *Pis);
 
 /* --- REGISTRATION  --- */
 static size_t _tnecs_register_A( tnecs_W *w, size_t num_c,
@@ -234,7 +234,7 @@ static int tnecs_C_migrate( tnecs_W *w,     tnecs_E ent,
 /************* W FUNCTIONS ***************/
 int tnecs_genesis(tnecs_W **W) {
     if (*W != NULL) 
-        TNECS_CHECK(tnecs_fin(W));
+        TNECS_CHECK(tnecs_finale(W));
 
     *W = calloc(1, sizeof(tnecs_W));
     TNECS_CHECK(*W);
@@ -248,11 +248,11 @@ int tnecs_genesis(tnecs_W **W) {
     return (1);
 }
 
-int tnecs_fin(tnecs_W **W) {
-    TNECS_CHECK(_tnecs_fin_Pis( &((*W)->Pis)));
-    TNECS_CHECK(_tnecs_fin_Ss(  &((*W)->Ss)));
-    TNECS_CHECK(_tnecs_fin_Es(  &((*W)->Es)));
-    TNECS_CHECK(_tnecs_fin_As(  &((*W)->byT)));
+int tnecs_finale(tnecs_W **W) {
+    TNECS_CHECK(_tnecs_finale_Pis( &((*W)->Pis)));
+    TNECS_CHECK(_tnecs_finale_Ss(  &((*W)->Ss)));
+    TNECS_CHECK(_tnecs_finale_Es(  &((*W)->Es)));
+    TNECS_CHECK(_tnecs_finale_As(  &((*W)->byT)));
     free(*W);
 
     *W = NULL;
@@ -394,7 +394,7 @@ int _tnecs_breath_As(tnecs_As *byT) {
     return (1);
 }
 
-static int _tnecs_fin_Phs(tnecs_Phs *byPh) {
+static int _tnecs_finale_Phs(tnecs_Phs *byPh) {
     for (size_t i = 0; i < byPh->len; i++) {
         if (byPh->Ss != NULL)
             free(byPh->Ss[i]);
@@ -409,7 +409,7 @@ static int _tnecs_fin_Phs(tnecs_Phs *byPh) {
     return(1);
 }
 
-static int _tnecs_fin_Ss(tnecs_Ss *Ss) {
+static int _tnecs_finale_Ss(tnecs_Ss *Ss) {
     free(Ss->Os);
     free(Ss->Phs);
     free(Ss->Pi);
@@ -423,7 +423,7 @@ static int _tnecs_fin_Ss(tnecs_Ss *Ss) {
     return(1);
 }
 
-static int _tnecs_fin_Es(tnecs_Es *Es) {
+static int _tnecs_finale_Es(tnecs_Es *Es) {
     free(Es->id);
     free(Es->Os);
     free(Es->open.arr);
@@ -432,16 +432,16 @@ static int _tnecs_fin_Es(tnecs_Es *Es) {
     return(1);
 }
 
-static int _tnecs_fin_Pis(tnecs_Pis *Pis) {
+static int _tnecs_finale_Pis(tnecs_Pis *Pis) {
     for (size_t i = 0; i < Pis->len; i++) {
-        _tnecs_fin_Phs(&Pis->byPh[i]);
+        _tnecs_finale_Phs(&Pis->byPh[i]);
     }
     free(Pis->byPh);
     
     return(1);
 }
 
-static int _tnecs_fin_As(tnecs_As *byT) {
+static int _tnecs_finale_As(tnecs_As *byT) {
     for (size_t i = 0; i < byT->len; i++) {
         if (byT->Es != NULL)
             free(byT->Es[i]);
