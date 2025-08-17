@@ -13,11 +13,12 @@
 **
 ***************************************************
 **
-** tnecs: Tiny C99 Entity-Component-System (ECS) library.
+**  tnecs: Tiny C99 Entity-Component-System (ECS) library.
 **      
 **  The simplest possible C99 ECS library, 
 **  only with the minimum necessary features. 
-**  Glossary:
+**
+**  Abbreviations:
 **      - E:    Entity      - Pi:   Pipeline
 **      - C:    Component   - Ph:   Phase
 **      - S:    System      - W:    World
@@ -25,8 +26,15 @@
 **      - A:    Archetype  i.e. ull w/ many bits set
 **      - T:    Type       i.e. ull w/ single bit set 
 **      Notes: 
-**          1- wC means "with Components" 
-**          2- Plural forms i.e. "Cs"
+**          1- wC   means "with Components" 
+**          2- byA  means "by Archetype" 
+**          3- Plural forms i.e. "Cs"
+**  Glossary:
+**      id: Unique identifier, always 1++.
+**          1. Self is NOT id: C,  S,  T,  A
+**          2. Self is id:     E, Ph, Pi 
+**      Order: index of thing, normally in other context
+**          - E_O_byT: order of entity, in archetype array.
 */
 
 #include <math.h>
@@ -73,7 +81,7 @@ enum TNECS_PUBLIC {
 #define TNECS_CONCAT2(arg1, arg2) arg1##arg2
 
 #define TNECS_A_HAS_T(A, T)         ((A & T) > 0)
-#define TNECS_A_IS_subT(A1, A2)     ((A1 & A2) == A1)
+#define TNECS_A_IS_subA(A1, A2)     ((A1 & A2) == A1)
 
 /* -- Hacky distribution for variadic macros -- */
 /* Distribution as in algebra: a(x + b) -> ax + ab */
@@ -90,7 +98,7 @@ enum TNECS_PUBLIC {
 #define  TNECS_ARGN(...) _TNECS_ARGN( __VA_ARGS__, _TNECS_SEQ())
 #define _TNECS_ARGN(...) _TNECS_SEQCUT(__VA_ARGS__)
 #define _TNECS_SEQCUT(_1, _2, _3, _4, _5, _6, _7, _8,  N, ...) N
-#define _TNECS_SEQ()  8,  7,  6,  5,  4,  3,  2,  1,  0
+#define _TNECS_SEQ()   8,  7,  6,  5,  4,  3,  2,  1,  0
 
 /* TNECS_COMMA puts commas after each arg except last. 
 **  - up to 63 args, if all TNECS_COMMA_N exist */
@@ -113,7 +121,7 @@ int tnecs_genesis(tnecs_W **w);
 int tnecs_finale(tnecs_W **w);
 
 /* Toggle entity reuse i.e. deleted entity in queue */
-void tnecs_W_reuse( tnecs_W *w, int toggle);
+void tnsecs_reuse_E( tnecs_W *w, int toggle);
 
 /* Run all Ss in all Pis, by Phs */
 int tnecs_step( tnecs_W *w,     tnecs_ns dt, 
@@ -181,8 +189,8 @@ tnecs_E tnecs_E_add_C(  tnecs_W *w, tnecs_E eID,
 tnecs_E tnecs_E_rm_C(   tnecs_W *w, tnecs_E eID, 
                         tnecs_C  A);
 
-int tnecs_E_reuse(tnecs_W *w);
-int tnecs_E_flush(tnecs_W *w);
+int tnecs_E_open_find(  tnecs_W *w);
+int tnecs_E_open_flush( tnecs_W *w);
 
 #define TNECS_E_CREATE_wC(W, ...) \
     tnecs_E_create_wC(\

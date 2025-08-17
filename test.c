@@ -221,10 +221,10 @@ void SystemMove2(struct tnecs_In *input) {
 
 void SystemMovePhase1(struct tnecs_In *input) {
     for (int ent = 0; ent < input->num_Es; ent++) {
-        tnecs_E current_ent = input->world->byT.Es[input->E_A_id][ent];
+        tnecs_E current_ent = input->world->byA.Es[input->E_A_id][ent];
         test_true(current_ent);
-        test_true(input->world->Es.id[input->world->byT.Es[input->E_A_id][ent]]
-            == input->world->byT.Es[input->E_A_id][ent]);
+        test_true(input->world->Es.id[input->world->byA.Es[input->E_A_id][ent]]
+            == input->world->byA.Es[input->E_A_id][ent]);
         test_true(input->E_A_id == tnecs_A_id(input->world,
                                                              input->world->Es.As[current_ent]));
     }
@@ -232,10 +232,10 @@ void SystemMovePhase1(struct tnecs_In *input) {
 
 void SystemMovePhase4(struct tnecs_In *input) {
     for (int ent = 0; ent < input->num_Es; ent++) {
-        tnecs_E current_ent = input->world->byT.Es[input->E_A_id][ent];
+        tnecs_E current_ent = input->world->byA.Es[input->E_A_id][ent];
         test_true(current_ent);
-        test_true(input->world->Es.id[input->world->byT.Es[input->E_A_id][ent]]
-            == input->world->byT.Es[input->E_A_id][ent]);
+        test_true(input->world->Es.id[input->world->byA.Es[input->E_A_id][ent]]
+            == input->world->byA.Es[input->E_A_id][ent]);
         test_true(input->E_A_id == tnecs_A_id(input->world,
                                                              input->world->Es.As[current_ent]));
     }
@@ -243,10 +243,10 @@ void SystemMovePhase4(struct tnecs_In *input) {
 
 void SystemMovePhase2(struct tnecs_In *input) {
     for (int ent = 0; ent < input->num_Es; ent++) {
-        tnecs_E current_ent = input->world->byT.Es[input->E_A_id][ent];
+        tnecs_E current_ent = input->world->byA.Es[input->E_A_id][ent];
         test_true(current_ent);
-        test_true(input->world->Es.id[input->world->byT.Es[input->E_A_id][ent]]
-            == input->world->byT.Es[input->E_A_id][ent]);
+        test_true(input->world->Es.id[input->world->byA.Es[input->E_A_id][ent]]
+            == input->world->byA.Es[input->E_A_id][ent]);
         test_true(input->E_A_id == tnecs_A_id(input->world,
                                                              input->world->Es.As[current_ent]));
     }
@@ -274,10 +274,10 @@ void SystemMove(struct tnecs_In *input) {
     v = TNECS_C_ARRAY(input, Velocity_ID);
 
     for (int ent = 0; ent < input->num_Es; ent++) {
-        tnecs_E current_ent = input->world->byT.Es[input->E_A_id][ent];
+        tnecs_E current_ent = input->world->byA.Es[input->E_A_id][ent];
         test_true(current_ent);
-        test_true(input->world->Es.id[input->world->byT.Es[input->E_A_id][ent]]
-            == input->world->byT.Es[input->E_A_id][ent]);
+        test_true(input->world->Es.id[input->world->byA.Es[input->E_A_id][ent]]
+            == input->world->byA.Es[input->E_A_id][ent]);
         test_true(input->E_A_id == tnecs_A_id(input->world,
                                                              input->world->Es.As[current_ent]));
 
@@ -331,8 +331,8 @@ void tnecs_test_utilities() {
     test_true(TNECS_C_ID2T(5) == 16);
     test_true(TNECS_C_ID2T(6) == 32);
 
-    test_true(TNECS_A_IS_subT(4, (4 + 8 + 16)));
-    test_true(!TNECS_A_IS_subT(2, (4 + 8 + 16)));
+    test_true(TNECS_A_IS_subA(4, (4 + 8 + 16)));
+    test_true(!TNECS_A_IS_subA(2, (4 + 8 + 16)));
 
     test_true(setBits_KnR(1) == 1);
     test_true(setBits_KnR(2) == 1);
@@ -354,12 +354,12 @@ void tnecs_test_C_registration() {
     size_t temp_A_id    = 1;
     size_t temp_archetype       = 1;
     test_true(TNECS_C_ID2T(temp_comp_id) == temp_archetype);
-    assert(test_world->byT.Cs_id != NULL);
-    assert(test_world->byT.Cs_id[temp_comp_id] != NULL);
-    test_true(test_world->byT.Cs_id[temp_A_id][temp_comp_order] == temp_comp_id);
-    test_true(test_world->byT.id[0] == 0);
-    test_true(test_world->byT.id[1] == (TNECS_NULLSHIFT << 0));
-    test_true(test_world->byT.id[1] == temp_comp_flag);
+    assert(test_world->byA.Cs_id != NULL);
+    assert(test_world->byA.Cs_id[temp_comp_id] != NULL);
+    test_true(test_world->byA.Cs_id[temp_A_id][temp_comp_order] == temp_comp_id);
+    test_true(test_world->byA.A[0] == 0);
+    test_true(test_world->byA.A[1] == (TNECS_NULLSHIFT << 0));
+    test_true(test_world->byA.A[1] == temp_comp_flag);
     test_true(test_world->Cs.num == 2);
 
     TNECS_REGISTER_C(test_world, Unit, NULL, NULL);
@@ -369,11 +369,11 @@ void tnecs_test_C_registration() {
     temp_A_id = 2;
     temp_archetype = 2;
     test_true(TNECS_C_ID2T(temp_comp_id) == temp_archetype);
-    test_true(test_world->byT.Cs_id[temp_comp_id][temp_comp_order] == temp_comp_id);
-    test_true(test_world->byT.id[0] == 0);
-    test_true(test_world->byT.id[1] == (TNECS_NULLSHIFT << 0));
-    test_true(test_world->byT.id[2] == (TNECS_NULLSHIFT << 1));
-    test_true(test_world->byT.id[2] == temp_comp_flag);
+    test_true(test_world->byA.Cs_id[temp_comp_id][temp_comp_order] == temp_comp_id);
+    test_true(test_world->byA.A[0] == 0);
+    test_true(test_world->byA.A[1] == (TNECS_NULLSHIFT << 0));
+    test_true(test_world->byA.A[2] == (TNECS_NULLSHIFT << 1));
+    test_true(test_world->byA.A[2] == temp_comp_flag);
     test_true(test_world->Cs.num == 3);
 
     TNECS_REGISTER_C(test_world, Sprite, NULL, NULL);
@@ -383,11 +383,11 @@ void tnecs_test_C_registration() {
     temp_A_id = 3;
     temp_archetype = 4;
     test_true(TNECS_C_ID2T(temp_comp_id) == temp_archetype);
-    test_true(test_world->byT.id[0] == 0);
-    test_true(test_world->byT.id[1] == (TNECS_NULLSHIFT << 0));
-    test_true(test_world->byT.id[2] == (TNECS_NULLSHIFT << 1));
-    test_true(test_world->byT.id[3] == (TNECS_NULLSHIFT << 2));
-    test_true(test_world->byT.id[3] == temp_comp_flag);
+    test_true(test_world->byA.A[0] == 0);
+    test_true(test_world->byA.A[1] == (TNECS_NULLSHIFT << 0));
+    test_true(test_world->byA.A[2] == (TNECS_NULLSHIFT << 1));
+    test_true(test_world->byA.A[3] == (TNECS_NULLSHIFT << 2));
+    test_true(test_world->byA.A[3] == temp_comp_flag);
     test_true(test_world->Cs.num == 4);
 
     TNECS_REGISTER_C(test_world, Velocity, NULL, NULL);
@@ -397,14 +397,14 @@ void tnecs_test_C_registration() {
     temp_A_id = 4;
     temp_archetype = 8;
     test_true(TNECS_C_ID2T(temp_comp_id) == temp_archetype);
-    test_true(test_world->byT.Cs_id[temp_comp_id][temp_comp_order] == temp_comp_id);
+    test_true(test_world->byA.Cs_id[temp_comp_id][temp_comp_order] == temp_comp_id);
 
-    test_true(test_world->byT.id[0] == 0);
-    test_true(test_world->byT.id[1] == (TNECS_NULLSHIFT << 0));
-    test_true(test_world->byT.id[2] == (TNECS_NULLSHIFT << 1));
-    test_true(test_world->byT.id[3] == (TNECS_NULLSHIFT << 2));
-    test_true(test_world->byT.id[4] == (TNECS_NULLSHIFT << 3));
-    test_true(test_world->byT.id[4] == temp_comp_flag);
+    test_true(test_world->byA.A[0] == 0);
+    test_true(test_world->byA.A[1] == (TNECS_NULLSHIFT << 0));
+    test_true(test_world->byA.A[2] == (TNECS_NULLSHIFT << 1));
+    test_true(test_world->byA.A[3] == (TNECS_NULLSHIFT << 2));
+    test_true(test_world->byA.A[4] == (TNECS_NULLSHIFT << 3));
+    test_true(test_world->byA.A[4] == temp_comp_flag);
     test_true(test_world->Cs.num == 5);
 
     int Position_ID = 1;
@@ -422,8 +422,8 @@ void tnecs_test_system_registration() {
     TNECS_REGISTER_S(test_world, SystemMove, pipe0, 0, 1, Position_ID, Velocity_ID);
     size_t temp_A_id    = 5;
 
-    test_true(test_world->byT.Cs_id[temp_A_id][0] == Position_ID);
-    test_true(test_world->byT.Cs_id[temp_A_id][1] == Velocity_ID);
+    test_true(test_world->byA.Cs_id[temp_A_id][0] == Position_ID);
+    test_true(test_world->byA.Cs_id[temp_A_id][1] == Velocity_ID);
 }
 
 void tnecs_test_E_creation() {
@@ -475,7 +475,7 @@ void tnecs_test_E_creation() {
     tnecs_E *open_arr = test_world->Es.open.arr;
     test_true(test_world->Es.open.num == 0);
     test_true(!test_world->Es.id[Silou]);
-    tnecs_E_reuse(test_world);
+    tnecs_E_open_find(test_world);
     test_true(test_world->Es.open.num == 1);
     test_true(open_arr[0] != TNECS_NULL);
     test_true(open_arr[0] == Silou);
@@ -495,18 +495,18 @@ void tnecs_test_E_creation() {
 
     tnecs_W *test_world3 = NULL;
     tnecs_genesis(&test_world3);
-    tnecs_fin(&test_world3);
+    tnecs_finale(&test_world3);
 
     // MORE TESTS FOR COVERAGE
     tnecs_W *test_world2 = NULL;
     tnecs_genesis(&test_world2);
 
-    test_world2->byT.num = TNECS_S_0LEN;
+    test_world2->byA.num = TNECS_S_0LEN;
     TNECS_REGISTER_C(test_world2, Position2, NULL, NULL);
     test_true(test_world2->Cs.num == 2);
 
     // Coverage for if in TNECS_REGISTER_S
-    tnecs_fin(&test_world2);
+    tnecs_finale(&test_world2);
     test_true(test_world2 == NULL);
     tnecs_genesis(&test_world2);
 
@@ -516,7 +516,7 @@ void tnecs_test_E_creation() {
     TNECS_REGISTER_C(test_world2, Position2, NULL, NULL);
     test_world2->Pis.byPh[0].num_Ss[0] = TNECS_Ph_0LEN;
     TNECS_REGISTER_S(test_world2, SystemMovePhase1, pipe0, 0, 0, Position2_ID);
-    tnecs_fin(&test_world2);
+    tnecs_finale(&test_world2);
 
     // Coverage for "for" in tnecs_C_del
     tnecs_genesis(&test_world2);
@@ -524,7 +524,7 @@ void tnecs_test_E_creation() {
     TNECS_REGISTER_C(test_world2, Position2_ID, NULL, NULL);
     tnecs_E Erwin = TNECS_E_CREATE_wC(test_world2, Position2_ID, Unit2_ID);
     tnecs_C_del(test_world2, Erwin, (1 + 2));
-    tnecs_fin(&test_world2);
+    tnecs_finale(&test_world2);
 }
 
 void tnecs_test_C_add() {
@@ -733,39 +733,39 @@ void tnecs_test_C_array() {
 
     size_t temp_C_O = tnecs_C_O_byTid(arr_world, Position_ID, temp_archetypeid);
     assert(temp_archetypeid > TNECS_NULL);
-    assert(arr_world->byT.Cs != NULL);
-    assert(arr_world->byT.Cs[temp_archetypeid] != NULL);
+    assert(arr_world->byA.Cs != NULL);
+    assert(arr_world->byA.Cs[temp_archetypeid] != NULL);
 
-    test_true(arr_world->byT.Cs[temp_archetypeid][temp_C_O].num == 4);
+    test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 4);
     temp_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, temp_archetypeid);
-    test_true(arr_world->byT.Cs[temp_archetypeid][temp_C_O].num == 4);
+    test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 4);
 
     temp_archetypeid = TNECS_C_IDS2AID(arr_world, Unit_ID, Velocity_ID);
     temp_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, temp_archetypeid);
-    test_true(arr_world->byT.Cs[temp_archetypeid][temp_C_O].num == 3);
+    test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 3);
     temp_C_O = tnecs_C_O_byTid(arr_world, Velocity_ID, temp_archetypeid);
-    test_true(arr_world->byT.Cs[temp_archetypeid][temp_C_O].num == 3);
+    test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 3);
 
     temp_archetypeid = TNECS_C_IDS2AID(arr_world, Unit_ID, Velocity_ID, Position_ID);
     temp_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, temp_archetypeid);
-    test_true(arr_world->byT.Cs[temp_archetypeid][temp_C_O].num == 2);
+    test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 2);
     temp_C_O = tnecs_C_O_byTid(arr_world, Position_ID, temp_archetypeid);
-    test_true(arr_world->byT.Cs[temp_archetypeid][temp_C_O].num == 2);
+    test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 2);
     temp_C_O = tnecs_C_O_byTid(arr_world, Velocity_ID, temp_archetypeid);
-    test_true(arr_world->byT.Cs[temp_archetypeid][temp_C_O].num == 2);
+    test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 2);
 
     size_t old_E_order = arr_world->Es.Os[temp_ent];
     test_true(old_E_order == 0);
     test_true(arr_world->Es.As[temp_ent] == TNECS_C_IDS2A(Unit_ID));
     size_t old_archetypeid = TNECS_C_IDS2AID(arr_world, Unit_ID);
-    test_true(arr_world->byT.num_Es[old_archetypeid] == 1);
+    test_true(arr_world->byA.num_Es[old_archetypeid] == 1);
     test_true(old_archetypeid == Unit_ID);
     size_t old_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, old_archetypeid);
 
     test_true(old_C_O < TNECS_C_CAP);
     test_true(old_C_O == 0);
 
-    test_true(arr_world->byT.Cs[old_archetypeid][old_C_O].num == 1);
+    test_true(arr_world->byA.Cs[old_archetypeid][old_C_O].num == 1);
 
     struct Unit     *temp_unit  = tnecs_get_C(arr_world, temp_ent, Unit_ID);
     struct Position *temp_pos   = tnecs_get_C(arr_world, temp_ent, Position_ID);
@@ -788,17 +788,17 @@ void tnecs_test_C_array() {
     test_true(temp_unit->str  == 12);
 
     size_t new_archetypeid = TNECS_C_IDS2AID(arr_world, Unit_ID, Position_ID);
-    test_true(arr_world->byT.num_Es[new_archetypeid] == 4);
+    test_true(arr_world->byA.num_Es[new_archetypeid] == 4);
     TNECS_ADD_C(arr_world, temp_ent, Position_ID);
     
     temp_unit = tnecs_get_C(arr_world, temp_ent, Unit_ID);
     test_true(temp_unit->hp   == 10);
     test_true(temp_unit->str  == 12);
 
-    test_true(arr_world->byT.num_Es[old_archetypeid] == 0);
+    test_true(arr_world->byA.num_Es[old_archetypeid] == 0);
     test_true(arr_world->Es.As[temp_ent] == TNECS_C_IDS2A(Unit_ID,
             Position_ID));
-    test_true(arr_world->byT.num_Es[new_archetypeid] == 5);
+    test_true(arr_world->byA.num_Es[new_archetypeid] == 5);
     temp_unit = tnecs_get_C(arr_world, temp_ent, Unit_ID);
     test_true(temp_unit->hp   == 10);
     test_true(temp_unit->str  == 12);
@@ -814,7 +814,7 @@ void tnecs_test_C_array() {
     test_true(temp_pos->x     == 0);
     test_true(temp_pos->y     == 0);
 
-    tnecs_fin(&arr_world);
+    tnecs_finale(&arr_world);
 }
 
 void tnecs_test_world_progress() {
@@ -837,7 +837,7 @@ void tnecs_test_world_progress() {
     test_true(!TNECS_E_HAS_C(test_world, Perignon, Unit_ID));
 
     test_true(test_world->Es.As[Perignon] == (1 + 2));
-    test_true(test_world->byT.num_Es[tnecs_A_id(test_world, 1 + 2)] == 1);
+    test_true(test_world->byA.num_Es[tnecs_A_id(test_world, 1 + 2)] == 1);
 
     temp_position = tnecs_get_C(test_world, Perignon, Position_ID);
     temp_velocity = tnecs_get_C(test_world, Perignon, Velocity_ID);
@@ -899,7 +899,7 @@ void tnecs_test_world_progress() {
     tnecs_step(test_world, 0, NULL);
 
     test_true(test_world->Es.As[Perignon] == (1 + 2));
-    test_true(test_world->byT.num_Es[tnecs_A_id(test_world, 1 + 2)] == 1);
+    test_true(test_world->byA.num_Es[tnecs_A_id(test_world, 1 + 2)] == 1);
     tnecs_E_destroy(test_world, Perignon);
 
     tnecs_grow_Ph(test_world, 0);
@@ -925,33 +925,33 @@ void tnecs_test_world_progress() {
     test_true(TNECS_S_ID2A(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
     test_true(TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
 
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world,
                                                             TNECS_S_ID2A(inclusive_world, SystemMove_ID))] == 3);
-    test_true(inclusive_world->byT.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMove_ID))][0] == tnecs_A_id(inclusive_world,
                                                                       TNECS_S_ID2A(inclusive_world, SystemMovePhase1_ID)));
-    test_true(inclusive_world->byT.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMove_ID))][1] == tnecs_A_id(inclusive_world,
                                                                       TNECS_S_ID2A(inclusive_world, SystemMovePhase2_ID)));
-    test_true(inclusive_world->byT.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMove_ID))][2] == tnecs_A_id(inclusive_world,
                                                                       TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID)));
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world,
                                                             TNECS_S_ID2A(inclusive_world, SystemMovePhase1_ID))] == 1);
-    test_true(inclusive_world->byT.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world,
                                                                       SystemMovePhase1_ID))][0] == tnecs_A_id(inclusive_world,
                                                                               TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID)));
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world,
                                                             TNECS_S_ID2A(inclusive_world, SystemMovePhase2_ID))] == 1);
-    test_true(inclusive_world->byT.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world,
                                                                       SystemMovePhase2_ID))][0] == tnecs_A_id(inclusive_world,
                                                                               TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID)));
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world,
                                                             TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID))] == 0);
 
-    test_true(inclusive_world->byT.num == 8);
+    test_true(inclusive_world->byA.num == 8);
     TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
     TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
     TNECS_E_CREATE_wC(inclusive_world, Unit_ID);
@@ -983,15 +983,15 @@ void tnecs_test_world_progress() {
     TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
     TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
     TNECS_E_CREATE_wC(inclusive_world, Unit_ID, Position_ID, Velocity_ID);
-    test_true(inclusive_world->byT.num_Es[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_Es[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMove_ID))] == 9);
-    test_true(inclusive_world->byT.num_Es[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_Es[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMovePhase1_ID))] == 2);
-    test_true(inclusive_world->byT.num_Es[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_Es[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMovePhase2_ID))] == 6);
-    test_true(inclusive_world->byT.num_Es[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.num_Es[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID))] == 12);
-    test_true(inclusive_world->byT.num == 8);
+    test_true(inclusive_world->byA.num == 8);
     tnecs_step(inclusive_world, 1, NULL);
 
     test_true(inclusive_world->Ss.to_run.num == 9);
@@ -1032,21 +1032,21 @@ void tnecs_test_world_progress() {
     test_true(TNECS_S_ID2A(inclusive_world, SystemMovePhase2_ID) == 4 + 1);
     test_true(TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID) == 4 + 2 + 1);
 
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world2,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world2,
                                                             TNECS_S_ID2A(inclusive_world2, SystemMove_ID))] == 3);
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world2,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world2,
                                                             TNECS_S_ID2A(inclusive_world2, SystemMovePhase1_ID))] == 1);
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world2,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world2,
                                                             TNECS_S_ID2A(inclusive_world2, SystemMovePhase2_ID))] == 1);
-    test_true(inclusive_world->byT.num_A_ids[tnecs_A_id(inclusive_world2,
+    test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world2,
                                                             TNECS_S_ID2A(inclusive_world2, SystemMovePhase4_ID))] == 0);
 
-    test_true(inclusive_world2->byT.num == 8);
+    test_true(inclusive_world2->byA.num == 8);
     TNECS_E_CREATE_wC(inclusive_world2, Unit_ID);
     TNECS_E_CREATE_wC(inclusive_world2, Unit_ID, Velocity_ID);
     TNECS_E_CREATE_wC(inclusive_world2, Unit_ID, Position_ID);
     TNECS_E_CREATE_wC(inclusive_world2, Unit_ID, Position_ID, Velocity_ID);
-    test_true(inclusive_world2->byT.num == 8);
+    test_true(inclusive_world2->byA.num == 8);
     tnecs_step(inclusive_world2, 1, NULL);
 
     test_true(inclusive_world2->Ss.to_run.num == 9);
@@ -1068,8 +1068,8 @@ void tnecs_test_world_progress() {
     test_true(torun_arr[14] == NULL);
     test_true(torun_arr[15] == NULL);
 
-    tnecs_fin(&inclusive_world2);
-    tnecs_fin(&inclusive_world);
+    tnecs_finale(&inclusive_world2);
+    tnecs_finale(&inclusive_world);
 }
 
 void tnecs_test_grow() {
@@ -1080,8 +1080,8 @@ void tnecs_test_grow() {
     test_true(grow_world != NULL);
 
     test_true(grow_world->Es.len    == TNECS_E_0LEN);
-    test_true(grow_world->byT.len      == TNECS_S_0LEN);
-    test_true(grow_world->byT.num      == 1);
+    test_true(grow_world->byA.len      == TNECS_S_0LEN);
+    test_true(grow_world->byA.num      == 1);
     test_true(grow_world->Ss.len     == TNECS_S_0LEN);
     test_true(grow_world->Ss.num     == 1);
     test_true(grow_world->Pis.byPh[0].len     == TNECS_Ph_0LEN);
@@ -1095,13 +1095,13 @@ void tnecs_test_grow() {
         test_true(grow_world->Es.id[i] == 0);
     }
 
-    for (size_t i = 0; i < grow_world->byT.len; i++) {
-        test_true(grow_world->byT.num_Es[i] == 0);
-        test_true(grow_world->byT.len_Es[i] == TNECS_E_0LEN);
-        for (size_t j = 0; j < grow_world->byT.len_Es[i]; j++) {
-            test_true(grow_world->byT.Es[i][j] == 0);
+    for (size_t i = 0; i < grow_world->byA.len; i++) {
+        test_true(grow_world->byA.num_Es[i] == 0);
+        test_true(grow_world->byA.len_Es[i] == TNECS_E_0LEN);
+        for (size_t j = 0; j < grow_world->byA.len_Es[i]; j++) {
+            test_true(grow_world->byA.Es[i][j] == 0);
         }
-        test_true(grow_world->byT.num_Cs[i] == 0);
+        test_true(grow_world->byA.num_Cs[i] == 0);
     }
 
     for (size_t i = 0; i < grow_world->Pis.byPh[0].len; i++) {
@@ -1123,44 +1123,44 @@ void tnecs_test_grow() {
 
     size_t test_archetypeid = 0;
     tnecs_grow_byT(grow_world, test_archetypeid);
-    test_true(grow_world->byT.num_Es[test_archetypeid] == 0);
-    test_true(grow_world->byT.len_Es[test_archetypeid] == TNECS_E_0LEN *
+    test_true(grow_world->byA.num_Es[test_archetypeid] == 0);
+    test_true(grow_world->byA.len_Es[test_archetypeid] == TNECS_E_0LEN *
         TNECS_ARR_GROW);
-    for (size_t j = 0; j < grow_world->byT.len_Es[test_archetypeid]; j++) {
-        test_true(grow_world->byT.Es[test_archetypeid][j] == 0);
+    for (size_t j = 0; j < grow_world->byA.len_Es[test_archetypeid]; j++) {
+        test_true(grow_world->byA.Es[test_archetypeid][j] == 0);
     }
 
     test_archetypeid = 1;
     tnecs_grow_byT(grow_world, test_archetypeid);
-    test_true(grow_world->byT.num_Es[test_archetypeid] == 0);
-    test_true(grow_world->byT.len_Es[test_archetypeid] == TNECS_E_0LEN *
+    test_true(grow_world->byA.num_Es[test_archetypeid] == 0);
+    test_true(grow_world->byA.len_Es[test_archetypeid] == TNECS_E_0LEN *
         TNECS_ARR_GROW);
-    for (size_t j = 0; j < grow_world->byT.len_Es[test_archetypeid]; j++) {
-        test_true(grow_world->byT.Es[test_archetypeid][j] == 0);
+    for (size_t j = 0; j < grow_world->byA.len_Es[test_archetypeid]; j++) {
+        test_true(grow_world->byA.Es[test_archetypeid][j] == 0);
     }
-    for (size_t i = (test_archetypeid + 1); i < grow_world->byT.len; i++) {
-        test_true(grow_world->byT.num_Es[i] == 0);
-        test_true(grow_world->byT.len_Es[i] == TNECS_E_0LEN);
-        for (size_t j = 0; j < grow_world->byT.len_Es[i]; j++) {
-            test_true(grow_world->byT.Es[i][j] == 0);
+    for (size_t i = (test_archetypeid + 1); i < grow_world->byA.len; i++) {
+        test_true(grow_world->byA.num_Es[i] == 0);
+        test_true(grow_world->byA.len_Es[i] == TNECS_E_0LEN);
+        for (size_t j = 0; j < grow_world->byA.len_Es[i]; j++) {
+            test_true(grow_world->byA.Es[i][j] == 0);
         }
-        test_true(grow_world->byT.num_Cs[i] == 0);
+        test_true(grow_world->byA.num_Cs[i] == 0);
     }
 
     tnecs_grow_S(grow_world);
     test_true(grow_world->Ss.len == TNECS_S_0LEN * TNECS_ARR_GROW);
     test_true(grow_world->Ss.num == 1);
     tnecs_grow_A(grow_world);
-    test_true(grow_world->byT.len == TNECS_S_0LEN * TNECS_ARR_GROW);
-    test_true(grow_world->byT.num == 1);
+    test_true(grow_world->byA.len == TNECS_S_0LEN * TNECS_ARR_GROW);
+    test_true(grow_world->byA.num == 1);
 
-    for (size_t i = TNECS_S_0LEN; i < grow_world->byT.len; i++) {
-        test_true(grow_world->byT.num_Es[i] == 0);
-        test_true(grow_world->byT.len_Es[i] == TNECS_E_0LEN);
-        for (size_t j = 0; j < grow_world->byT.len_Es[i]; j++) {
-            test_true(grow_world->byT.Es[i][j] == 0);
+    for (size_t i = TNECS_S_0LEN; i < grow_world->byA.len; i++) {
+        test_true(grow_world->byA.num_Es[i] == 0);
+        test_true(grow_world->byA.len_Es[i] == TNECS_E_0LEN);
+        for (size_t j = 0; j < grow_world->byA.len_Es[i]; j++) {
+            test_true(grow_world->byA.Es[i][j] == 0);
         }
-        test_true(grow_world->byT.num_Cs[i] == 0);
+        test_true(grow_world->byA.num_Cs[i] == 0);
     }
 
     tnecs_grow_Ph(grow_world, 0);
@@ -1175,7 +1175,7 @@ void tnecs_test_grow() {
         }
     }
 
-    tnecs_fin(&grow_world);
+    tnecs_finale(&grow_world);
 }
 
 void tnecs_benchmarks(uint64_t num) {
@@ -1288,7 +1288,7 @@ void tnecs_benchmarks(uint64_t num) {
     dupprintf(globalf, "%7llu\t", t_1 - t_0);
 
     t_0 = tnecs_get_us();
-    tnecs_fin(&bench_world);
+    tnecs_finale(&bench_world);
     t_1 = tnecs_get_us();
     dupprintf(globalf, "%7llu\n", t_1 - t_0);
 }
@@ -1386,7 +1386,7 @@ void tnecs_test_Pis() {
     tnecs_step_Pi_Ph(pipe_world, 1, NULL, pipe1, phase1);
     test_true(pipe_world->Ss.to_run.num == 1);
 
-    tnecs_fin(&pipe_world);
+    tnecs_finale(&pipe_world);
 }
 
 void Position_Init(void *voidpos) {
@@ -1435,8 +1435,8 @@ void tnecs_test_finit_ffree(void) {
     test_true(pos->arr      == NULL);
     test_true(pos->arr_len  == 0);
 
-    tnecs_fin(&nof_world);
-    tnecs_fin(&f_world);
+    tnecs_finale(&nof_world);
+    tnecs_finale(&f_world);
 }
 
 int main() {
@@ -1479,7 +1479,7 @@ int main() {
     // for (uint64_t num = 1; num < 2e6; num *= 2)
     //     tnecs_benchmarks(num);
 
-    tnecs_fin(&test_world);
+    tnecs_finale(&test_world);
     dupprintf(globalf, "\n --- tnecs test end ---\n\n");
     fclose(globalf);
     return (0);
