@@ -39,6 +39,12 @@ enum TNECS_PRIVATE {
 };
 
 /* -- struct -- */
+Lexicon:
+id: Unique identifier, always 1++.
+    1. Self is NOT id: S,  C,  T,  A
+    2. Self is id:     Ph, Pi, E
+Order: index of thing, normally in other context
+    - E.g. E_O_byT: order of entity, in archetype array.
 typedef struct tnecs_carr { /* 1D array of Cs */
     tnecs_C  type;
     size_t   num;
@@ -53,18 +59,18 @@ typedef struct tnecs_arr {
 } tnecs_arr;
 
 typedef struct tnecs_Phs {
-    /* phase == id == O == 1++ */
+    /* phase == id == 1++ */
     size_t num;
     size_t len;
-
+j
     size_t       *len_Ss; /* [Ph_id] */
     size_t       *num_Ss; /* [Ph_id] */
-    size_t      **Ss_id;  /* [Ph_id][S_O] */
-    tnecs_S_f   **Ss;     /* [Ph_id][S_id]    */
+    size_t      **Ss_id;  /* [Ph_id][S_O]    */
+    tnecs_S_f   **Ss;     /* [Ph_id][S_O]    */
 } tnecs_Phs;
 
 typedef struct tnecs_Pis {
-    /* pipeline == id == O == 1++ */
+    /* pipeline == id == 1++ */
     size_t num;
     size_t len;
 
@@ -72,7 +78,7 @@ typedef struct tnecs_Pis {
 } tnecs_Pis;
 
 typedef struct tnecs_Es {
-    /* entity == id == O == 1++ */
+    /* entity == id == 1++ */
     // - .num doesn't change even if Es get deleted
     // - if reuse_Es: add deleted Es to Es_open
     //      - Call tnecs_E_reuse to add Es with
@@ -88,7 +94,7 @@ typedef struct tnecs_Es {
 
 typedef struct tnecs_Ss {
     /* System == function != S_id */
-    /* S_id == O == 1++ */
+    /* S_id== 1++ */
     size_t num;
     size_t len;
 
@@ -107,7 +113,7 @@ typedef struct tnecs_Ss {
 
 typedef struct tnecs_As {
     /* Archetype == multiple bits set ULL != A_id */
-    /* A_id == A_O == 1++ */
+    /* A_id == 1++ */
     size_t num;
     size_t len;
 
@@ -127,6 +133,8 @@ typedef struct tnecs_As {
 } tnecs_As;
 
 typedef struct tnecs_Cs {
+    /* Component == 1 bit set ULL != C_id */
+    /* C_id == T_id == 1++ */
     size_t          num;
     size_t          bytesizes[TNECS_C_CAP]; /* [cID] */
     tnecs_init_f    finit[TNECS_C_CAP];     /* [cID] */
@@ -136,7 +144,7 @@ typedef struct tnecs_Cs {
 struct tnecs_W {
     tnecs_Ss    Ss;
     tnecs_Es    Es;
-    tnecs_As    byT;
+    tnecs_As    byT; /* rn byA */
     tnecs_Pis   Pis;
     tnecs_Cs    Cs;
     int reuse_Es;
