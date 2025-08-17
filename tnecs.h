@@ -34,7 +34,7 @@
 **          1. Self is NOT id: C,  S,  T,  A
 **          2. Self is id:     E, Ph, Pi 
 **      Order: index of thing, normally in other context
-**          - E_O_byT: order of entity, in archetype array.
+**          - E_O_byA: order of entity, in archetype array.
 */
 
 #include <math.h>
@@ -123,16 +123,16 @@ int tnecs_finale(tnecs_W **w);
 /* Toggle entity reuse i.e. deleted entity in queue */
 void tnsecs_reuse_E( tnecs_W *w, int toggle);
 
-/* Run all Ss in all Pis, by Phs */
+/* Run all systems, by pipelines and phases */
 int tnecs_step( tnecs_W *w,     tnecs_ns dt, 
                 void    *data);
 
 /* --- PIPELINES --- */
-/* Run all Ss in pipeline, by Phs */
+/* Run all systems in pipeline, by phases */
 int tnecs_step_Pi(  tnecs_W *w,     tnecs_ns dt,
                     void    *data,  tnecs_Pi pi);
 
-/* Run all Ss in pipeline & phase combo */
+/* Run all systems in pipeline & phase combo */
 int tnecs_step_Pi_Ph(   tnecs_W     *w, tnecs_ns dt,
                         void        *d, tnecs_Pi pi,
                         tnecs_Ph     ph);
@@ -148,6 +148,8 @@ int tnecs_S_run(tnecs_W *w,     size_t   id,
 int tnecs_custom_S_run( tnecs_W *w,     tnecs_S_f     s,    
                         tnecs_C  a,     tnecs_ns    dt,    
                         void    *data);
+/* -- tnecs_in -- */
+int tnecs_In_data(tnecs_In *in, void *data);
 
 /* --- REGISTRATION --- */
 /* Phases start at 1, increment every call. */
@@ -170,6 +172,7 @@ size_t tnecs_register_S(tnecs_W     *w,     tnecs_S_f    s,
         )\
     )
 
+/* Component ID start at 1, increment every call. */
 tnecs_C tnecs_register_C(   tnecs_W         *w,
                             size_t           b,
                             tnecs_free_f    ffree,  
@@ -193,10 +196,8 @@ int tnecs_E_open_find(  tnecs_W *w);
 int tnecs_E_open_flush( tnecs_W *w);
 
 #define TNECS_E_CREATE_wC(W, ...) \
-    tnecs_E_create_wC(\
-        W, TNECS_ARGN(__VA_ARGS__), \
-        TNECS_COMMA(__VA_ARGS__)\
-    )
+    tnecs_E_create_wC(  W, TNECS_ARGN(__VA_ARGS__), \
+                        TNECS_COMMA(__VA_ARGS__))
 #define TNECS_E_EXISTS(w, i) \
     ((i != TNECS_NULL) && (w->Es.id[i] == i))
 #define TNECS_E_A(w, e) w->Es.As[e]
@@ -204,11 +205,8 @@ int tnecs_E_open_flush( tnecs_W *w);
 /* --- COMPONENT --- */
 void *tnecs_get_C(tnecs_W *w, tnecs_E E, tnecs_C C_id);
 
-#define TNECS_E_HAS_C(w, e, C_id) (\
-        ( \
-            w->Es.As[e] & tnecs_C_ids2A(1, C_id) \
-        ) > 0 \
-    )
+#define TNECS_E_HAS_C(w, e, C_id) \
+        ((w->Es.As[e] & tnecs_C_ids2A(1, C_id)) > 0)
 #define TNECS_ADD_C(...) \
     TNECS_CHOOSE_ADD_C(\
         __VA_ARGS__, TNECS_ADD_C4, TNECS_ADD_C3 \
@@ -220,8 +218,7 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E E, tnecs_C C_id);
     tnecs_E_add_C(W, E_id, tnecs_C_ids2A(1, C_id), isnewT)
 #define TNECS_ADD_Cs(W, E_id, isnewT, ...) \
     tnecs_E_add_C(\
-        W, \
-        E_id, \
+        W, E_id, \
         tnecs_C_ids2A(\
             TNECS_ARGN(__VA_ARGS__), \
             TNECS_COMMA(__VA_ARGS__)\
@@ -230,8 +227,7 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E E, tnecs_C C_id);
     )
 #define TNECS_REMOVE_C(W, E_id, ...) \
     tnecs_E_rm_C(\
-        W, \
-        E_id, \
+        W, E_id, \
         tnecs_C_ids2A(\
             TNECS_ARGN(__VA_ARGS__), \
             TNECS_COMMA(__VA_ARGS__)\
@@ -239,9 +235,8 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E E, tnecs_C C_id);
     )
 
 /* --- COMPONENT ARRAY --- */
-void *tnecs_C_array(tnecs_W         *w, 
-                    const size_t     C_id,
-                    const size_t     tID);
+void *tnecs_C_array(tnecs_W     *w, const size_t     C_id,
+                    const size_t tID);
 
 #define TNECS_C_ARRAY(in, C_id) \
     tnecs_C_array(in->world, C_id, in->E_A_id)
@@ -252,8 +247,7 @@ tnecs_C tnecs_A_id(const tnecs_W *const w, tnecs_C arch);
 
 #define TNECS_C_ID2T(id) ( \
         ((id >= TNECS_NULLSHIFT) && (id < TNECS_C_CAP)) ? \
-        (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL \
-    )
+        (1ULL << (id - TNECS_NULLSHIFT)) : 0ULL)
 #define TNECS_C_T2ID(T) \
     (T >= 1 ? (tnecs_C)(log2(T) + 1.1f) : 0ULL) 
 #define TNECS_C_IDS2A(...) \

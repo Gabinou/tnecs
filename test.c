@@ -730,27 +730,27 @@ void tnecs_test_C_array() {
 
     size_t temp_archetypeid     = TNECS_C_IDS2AID(arr_world, Unit_ID, Position_ID);
 
-    size_t temp_C_O = tnecs_C_O_byTid(arr_world, Position_ID, temp_archetypeid);
+    size_t temp_C_O = tnecs_C_O_byAid(arr_world, Position_ID, temp_archetypeid);
     assert(temp_archetypeid > TNECS_NULL);
     assert(arr_world->byA.Cs != NULL);
     assert(arr_world->byA.Cs[temp_archetypeid] != NULL);
 
     test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 4);
-    temp_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, temp_archetypeid);
+    temp_C_O = tnecs_C_O_byAid(arr_world, Unit_ID, temp_archetypeid);
     test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 4);
 
     temp_archetypeid = TNECS_C_IDS2AID(arr_world, Unit_ID, Velocity_ID);
-    temp_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, temp_archetypeid);
+    temp_C_O = tnecs_C_O_byAid(arr_world, Unit_ID, temp_archetypeid);
     test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 3);
-    temp_C_O = tnecs_C_O_byTid(arr_world, Velocity_ID, temp_archetypeid);
+    temp_C_O = tnecs_C_O_byAid(arr_world, Velocity_ID, temp_archetypeid);
     test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 3);
 
     temp_archetypeid = TNECS_C_IDS2AID(arr_world, Unit_ID, Velocity_ID, Position_ID);
-    temp_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, temp_archetypeid);
+    temp_C_O = tnecs_C_O_byAid(arr_world, Unit_ID, temp_archetypeid);
     test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 2);
-    temp_C_O = tnecs_C_O_byTid(arr_world, Position_ID, temp_archetypeid);
+    temp_C_O = tnecs_C_O_byAid(arr_world, Position_ID, temp_archetypeid);
     test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 2);
-    temp_C_O = tnecs_C_O_byTid(arr_world, Velocity_ID, temp_archetypeid);
+    temp_C_O = tnecs_C_O_byAid(arr_world, Velocity_ID, temp_archetypeid);
     test_true(arr_world->byA.Cs[temp_archetypeid][temp_C_O].num == 2);
 
     size_t old_E_order = arr_world->Es.Os[temp_ent];
@@ -759,7 +759,7 @@ void tnecs_test_C_array() {
     size_t old_archetypeid = TNECS_C_IDS2AID(arr_world, Unit_ID);
     test_true(arr_world->byA.num_Es[old_archetypeid] == 1);
     test_true(old_archetypeid == Unit_ID);
-    size_t old_C_O = tnecs_C_O_byTid(arr_world, Unit_ID, old_archetypeid);
+    size_t old_C_O = tnecs_C_O_byAid(arr_world, Unit_ID, old_archetypeid);
 
     test_true(old_C_O < TNECS_C_CAP);
     test_true(old_C_O == 0);
@@ -1121,7 +1121,7 @@ void tnecs_test_grow() {
     }
 
     size_t test_archetypeid = 0;
-    tnecs_grow_byT(grow_world, test_archetypeid);
+    tnecs_grow_byA(grow_world, test_archetypeid);
     test_true(grow_world->byA.num_Es[test_archetypeid] == 0);
     test_true(grow_world->byA.len_Es[test_archetypeid] == TNECS_E_0LEN *
         TNECS_ARR_GROW);
@@ -1130,7 +1130,7 @@ void tnecs_test_grow() {
     }
 
     test_archetypeid = 1;
-    tnecs_grow_byT(grow_world, test_archetypeid);
+    tnecs_grow_byA(grow_world, test_archetypeid);
     test_true(grow_world->byA.num_Es[test_archetypeid] == 0);
     test_true(grow_world->byA.len_Es[test_archetypeid] == TNECS_E_0LEN *
         TNECS_ARR_GROW);
