@@ -64,7 +64,6 @@ typedef struct tnecs_Phs {
 } tnecs_Phs;
 
 typedef struct tnecs_Pis {
-    /* pipeline == id == 1++ */
     size_t num;
     size_t len;
 
@@ -72,11 +71,10 @@ typedef struct tnecs_Pis {
 } tnecs_Pis;
 
 typedef struct tnecs_Es {
-    /* entity == id == 1++ */
-    // - .num doesn't change even if Es get deleted
-    // - if reuse_Es: add deleted Es to Es_open
+    // 1. .num doesn't change even if Es get deleted
+    // 2. if reuse_Es: add deleted Es to Es_open
     //      - Call tnecs_E_open_find to add Es with
-    //        id[ent] == false Es_open.
+    //        id[ent] == false to Es_open.
     size_t num;
     size_t len;
 
@@ -87,8 +85,6 @@ typedef struct tnecs_Es {
 } tnecs_Es;
 
 typedef struct tnecs_Ss {
-    /* System == function != S_id */
-    /* S_id== 1++ */
     size_t num;
     size_t len;
 
@@ -106,12 +102,9 @@ typedef struct tnecs_Ss {
 } tnecs_Ss;
 
 typedef struct tnecs_As {
-    /* Archetype == multiple bits set ULL != A_id */
-    /* A_id == 1++ */
     size_t num;
     size_t len;
 
-    /* List of all ARCHETYPES: rn A */
     tnecs_C      *A;            /* [A_id] */
     size_t       *num_Cs;       /* [aID] */
     size_t       *len_Es;       /* [aID] */
@@ -119,7 +112,7 @@ typedef struct tnecs_As {
     size_t       *num_A_ids;    /* [aID] */
 
     /* List of ALL SUBARCHETYPES: rn subA */
-    size_t      **A_id;     /* [A_id][subA_O]    */
+    size_t      **subA;     /* [A_id][subA_O]    */
     tnecs_E     **Es;       /* [aID][E_O_byT]   */
     size_t      **Cs_O;     /* [aID][cID]           */
     tnecs_C     **Cs_id;    /* [aID][C_O_byT]       */
@@ -127,8 +120,6 @@ typedef struct tnecs_As {
 } tnecs_As;
 
 typedef struct tnecs_Cs {
-    /* Component == 1 bit set ULL != C_id */
-    /* C_id == T_id == 1++ */
     size_t          num;
     size_t          bytesizes[TNECS_C_CAP]; /* [cID] */
     tnecs_init_f    finit[TNECS_C_CAP];     /* [cID] */
@@ -366,7 +357,7 @@ int _tnecs_breath_As(tnecs_As *byA) {
     byA->Cs         = calloc(byA->len, sizeof(*byA->Cs));
     byA->len_Es     = calloc(byA->len, sizeof(*byA->len_Es));
     byA->num_Es     = calloc(byA->len, sizeof(*byA->num_Es));
-    byA->A_id       = calloc(byA->len, sizeof(*byA->A_id));
+    byA->subA       = calloc(byA->len, sizeof(*byA->subA));
     byA->Cs_id      = calloc(byA->len, sizeof(*byA->Cs_id));
     byA->num_Cs     = calloc(byA->len, sizeof(*byA->num_Cs));
     byA->Cs_O       = calloc(byA->len, sizeof(*byA->Cs_O));
@@ -375,7 +366,7 @@ int _tnecs_breath_As(tnecs_As *byA) {
     TNECS_CHECK(byA->A);
     TNECS_CHECK(byA->Es);
     TNECS_CHECK(byA->Cs);
-    TNECS_CHECK(byA->A_id);
+    TNECS_CHECK(byA->subA);
     TNECS_CHECK(byA->len_Es);
     TNECS_CHECK(byA->num_Es);
     TNECS_CHECK(byA->Cs_id);
@@ -385,8 +376,8 @@ int _tnecs_breath_As(tnecs_As *byA) {
 
     /* Alloc & check for id_byT elements */
     for (size_t i = 0; i < byA->len; i++) {
-        byA->A_id[i] = calloc(TNECS_C_CAP, sizeof(**byA->A_id));
-        TNECS_CHECK(byA->A_id[i]);
+        byA->subA[i] = calloc(TNECS_C_CAP, sizeof(**byA->subA));
+        TNECS_CHECK(byA->subA[i]);
         byA->Es[i]   = calloc(TNECS_E_0LEN, sizeof(**byA->Es));
         TNECS_CHECK(byA->Es[i]);
 
@@ -451,8 +442,8 @@ static int _tnecs_finale_As(tnecs_As *byA) {
             free(byA->Cs_id[i]);
         if (byA->Cs_O != NULL)
             free(byA->Cs_O[i]);
-        if (byA->A_id != NULL)
-            free(byA->A_id[i]);
+        if (byA->subA != NULL)
+            free(byA->subA[i]);
         if (byA->Cs != NULL) {
             for (size_t j = 0; j < byA->num_Cs[i]; j++) {
                 free(byA->Cs[i][j].Cs);
@@ -466,7 +457,7 @@ static int _tnecs_finale_As(tnecs_As *byA) {
     free(byA->Cs);
     free(byA->len_Es);
     free(byA->num_Es);
-    free(byA->A_id);
+    free(byA->subA);
     free(byA->Cs_id);
     free(byA->num_Cs);
     free(byA->Cs_O);
@@ -529,7 +520,7 @@ int tnecs_custom_S_run( tnecs_W     *W, tnecs_S_f    S,
 
     /* Running the non-exclusive/inclusive custom system */
     for (size_t subT = 0; subT < W->byA.num_A_ids[A_id]; subT++) {
-        input.E_A_id = W->byA.A_id[A_id][subT];
+        input.E_A_id = W->byA.subA[A_id][subT];
         input.num_Es = W->byA.num_Es[input.E_A_id];
         S(&input);
     }
@@ -579,7 +570,7 @@ int tnecs_S_run(tnecs_W *W, size_t S_id,
     /* - Running the inclusive Ss in current phase - */
     for (size_t subT = 0; subT < W->byA.num_A_ids[S_A_id]; subT++) {
 
-        input.E_A_id    = W->byA.A_id[S_A_id][subT];
+        input.E_A_id    = W->byA.subA[S_A_id][subT];
         input.num_Es    = W->byA.num_Es[input.E_A_id];
         tnecs_S_f S     = byPh->Ss[Ph][S_O];
 
@@ -679,14 +670,14 @@ tnecs_C tnecs_register_C(   tnecs_W     *W,
 
 size_t _tnecs_register_A(   tnecs_W    *W, size_t      num_Cs,
                             tnecs_C     A_new) {
-    // 0- Check if archetype exists, return
+    /* 0- Check if archetype exists, return */
     for (size_t i = 0 ; i < W->byA.num; i++) {
         if (A_new == W->byA.A[i]) {
             return (i);
         }
     }
 
-    // 1- Add new byA.Cs at [tID]
+    /* 1- Add new byA.Cs at [tID] */
     if ((W->byA.num + 1) >= W->byA.len)
         TNECS_CHECK(tnecs_grow_A(W));
     W->byA.A[W->byA.num++] = A_new;
@@ -694,10 +685,10 @@ size_t _tnecs_register_A(   tnecs_W    *W, size_t      num_Cs,
     assert(tID == (W->byA.num - 1));
     W->byA.num_Cs[tID] = num_Cs;
 
-    // 2- Add arrays to byA.Cs[tID] for each component
+    /* 2- Add arrays to byA.Cs[tID] for each component */
     TNECS_CHECK(tnecs_C_arr_new(W, num_Cs, A_new));
 
-    // 3- Add all Cs to byA.Cs_id
+    /* 3- Add all Cs to byA.Cs_id */
     tnecs_C A_reduced = A_new, A_added = 0;
     size_t bytesize1 = sizeof(**W->byA.Cs_id);
     size_t bytesize2 = sizeof(**W->byA.Cs_O);
@@ -721,7 +712,7 @@ size_t _tnecs_register_A(   tnecs_W    *W, size_t      num_Cs,
 
     /* 4- Find every subtype of every archertype. 
     **  a. Check if ALL archetypes are subtypes
-    **  b. If subtype: to list of subtypes byA.A_id */
+    **  b. If subtype: to list of subtypes byA.subA */
     for (size_t i = 1; i < W->byA.num; i++) {
         W->byA.num_A_ids[i] = 0;
         for (size_t j = 1; j < W->byA.num; j++) {
@@ -732,7 +723,7 @@ size_t _tnecs_register_A(   tnecs_W    *W, size_t      num_Cs,
                 continue;
 
             /* j is an archetype of i */
-            W->byA.A_id[i][W->byA.num_A_ids[i]++] = j;
+            W->byA.subA[i][W->byA.num_A_ids[i]++] = j;
         }
     }
 
@@ -1439,8 +1430,8 @@ int tnecs_grow_A(tnecs_W *W) {
                                     sizeof(*W->byA.num_Es));
     W->byA.len_Es   = tnecs_realloc(W->byA.len_Es, olen, nlen,
                                     sizeof(*W->byA.len_Es));
-    W->byA.A_id     = tnecs_realloc(W->byA.A_id, olen, nlen,
-                                    sizeof(*W->byA.A_id));
+    W->byA.subA     = tnecs_realloc(W->byA.subA, olen, nlen,
+                                    sizeof(*W->byA.subA));
     W->byA.Cs_id    = tnecs_realloc(W->byA.Cs_id, olen, nlen,
                                     sizeof(*W->byA.Cs_id));
     W->byA.num_Cs   = tnecs_realloc(W->byA.num_Cs, olen, nlen,
@@ -1455,7 +1446,7 @@ int tnecs_grow_A(tnecs_W *W) {
     TNECS_CHECK(W->byA.A);
     TNECS_CHECK(W->byA.Es);
     TNECS_CHECK(W->byA.num_Es);
-    TNECS_CHECK(W->byA.A_id);
+    TNECS_CHECK(W->byA.subA);
     TNECS_CHECK(W->byA.len_Es);
     TNECS_CHECK(W->byA.Cs_id);
     TNECS_CHECK(W->byA.num_Cs);
@@ -1466,8 +1457,8 @@ int tnecs_grow_A(tnecs_W *W) {
     for (size_t i = olen; i < W->byA.len; i++) {
         W->byA.Es[i] = calloc(TNECS_E_0LEN, sizeof(**W->byA.Es));
         TNECS_CHECK(W->byA.Es[i]);
-        W->byA.A_id[i] = calloc(TNECS_C_CAP, sizeof(**W->byA.A_id));
-        TNECS_CHECK(W->byA.A_id[i]);
+        W->byA.subA[i] = calloc(TNECS_C_CAP, sizeof(**W->byA.subA));
+        TNECS_CHECK(W->byA.subA[i]);
 
         W->byA.len_Es[i] = TNECS_E_0LEN;
         W->byA.num_Es[i] = 0;

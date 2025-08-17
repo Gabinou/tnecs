@@ -927,24 +927,24 @@ void tnecs_test_world_progress() {
 
     test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world,
                                                             TNECS_S_ID2A(inclusive_world, SystemMove_ID))] == 3);
-    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.subA[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMove_ID))][0] == tnecs_A_id(inclusive_world,
                                                                       TNECS_S_ID2A(inclusive_world, SystemMovePhase1_ID)));
-    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.subA[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMove_ID))][1] == tnecs_A_id(inclusive_world,
                                                                       TNECS_S_ID2A(inclusive_world, SystemMovePhase2_ID)));
-    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.subA[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world, SystemMove_ID))][2] == tnecs_A_id(inclusive_world,
                                                                       TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID)));
     test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world,
                                                             TNECS_S_ID2A(inclusive_world, SystemMovePhase1_ID))] == 1);
-    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.subA[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world,
                                                                       SystemMovePhase1_ID))][0] == tnecs_A_id(inclusive_world,
                                                                               TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID)));
     test_true(inclusive_world->byA.num_A_ids[tnecs_A_id(inclusive_world,
                                                             TNECS_S_ID2A(inclusive_world, SystemMovePhase2_ID))] == 1);
-    test_true(inclusive_world->byA.A_id[tnecs_A_id(inclusive_world,
+    test_true(inclusive_world->byA.subA[tnecs_A_id(inclusive_world,
                                                               TNECS_S_ID2A(inclusive_world,
                                                                       SystemMovePhase2_ID))][0] == tnecs_A_id(inclusive_world,
                                                                               TNECS_S_ID2A(inclusive_world, SystemMovePhase4_ID)));
