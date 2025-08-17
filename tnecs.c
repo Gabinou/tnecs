@@ -57,17 +57,17 @@ typedef struct tnecs_Phs {
     size_t num;
     size_t len;
 
-    size_t       *len_Ss; /* [Ph_id] */
-    size_t       *num_Ss; /* [Ph_id] */
-    size_t      **Ss_id;  /* [Ph_id][S_O]    */
-    tnecs_S_f   **Ss;     /* [Ph_id][S_O]    */
+    size_t       *len_Ss; /* [Ph]       */
+    size_t       *num_Ss; /* [Ph]       */
+    size_t      **Ss_id;  /* [Ph][S_O]  */
+    tnecs_S_f   **Ss;     /* [Ph][S_O]  */
 } tnecs_Phs;
 
 typedef struct tnecs_Pis {
     size_t num;
     size_t len;
 
-    tnecs_Phs *byPh;   /* [Pi_id] */
+    tnecs_Phs *byPh;   /* [Pi] */
 } tnecs_Pis;
 
 typedef struct tnecs_Es {
@@ -78,9 +78,9 @@ typedef struct tnecs_Es {
     size_t num;
     size_t len;
 
-    tnecs_E     *id; /* [entity_id] -> eID */
-    size_t      *Os; /* [eID] */
-    tnecs_C     *As; /* [eID] */
+    tnecs_E     *id; /* [E] */
+    size_t      *Os; /* [E] */
+    tnecs_C     *As; /* [E] */
     tnecs_arr  open;
 } tnecs_Es;
 
@@ -89,10 +89,10 @@ typedef struct tnecs_Ss {
     size_t len;
 
     tnecs_Ph    *Phs;   /* [S_id] */
-    size_t      *Os;    /* [sID] */
-    int         *Ex;    /* [sID] */
-    tnecs_C     *As;    /* [sID] */
-    tnecs_Pi    *Pi;    /* [sID] */
+    size_t      *Os;    /* [S_id] */
+    int         *Ex;    /* [S_id] */
+    tnecs_C     *As;    /* [S_id] */
+    tnecs_Pi    *Pi;    /* [S_id] */
 #ifndef NDEBUG
     /* Systems maybe run in current pipeline */
     tnecs_arr to_run;
@@ -105,25 +105,24 @@ typedef struct tnecs_As {
     size_t num;
     size_t len;
 
-    tnecs_C      *A;            /* [A_id] */
-    size_t       *num_Cs;       /* [aID] */
-    size_t       *len_Es;       /* [aID] */
-    size_t       *num_Es;       /* [aID] */
-    size_t       *num_A_ids;    /* [aID] */
+    tnecs_C      *A;            /* [A_id]   */
+    size_t       *num_Cs;       /* [A_id]   */
+    size_t       *len_Es;       /* [A_id]   */
+    size_t       *num_Es;       /* [A_id]   */
+    size_t       *num_A_ids;    /* [A_id]   */
 
-    /* List of ALL SUBARCHETYPES: rn subA */
-    size_t      **subA;     /* [A_id][subA_O]    */
-    tnecs_E     **Es;       /* [aID][E_O_byT]   */
-    size_t      **Cs_O;     /* [aID][cID]           */
-    tnecs_C     **Cs_id;    /* [aID][C_O_byT]       */
-    tnecs_C_arr **Cs;       /* [aID][C_O_byT]       */
+    size_t      **subA;     /* [A_id][subA_O]   */
+    tnecs_E     **Es;       /* [A_id][E_O_byT]   */
+    size_t      **Cs_O;     /* [A_id][C_id]       */
+    tnecs_C     **Cs_id;    /* [A_id][C_O_byT]   */
+    tnecs_C_arr **Cs;       /* [A_id][C_O_byT]   */
 } tnecs_As;
 
 typedef struct tnecs_Cs {
     size_t          num;
-    size_t          bytesizes[TNECS_C_CAP]; /* [cID] */
-    tnecs_init_f    finit[TNECS_C_CAP];     /* [cID] */
-    tnecs_free_f    ffree[TNECS_C_CAP];     /* [cID] */
+    size_t          bytesizes[TNECS_C_CAP]; /* [C_id] */
+    tnecs_init_f    finit[TNECS_C_CAP];     /* [C_id] */
+    tnecs_free_f    ffree[TNECS_C_CAP];     /* [C_id] */
 } tnecs_Cs;
 
 struct tnecs_W {
@@ -176,7 +175,7 @@ static int tnecs_grow_ran(tnecs_W *w);
 #endif /* NDEBUG */
 
 static int tnecs_grow_Ph(       tnecs_W *w, tnecs_Pi    pi);
-static int tnecs_grow_byT(      tnecs_W *w, size_t      aID);
+static int tnecs_grow_byT(      tnecs_W *w, size_t      A_id);
 static int tnecs_grow_E(        tnecs_W *w);
 static int tnecs_grow_S(        tnecs_W *w);
 static int tnecs_grow_Pi(       tnecs_W *w);
@@ -191,15 +190,15 @@ static int tnecs_grow_C_array(  tnecs_W     *w,
 
 /* --- UTILITIES --- */
 static size_t tnecs_C_O_byT(    const tnecs_W *const w,
-                                size_t cID, tnecs_C arch);
+                                size_t C_id, tnecs_C arch);
 static size_t tnecs_C_O_byTid(  const tnecs_W *const w, 
-                                size_t cID, size_t aID);
+                                size_t C_id, size_t A_id);
 
 /* --- COMPONENT ARRAY --- */
 static int tnecs_C_arr_new(  tnecs_W *w, size_t num,
                             tnecs_C a);
 static int tnecs_C_arr_init( tnecs_W *w, tnecs_C_arr *arr,
-                            size_t cID);
+                            size_t C_id);
 
 /* --- byA --- */
 static int tnecs_EsbyT_add( tnecs_W *w, tnecs_E e,
@@ -972,13 +971,13 @@ tnecs_E tnecs_E_rm_C(   tnecs_W *W, tnecs_E  E,
     return (1);
 }
 
-void *tnecs_get_C(  tnecs_W *W, tnecs_E  eID,
-                    tnecs_C  cID) {
-    if (!TNECS_E_EXISTS(W, eID))
+void *tnecs_get_C(  tnecs_W *W, tnecs_E  E,
+                    tnecs_C  C_id) {
+    if (!TNECS_E_EXISTS(W, E))
         return (NULL);
 
-    tnecs_C C_flag  = TNECS_C_ID2T(cID);
-    tnecs_C E_A     = TNECS_E_A(W, eID);
+    tnecs_C C_flag  = TNECS_C_ID2T(C_id);
+    tnecs_C E_A     = TNECS_E_A(W, E);
     /* If entity has component, get output it.  */
     /* If not output NULL. */
     if (!TNECS_A_HAS_T(C_flag, E_A))
@@ -986,10 +985,10 @@ void *tnecs_get_C(  tnecs_W *W, tnecs_E  eID,
 
     size_t tID = tnecs_A_id(W, E_A);
     assert(tID > 0);
-    size_t C_O = tnecs_C_O_byT(W, cID, E_A);
+    size_t C_O = tnecs_C_O_byT(W, C_id, E_A);
     assert(C_O <= W->byA.num_Cs[tID]);
-    size_t E_O = W->Es.Os[eID];
-    size_t bytesize = W->Cs.bytesizes[cID];
+    size_t E_O = W->Es.Os[E];
+    size_t bytesize = W->Cs.bytesizes[C_id];
 
     tnecs_C_arr *C_array = &W->byA.Cs[tID][C_O];
     assert(C_array != NULL);
@@ -1157,12 +1156,12 @@ int tnecs_C_run(tnecs_W *W, tnecs_E          E,
     size_t tID      = tnecs_A_id(W, A);
     size_t C_num = W->byA.num_Cs[tID];
     for (size_t C_O = 0; C_O < C_num; C_O++) {
-        size_t cID = W->byA.Cs_id[tID][C_O];
-        tnecs_init_f func = funcs[cID]; 
+        size_t C_id = W->byA.Cs_id[tID][C_O];
+        tnecs_init_f func = funcs[C_id]; 
         if (func == NULL) {
             continue;
         }
-        void *comp = tnecs_get_C(W, E, cID);
+        void *comp = tnecs_get_C(W, E, C_id);
         assert(comp != NULL);
         func(comp);
     }
@@ -1240,13 +1239,13 @@ int tnecs_C_arr_new(tnecs_W *W, size_t num_Cs, tnecs_C A) {
 }
 
 int tnecs_C_arr_init(   tnecs_W *W, tnecs_C_arr  *C_arr,
-                        size_t   cID) {
-    assert(cID > 0);
-    assert(cID < W->Cs.num);
-    tnecs_C in_type = TNECS_C_ID2T(cID);
+                        size_t   C_id) {
+    assert(C_id > 0);
+    assert(C_id < W->Cs.num);
+    tnecs_C in_type = TNECS_C_ID2T(C_id);
     assert(in_type <= TNECS_C_ID2T(W->Cs.num));
 
-    size_t bytesize = W->Cs.bytesizes[cID];
+    size_t bytesize = W->Cs.bytesizes[C_id];
     assert(bytesize > 0);
 
     C_arr->type  = in_type;
@@ -1259,15 +1258,15 @@ int tnecs_C_arr_init(   tnecs_W *W, tnecs_C_arr  *C_arr,
 
 /*********** UTILITY FUNCTIONS/MACROS **************/
 size_t tnecs_C_O_byT(   const tnecs_W *const W,
-                        size_t cID, tnecs_C flag) {
+                        size_t C_id, tnecs_C flag) {
     tnecs_C tID = tnecs_A_id(W, flag);
-    return (tnecs_C_O_byTid(W, cID, tID));
+    return (tnecs_C_O_byTid(W, C_id, tID));
 }
 
 size_t tnecs_C_O_byTid( const tnecs_W *const W,
-                        size_t cID, size_t tID) {
+                        size_t C_id, size_t tID) {
     for (size_t i = 0; i < W->byA.num_Cs[tID]; i++) {
-        if (W->byA.Cs_id[tID][i] == cID) {
+        if (W->byA.Cs_id[tID][i] == C_id) {
             return(i);
         }
     }
@@ -1362,9 +1361,9 @@ int tnecs_grow_C_array( tnecs_W *W, tnecs_C_arr *C_arr,
     size_t olen = C_arr->len;
     size_t nlen = olen * TNECS_ARR_GROW;
     C_arr->len  = nlen;
-    size_t cID  = W->byA.Cs_id[tID][C_O];
+    size_t C_id  = W->byA.Cs_id[tID][C_O];
 
-    size_t bytesize = W->Cs.bytesizes[cID];
+    size_t bytesize = W->Cs.bytesizes[C_id];
     C_arr->Cs = tnecs_realloc(C_arr->Cs, olen, nlen, bytesize);
     TNECS_CHECK(C_arr->Cs);
     return (1);
@@ -1562,16 +1561,16 @@ size_t setBits_KnR(tnecs_C flags) {
     return (count);
 }
 
-void *tnecs_C_array(tnecs_W *W, const size_t cID,
+void *tnecs_C_array(tnecs_W *W, const size_t C_id,
                     const size_t tID) {
-    if ((cID == TNECS_NULL) || (tID == TNECS_NULL))
+    if ((C_id == TNECS_NULL) || (tID == TNECS_NULL))
         return (NULL);
 
-    if (cID >= W->Cs.num)
+    if (C_id >= W->Cs.num)
         return (NULL);
 
     tnecs_C_arr *carr = W->byA.Cs[tID];
-    size_t       C_O  = W->byA.Cs_O[tID][cID];
+    size_t       C_O  = W->byA.Cs_O[tID][C_id];
 
     return (carr[C_O].Cs);
 }

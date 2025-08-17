@@ -184,9 +184,9 @@ tnecs_E tnecs_E_create(     tnecs_W *w);
 tnecs_E tnecs_E_destroy(    tnecs_W *w, tnecs_E ent);
 tnecs_E tnecs_E_create_wC(  tnecs_W *w, size_t argnum, ...);
 
-tnecs_E tnecs_E_add_C(  tnecs_W *w, tnecs_E eID,
+tnecs_E tnecs_E_add_C(  tnecs_W *w, tnecs_E E,
                         tnecs_C  A, int     isNew);
-tnecs_E tnecs_E_rm_C(   tnecs_W *w, tnecs_E eID, 
+tnecs_E tnecs_E_rm_C(   tnecs_W *w, tnecs_E E, 
                         tnecs_C  A);
 
 int tnecs_E_open_find(  tnecs_W *w);
@@ -202,11 +202,11 @@ int tnecs_E_open_flush( tnecs_W *w);
 #define TNECS_E_A(w, e) w->Es.As[e]
 
 /* --- COMPONENT --- */
-void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
+void *tnecs_get_C(tnecs_W *w, tnecs_E E, tnecs_C C_id);
 
-#define TNECS_E_HAS_C(w, e, cID) (\
+#define TNECS_E_HAS_C(w, e, C_id) (\
         ( \
-            w->Es.As[e] & tnecs_C_ids2A(1, cID) \
+            w->Es.As[e] & tnecs_C_ids2A(1, C_id) \
         ) > 0 \
     )
 #define TNECS_ADD_C(...) \
@@ -214,10 +214,10 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
         __VA_ARGS__, TNECS_ADD_C4, TNECS_ADD_C3 \
     )(__VA_ARGS__)
 #define TNECS_CHOOSE_ADD_C(_1, _2, _3, _4, NAME, ...) NAME
-#define TNECS_ADD_C3(W, E_id, cID) \
-    tnecs_E_add_C(W, E_id, tnecs_C_ids2A(1, cID), 1)
-#define TNECS_ADD_C4(W, E_id, cID, isnewT) \
-    tnecs_E_add_C(W, E_id, tnecs_C_ids2A(1, cID), isnewT)
+#define TNECS_ADD_C3(W, E_id, C_id) \
+    tnecs_E_add_C(W, E_id, tnecs_C_ids2A(1, C_id), 1)
+#define TNECS_ADD_C4(W, E_id, C_id, isnewT) \
+    tnecs_E_add_C(W, E_id, tnecs_C_ids2A(1, C_id), isnewT)
 #define TNECS_ADD_Cs(W, E_id, isnewT, ...) \
     tnecs_E_add_C(\
         W, \
@@ -240,11 +240,11 @@ void *tnecs_get_C(tnecs_W *w, tnecs_E eID, tnecs_C cID);
 
 /* --- COMPONENT ARRAY --- */
 void *tnecs_C_array(tnecs_W         *w, 
-                    const size_t     cID,
+                    const size_t     C_id,
                     const size_t     tID);
 
-#define TNECS_C_ARRAY(in, cID) \
-    tnecs_C_array(in->world, cID, in->E_A_id)
+#define TNECS_C_ARRAY(in, C_id) \
+    tnecs_C_array(in->world, C_id, in->E_A_id)
 
 /* --- ARCHETYPES --- */
 tnecs_C tnecs_C_ids2A(size_t argnum, ...);
