@@ -53,6 +53,7 @@ typedef struct tnecs_arr {
 } tnecs_arr;
 
 typedef struct tnecs_Phs {
+    /* phase == id == O == 1++ */
     size_t num;
     size_t len;
 
@@ -63,6 +64,7 @@ typedef struct tnecs_Phs {
 } tnecs_Phs;
 
 typedef struct tnecs_Pis {
+    /* pipeline == id == O == 1++ */
     size_t num;
     size_t len;
 
@@ -70,6 +72,7 @@ typedef struct tnecs_Pis {
 } tnecs_Pis;
 
 typedef struct tnecs_Es {
+    /* entity == id == O == 1++ */
     // - .num doesn't change even if Es get deleted
     // - if reuse_Es: add deleted Es to Es_open
     //      - Call tnecs_E_reuse to add Es with
@@ -84,6 +87,8 @@ typedef struct tnecs_Es {
 } tnecs_Es;
 
 typedef struct tnecs_Ss {
+    /* System == function != S_id */
+    /* S_id == O == 1++ */
     size_t num;
     size_t len;
 
@@ -101,6 +106,8 @@ typedef struct tnecs_Ss {
 } tnecs_Ss;
 
 typedef struct tnecs_As {
+    /* Archetype == multiple bits set ULL != A_id */
+    /* A_id == A_O == 1++ */
     size_t num;
     size_t len;
 
@@ -111,8 +118,8 @@ typedef struct tnecs_As {
     size_t       *num_Es;       /* [aID] */
     size_t       *num_A_ids;    /* [aID] */
 
-    /* List of ALL SUBTYPES: rn subT */
-    size_t      **A_id;     /* [aID][A_id_order]    */
+    /* List of ALL SUBARCHETYPES: rn subA */
+    size_t      **A_id;     /* [A_id][subA_O]    */
     tnecs_E     **Es;       /* [aID][E_O_byT]   */
     size_t      **Cs_O;     /* [aID][cID]           */
     tnecs_C     **Cs_id;    /* [aID][C_O_byT]       */
@@ -1570,7 +1577,7 @@ void *tnecs_C_array(tnecs_W *W, const size_t cID,
     if (cID >= W->Cs.num)
         return (NULL);
 
-    tnecs_carr *carr    = W->byT.Cs[tID];
+    tnecs_carr *carr = W->byT.Cs[tID];
     size_t      C_O  = W->byT.Cs_O[tID][cID];
 
     return (carr[C_O].Cs);
