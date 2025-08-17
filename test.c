@@ -675,7 +675,7 @@ void tnecs_test_C_remove() {
     tnecs_E Silou = tnecs_E_create(test_world);
     TNECS_ADD_C(test_world, Silou, Position_ID);
     test_true(TNECS_E_HAS_C(test_world, Silou, Position_ID));
-    TNECS_REMOVE_C(test_world, Silou, Position_ID);
+    TNECS_RM_C(test_world, Silou, Position_ID);
     test_true(!TNECS_E_HAS_C(test_world, Silou, Position_ID));
 
     tnecs_E Perignon = TNECS_E_CREATE_wC(test_world, Position_ID, Velocity_ID);
@@ -683,7 +683,7 @@ void tnecs_test_C_remove() {
     test_true(TNECS_E_HAS_C(test_world, Perignon, Velocity_ID));
     test_true(!TNECS_E_HAS_C(test_world, Perignon, Unit_ID));
 
-    TNECS_REMOVE_C(test_world, Perignon, Velocity_ID);
+    TNECS_RM_C(test_world, Perignon, Velocity_ID);
     test_true(!TNECS_E_HAS_C(test_world, Perignon, Velocity_ID));
     test_true(TNECS_E_HAS_C(test_world, Perignon, Position_ID));
     test_true(!TNECS_E_HAS_C(test_world, Perignon, Unit_ID));
@@ -693,7 +693,7 @@ void tnecs_test_C_remove() {
     test_true(TNECS_E_HAS_C(test_world, Pirou, Velocity_ID));
     test_true(TNECS_E_HAS_C(test_world, Pirou, Unit_ID));
 
-    TNECS_REMOVE_C(test_world, Pirou, Position_ID, Velocity_ID);
+    TNECS_RM_C(test_world, Pirou, Position_ID, Velocity_ID);
     test_true(TNECS_E_HAS_C(test_world, Pirou, Unit_ID));
     test_true(!TNECS_E_HAS_C(test_world, Pirou, Position_ID));
     test_true(!TNECS_E_HAS_C(test_world, Pirou, Velocity_ID));

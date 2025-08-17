@@ -56,7 +56,22 @@ typedef unsigned long long int tnecs_C;
 
 /* -- Forward declarations -- */
 struct tnecs_In;
-typedef struct tnecs_W  tnecs_W;
+
+/* --- CONSTANTS --- */
+enum TNECS_PUBLIC {
+    TNECS_NULL           =         0,
+    TNECS_NULLSHIFT      =         1,
+    TNECS_E_CAP          = 100000000,
+    TNECS_Pi_CAP         =        64,
+    TNECS_Ph_CAP         =        64,
+    TNECS_C_CAP          =        64
+};
+
+
+/* -- Functions -- */
+typedef void (*tnecs_S_f)   (struct tnecs_In *);
+typedef void (*tnecs_free_f)(void *);
+typedef void (*tnecs_init_f)(void *);
 
 /* -- struct -- */
 typedef struct tnecs_C_arr { /* 1D array of Cs */
@@ -147,38 +162,23 @@ typedef struct tnecs_Cs {
     tnecs_free_f    ffree[TNECS_C_CAP];     /* [C_id] */
 } tnecs_Cs;
 
-struct tnecs_W {
+typedef struct tnecs_W {
     tnecs_Ss    Ss;
     tnecs_Es    Es;
     tnecs_As    byA;
     tnecs_Pis   Pis;
     tnecs_Cs    Cs;
     int reuse_Es;
-};
+} tnecs_W;
 
-struct tnecs_In {
+typedef struct tnecs_In {
     tnecs_W *world;
     tnecs_ns dt;
     tnecs_C  S_A;
     size_t   num_Es;
     size_t   E_A_id;
     void    *data;
-};
-
-/* -- Functions -- */
-typedef void (*tnecs_S_f)   (tnecs_In *);
-typedef void (*tnecs_free_f)(void *);
-typedef void (*tnecs_init_f)(void *);
-
-/* --- CONSTANTS --- */
-enum TNECS_PUBLIC {
-    TNECS_NULL           =         0,
-    TNECS_NULLSHIFT      =         1,
-    TNECS_E_CAP          = 100000000,
-    TNECS_Pi_CAP         =        64,
-    TNECS_Ph_CAP         =        64,
-    TNECS_C_CAP          =        64
-};
+} tnecs_In;
 
 /* --- UTILITY MACROS --- */
 #define TNECS_CONCAT( arg1, arg2) TNECS_CONCAT1(arg1, arg2)
