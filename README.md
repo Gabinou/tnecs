@@ -41,6 +41,10 @@ gcc --std=iso9899:1999 -O0 -fsanitize=undefined,address -fno-strict-aliasing -fw
 ./test
 ```
 
+## Wishlist
+- C89 compatibility
+- More than 63 components
+
 ## Credits
 Copyright (c) 2025 Gabriel Taillon
 
